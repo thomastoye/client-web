@@ -8,6 +8,7 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'app-root',
   template: `
+  <messageCenter></messageCenter>
   <div id='main_container'>
     <div id='middle_column'>
       <div id='menu'>

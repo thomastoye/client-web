@@ -3,6 +3,8 @@ import { AuthenticationService } from './auth.service';
 import { Router } from '@angular/router'
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
+
 
 
 
@@ -12,7 +14,6 @@ import { AngularFireAuth } from 'angularfire2/auth';
   template: `
   <div id="login">
     <div class="module form-module">
-    <div class="message">{{message}}</div>
       <div class="form">
         <form>
           <input [(ngModel)]="this.email" name="email" type="text" placeholder="Email"/>
@@ -21,6 +22,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
           <button type="button" (click)="this.authService.logout()">Logout</button>
           <button type="button" (click)="this.authService.register(this.email,this.password)">Register</button>
           <button type="button" (click)="this.authService.sendEmailVerification()">Send email verification link</button>
+          <button type="button" (click)="editProfile()">Edit profile</button>
         </form>
       </div>
       <div class="cta"><a href='mailto:contactperrinn@gmail.com'>Contact PERRINN</a></div>
@@ -32,6 +34,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 export class LoginComponent  {
 
+  currentUserID: string;
   email: string;
   password: string;
   message: string;
@@ -39,18 +42,22 @@ export class LoginComponent  {
   constructor(
     public authService: AuthenticationService,
     private router: Router,
-    public afAuth: AngularFireAuth
+    public afAuth: AngularFireAuth,
+    public db: AngularFireDatabase
   ) {
     this.afAuth.authState.subscribe((auth) => {
-      if (!auth) {this.message = "please login or register"}
-      else {
-        firebase.auth().currentUser.reload();
-        firebase.auth().currentUser.getToken(true);
-        if (!auth.emailVerified) {this.message = "now please verify your email"}
-        else {this.message = "you are logged in and ready to go!"}
-      }
+        if (auth == null) {
+          this.currentUserID="";
+        }
+        else {
+          this.currentUserID=auth.uid;
+        }
     });
+  }
 
+  editProfile () {
+    this.db.list('users/').update(this.currentUserID, {focusUserID:this.currentUserID});
+    this.router.navigate(['user']);
   }
 
 }

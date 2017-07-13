@@ -130,6 +130,23 @@ input:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.message {
+  font-size: 10px;
+  background: #1db217;
+  width: 100%;
+  box-sizing: border-box;
+  color: white;
+  text-align: center;
+}
+.message .general {
+  background: #1db217;
+}
+.message .important {
+  background: #e08600;
+}
+.message .urgent {
+  background: #ff4300;
+}
 /* Form Module */
 .form-module {
   position: relative;
@@ -141,15 +158,6 @@ input:focus {
 }
 .form-module .form {
   padding: 40px;
-}
-.form-module .message {
-  font-size: 10px;
-  background: #1db217;
-  width: 100%;
-  padding: 5px;
-  box-sizing: border-box;
-  color: white;
-  text-align: center;
 }
 .form-module .cta {
   background: #f2f2f2;
