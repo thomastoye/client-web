@@ -8,7 +8,6 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'app-root',
   template: `
-  <messageCenter></messageCenter>
   <div id='main_container'>
     <div id='middle_column'>
       <div id='menu'>
@@ -29,6 +28,7 @@ import { Router } from '@angular/router'
         <div style="color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">login/logout</div>
       </div>
       <div id='app_container'>
+        <messageCenter></messageCenter>
         <router-outlet></router-outlet>
       </div>
     </div>

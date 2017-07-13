@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'addMember',
   template: `
   <ul class="teams">
-  <h6 style="padding:7px; color:#AAA;">ALL USERS</h6>
+  <input (keydown.enter)="refreshUserList()" [(ngModel)]="this.filter" placeholder="Search exact first name">
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"
       (click)="selectedUserID = user.$key">
@@ -38,6 +38,7 @@ export class AddMemberComponent  {
   newMemberID: string;
   joinTeamID: string;
   newTeam: string;
+  filter: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -54,9 +55,20 @@ export class AddMemberComponent  {
       });
     });
     this.users = db.list('users/', {
-      query:{orderByChild:'firstName'}
+      query:{
+        orderByChild:'firstName',
+      }
     });
   }
+
+    refreshUserList () {
+      this.users = this.db.list('users/', {
+        query:{
+          orderByChild:'firstName',
+          equalTo: this.filter,
+        }
+      });
+    }
 
   addMember (teamID: string, memberID: string) {
     this.db.list('teamUsers/' + teamID).update(memberID, {leader: false});

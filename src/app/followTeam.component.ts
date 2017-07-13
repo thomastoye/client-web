@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'followTeam',
   template: `
   <ul class="teams">
-  <h6 style="padding:7px; color:#AAA;">ALL TEAMS</h6>
+  <input (keydown.enter)="refreshTeamList()" [(ngModel)]="this.filter" style="text-transform:uppercase" placeholder="Search exact team name">
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
@@ -36,23 +36,30 @@ export class FollowTeamComponent  {
   newMemberID: string;
   followTeamID: string;
   newTeam: string;
+  filter: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
       this.currentUserID = auth.uid;
       this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
       this.currentUser.subscribe(snapshot => {
-        this.firstName = snapshot.firstName;
-        this.photoURL = snapshot.photoURL;
         this.currentTeamID = snapshot.currentTeam;
-        this.currentTeam = db.object('teams/' + this.currentTeamID);
-      });
-      this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"), {
-        query:{orderByChild:'name'}
       });
     });
-    this.teams = db.list('teams/', {
-      query:{orderByChild:'name'}
+    this.teams = this.db.list('teams/', {
+      query:{
+        orderByChild:'name',
+      }
+    });
+  }
+
+  refreshTeamList () {
+    this.filter = this.filter.toUpperCase();
+    this.teams = this.db.list('teams/', {
+      query:{
+        orderByChild:'name',
+        equalTo: this.filter,
+      }
     });
   }
 
