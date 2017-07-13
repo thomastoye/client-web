@@ -47,7 +47,7 @@ export class ChatComponent {
         this.photoURL = snapshot.photoURL;
         this.currentTeamID = snapshot.currentTeam;
         this.currentTeam = db.object('teams/' + this.currentTeamID);
-        this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: 50}});
+        this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: 10}});
       });
     });
   }

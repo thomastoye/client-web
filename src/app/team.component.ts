@@ -80,9 +80,7 @@ export class TeamComponent  {
         this.currentTeamID = snapshot.currentTeam;
         this.currentTeam = db.object('teams/' + this.currentTeamID);
       });
-      this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"), {
-        query:{orderByChild:'name'}
-      });
+      this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"));
     });
     this.teams = db.list('teams/');
   }

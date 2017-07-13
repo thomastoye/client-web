@@ -11,9 +11,9 @@ import { Router } from '@angular/router'
   <div class="user">
   <div>
   <div style="float: left; width: 50%;">
-  <input [(ngModel)]="this.firstName" placeholder="First name" />
-  <input [(ngModel)]="this.lastName" placeholder="Last name" />
-  <input [(ngModel)]="this.photoURL" placeholder="Photo URL" />
+  <input [(ngModel)]="this.firstName" placeholder="Enter first name" />
+  <input [(ngModel)]="this.lastName" placeholder="Enter last name" />
+  <input [(ngModel)]="this.photoURL" placeholder="Copy photo URL from the web" />
   </div>
   <div style="float: right; width: 50%;">
   <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">

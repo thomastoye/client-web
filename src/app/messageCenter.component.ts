@@ -29,23 +29,21 @@ export class MessageCenterComponent {
           this.messageUrgent = ""
         }
         else {
-          firebase.auth().currentUser.reload();
-          firebase.auth().currentUser.getToken(true);
           if (!auth.emailVerified) {
             this.messageGeneral = ""
             this.messageImportant = ""
-            this.messageUrgent = "Please verify your email"
+            this.messageUrgent = "Please verify your email (you will need to refresh this page once you have done it)"
           }
           else {
             db.object('users/'+auth.uid).subscribe((user) => {
-              if (user.firstName && user.lastName && user.photoURL) {
+              if (!user.firstName || !user.lastName || !user.photoURL) {
                 this.messageGeneral = ""
-                this.messageImportant = ""
+                this.messageImportant = "Please edit your profile (name and photo)"
                 this.messageUrgent = ""
               }
               else {
                 this.messageGeneral = ""
-                this.messageImportant = "Please edit your profile (name and photo)"
+                this.messageImportant = ""
                 this.messageUrgent = ""
               }
             });
