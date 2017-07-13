@@ -46,7 +46,7 @@ export class LoginComponent  {
       else {
         firebase.auth().currentUser.reload();
         firebase.auth().currentUser.getToken(true);
-        if (!auth.emailVerified) {this.message = "please verify your email"}
+        if (!auth.emailVerified) {this.message = "now please verify your email"}
         else {this.message = "you are logged in and ready to go!"}
       }
     });
