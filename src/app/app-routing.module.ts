@@ -7,6 +7,8 @@ import { TeamSettingsComponent } from './teamSettings.component';
 import { AddMemberComponent } from './addMember.component';
 import { FollowTeamComponent } from './followTeam.component';
 import { WalletComponent } from './wallet.component';
+import { CreateTeamComponent } from './createTeam.component';
+import { TeamProfileComponent } from './teamProfile.component';
 
 const appRoutes: Routes = [
   { path: 'chat', component: ChatComponent },
@@ -16,6 +18,8 @@ const appRoutes: Routes = [
   { path: 'addMember', component: AddMemberComponent },
   { path: 'followTeam', component: FollowTeamComponent },
   { path: 'wallet', component: WalletComponent },
+  { path: 'createTeam', component: CreateTeamComponent },
+  { path: 'teamProfile', component: TeamProfileComponent },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
   { path: '**', component: LoginComponent }
 ];

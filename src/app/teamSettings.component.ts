@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
       (click)="currentUser.update({currentTeam: team.$key})">
+      <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; border-radius:4px; object-fit: cover; height:25px; width:25px">
       {{getTeamName(team.$key)}}
     </li>
   </ul>
@@ -21,12 +22,12 @@ import { Router } from '@angular/router';
   <div>
   <div style="float: left; width: 50%;">
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
-  <button (click)="createNewTeam()">Create a new team</button>
+  <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
   </div>
   </div>
   <hr>
   <div style="float: left; width: 50%;">
-  <button >Edit team profile</button>
+  <button (click)="this.router.navigate(['teamProfile'])" >Edit team profile</button>
   <button (click)="this.router.navigate(['addMember'])">Add a member</button>
   </div>
   <div class="titleSeperator">ORGANISTION</div>
@@ -72,17 +73,6 @@ export class TeamSettingsComponent  {
     this.teams = db.list('teams/');
   }
 
-  createNewTeam() {
-    this.newTeam = this.newTeam.toUpperCase();
-    var teamID = this.db.list('ids/').push(true).key;
-    this.teamUsers = this.db.list('teamUsers/' + teamID);
-    this.teamUsers.update(this.currentUserID, {leader: true});
-    this.teams.update(teamID, {name: this.newTeam, organisation: "Family and Friends"});
-    this.userTeams.update(teamID, {status: "confirmed"});
-    this.currentUser.update({currentTeam: teamID});
-    this.db.list('ids/').remove();
-  }
-
   followTeam() {
     this.userTeams.update(this.followTeamID, {status: "confirmed"});
     this.currentUser.update({currentTeam: this.followTeamID});
@@ -92,6 +82,14 @@ export class TeamSettingsComponent  {
     var output;
     this.db.object('teams/' + ID).subscribe(snapshot => {
       output = snapshot.name;
+    });
+    return output;
+  }
+
+  getTeamPhotoURL (ID: string) :string {
+    var output;
+    this.db.object('teams/' + ID).subscribe(snapshot => {
+      output = snapshot.photoURL;
     });
     return output;
   }
