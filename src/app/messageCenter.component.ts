@@ -24,7 +24,7 @@ export class MessageCenterComponent {
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
         if (auth == null) {
-          this.messageGeneral = "Please login or register"
+          this.messageGeneral = "Enter email and password and press login (or register to create a new account)"
           this.messageImportant = ""
           this.messageUrgent = ""
         }
@@ -32,13 +32,13 @@ export class MessageCenterComponent {
           if (!auth.emailVerified) {
             this.messageGeneral = ""
             this.messageImportant = ""
-            this.messageUrgent = "Please verify your email (after verification you need to logout and login again)"
+            this.messageUrgent = "Send email verification and follow the link in the email (after verification you will need to logout and login again)"
           }
           else {
             db.object('users/'+auth.uid).subscribe((user) => {
               if (!user.firstName || !user.lastName || !user.photoURL) {
                 this.messageGeneral = ""
-                this.messageImportant = "Please edit your profile (name and photo)"
+                this.messageImportant = "Go to edit your profile"
                 this.messageUrgent = ""
               }
               else {

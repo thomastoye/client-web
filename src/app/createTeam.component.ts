@@ -12,7 +12,7 @@ import { Router } from '@angular/router'
   <div style="float: left; width: 50%;">
   <hr>
   <input [(ngModel)]="this.newTeam" style="text-transform: uppercase;" placeholder="Enter team name" />
-  <input [(ngModel)]="this.photoURL" placeholder="Copy photo URL from the web" />
+  <input [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
   <hr>
   <button (click)="createNewTeam()">Create team</button>
   </div>

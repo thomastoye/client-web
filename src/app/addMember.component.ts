@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'addMember',
   template: `
   <ul class="teams">
-  <input (keydown.enter)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="Search exact first name">
+  <input (keydown.enter)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="Enter exact first name">
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"
       (click)="selectedUserID = user.$key">
@@ -56,7 +56,7 @@ export class AddMemberComponent  {
     });
     this.users = db.list('users/', {
       query:{
-        orderByChild:'firstName',
+        limitToFirst: 0,
       }
     });
   }

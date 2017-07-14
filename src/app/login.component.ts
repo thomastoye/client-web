@@ -21,7 +21,7 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <button type="button" (click)="this.authService.login(this.email,this.password)">Login</button>
           <button type="button" (click)="this.authService.logout()">Logout</button>
           <button type="button" (click)="this.authService.register(this.email,this.password)">Register</button>
-          <button type="button" (click)="this.authService.sendEmailVerification()">Send email verification link</button>
+          <button type="button" (click)="this.authService.sendEmailVerification()">Send email verification</button>
           <button type="button" (click)="editProfile()">Edit your profile</button>
         </form>
       </div>
@@ -57,7 +57,7 @@ export class LoginComponent  {
 
   editProfile () {
     this.db.list('users/').update(this.currentUserID, {focusUserID:this.currentUserID});
-    this.router.navigate(['user']);
+    this.router.navigate(['userProfile']);
   }
 
 }

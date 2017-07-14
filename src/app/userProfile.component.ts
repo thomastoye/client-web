@@ -14,7 +14,7 @@ import { Router } from '@angular/router'
   <hr>
   <input [(ngModel)]="this.firstName" style="text-transform: lowercase;" placeholder="Enter first name" />
   <input [(ngModel)]="this.lastName" style="text-transform: lowercase;" placeholder="Enter last name" />
-  <input [(ngModel)]="this.photoURL" placeholder="Copy photo URL from the web" />
+  <input [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
   <hr>
   <button (click)="updateUserProfile()">Save profile</button>
   <button (click)="removeMember(currentTeamID, focusUserID)" style="color:red">Remove from this team</button>
