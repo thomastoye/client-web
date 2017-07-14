@@ -72,7 +72,7 @@ export class AddMemberComponent  {
 
   addMember (teamID: string, memberID: string) {
     this.db.list('teamUsers/' + teamID).update(memberID, {leader: false});
-    this.router.navigate(['team']);
+    this.router.navigate(['teamSettings']);
   }
 
 }

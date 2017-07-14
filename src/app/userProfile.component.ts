@@ -6,15 +6,17 @@ import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
 
 @Component({
-  selector: 'user',
+  selector: 'userProfile',
   template: `
   <div class="user">
   <div style="float: left; width: 50%;">
   <div class="memberStatus">{{memberStatus}}</div>
+  <hr>
   <input [(ngModel)]="this.firstName" placeholder="Enter first name" />
   <input [(ngModel)]="this.lastName" placeholder="Enter last name" />
   <input [(ngModel)]="this.photoURL" placeholder="Copy photo URL from the web" />
-  <button (click)="updateUserProfile()">Update profile</button>
+  <hr>
+  <button (click)="updateUserProfile()">Save profile</button>
   <button (click)="removeMember(currentTeamID, focusUserID)" style="color:red">Remove from this team</button>
   </div>
   <div style="float: right; width: 50%;">
@@ -23,7 +25,7 @@ import { Router } from '@angular/router'
   </div>
   `,
 })
-export class UserComponent {
+export class UserProfileComponent {
   currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
   focusUser: FirebaseObjectObservable<any>;

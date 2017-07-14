@@ -10,22 +10,24 @@ import { Router } from '@angular/router'
   template: `
   <div id='main_container'>
     <div id='middle_column'>
-      <div id='menu'>
+      <div class='menu' style="background-image:  url({{(currentTeam | async)?.photoURL}});">
+        <div>
+        <div style="color:white; float: left; font-size:10px;">{{ (currentTeam | async)?.name }}</div>
+        <div style="color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">admin</div>
+        </div>
         <member></member>
-        <div style="text-align: center; float: left; width: 60px; margin: 0 5px 20px 0; padding-top: 5px">
+        <div class='icon'>
         <img src="./../assets/App icons/icon_chat_01.svg" style="width:45px" routerLink="/chat" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Chat</div>
         </div>
-        <div style="text-align: center; float: left; width: 60px; margin: 0 5px 20px 0; padding-top: 5px">
+        <div class='icon'>
         <img src="./../assets/App icons/icon_share_01.svg" style="width:45px" routerLink="/wallet" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Wallet</div>
         </div>
-        <div style="text-align: center; float: left;  width: 60px; margin: 0 5px 20px 0; padding-top: 5px">
+        <div class='icon'>
         <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:4px;" routerLink="/teamSettings" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Team</div>
         </div>
-        <div style="color:white; clear:left; float: left; font-size:10px;">{{ (currentTeam | async)?.name }}</div>
-        <div style="color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">admin</div>
       </div>
       <div id='app_container'>
         <messageCenter></messageCenter>

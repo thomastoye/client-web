@@ -60,8 +60,4 @@ export class ChatComponent {
     element.scrollTop = element.scrollHeight;
     }
   }
-
-  deleteMessage(key: string) {
-    this.teamMessages.remove(key);
-  }
 }

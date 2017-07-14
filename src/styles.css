@@ -29,10 +29,19 @@ body {
   flex-wrap: nowrap;
   flex-direction: column;
 }
-#menu {
+.menu {
   color: #FFF;
   background-image: linear-gradient(145deg, rgb(13, 71, 161), rgb(66, 165, 245));
-  padding: 15px 15px 2px 15px;
+  padding: 5px 15px 0 15px;
+  background-size:cover;
+  background-position: center;
+}
+.menu .icon {
+  text-align: center;
+  float: left;
+  width: 60px;
+  margin: 10px 5px 10px 0;
+  padding-top: 5px
 }
 #app_container {
   overflow-y: auto;
@@ -186,4 +195,10 @@ input:focus {
   font-size: 10px;
   color: #333333;
   text-decoration: none;
+}
+hr {
+    display: block;
+    margin: 10px 10px 10px 10px;
+    border-style: ridge;
+    border-width: thin;
 }

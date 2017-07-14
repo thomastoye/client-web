@@ -22,7 +22,7 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <button type="button" (click)="this.authService.logout()">Logout</button>
           <button type="button" (click)="this.authService.register(this.email,this.password)">Register</button>
           <button type="button" (click)="this.authService.sendEmailVerification()">Send email verification link</button>
-          <button type="button" (click)="editProfile()">Edit profile</button>
+          <button type="button" (click)="editProfile()">Edit your profile</button>
         </form>
       </div>
       <div class="cta"><a href='mailto:contactperrinn@gmail.com'>Contact PERRINN</a></div>

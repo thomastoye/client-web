@@ -7,9 +7,9 @@ import { AngularFireAuth } from 'angularfire2/auth';
 @Component({
   selector: 'member',
   template: `
-  <ul class="members" style="float: left;">
-    <li *ngFor="let user of teamUsers | async" style="text-align: center; float: left; width: 60px; margin: 0 5px 20px 0; padding-top: 5px">
-      <img [src]="getPhotoURL(user.$key)" (click)="currentUser.update({focusUserID: user.$key})" style="border-radius:3px; object-fit: cover; height:45px; width:45px" routerLink="/user" routerLinkActive="active">
+  <ul class="members" style="float: left">
+    <li class='icon' *ngFor="let user of teamUsers | async">
+      <img [src]="getPhotoURL(user.$key)" (click)="currentUser.update({focusUserID: user.$key})" style="border-radius:3px; object-fit: cover; height:45px; width:45px" routerLink="/userProfile" routerLinkActive="active">
       <div style="font-size: 9px; color: #FFF;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}</div>
     </li>
   </ul>
