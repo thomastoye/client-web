@@ -10,10 +10,10 @@ import { Router } from '@angular/router'
   template: `
   <div class="user">
   <div style="float: left; width: 50%;">
-  <div class="memberStatus">{{memberStatus}}</div>
+  <div class="memberStatus">{{this.memberStatus}}</div>
   <hr>
-  <input [(ngModel)]="this.firstName" placeholder="Enter first name" />
-  <input [(ngModel)]="this.lastName" placeholder="Enter last name" />
+  <input [(ngModel)]="this.firstName" style="text-transform: lowercase;" placeholder="Enter first name" />
+  <input [(ngModel)]="this.lastName" style="text-transform: lowercase;" placeholder="Enter last name" />
   <input [(ngModel)]="this.photoURL" placeholder="Copy photo URL from the web" />
   <hr>
   <button (click)="updateUserProfile()">Save profile</button>
@@ -70,6 +70,8 @@ export class UserProfileComponent {
   }
 
   updateUserProfile() {
+    this.firstName = this.firstName.toLowerCase();
+    this.lastName = this.lastName.toLowerCase();
     this.focusUser.update({
       firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL
     });
@@ -77,6 +79,7 @@ export class UserProfileComponent {
 
   removeMember(teamID: string, userID: string) {
     this.db.list('teamUsers/' + teamID).remove(userID);
+    this.router.navigate(['teamSettings']);
   }
 
 }

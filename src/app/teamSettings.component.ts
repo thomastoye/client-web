@@ -19,13 +19,6 @@ import { Router } from '@angular/router';
     </li>
   </ul>
   <div class="teamProfile">
-  <div>
-  <div style="float: left; width: 50%;">
-  <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
-  <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
-  </div>
-  </div>
-  <hr>
   <div style="float: left; width: 50%;">
   <button (click)="this.router.navigate(['teamProfile'])" >Edit team profile</button>
   <button (click)="this.router.navigate(['addMember'])">Add a member</button>
@@ -35,8 +28,15 @@ import { Router } from '@angular/router';
   <button>{{ (currentTeam | async)?.organisation }}</button>
   </div>
   <div class="titleSeperator">PROJECTS</div>
+  <div>
   <div style="float: left; width: 50%;">
   <button>Add a project (coming soon)</button>
+  </div>
+  </div>
+  <hr>
+  <div style="float: left; width: 50%;">
+  <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
+  <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
   <button (click)="leaveTeam(currentTeamID)" style="color:red">Stop following this team</button>
   </div>
   </div>

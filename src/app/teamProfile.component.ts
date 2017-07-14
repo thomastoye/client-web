@@ -50,6 +50,7 @@ export class TeamProfileComponent {
   }
 
   saveTeamProfile() {
+    this.teamName = this.teamName.toUpperCase();
     this.currentTeam.update({
       name: this.teamName, photoURL: this.photoURL,
     })

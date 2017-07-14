@@ -47,7 +47,7 @@ export class MemberComponent  {
 
   getFirstName (ID: string) :string {
     var output;
-    if (ID == this.currentUserID) { output = "Me"} else {
+    if (ID == this.currentUserID) { output = "me"} else {
       this.db.object('users/' + ID).subscribe(snapshot => {
         output = snapshot.firstName;
       });

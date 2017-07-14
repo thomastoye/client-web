@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'addMember',
   template: `
   <ul class="teams">
-  <input (keydown.enter)="refreshUserList()" [(ngModel)]="this.filter" placeholder="Search exact first name">
+  <input (keydown.enter)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="Search exact first name">
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"
       (click)="selectedUserID = user.$key">
@@ -62,6 +62,7 @@ export class AddMemberComponent  {
   }
 
     refreshUserList () {
+      this.filter = this.filter.toLowerCase();
       this.users = this.db.list('users/', {
         query:{
           orderByChild:'firstName',

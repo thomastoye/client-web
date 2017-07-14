@@ -10,10 +10,11 @@ import { Router } from '@angular/router'
   template: `
   <div id='main_container'>
     <div id='middle_column'>
-      <div class='menu' style="background-image:  url({{(currentTeam | async)?.photoURL}});">
+      <div class='menu'>
+      <img src="{{ (currentTeam | async)?.photoURL }}" style="height:30px; width: 100%; object-fit:cover">
         <div>
-        <div style="color:white; float: left; font-size:10px;">{{ (currentTeam | async)?.name }}</div>
-        <div style="color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">admin</div>
+        <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ (currentTeam | async)?.name }}</div>
+        <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">admin</div>
         </div>
         <member></member>
         <div class='icon'>
