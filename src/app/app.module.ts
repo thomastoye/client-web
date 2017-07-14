@@ -6,7 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { TeamComponent }  from './team.component';
+import { TeamSettingsComponent }  from './teamSettings.component';
 import { MemberComponent }  from './member.component';
 import { ChatComponent }  from './chat.component';
 import { LoginComponent }  from './login.component';
@@ -32,7 +32,7 @@ export const firebaseConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    TeamComponent,
+    TeamSettingsComponent,
     MemberComponent,
     ChatComponent,
     LoginComponent,

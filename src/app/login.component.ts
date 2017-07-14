@@ -26,7 +26,7 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
         </form>
       </div>
       <div class="cta"><a href='mailto:contactperrinn@gmail.com'>Contact PERRINN</a></div>
-      <div class="cta"><a href='https://docs.google.com/document/d/1IjmDbmcW2IDg5Kj9ENpY3_Fw-oHv3RCJ2f8ZJdbjRpk/pub'>Learn more about us</a></div>
+      <div class="cta"><a href='https://docs.google.com/document/d/1IjmDbmcW2IDg5Kj9ENpY3_Fw-oHv3RCJ2f8ZJdbjRpk/pub'>Learn more about PERRINN</a></div>
     </div>
   </div>
   `,

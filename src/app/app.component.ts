@@ -21,11 +21,11 @@ import { Router } from '@angular/router'
         <div style="font-size: 9px; color: #FFF;">Wallet</div>
         </div>
         <div style="text-align: center; float: left;  width: 60px; margin: 0 5px 20px 0; padding-top: 5px">
-        <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:4px;" routerLink="/team" routerLinkActive="active">
+        <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:4px;" routerLink="/teamSettings" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Team</div>
         </div>
         <div style="color:white; clear:left; float: left; font-size:10px;">{{ (currentTeam | async)?.name }}</div>
-        <div style="color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">login/logout</div>
+        <div style="color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">admin</div>
       </div>
       <div id='app_container'>
         <messageCenter></messageCenter>

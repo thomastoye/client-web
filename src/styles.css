@@ -44,6 +44,17 @@ body {
 .user {
   padding: 5px;
 }
+.user .memberStatus {
+  background-color: #1d7caf;
+  color: white;
+  text-align: center;
+  font-size: 10px;
+  padding: 3px;
+  border-radius: 5px;
+  width: 65px;
+  float: right;
+  margin: 5px 75px 5px 5px;
+}
 .chat{
   overflow-y: auto;
   height: 400px;
@@ -92,18 +103,22 @@ img.active {
 }
 button {
   cursor: pointer;
-  background: #33b5e5;
+  background: none;
   width: 95%;
   border: 0;
   padding: 7px;
   margin: 5px;
-  color: #ffffff;
+  color: blue;
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
   border-radius: 4px;
+  border-width: thin;
+  border-color: white;
+  border-style: solid;
+  text-align: left;
 }
 button:hover {
-  background: #178ab4;
+  border-color: inherit;
 }
 input {
   outline: none;

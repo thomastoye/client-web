@@ -9,21 +9,16 @@ import { Router } from '@angular/router'
   selector: 'user',
   template: `
   <div class="user">
-  <div>
   <div style="float: left; width: 50%;">
+  <div class="memberStatus">{{memberStatus}}</div>
   <input [(ngModel)]="this.firstName" placeholder="Enter first name" />
   <input [(ngModel)]="this.lastName" placeholder="Enter last name" />
   <input [(ngModel)]="this.photoURL" placeholder="Copy photo URL from the web" />
+  <button (click)="updateUserProfile()">Update profile</button>
+  <button (click)="removeMember(currentTeamID, focusUserID)" style="color:red">Remove from this team</button>
   </div>
   <div style="float: right; width: 50%;">
   <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
-  </div>
-  </div>
-  <div>
-  <div style="float: right; width: 50%;">
-  <button (click)="updateUserProfile()">Update profile</button>
-  <button (click)="removeMember(currentTeamID, focusUserID)" style="background-color:#d65555">Remove from this team</button>
-  </div>
   </div>
   </div>
   `,
@@ -32,11 +27,13 @@ export class UserComponent {
   currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
   focusUser: FirebaseObjectObservable<any>;
+  focusTeamUser: FirebaseObjectObservable<any>;
   focusUserID: string;
   firstName: string;
   lastName: string;
   photoURL: string;
   currentTeamID: string;
+  memberStatus: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -47,6 +44,7 @@ export class UserComponent {
           this.lastName = "";
           this.photoURL = "./../assets/App icons/me.png";
           this.currentTeamID = "";
+          this.memberStatus = "";
         }
         else {
           db.object('users/' + auth.uid).subscribe( snapshot => {
@@ -59,6 +57,10 @@ export class UserComponent {
               this.lastName = snapshot2.lastName;
               this.photoURL = snapshot2.photoURL;
               this.currentTeamID = snapshot.currentTeam;
+            });
+            this.focusTeamUser = db.object('teamUsers/' + this.currentTeamID + "/" + this.focusUserID);
+            this.focusTeamUser.subscribe(snapshot3 => {
+              this.memberStatus = snapshot3.leader ? "Leader" : "Member";
             });
           });
         }

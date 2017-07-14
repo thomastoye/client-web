@@ -32,7 +32,7 @@ export class MessageCenterComponent {
           if (!auth.emailVerified) {
             this.messageGeneral = ""
             this.messageImportant = ""
-            this.messageUrgent = "Please verify your email (you will need to refresh this page once you have done it)"
+            this.messageUrgent = "Please verify your email (after verification you need to logout and login again)"
           }
           else {
             db.object('users/'+auth.uid).subscribe((user) => {
