@@ -26,7 +26,7 @@ import { Router } from '@angular/router'
         <div style="font-size: 9px; color: #FFF;">Wallet</div>
         </div>
         <div class='icon'>
-        <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:4px;" routerLink="/teamSettings" routerLinkActive="active">
+        <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;" routerLink="/teamSettings" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Team</div>
         </div>
       </div>

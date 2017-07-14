@@ -10,7 +10,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   <div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async">
-    <img [src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:4px; object-fit: cover; height:35px; width:35px">
+    <img [src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'shortTime'}}</div>
     <div style="padding: 0 50px 10px 0;">{{message.text}}</div>

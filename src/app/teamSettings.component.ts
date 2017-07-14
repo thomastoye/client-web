@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
       (click)="currentUser.update({currentTeam: team.$key})">
-      <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; border-radius:4px; object-fit: cover; height:25px; width:25px">
+      <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       {{getTeamName(team.$key)}}
     </li>
   </ul>

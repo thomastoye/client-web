@@ -69,15 +69,15 @@ body {
 .chat-input{
   padding: 5px;
 }
+.teamProfile{
+  padding: 5px;
+}
 .teams {
-  background: #444;
+  background: #222;
   color: white;
   padding: 20px;
   list-style-type: none;
   width: 100%;
-}
-.teamProfile{
-  padding: 5px;
 }
 .teams li {
   cursor: pointer;

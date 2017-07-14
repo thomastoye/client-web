@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
-      <img [src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; border-radius:4px; object-fit: cover; height:25px; width:25px">
+      <img [src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
       {{team.name}}
     </li>
   </ul>
