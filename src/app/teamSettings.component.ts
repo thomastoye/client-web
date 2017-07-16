@@ -23,7 +23,7 @@ import { Router } from '@angular/router';
   <button (click)="this.router.navigate(['teamProfile'])" >Edit team profile</button>
   <button (click)="this.router.navigate(['addMember'])">Add a member</button>
   </div>
-  <div class="titleSeperator">ORGANISTION</div>
+  <div class="titleSeperator">ORGANISATION</div>
   <div style="float: left; width: 50%;">
   <button>{{ (currentTeam | async)?.organisation }}</button>
   </div>
@@ -37,7 +37,7 @@ import { Router } from '@angular/router';
   <div style="float: left; width: 50%;">
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
   <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
-  <button (click)="leaveTeam(currentTeamID)" style="color:red">Stop following this team</button>
+  <button (click)="leaveTeam(currentTeamID)" style="color:red">Stop following this team {{message1}}</button>
   </div>
   </div>
   `,
@@ -57,6 +57,7 @@ export class TeamSettingsComponent  {
   newMemberID: string;
   followTeamID: string;
   newTeam: string;
+  message1: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -95,12 +96,9 @@ export class TeamSettingsComponent  {
   }
 
   leaveTeam(teamID: string) {
-    this.userTeams.remove(teamID);
-  }
-
-  addTeamMember(teamID: string, memberID: string) {
-    this.teamUsers = this.db.list('teamUsers/' + teamID);
-    this.teamUsers.update(memberID, {leader: false});
+    this.userTeams.remove(teamID)
+    .then(_ => console.log('success'))
+    .catch(err => this.message1="Error: Team leaders cannot leave their teams");
   }
 
 }

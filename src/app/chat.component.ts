@@ -19,7 +19,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   </div>
   </div>
   <div class="chat-input">
-  <input style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" />
+  <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" />
   </div>
     `,
 })
@@ -37,27 +37,32 @@ export class ChatComponent {
   newMemberID: string;
   photoURL: string;
 
-
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.afAuth.authState.subscribe((auth) => {
       this.currentUserID = auth.uid;
       this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-      this.currentUser.subscribe(snapshot => {
-        this.firstName = snapshot.firstName;
-        this.photoURL = snapshot.photoURL;
-        this.currentTeamID = snapshot.currentTeam;
+      this.currentUser.subscribe(user => {
+        this.firstName = user.firstName;
+        this.photoURL = user.photoURL;
+        this.currentTeamID = user.currentTeam;
         this.currentTeam = db.object('teams/' + this.currentTeamID);
-        this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: 10}});
+        this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: 25}});
+        this.db.object('userTeams/'+this.currentUserID+'/'+this.currentTeamID).update({lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
       });
     });
   }
 
-  addMessage() {
-    if (this.draftMessage!="") {
-    this.teamMessages.push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, author: this.currentUserID});
-    this.draftMessage = "";
+  ngAfterContentChecked() {
     var element = document.getElementById("chat-scroll");
     element.scrollTop = element.scrollHeight;
+  }
+
+  addMessage() {
+    if (this.draftMessage!="") {
+    this.db.object('teamActivities/'+this.currentTeamID).update({lastMessageTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.db.object('userTeams/'+this.currentUserID+'/'+this.currentTeamID).update({lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.teamMessages.push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, author: this.currentUserID});
+    this.draftMessage = "";
     }
   }
 }

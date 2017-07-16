@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AuthenticationService } from './auth.service';
 import { Router } from '@angular/router'
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -10,19 +9,18 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
 
 @Component({
   selector: 'login',
-  providers: [AuthenticationService],
   template: `
   <div id="login">
     <div class="module form-module">
       <div class="form">
         <form>
-          <input [(ngModel)]="this.email" name="email" type="text" placeholder="Email"/>
-          <input [(ngModel)]="this.password" name="password" type="password" placeholder="Password"/>
-          <button type="button" (click)="this.authService.login(this.email,this.password)">Login</button>
-          <button type="button" (click)="this.authService.logout()">Logout</button>
-          <button type="button" (click)="this.authService.register(this.email,this.password)">Register</button>
-          <button type="button" (click)="this.authService.sendEmailVerification()">Send email verification</button>
-          <button type="button" (click)="editProfile()">Edit your profile</button>
+          <input maxlength="500" [(ngModel)]="this.email" name="email" type="text" placeholder="Email"/>
+          <input maxlength="500" [(ngModel)]="this.password" name="password" type="password" placeholder="Password"/>
+          <button type="button" (click)="login(this.email,this.password)">Login {{messageLogin}}</button>
+          <button type="button" (click)="logout()">Logout {{messageLogout}}</button>
+          <button type="button" (click)="register(this.email,this.password)">Register {{messageRegister}}</button>
+          <button type="button" (click)="sendEmailVerification()">Send email verification {{messageVerification}}</button>
+          <button type="button" (click)="editProfile()">Edit your profile {{messageEditProfile}}</button>
         </form>
       </div>
       <div class="cta"><a href='mailto:contactperrinn@gmail.com'>Contact PERRINN</a></div>
@@ -38,9 +36,13 @@ export class LoginComponent  {
   email: string;
   password: string;
   message: string;
+  messageRegister: string;
+  messageVerification: string;
+  messageLogout: string;
+  messageLogin: string;
+  messageEditProfile: string;
 
   constructor(
-    public authService: AuthenticationService,
     private router: Router,
     public afAuth: AngularFireAuth,
     public db: AngularFireDatabase
@@ -55,9 +57,45 @@ export class LoginComponent  {
     });
   }
 
+  login(email: string, password: string) {
+    this.clearAllMessages ();
+    this.afAuth.auth.signInWithEmailAndPassword(email, password)
+    .then(_ => this.messageLogin="Successfully logged in")
+    .catch(err => this.messageLogin="Error: Verify your email and password or register a new account");
+    }
+  logout() {
+    this.clearAllMessages ();
+    this.afAuth.auth.signOut()
+    .then(_ => this.messageLogout="Successfully logged out")
+    .catch(err => this.messageLogout="Error: You were not logged in");
+  }
+  register(email: string, password: string) {
+    this.clearAllMessages ();
+    this.afAuth.auth.createUserWithEmailAndPassword(email, password)
+    .then(_ => this.messageRegister="Successful registered")
+    .catch(err => this.messageRegister="Error: This email is already used or your passward is too short");
+  }
+  sendEmailVerification() {
+    this.clearAllMessages ();
+    firebase.auth().currentUser.sendEmailVerification()
+    .then(_ => this.messageVerification="An email has been sent to you")
+    .catch(err => this.messageVerification="Error: You need to login or register first");
+  }
+
   editProfile () {
-    this.db.list('users/').update(this.currentUserID, {focusUserID:this.currentUserID});
+    this.clearAllMessages ();
+    this.db.list('users/').update(this.currentUserID, {focusUserID:this.currentUserID})
+    .then(_ => this.messageEditProfile="")
+    .catch(err => this.messageEditProfile="Error: You need to login or register first");
     this.router.navigate(['userProfile']);
+  }
+
+  clearAllMessages () {
+    this.messageLogin = "";
+    this.messageLogout = "";
+    this.messageRegister = "";
+    this.messageVerification = "";
+    this.messageEditProfile = "";
   }
 
 }

@@ -11,10 +11,10 @@ import { Router } from '@angular/router'
   <div class="user">
   <div style="float: left; width: 50%;">
   <hr>
-  <input [(ngModel)]="this.teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
-  <input [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
+  <input maxlength="500" [(ngModel)]="this.teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
+  <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
   <hr>
-  <button (click)="saveTeamProfile()">Save team profile</button>
+  <button (click)="saveTeamProfile()">Save team profile {{messageSaveTeamProfile}}</button>
   </div>
   <div style="float: right; width: 50%;">
   <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
@@ -33,6 +33,7 @@ export class TeamProfileComponent {
   teamUsers: FirebaseListObservable<any>;
   followTeamID: string;
   teamName: string;
+  messageSaveTeamProfile: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -54,6 +55,9 @@ export class TeamProfileComponent {
     this.currentTeam.update({
       name: this.teamName, photoURL: this.photoURL,
     })
+    .then(_ => this.router.navigate(['teamSettings']))
+    .catch(err => this.messageSaveTeamProfile="Error: Only leaders can save team profile");
+
   }
 
 }

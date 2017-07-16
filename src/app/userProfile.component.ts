@@ -12,12 +12,12 @@ import { Router } from '@angular/router'
   <div style="float: left; width: 50%;">
   <div class="memberStatus">{{this.memberStatus}}</div>
   <hr>
-  <input [(ngModel)]="this.firstName" style="text-transform: lowercase;" placeholder="Enter first name" />
-  <input [(ngModel)]="this.lastName" style="text-transform: lowercase;" placeholder="Enter last name" />
-  <input [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
+  <input maxlength="500" [(ngModel)]="this.firstName" style="text-transform: lowercase;" placeholder="Enter first name" />
+  <input maxlength="500" [(ngModel)]="this.lastName" style="text-transform: lowercase;" placeholder="Enter last name" />
+  <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
   <hr>
   <button (click)="updateUserProfile()">Save profile</button>
-  <button (click)="removeMember(currentTeamID, focusUserID)" style="color:red">Remove from this team</button>
+  <button (click)="removeMember(currentTeamID, focusUserID)" style="color:red">Cancel team membership {{message1}}</button>
   </div>
   <div style="float: right; width: 50%;">
   <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
@@ -36,6 +36,7 @@ export class UserProfileComponent {
   photoURL: string;
   currentTeamID: string;
   memberStatus: string;
+  message1: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -78,8 +79,9 @@ export class UserProfileComponent {
   }
 
   removeMember(teamID: string, userID: string) {
-    this.db.list('teamUsers/' + teamID).remove(userID);
-    this.router.navigate(['teamSettings']);
+    this.db.list('teamUsers/' + teamID).remove(userID)
+    .then(_ => this.router.navigate(['teamSettings']))
+    .catch(err => this.message1="Error: You are not allowed to do that");
   }
 
 }

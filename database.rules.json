@@ -4,6 +4,12 @@
       ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
       ".write": "auth.token.email_verified === true"
     },
+    "teamActivities": {
+      ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
+      "$teamid": {
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).exists() && auth.token.email_verified === true"
+      }
+    },
     "teamMessages": {
       ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
       "$teamid": {
