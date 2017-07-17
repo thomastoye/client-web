@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
       [class.selected]="team.$key === currentTeamID"
       (click)="currentUser.update({currentTeam: team.$key})">
       <div style="display: inline; float: left; margin: 0 10px 0 10px; height:25px; width:25px">
-      <div class="activity" [hidden]="!team.chatActivity"></div>
+      <div class="activity" [hidden]="getChatActivity(team.$key)"></div>
       </div>
       <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
@@ -91,6 +91,16 @@ export class TeamSettingsComponent  {
     var output;
     this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
       output = snapshot.leader;
+    });
+    return output;
+  }
+
+  getChatActivity (ID: string) :boolean {
+    var output;
+    this.db.object('userTeams/' + this.currentUserID + '/' + ID).subscribe(userTeam => {
+      this.db.object('teamActivities/' + ID).subscribe(teamActivities => {
+        output = !(teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
+      });
     });
     return output;
   }

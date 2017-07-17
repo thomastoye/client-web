@@ -19,6 +19,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   </div>
   </div>
   <div class="chat-input">
+  <button (click)="timestampChatVisit()">Mark all read</button>
   <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" />
   </div>
     `,
@@ -56,7 +57,7 @@ export class ChatComponent {
     element.scrollTop = element.scrollHeight;
   }
 
-  timestampChatVisist(){
+  timestampChatVisit(){
     this.db.object('userTeams/'+this.currentUserID+'/'+this.currentTeamID).update({lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
   }
 

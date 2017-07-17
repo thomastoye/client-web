@@ -3,7 +3,7 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
-import { Router } from '@angular/router'
+import { Router, NavigationEnd } from '@angular/router'
 
 @Component({
   selector: 'app-root',
@@ -28,7 +28,7 @@ import { Router } from '@angular/router'
         <div class='icon'>
         <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;" routerLink="/teamSettings" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Team</div>
-        <div class='activity' [hidden]="!this.globalActivity"></div>
+        <div class='activity' [hidden]="!this.globalChatActivity"></div>
         </div>
       </div>
       <div id='app_container'>
@@ -50,52 +50,50 @@ export class AppComponent {
   teamActivities: FirebaseObjectObservable<any>;
   userTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
-  globalActivity: boolean;
+  globalChatActivity: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     var startupBackgroundImage;
     startupBackgroundImage = 'url("https://upload.wikimedia.org/wikipedia/commons/d/d7/Oslo%2C_Norway_1952_%2812350700414%29.jpg")';
     startupBackgroundImage = 'url("https://upload.wikimedia.org/wikipedia/commons/9/93/GoldenGateBridge_BakerBeach_MC.jpg")';
     this.afAuth.authState.subscribe((auth) => {
-        if (auth == null) {
-          this.currentUserID = "";
-          this.firstName = "";
-          this.lastName = "";
-          this.photoURL = "./../assets/App icons/me.png";
-          this.currentTeamID = "";
-          this.currentTeam = null;
-          document.getElementById('menu').style.backgroundImage = startupBackgroundImage;
-        }
-        else {
-          this.currentUserID = auth.uid;
-          this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-          this.currentUser.subscribe(snapshot => {
-            this.firstName = snapshot.firstName;
-            this.lastName = snapshot.lastName;
-            this.photoURL = snapshot.photoURL;
-            this.currentTeamID = snapshot.currentTeam;
-            this.currentTeam = db.object('teams/' + this.currentTeamID);
-            this.currentTeam.subscribe(currentTeam=>{
-              console.log("loopTeam");
-              document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeam.photoURL?currentTeam.photoURL:startupBackgroundImage) + ')';
-            });
-            db.list('userTeams/'+this.currentUserID).subscribe(userTeams=>{
-              this.globalActivity = false;
-              userTeams.forEach(userTeam=>{
+      if (auth == null) {
+        this.currentUserID = "";
+        this.firstName = "";
+        this.lastName = "";
+        this.photoURL = "./../assets/App icons/me.png";
+        this.currentTeamID = "";
+        this.currentTeam = null;
+        document.getElementById('menu').style.backgroundImage = startupBackgroundImage;
+      }
+      else {
+        this.currentUserID = auth.uid;
+        this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
+        this.currentUser.subscribe(snapshot => {
+          this.firstName = snapshot.firstName;
+          this.lastName = snapshot.lastName;
+          this.photoURL = snapshot.photoURL;
+          this.currentTeamID = snapshot.currentTeam;
+          this.currentTeam = db.object('teams/' + this.currentTeamID);
+          this.currentTeam.subscribe(currentTeam=>{
+            document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeam.photoURL?currentTeam.photoURL:startupBackgroundImage) + ')';
+          });
+          db.list('userTeams/'+this.currentUserID).subscribe(userTeams=>{
+            this.globalChatActivity = false;
+            userTeams.forEach(userTeam=>{
+              db.object('teamActivities/'+userTeam.$key).subscribe(teamActivities=>{
+                var chatActivity = (teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
                 if (userTeam.$key == this.currentTeamID) {
-                  if (userTeam.chatActivity) {document.getElementById('activityChat').style.display = 'inherit'}
+                  if (chatActivity) {document.getElementById('activityChat').style.display = 'inherit'}
                   else {document.getElementById('activityChat').style.display = 'none'}
                 }
-                db.object('teamActivities/'+userTeam.$key).subscribe(teamActivities=>{
-                  var chatActivity = (teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
-                  this.globalActivity = chatActivity?true:this.globalActivity;
-                  console.log("loopActivity");
-                  db.object('userTeams/'+auth.uid+'/'+userTeam.$key).update({chatActivity: chatActivity});
-                });
+                this.globalChatActivity = chatActivity?true:this.globalChatActivity;
+                console.log("loopActivity");
               });
             });
           });
-        }
+        });
+      }
     });
   }
 
