@@ -6,8 +6,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 @Component({
   selector: 'chat',
   template: `
-  <div class="chat" id="chat-scroll">
-  <div>
+  <div class="chat-content">
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async">
     <img [src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
@@ -16,7 +15,6 @@ import { AngularFireAuth } from 'angularfire2/auth';
     <div style="padding: 0 50px 10px 0;">{{message.text}}</div>
     </li>
   </ul>
-  </div>
   </div>
   <div class="chat-input">
   <input style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" />

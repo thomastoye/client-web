@@ -8,9 +8,9 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'app-root',
   template: `
-  <div id='main_container'>
-    <div id='middle_column'>
-      <div class='menu'>
+  <div id='main_container' class="container-fluid">
+    <div id='middle_column' class="row">
+      <div class='menu col-sm-12'>
       <img src="{{ (currentTeam | async)?.photoURL }}" style="height:30px; width: 100%; object-fit:cover">
         <div>
         <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ (currentTeam | async)?.name }}</div>
@@ -30,7 +30,7 @@ import { Router } from '@angular/router'
         <div style="font-size: 9px; color: #FFF;">Team</div>
         </div>
       </div>
-      <div id='app_container'>
+      <div id='app_container' class="col-sm-12">
         <messageCenter></messageCenter>
         <router-outlet></router-outlet>
       </div>
