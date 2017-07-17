@@ -47,7 +47,6 @@ export class ChatComponent {
         this.currentTeamID = user.currentTeam;
         this.currentTeam = db.object('teams/' + this.currentTeamID);
         this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: 25}});
-        this.db.object('userTeams/'+this.currentUserID+'/'+this.currentTeamID).update({lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
       });
     });
   }
@@ -57,10 +56,13 @@ export class ChatComponent {
     element.scrollTop = element.scrollHeight;
   }
 
+  timestampChatVisist(){
+    this.db.object('userTeams/'+this.currentUserID+'/'+this.currentTeamID).update({lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+  }
+
   addMessage() {
     if (this.draftMessage!="") {
     this.db.object('teamActivities/'+this.currentTeamID).update({lastMessageTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    this.db.object('userTeams/'+this.currentUserID+'/'+this.currentTeamID).update({lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
     this.teamMessages.push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, author: this.currentUserID});
     this.draftMessage = "";
     }

@@ -14,31 +14,24 @@ import { Router } from '@angular/router';
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
       (click)="currentUser.update({currentTeam: team.$key})">
+      <div style="display: inline; float: left; margin: 0 10px 0 10px; height:25px; width:25px">
+      <div class="activity" [hidden]="!team.chatActivity"></div>
+      </div>
       <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
-      {{getTeamName(team.$key)}}
+      {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
     </li>
   </ul>
   <div class="teamProfile">
-  <div style="float: left; width: 50%;">
   <button (click)="this.router.navigate(['teamProfile'])" >Edit team profile</button>
   <button (click)="this.router.navigate(['addMember'])">Add a member</button>
-  </div>
   <div class="titleSeperator">ORGANISATION</div>
-  <div style="float: left; width: 50%;">
   <button>{{ (currentTeam | async)?.organisation }}</button>
-  </div>
   <div class="titleSeperator">PROJECTS</div>
-  <div>
-  <div style="float: left; width: 50%;">
   <button>Add a project (coming soon)</button>
-  </div>
-  </div>
   <hr>
-  <div style="float: left; width: 50%;">
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
   <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
   <button (click)="leaveTeam(currentTeamID)" style="color:red">Stop following this team {{message1}}</button>
-  </div>
   </div>
   `,
 })
@@ -63,15 +56,14 @@ export class TeamSettingsComponent  {
     this.afAuth.authState.subscribe((auth) => {
       this.currentUserID = auth.uid;
       this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-      this.currentUser.subscribe(snapshot => {
-        this.firstName = snapshot.firstName;
-        this.photoURL = snapshot.photoURL;
-        this.currentTeamID = snapshot.currentTeam;
+      this.currentUser.subscribe(user => {
+        this.firstName = user.firstName;
+        this.photoURL = user.photoURL;
+        this.currentTeamID = user.currentTeam;
         this.currentTeam = db.object('teams/' + this.currentTeamID);
       });
       this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"));
     });
-    this.teams = db.list('teams/');
   }
 
   followTeam() {
@@ -91,6 +83,14 @@ export class TeamSettingsComponent  {
     var output;
     this.db.object('teams/' + ID).subscribe(snapshot => {
       output = snapshot.photoURL;
+    });
+    return output;
+  }
+
+  getUserLeader (ID: string) :string {
+    var output;
+    this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
+      output = snapshot.leader;
     });
     return output;
   }
