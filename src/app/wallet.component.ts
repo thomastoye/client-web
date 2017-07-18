@@ -20,12 +20,37 @@ import { Router } from '@angular/router'
     <div style="color: black;">COINS</div>
     </div>
     </div>
-  <div>
+  </div>
+  <ul class="teams">
+    <h6 style="padding:7px; color:#AAA;">TRANSACTIONS</h6>
+    <li *ngFor="let transaction of teamTransactions | async">
+      Transaction        {{transaction.createdTimestamp | date :'medium'}}       {{transaction.amount}}       {{transaction.reference}}       {{transaction.status}}
+    </li>
+  </ul>
+  <button (click)="this.router.navigate(['createTransaction'])">New transaction</button>
   `,
 })
 export class WalletComponent {
 
-  constructor() {
+teamTransactions: FirebaseListObservable<any>;
+currentTeam: FirebaseObjectObservable<any>;
+currentTeamID: string;
+userTeams: FirebaseListObservable<any>;
+teams: FirebaseListObservable<any>;
+teamUsers: FirebaseListObservable<any>;
+
+constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+  this.afAuth.authState.subscribe((auth) => {
+      if (auth == null) {
+        this.currentTeamID = "";
+      }
+      else {
+        db.object('users/' + auth.uid).subscribe( snapshot => {
+          this.currentTeamID = snapshot.currentTeam;
+          this.teamTransactions = db.list('teamTransactions/'+this.currentTeamID);
+        });
+      }
+  });
 }
 
 }

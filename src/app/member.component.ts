@@ -10,7 +10,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   <ul class="members" style="float: left">
     <li class='icon' *ngFor="let user of teamUsers | async">
       <img [src]="getPhotoURL(user.$key)" (click)="currentUser.update({focusUserID: user.$key})" style="border-radius:3px; object-fit: cover; height:45px; width:45px" routerLink="/userProfile" routerLinkActive="active">
-      <div style="font-size: 9px; color: #FFF;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}</div>
+      <div style="font-size: 9px; color: #FFF;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (NF)"}}</div>
     </li>
   </ul>
 `,
@@ -52,6 +52,14 @@ export class MemberComponent  {
         output = snapshot.firstName;
       });
     }
+    return output;
+  }
+
+  getUserFollowing (userID: string, teamID: string) :boolean {
+    var output;
+    this.db.object('userTeams/' + userID + '/' + teamID).subscribe(snapshot => {
+      output = (snapshot.status == "confirmed")
+    });
     return output;
   }
 

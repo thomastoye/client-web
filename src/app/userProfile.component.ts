@@ -11,7 +11,6 @@ import { Router } from '@angular/router'
   <div class="user">
   <div style="float: left; width: 50%;">
   <div class="memberStatus">{{this.memberStatus}}</div>
-  <hr>
   <input maxlength="500" [(ngModel)]="this.firstName" style="text-transform: lowercase;" placeholder="Enter first name" />
   <input maxlength="500" [(ngModel)]="this.lastName" style="text-transform: lowercase;" placeholder="Enter last name" />
   <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
@@ -53,17 +52,24 @@ export class UserProfileComponent {
           db.object('users/' + auth.uid).subscribe( snapshot => {
             this.currentUserID = auth.uid;
             this.currentUser = db.object('users/' + this.currentUserID);
+            this.currentTeamID = snapshot.currentTeam;
             this.focusUserID = snapshot.focusUserID;
             this.focusUser = db.object('users/' + this.focusUserID);
             this.focusUser.subscribe(snapshot2 => {
               this.firstName = snapshot2.firstName;
               this.lastName = snapshot2.lastName;
               this.photoURL = snapshot2.photoURL;
-              this.currentTeamID = snapshot.currentTeam;
-            });
-            this.focusTeamUser = db.object('teamUsers/' + this.currentTeamID + "/" + this.focusUserID);
-            this.focusTeamUser.subscribe(snapshot3 => {
-              this.memberStatus = snapshot3.leader ? "Leader" : "Member";
+              this.focusTeamUser = db.object('teamUsers/' + this.currentTeamID + "/" + this.focusUserID);
+              this.focusTeamUser.subscribe(snapshot3 => {
+                db.object('userTeams/'+this.focusUserID+'/'+this.currentTeamID).subscribe(snapshot4=>{
+                  if (snapshot4.status == "confirmed") {
+                    this.memberStatus = snapshot3.leader ? "Leader" : "Member";
+                  }
+                  else {
+                    this.memberStatus = snapshot3.leader ? "Leader (Not Following)" : "Member (Not Following)";
+                  }
+                });
+              });
             });
           });
         }

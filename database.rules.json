@@ -16,6 +16,12 @@
         ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).exists() && auth.token.email_verified === true"
       }
     },
+    "teamTransactions": {
+      ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
+      "$teamid": {
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth.token.email_verified === true"
+      }
+    },
     "teamUsers": {
       ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
       "$teamid": {

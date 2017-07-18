@@ -80,6 +80,7 @@ export class AppComponent {
           });
           db.list('userTeams/'+this.currentUserID).subscribe(userTeams=>{
             this.globalChatActivity = false;
+            console.log("loopUserTeam");
             userTeams.forEach(userTeam=>{
               db.object('teamActivities/'+userTeam.$key).subscribe(teamActivities=>{
                 var chatActivity = (teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);

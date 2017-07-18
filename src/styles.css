@@ -69,9 +69,9 @@ body {
   font-size: 10px;
   padding: 3px;
   border-radius: 5px;
-  width: 65px;
-  float: right;
-  margin: 5px 75px 5px 5px;
+  width: 130px;
+  float: left;
+  margin: 5px 5px 5px 5px;
 }
 .chat{
   overflow-y: auto;

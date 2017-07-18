@@ -16,6 +16,7 @@ import { FollowTeamComponent }  from './followTeam.component';
 import { WalletComponent }  from './wallet.component';
 import { MessageCenterComponent }  from './messageCenter.component';
 import { CreateTeamComponent }  from './createTeam.component';
+import { CreateTransactionComponent }  from './createTransaction.component';
 import { TeamProfileComponent }  from './teamProfile.component';
 
 import { AngularFireModule } from 'angularfire2';
@@ -44,6 +45,7 @@ export const firebaseConfig = {
     WalletComponent,
     MessageCenterComponent,
     CreateTeamComponent,
+    CreateTransactionComponent,
     TeamProfileComponent,
   ],
   imports: [
