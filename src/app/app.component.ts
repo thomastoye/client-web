@@ -10,6 +10,8 @@ import { Router, NavigationEnd } from '@angular/router'
   template: `
   <div id='main_container'>
     <div id='middle_column'>
+      <div [hidden]="!loggedIn">
+      <div [hidden]="!emailVerified">
       <div class='menu' id='menu'>
         <div>
         <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ (currentTeam | async)?.name }}</div>
@@ -30,9 +32,10 @@ import { Router, NavigationEnd } from '@angular/router'
         <div style="font-size: 9px; color: #FFF;">Team</div>
         <div class='activity' [hidden]="!this.globalChatActivity"></div>
         </div>
+        </div>
+        </div>
       </div>
       <div id='app_container'>
-        <messageCenter></messageCenter>
         <router-outlet></router-outlet>
       </div>
     </div>
@@ -51,6 +54,8 @@ export class AppComponent {
   userTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   globalChatActivity: boolean;
+  loggedIn: boolean;
+  emailVerified: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     var startupBackgroundImage;
@@ -58,6 +63,8 @@ export class AppComponent {
     startupBackgroundImage = 'url("https://upload.wikimedia.org/wikipedia/commons/9/93/GoldenGateBridge_BakerBeach_MC.jpg")';
     this.afAuth.authState.subscribe((auth) => {
       if (auth == null) {
+        this.loggedIn = false;
+        this.emailVerified = true;
         this.currentUserID = "";
         this.firstName = "";
         this.lastName = "";
@@ -67,6 +74,13 @@ export class AppComponent {
         document.getElementById('menu').style.backgroundImage = startupBackgroundImage;
       }
       else {
+        this.loggedIn = true;
+        if (!auth.emailVerified) {
+          this.emailVerified = false;
+        }
+        else {
+          this.emailVerified = true;
+        }
         this.currentUserID = auth.uid;
         this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
         this.currentUser.subscribe(snapshot => {

@@ -19,7 +19,7 @@ import { Router } from '@angular/router'
   <button (click)="removeMember(currentTeamID, focusUserID)" style="color:red">Cancel team membership {{message1}}</button>
   </div>
   <div style="float: right; width: 50%;">
-  <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
+  <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%">
   </div>
   </div>
   `,

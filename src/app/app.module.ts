@@ -14,7 +14,6 @@ import { UserProfileComponent }  from './userProfile.component';
 import { AddMemberComponent }  from './addMember.component';
 import { FollowTeamComponent }  from './followTeam.component';
 import { WalletComponent }  from './wallet.component';
-import { MessageCenterComponent }  from './messageCenter.component';
 import { CreateTeamComponent }  from './createTeam.component';
 import { CreateTransactionComponent }  from './createTransaction.component';
 import { TeamProfileComponent }  from './teamProfile.component';
@@ -43,7 +42,6 @@ export const firebaseConfig = {
     AddMemberComponent,
     FollowTeamComponent,
     WalletComponent,
-    MessageCenterComponent,
     CreateTeamComponent,
     CreateTransactionComponent,
     TeamProfileComponent,
