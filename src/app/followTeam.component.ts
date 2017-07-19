@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'followTeam',
   template: `
-  <ul class="teams">
+  <ul class="listDark">
   <input maxlength="500" (keydown.enter)="refreshTeamList()" [(ngModel)]="this.filter" style="text-transform:uppercase" placeholder="Enter exact team name and press enter">
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"

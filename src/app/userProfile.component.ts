@@ -87,7 +87,7 @@ export class UserProfileComponent {
   cancelMember(teamID: string, userID: string) {
     this.db.object('teamUsers/' + teamID + '/' + userID).update({member:false})
     .then(_ => this.router.navigate(['teamSettings']))
-    .catch(err => this.message1="Error: You are not allowed to do that");
+    .catch(err => this.message1="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
   }
 
 }

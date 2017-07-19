@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'addMember',
   template: `
-  <ul class="teams">
+  <ul class="listDark">
   <input maxlength="500" (keydown.enter)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="Enter exact first name and press enter">
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"
@@ -72,7 +72,7 @@ export class AddMemberComponent  {
     this.teamUsers = this.db.list('teamUsers/' + teamID);
     this.teamUsers.update(memberID, {member: true, leader: false})
     .then(_ => this.router.navigate(['teamSettings']))
-    .catch(err => this.messageAddMember="Error: You need to be leader to add a Member");
+    .catch(err => this.messageAddMember="Error: You need to be leader to add a Member - You cannot add yourself if you are already in the team");
   }
 
 }

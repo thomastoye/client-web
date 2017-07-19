@@ -85,14 +85,14 @@ body {
 .teamProfile{
   padding: 5px;
 }
-.teams {
+.listDark {
   background: #222;
   color: white;
   padding: 20px;
   list-style-type: none;
   width: 100%;
 }
-.teams .activity {
+.listDark .activity {
   height: 12px;
   width: 12px;
   background-color: red;
@@ -102,17 +102,17 @@ body {
   left: 5px;
   z-index: 1000;
 }
-.teams li {
+.listDark li {
   cursor: pointer;
   position: relative;
   left: 0;
   border-radius: 4px;
   padding: 5px;
 }
-.teams li.selected:hover {
+.listDark li.selected:hover {
   background-color: #BBD8DC !important;
 }
-.teams li:hover {
+.listDark li:hover {
   color: #607D8B;
   background-color: #DDD;
 }

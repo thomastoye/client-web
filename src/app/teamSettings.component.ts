@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'teamSettings',
   template: `
-  <ul class="teams">
+  <ul class="listDark">
     <h6 style="padding:7px; color:#AAA;">MY TEAMS</h6>
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
