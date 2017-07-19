@@ -11,10 +11,10 @@ import { Router } from '@angular/router'
   <div class="user">
   <div style="float: left; width: 50%;">
   <hr>
-  <input maxlength="500" [(ngModel)]="this.newTeam" style="text-transform: uppercase;" placeholder="Enter team name" />
-  <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
+  <input maxlength="500" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name" />
+  <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
   <hr>
-  <button (click)="createNewTeam()">Create team</button>
+  <button (click)="createNewTeam(currentUserID, newTeam)">Create team</button>
   </div>
   <div style="float: right; width: 50%;">
   <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
@@ -40,17 +40,13 @@ export class CreateTeamComponent {
     });
   }
 
-  createNewTeam() {
-    this.newTeam = this.newTeam.toUpperCase();
+  createNewTeam(userID: string, teamName: string) {
+    teamName = teamName.toUpperCase();
     var teamID = this.db.list('ids/').push(true).key;
-    this.teamUsers = this.db.list('teamUsers/' + teamID);
-    this.teamUsers.update(this.currentUserID, {member: true, leader: true});
-    this.teams = this.db.list('teams/');
-    this.teams.update(teamID, {name: this.newTeam, photoURL: this.photoURL, organisation: "Family and Friends"});
-    this.userTeams = this.db.list('userTeams/' + this.currentUserID);
-    this.userTeams.update(teamID, {following: true});
-    this.currentUser = this.db.object('users/' + this.currentUserID);
-    this.currentUser.update({currentTeam: teamID});
+    this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
+    this.db.object('teams/'+teamID).update({name: teamName, photoURL: this.photoURL, organisation: "Family and Friends"});
+    this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.db.object('users/' + userID).update({currentTeam: teamID});
     this.router.navigate(['teamSettings']);
   }
 

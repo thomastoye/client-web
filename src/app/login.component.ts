@@ -25,14 +25,14 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name"/>
           <input maxlength="500" [(ngModel)]="photoURL" name="photoURL" placeholder="Paste profile image from the web here" style="font-size:9px"/>
           <img [src]="this.photoURL" style="object-fit:contain; height:100px; width:100%">
-          <button type="button" (click)="register(email,password)">Register {{messageRegister}}</button>
+          <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register {{messageRegister}}</button>
           </div>
           </div>
           <div [hidden]="!loggedIn">
           <button type="button" (click)="logout()">Logout {{messageLogout}}</button>
           <div [hidden]="emailVerified">
-          <div style="font-size:10px">To use this app you need to verify your email address. After clicking the link in the email, you need to logout and login to complete the setup.</div>
-          <button type="button" (click)="sendEmailVerification()">Send email verification {{messageVerification}}</button>
+          <div style="font-size:10px">To use this app you need to verify your email address. An email has been sent to you. After clicking the link in the email, you need to logout and login to complete the setup.</div>
+          <button type="button" (click)="sendEmailVerification()">Resend email verification {{messageVerification}}</button>
           </div>
           </div>
         </form>
@@ -95,18 +95,20 @@ export class LoginComponent  {
     this.afAuth.auth.signInWithEmailAndPassword(email, password)
     .then(_ => this.messageLogin="Successfully logged in")
     .catch(err => this.messageLogin="Error: Verify your email and password or create a new account");
-    }
+  }
+
   logout() {
     this.clearAllMessages ();
     this.afAuth.auth.signOut()
     .then(_ => this.messageLogout="Successfully logged out")
     .catch(err => this.messageLogout="Error: You were not logged in");
   }
-  register(email: string, password: string) {
-    this.firstName = this.firstName.toLowerCase();
-    this.lastName = this.lastName.toLowerCase();
+
+  register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string, photoURL: string) {
+    firstName = firstName.toLowerCase();
+    lastName = lastName.toLowerCase();
     this.clearAllMessages ();
-    if (this.email==""||this.password==""||this.passwordConfirm==""||!(this.password==this.passwordConfirm)||this.firstName==""||this.lastName==""||this.photoURL=="") {
+    if (email==""||password==""||passwordConfirm==""||!(password==passwordConfirm)||firstName==""||lastName==""||photoURL=="") {
         this.messageRegister="Error: You need to fill all the fields";
     }
     else {
@@ -114,18 +116,33 @@ export class LoginComponent  {
       .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information")
       .then(_=> {
         this.afAuth.authState.subscribe((auth) => {
-          this.db.object('users/' + auth.uid).update({firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL})
-          .then(_ => this.messageRegister="Successful registered")
-          .catch(err => this.messageRegister="Error: We couldn't save your profile");
+          this.db.object('users/' + auth.uid).update({firstName: firstName, lastName: lastName, photoURL: photoURL})
+          .catch(err => this.messageRegister="Error: We couldn't save your profile")
+          .then(_ => {
+            this.sendEmailVerification();
+            this.messageRegister="Successful registered";
+            var teamName = "team " + firstName;
+            this.createNewTeam(auth.uid, teamName);
+          });
         });
       });
     }
   }
+  
   sendEmailVerification() {
     this.clearAllMessages ();
     firebase.auth().currentUser.sendEmailVerification()
     .then(_ => this.messageVerification="An email has been sent to you")
     .catch(err => this.messageVerification="Error: You need to login or register first");
+  }
+
+  createNewTeam(userID: string, teamName: string) {
+    teamName = teamName.toUpperCase();
+    var teamID = this.db.list('ids/').push(true).key;
+    this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
+    this.db.object('teams/'+teamID).update({name: teamName, photoURL: this.photoURL, organisation: "Family and Friends"});
+    this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.db.object('users/' + userID).update({currentTeam: teamID});
   }
 
   clearAllMessages () {

@@ -18,12 +18,12 @@ import { Router, NavigationEnd } from '@angular/router'
         <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">admin</div>
         </div>
         <member></member>
-        <div class='icon'[hidden]="!hasCurrentTeamSelected">
+        <div class='icon'>
         <img id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px" routerLink="/chat" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Chat</div>
         <div class='activity' id='activityChat'></div>
         </div>
-        <div class='icon' [hidden]="!hasCurrentTeamSelected">
+        <div class='icon'>
         <img src="./../assets/App icons/icon_share_01.svg" style="width:45px" routerLink="/wallet" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Wallet</div>
         </div>
@@ -56,7 +56,6 @@ export class AppComponent {
   globalChatActivity: boolean;
   loggedIn: boolean;
   emailVerified: boolean;
-  hasCurrentTeamSelected: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     var startupBackgroundImage;
@@ -71,7 +70,6 @@ export class AppComponent {
         this.lastName = "";
         this.photoURL = "./../assets/App icons/me.png";
         this.currentTeamID = "";
-        this.hasCurrentTeamSelected = false;
         this.currentTeam = null;
         document.getElementById('menu').style.backgroundImage = startupBackgroundImage;
       }
@@ -90,8 +88,6 @@ export class AppComponent {
           this.lastName = snapshot.lastName;
           this.photoURL = snapshot.photoURL;
           this.currentTeamID = snapshot.currentTeam;
-          if (this.currentTeamID == null || this.currentTeamID == "") {this.hasCurrentTeamSelected = false}
-          else {this.hasCurrentTeamSelected = true}
           this.currentTeam = db.object('teams/' + this.currentTeamID);
           this.currentTeam.subscribe(currentTeam=>{
             document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeam.photoURL?currentTeam.photoURL:startupBackgroundImage) + ')';

@@ -22,7 +22,6 @@ import { Router } from '@angular/router';
     </li>
   </ul>
   <div class="teamProfile">
-  <div [hidden]="!hasCurrentTeamSelected">
   <button (click)="this.router.navigate(['teamProfile'])" >Edit team profile</button>
   <button (click)="this.router.navigate(['addMember'])">Add a member</button>
   <div class="titleSeperator">ORGANISATION</div>
@@ -30,10 +29,9 @@ import { Router } from '@angular/router';
   <div class="titleSeperator">PROJECTS</div>
   <button>Add a project (coming soon)</button>
   <hr>
-  <button (click)="leaveTeam(currentTeamID)" style="color:red">Stop following this team {{message1}}</button>
-  </div>
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
   <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
+  <button (click)="leaveTeam(currentTeamID)" style="color:red">Stop following this team {{message1}}</button>
   </div>
   `,
 })
@@ -53,7 +51,6 @@ export class TeamSettingsComponent  {
   followTeamID: string;
   newTeam: string;
   message1: string;
-  hasCurrentTeamSelected: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -63,8 +60,6 @@ export class TeamSettingsComponent  {
         this.firstName = user.firstName;
         this.photoURL = user.photoURL;
         this.currentTeamID = user.currentTeam;
-        if (this.currentTeamID == null || this.currentTeamID == "") {this.hasCurrentTeamSelected = false}
-        else {this.hasCurrentTeamSelected = true}
         this.currentTeam = db.object('teams/' + this.currentTeamID);
       });
       this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"), {

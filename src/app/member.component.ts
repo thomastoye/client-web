@@ -39,7 +39,12 @@ export class MemberComponent  {
         this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
         this.currentUser.subscribe(snapshot => {
           this.currentTeamID = snapshot.currentTeam;
-          this.teamUsers = this.db.list('teamUsers/' + this.currentTeamID);
+          this.teamUsers = this.db.list('teamUsers/' + this.currentTeamID, {
+            query:{
+              orderByChild:'member',
+              equalTo: true,
+            }
+          });
         });
       }
     });
