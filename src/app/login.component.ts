@@ -111,8 +111,14 @@ export class LoginComponent  {
     }
     else {
       this.afAuth.auth.createUserWithEmailAndPassword(email, password)
-      .then(_ => this.messageRegister="Successful registered")
-      .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information");
+      .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information")
+      .then(_=> {
+        this.afAuth.authState.subscribe((auth) => {
+          this.db.object('users/' + auth.uid).update({firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL})
+          .then(_ => this.messageRegister="Successful registered")
+          .catch(err => this.messageRegister="Error: We couldn't save your profile");
+        });
+      });
     }
   }
   sendEmailVerification() {

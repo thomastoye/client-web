@@ -58,7 +58,7 @@ export class MemberComponent  {
   getUserFollowing (userID: string, teamID: string) :boolean {
     var output;
     this.db.object('userTeams/' + userID + '/' + teamID).subscribe(snapshot => {
-      output = (snapshot.status == "confirmed")
+      output = snapshot.following
     });
     return output;
   }

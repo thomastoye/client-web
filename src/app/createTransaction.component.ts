@@ -49,7 +49,12 @@ export class CreateTransactionComponent {
             this.transactionType = "Send to"
             this.currentUserID = auth.uid;
             this.currentTeamID = snapshot.currentTeam;
-            this.userTeams = db.list('userTeams/'+auth.uid);
+            this.userTeams = db.list('userTeams/'+auth.uid, {
+              query:{
+                orderByChild:'following',
+                equalTo: true,
+              }
+            });
           });
         }
     });

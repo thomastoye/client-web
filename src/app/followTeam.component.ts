@@ -65,7 +65,7 @@ export class FollowTeamComponent  {
   }
 
   followTeam (teamID: string, userID: string) {
-    this.db.list('userTeams/' + userID).update(teamID, {status: "confirmed"});
+    this.db.list('userTeams/' + userID).update(teamID, {following: true});
     this.db.list('users/').update(userID, {currentTeam: teamID});
     this.router.navigate(['teamSettings']);
   }

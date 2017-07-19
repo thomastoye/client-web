@@ -70,7 +70,7 @@ export class AddMemberComponent  {
 
   addMember (teamID: string, memberID: string) {
     this.teamUsers = this.db.list('teamUsers/' + teamID);
-    this.teamUsers.update(memberID, {leader: false})
+    this.teamUsers.update(memberID, {member: true, leader: false})
     .then(_ => this.router.navigate(['teamSettings']))
     .catch(err => this.messageAddMember="Error: You need to be leader to add a Member");
   }

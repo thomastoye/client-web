@@ -16,7 +16,7 @@ import { Router } from '@angular/router'
   <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
   <hr>
   <button (click)="updateUserProfile()">Save profile</button>
-  <button (click)="removeMember(currentTeamID, focusUserID)" style="color:red">Cancel team membership {{message1}}</button>
+  <button (click)="cancelMember(currentTeamID, focusUserID)" style="color:red">Cancel team membership {{message1}}</button>
   </div>
   <div style="float: right; width: 50%;">
   <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%">
@@ -62,7 +62,7 @@ export class UserProfileComponent {
               this.focusTeamUser = db.object('teamUsers/' + this.currentTeamID + "/" + this.focusUserID);
               this.focusTeamUser.subscribe(snapshot3 => {
                 db.object('userTeams/'+this.focusUserID+'/'+this.currentTeamID).subscribe(snapshot4=>{
-                  if (snapshot4.status == "confirmed") {
+                  if (snapshot4.following) {
                     this.memberStatus = snapshot3.leader ? "Leader" : "Member";
                   }
                   else {
@@ -84,8 +84,8 @@ export class UserProfileComponent {
     });
   }
 
-  removeMember(teamID: string, userID: string) {
-    this.db.list('teamUsers/' + teamID).remove(userID)
+  cancelMember(teamID: string, userID: string) {
+    this.db.object('teamUsers/' + teamID + '/' + userID).update({member:false})
     .then(_ => this.router.navigate(['teamSettings']))
     .catch(err => this.message1="Error: You are not allowed to do that");
   }

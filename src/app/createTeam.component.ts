@@ -44,14 +44,13 @@ export class CreateTeamComponent {
     this.newTeam = this.newTeam.toUpperCase();
     var teamID = this.db.list('ids/').push(true).key;
     this.teamUsers = this.db.list('teamUsers/' + teamID);
-    this.teamUsers.update(this.currentUserID, {leader: true});
+    this.teamUsers.update(this.currentUserID, {member: true, leader: true});
     this.teams = this.db.list('teams/');
     this.teams.update(teamID, {name: this.newTeam, photoURL: this.photoURL, organisation: "Family and Friends"});
     this.userTeams = this.db.list('userTeams/' + this.currentUserID);
-    this.userTeams.update(teamID, {status: "confirmed"});
+    this.userTeams.update(teamID, {following: true});
     this.currentUser = this.db.object('users/' + this.currentUserID);
     this.currentUser.update({currentTeam: teamID});
-    this.db.list('ids/').remove();
     this.router.navigate(['teamSettings']);
   }
 
