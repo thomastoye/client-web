@@ -1,5 +1,9 @@
 {
   "rules": {
+    "appSettings": {
+      ".read": "true",
+      ".write": "false"
+    },
     "ids": {
       ".read": "auth.token.email_verified === true",
       ".write": "newData.exists() && auth != null"

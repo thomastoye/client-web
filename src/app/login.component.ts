@@ -68,20 +68,22 @@ export class LoginComponent  {
     public afAuth: AngularFireAuth,
     public db: AngularFireDatabase
   ) {
-    var loginBackgroundImage;
-    loginBackgroundImage = 'url("https://upload.wikimedia.org/wikipedia/commons/d/d7/Oslo%2C_Norway_1952_%2812350700414%29.jpg")';
     this.newUser = false;
     this.afAuth.authState.subscribe((auth) => {
         if (auth == null) {
           this.currentUserID="";
           this.loggedIn = false;
           this.emailVerified = true;
-          document.getElementById('login').style.backgroundImage = loginBackgroundImage;
+          this.db.object('appSettings/').subscribe(appSettings=>{
+            document.getElementById('login').style.backgroundImage = 'url(' + appSettings.loginBackgroundImage + ')';
+          });
         }
         else {
           this.currentUserID=auth.uid;
           this.loggedIn = true;
-          document.getElementById('login').style.backgroundImage = loginBackgroundImage;
+          this.db.object('appSettings/').subscribe(appSettings=>{
+            document.getElementById('login').style.backgroundImage = 'url(' + appSettings.loginBackgroundImage + ')';
+          });
           if (!auth.emailVerified) {
             this.emailVerified = false;
           }

@@ -58,9 +58,6 @@ export class AppComponent {
   emailVerified: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
-    var startupBackgroundImage;
-    startupBackgroundImage = 'url("https://upload.wikimedia.org/wikipedia/commons/d/d7/Oslo%2C_Norway_1952_%2812350700414%29.jpg")';
-    startupBackgroundImage = 'url("https://upload.wikimedia.org/wikipedia/commons/9/93/GoldenGateBridge_BakerBeach_MC.jpg")';
     this.afAuth.authState.subscribe((auth) => {
       if (auth == null) {
         this.loggedIn = false;
@@ -71,7 +68,9 @@ export class AppComponent {
         this.photoURL = "./../assets/App icons/me.png";
         this.currentTeamID = "";
         this.currentTeam = null;
-        document.getElementById('menu').style.backgroundImage = startupBackgroundImage;
+        this.db.object('appSettings/').subscribe(appSettings=>{
+          document.getElementById('menu').style.backgroundImage = appSettings.teamBackgroundImage;
+        });
       }
       else {
         this.loggedIn = true;
@@ -90,7 +89,9 @@ export class AppComponent {
           this.currentTeamID = snapshot.currentTeam;
           this.currentTeam = db.object('teams/' + this.currentTeamID);
           this.currentTeam.subscribe(currentTeam=>{
-            document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeam.photoURL?currentTeam.photoURL:startupBackgroundImage) + ')';
+            this.db.object('appSettings/').subscribe(appSettings=>{
+              document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeam.photoURL?currentTeam.photoURL:appSettings.teamBackgroundImage) + ')';
+            });
           });
           db.list('userTeams/'+this.currentUserID).subscribe(userTeams=>{
             this.globalChatActivity = false;
