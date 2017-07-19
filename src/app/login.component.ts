@@ -105,13 +105,13 @@ export class LoginComponent  {
   }
 
   register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string, photoURL: string) {
-    firstName = firstName.toLowerCase();
-    lastName = lastName.toLowerCase();
     this.clearAllMessages ();
     if (email==""||password==""||passwordConfirm==""||!(password==passwordConfirm)||firstName==""||lastName==""||photoURL=="") {
         this.messageRegister="Error: You need to fill all the fields";
     }
     else {
+      firstName = firstName.toLowerCase();
+      lastName = lastName.toLowerCase();
       this.afAuth.auth.createUserWithEmailAndPassword(email, password)
       .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information")
       .then(_=> {
@@ -128,7 +128,7 @@ export class LoginComponent  {
       });
     }
   }
-  
+
   sendEmailVerification() {
     this.clearAllMessages ();
     firebase.auth().currentUser.sendEmailVerification()
@@ -140,7 +140,7 @@ export class LoginComponent  {
     teamName = teamName.toUpperCase();
     var teamID = this.db.list('ids/').push(true).key;
     this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
-    this.db.object('teams/'+teamID).update({name: teamName, photoURL: this.photoURL, organisation: "Family and Friends"});
+    this.db.object('teams/'+teamID).update({name: teamName, organisation: "Family and Friends"});
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
     this.db.object('users/' + userID).update({currentTeam: teamID});
   }
