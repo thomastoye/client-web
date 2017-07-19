@@ -23,7 +23,7 @@ import { Router } from '@angular/router';
   </ul>
   <div class="teamProfile">
   <button (click)="this.router.navigate(['teamProfile'])" >Edit team profile</button>
-  <button (click)="this.router.navigate(['addMember'])">Add a member</button>
+  <button (click)="this.router.navigate(['addMember'])">Add a member to this team</button>
   <div class="titleSeperator">ORGANISATION</div>
   <button>{{ (currentTeam | async)?.organisation }}</button>
   <div class="titleSeperator">PROJECTS</div>

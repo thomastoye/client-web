@@ -12,7 +12,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
     <li *ngFor="let message of teamMessages | async">
     <img [src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
-    <div style="color: #AAA;">{{message.timestamp | date:'shortTime'}}</div>
+    <div style="color: #AAA;">{{message.timestamp | date:'medium'}}</div>
     <div style="padding: 0 50px 10px 0;">{{message.text}}</div>
     </li>
   </ul>
@@ -20,7 +20,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   </div>
   <div class="chat-input">
   <button (click)="timestampChatVisit()">Mark all read</button>
-  <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" />
+  <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Message team" />
   </div>
     `,
 })

@@ -96,15 +96,17 @@ export class AppComponent {
             this.globalChatActivity = false;
             console.log("loopUserTeam");
             userTeams.forEach(userTeam=>{
-              db.object('teamActivities/'+userTeam.$key).subscribe(teamActivities=>{
-                var chatActivity = (teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
-                if (userTeam.$key == this.currentTeamID) {
-                  if (chatActivity) {document.getElementById('activityChat').style.display = 'inherit'}
-                  else {document.getElementById('activityChat').style.display = 'none'}
-                }
-                this.globalChatActivity = chatActivity?true:this.globalChatActivity;
-                console.log("loopActivity");
-              });
+              if (userTeam.following) {
+                db.object('teamActivities/'+userTeam.$key).subscribe(teamActivities=>{
+                  var chatActivity = (teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
+                  if (userTeam.$key == this.currentTeamID) {
+                    if (chatActivity) {document.getElementById('activityChat').style.display = 'inherit'}
+                    else {document.getElementById('activityChat').style.display = 'none'}
+                  }
+                  this.globalChatActivity = chatActivity?true:this.globalChatActivity;
+                  console.log("loopActivity");
+                });
+              }
             });
           });
         });

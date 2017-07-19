@@ -14,6 +14,7 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
     <div class="module form-module">
       <div class="form">
         <form>
+          <img src="./../assets/App icons/PERRINN logo.png" style="width:100%">
           <div [hidden]="loggedIn">
           <button style="text-align:right; font-size:10px" type="button" (click)="newUser=!newUser">{{newUser?"Already have an account?":"Need a new account?"}}</button>
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email"/>
@@ -80,6 +81,7 @@ export class LoginComponent  {
         else {
           this.currentUserID=auth.uid;
           this.loggedIn = true;
+          document.getElementById('login').style.backgroundImage = loginBackgroundImage;
           if (!auth.emailVerified) {
             this.emailVerified = false;
           }
