@@ -62,7 +62,7 @@ chat{
   display:flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  height:100%;y
+  height:100%;
 }
 .chat-content{
   display:flex;
