@@ -59,9 +59,12 @@ export class AddMemberComponent  {
   }
 
   addMember (teamID: string, memberID: string) {
-    this.db.object('teamUsers/'+teamID+'/'+memberID).update({member: true, leader: false})
-    .then(_ => this.router.navigate(['teamSettings']))
-    .catch(err => this.messageAddMember="Error: You need to be leader to add a Member - You cannot add yourself if you are already in the team");
+    if (memberID==null || memberID=="") {this.messageAddMember = "Please select a member"}
+    else {
+      this.db.object('teamUsers/'+teamID+'/'+memberID).update({member: true, leader: false})
+      .then(_ => this.router.navigate(['teamSettings']))
+      .catch(err => this.messageAddMember="Error: You need to be leader to add a Member - You cannot add yourself if you are already in the team");
+    }
   }
 
 }
