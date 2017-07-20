@@ -25,10 +25,7 @@ import { Router } from '@angular/router'
   `,
 })
 export class UserProfileComponent {
-  currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
-  focusUser: FirebaseObjectObservable<any>;
-  focusTeamUser: FirebaseObjectObservable<any>;
   focusUserID: string;
   firstName: string;
   lastName: string;
@@ -39,47 +36,38 @@ export class UserProfileComponent {
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-        if (auth == null) {
-          this.focusUserID = "";
-          this.currentUserID = "";
-          this.firstName = "";
-          this.lastName = "";
-          this.photoURL = "./../assets/App icons/me.png";
-          this.currentTeamID = "";
-          this.memberStatus = "";
-        }
-        else {
-          db.object('users/' + auth.uid).subscribe( snapshot => {
-            this.currentUserID = auth.uid;
-            this.currentUser = db.object('users/' + this.currentUserID);
-            this.currentTeamID = snapshot.currentTeam;
-            this.focusUserID = snapshot.focusUserID;
-            this.focusUser = db.object('users/' + this.focusUserID);
-            this.focusUser.subscribe(snapshot2 => {
-              this.firstName = snapshot2.firstName;
-              this.lastName = snapshot2.lastName;
-              this.photoURL = snapshot2.photoURL;
-              this.focusTeamUser = db.object('teamUsers/' + this.currentTeamID + "/" + this.focusUserID);
-              this.focusTeamUser.subscribe(snapshot3 => {
-                db.object('userTeams/'+this.focusUserID+'/'+this.currentTeamID).subscribe(snapshot4=>{
-                  if (snapshot4.following) {
-                    this.memberStatus = snapshot3.leader ? "Leader" : "Member";
-                  }
-                  else {
-                    this.memberStatus = snapshot3.leader ? "Leader (Not Following)" : "Member (Not Following)";
-                  }
-                });
+      if (auth==null){}
+      else {
+        this.currentUserID = auth.uid;
+        db.object('userInterface/'+auth.uid).subscribe(userInterface=>{
+          this.currentTeamID = userInterface.currentTeam;
+          this.focusUserID = userInterface.focusUser;
+          db.object('users/' + this.focusUserID).subscribe(focusUser => {
+            this.firstName = focusUser.firstName;
+            console.log(this.firstName);
+            this.lastName = focusUser.lastName;
+            this.photoURL = focusUser.photoURL;
+            db.object('teamUsers/' + this.currentTeamID+"/"+this.focusUserID).subscribe(teamFocusUser => {
+              db.object('userTeams/'+this.focusUserID+'/'+this.currentTeamID).subscribe(focusUserTeam=>{
+                if (focusUserTeam.following) {
+                  this.memberStatus = teamFocusUser.leader ? "Leader" : "Member";
+                }
+                else {
+                  this.memberStatus = teamFocusUser.leader ? "Leader (Not Following)" : "Member (Not Following)";
+                }
+                console.log(this.memberStatus);
               });
             });
           });
-        }
+        });
+      }
     });
   }
 
   updateUserProfile() {
     this.firstName = this.firstName.toLowerCase();
     this.lastName = this.lastName.toLowerCase();
-    this.focusUser.update({
+    this.db.object('users/'+this.focusUserID).update({
       firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL
     });
   }

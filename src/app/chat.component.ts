@@ -21,35 +21,32 @@ import { AngularFireAuth } from 'angularfire2/auth';
   </div>
   <div class="chat-input">
   <button (click)="timestampChatVisit()">Mark all read</button>
-  <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Message team" />
+  <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
   </div>
     `,
 })
 export class ChatComponent {
   draftMessage: string;
   teamMessages: FirebaseListObservable<any>;
-  currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
-  firstName= "";
-  currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
-  userTeams: FirebaseListObservable<any>;
-  teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
   newMemberID: string;
-  photoURL: string;
+  messageInput: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.afAuth.authState.subscribe((auth) => {
-      this.currentUserID = auth.uid;
-      this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-      this.currentUser.subscribe(user => {
-        this.firstName = user.firstName;
-        this.photoURL = user.photoURL;
-        this.currentTeamID = user.currentTeam;
-        this.currentTeam = db.object('teams/' + this.currentTeamID);
-        this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: 25}});
-      });
+      if (auth==null){}
+      else {
+        this.currentUserID = auth.uid;
+        db.object('userInterface/'+auth.uid).subscribe(userInterface => {
+          this.currentTeamID = userInterface.currentTeam;
+          this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: 25}});
+          this.db.object('teamUsers/'+this.currentTeamID+'/'+auth.uid).subscribe(teamUser=>{
+            if (teamUser==null) {this.messageInput="You need to be a member to message this team"}
+            else {this.messageInput = teamUser.member?"Message team":"You need to be a member to message this team"}
+          });
+        });
+      }
     });
   }
 
@@ -65,7 +62,7 @@ export class ChatComponent {
   addMessage() {
     if (this.draftMessage!="") {
     this.db.object('teamActivities/'+this.currentTeamID).update({lastMessageTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    this.teamMessages.push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, author: this.currentUserID});
+    this.db.list('teamMessages/' + this.currentTeamID).push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, author: this.currentUserID});
     this.draftMessage = "";
     }
   }

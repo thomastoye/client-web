@@ -10,10 +10,10 @@ import { Router } from '@angular/router';
   selector: 'teamSettings',
   template: `
   <ul class="listDark">
-    <h6 style="padding:7px; color:#AAA;">MY TEAMS</h6>
+    <div class="title">MY TEAMS</div>
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
-      (click)="currentUser.update({currentTeam: team.$key})">
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
       <div style="display: inline; float: left; margin: 0 10px 0 10px; height:25px; width:25px">
       <div class="activity" [hidden]="getChatActivity(team.$key)"></div>
       </div>
@@ -40,13 +40,9 @@ export class TeamSettingsComponent  {
 
   currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
-  firstName: string;
-  photoURL: string;
   currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   userTeams: FirebaseListObservable<any>;
-  teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
   newMemberID: string;
   followTeamID: string;
   newTeam: string;
@@ -54,20 +50,23 @@ export class TeamSettingsComponent  {
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-      this.currentUserID = auth.uid;
-      this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-      this.currentUser.subscribe(user => {
-        this.firstName = user.firstName;
-        this.photoURL = user.photoURL;
-        this.currentTeamID = user.currentTeam;
-        this.currentTeam = db.object('teams/' + this.currentTeamID);
-      });
-      this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"), {
-        query:{
-          orderByChild:'following',
-          equalTo: true,
-        }
-      });
+      if (auth==null){
+        this.userTeams=null;
+      }
+      else {
+        this.currentUserID = auth.uid;
+        this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
+        db.object('userInterface/'+auth.uid).subscribe(userInterface => {
+          this.currentTeamID = userInterface.currentTeam;
+          this.currentTeam = db.object('teams/' + this.currentTeamID);
+        });
+        this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"), {
+          query:{
+            orderByChild:'following',
+            equalTo: true,
+          }
+        });
+      }
     });
   }
 

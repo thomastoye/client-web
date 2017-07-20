@@ -22,9 +22,26 @@ import { Router } from '@angular/router'
     </div>
   </div>
   <ul class="listDark">
-    <h6 style="padding:7px; color:#AAA;">TRANSACTIONS</h6>
+    <div class="title">CONFIRMED TRANSACTIONS IN</div>
+    <li *ngFor="let transaction of perrinnTransactionsIn | async">
+      {{transaction.createdTimestamp | date :'medium'}}
+      {{transaction.amount | number:'1.2-2'}}
+      {{transaction.reference}}
+      {{transaction.status}}
+    </li>
+    <div class="title">CONFIRMED TRANSACTIONS OUT</div>
+    <li *ngFor="let transaction of perrinnTransactionsOut | async">
+    {{transaction.createdTimestamp | date :'medium'}}
+    {{transaction.amount | number:'1.2-2'}}
+    {{transaction.reference}}
+    {{transaction.status}}
+    </li>
+    <div class="title">PENDING TRANSACTIONS</div>
     <li *ngFor="let transaction of teamTransactions | async">
-      Transaction        {{transaction.createdTimestamp | date :'medium'}}       {{transaction.amount}}       {{transaction.reference}}       {{transaction.status}}
+    {{transaction.createdTimestamp | date :'medium'}}
+    {{transaction.amount | number:'1.2-2'}}
+    {{transaction.reference}}
+    {{transaction.status}}
     </li>
   </ul>
   <button (click)="this.router.navigate(['createTransaction'])">New transaction</button>
@@ -33,11 +50,6 @@ import { Router } from '@angular/router'
 export class WalletComponent {
 
 teamTransactions: FirebaseListObservable<any>;
-currentTeam: FirebaseObjectObservable<any>;
-currentTeamID: string;
-userTeams: FirebaseListObservable<any>;
-teams: FirebaseListObservable<any>;
-teamUsers: FirebaseListObservable<any>;
 perrinnTransactionsOut: FirebaseListObservable<any>;
 perrinnTransactionsIn: FirebaseListObservable<any>;
 currentBalance: number;
@@ -45,37 +57,38 @@ currentBalance: number;
 constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
   this.currentBalance = 0;
   this.afAuth.authState.subscribe((auth) => {
-      if (auth == null) {
-        this.currentTeamID = "";
-      }
-      else {
-        db.object('users/' + auth.uid).subscribe( snapshot => {
-          this.currentTeamID = snapshot.currentTeam;
-          this.teamTransactions = db.list('teamTransactions/'+this.currentTeamID);
-          this.perrinnTransactionsOut = db.list('perrinnTransactions/', {
-            query:{
-              orderByChild:'sender',
-              equalTo: this.currentTeamID,
-            }
-          });
-          this.perrinnTransactionsIn = db.list('perrinnTransactions/', {
-            query:{
-              orderByChild:'receiver',
-              equalTo: this.currentTeamID,
-            }
-          });
-          this.perrinnTransactionsOut.subscribe(perrinnTransactionsOut=>{
-            perrinnTransactionsOut.forEach(perrinnTransactionOut=>{
-              this.currentBalance = this.currentBalance - perrinnTransactionOut.amount
-            });
-          });
-          this.perrinnTransactionsIn.subscribe(perrinnTransactionsIn=>{
-            perrinnTransactionsIn.forEach(perrinnTransactionIn=>{
-              this.currentBalance = this.currentBalance + perrinnTransactionIn.amount
-            });
+    if (auth==null){
+      this.teamTransactions=null;
+      this.perrinnTransactionsOut=null;
+      this.perrinnTransactionsIn=null;
+    }
+    else {
+      db.object('userInterface/'+auth.uid).subscribe( userInterface => {
+        this.teamTransactions = db.list('teamTransactions/'+userInterface.currentTeam);
+        this.perrinnTransactionsOut = db.list('perrinnTransactions/', {
+          query:{
+            orderByChild:'sender',
+            equalTo: userInterface.currentTeam,
+          }
+        });
+        this.perrinnTransactionsIn = db.list('perrinnTransactions/', {
+          query:{
+            orderByChild:'receiver',
+            equalTo: userInterface.currentTeam,
+          }
+        });
+        this.perrinnTransactionsOut.subscribe(perrinnTransactionsOut=>{
+          perrinnTransactionsOut.forEach(perrinnTransactionOut=>{
+            this.currentBalance = this.currentBalance - perrinnTransactionOut.amount
           });
         });
-      }
+        this.perrinnTransactionsIn.subscribe(perrinnTransactionsIn=>{
+          perrinnTransactionsIn.forEach(perrinnTransactionIn=>{
+            this.currentBalance = this.currentBalance + perrinnTransactionIn.amount
+          });
+        });
+      });
+    }
   });
 }
 

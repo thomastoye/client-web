@@ -91,6 +91,10 @@ body {
   padding: 20px;
   list-style-type: none;
 }
+.listDark .title {
+  padding:7px;
+  color:#AAA;
+}
 .listDark .activity {
   height: 12px;
   width: 12px;

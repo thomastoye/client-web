@@ -14,7 +14,7 @@ import { Router, NavigationEnd } from '@angular/router'
       <div [hidden]="!emailVerified">
       <div class='menu' id='menu'>
         <div>
-        <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ (currentTeam | async)?.name }}</div>
+        <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
         <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">admin</div>
         </div>
         <member></member>
@@ -43,68 +43,38 @@ import { Router, NavigationEnd } from '@angular/router'
   `,
 })
 export class AppComponent {
-  currentUser: FirebaseObjectObservable<any>;
-  currentUserID: string;
-  firstName: string;
-  lastName: string;
-  photoURL: string;
-  currentTeam: FirebaseObjectObservable<any>;
-  currentTeamActivities: FirebaseObjectObservable<any>;
-  teamActivities: FirebaseObjectObservable<any>;
-  userTeam: FirebaseObjectObservable<any>;
-  currentTeamID: string;
   globalChatActivity: boolean;
   loggedIn: boolean;
   emailVerified: boolean;
+  currentTeamName: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-      if (auth == null) {
-        this.loggedIn = false;
-        this.emailVerified = true;
-        this.currentUserID = "";
-        this.firstName = "";
-        this.lastName = "";
-        this.photoURL = "./../assets/App icons/me.png";
-        this.currentTeamID = "";
-        this.currentTeam = null;
-        this.db.object('appSettings/').subscribe(appSettings=>{
-          document.getElementById('menu').style.backgroundImage = appSettings.teamBackgroundImage;
-        });
-      }
+      if (auth == null) {this.loggedIn = false}
       else {
         this.loggedIn = true;
-        if (!auth.emailVerified) {
-          this.emailVerified = false;
-        }
-        else {
-          this.emailVerified = true;
-        }
-        this.currentUserID = auth.uid;
-        this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-        this.currentUser.subscribe(snapshot => {
-          this.firstName = snapshot.firstName;
-          this.lastName = snapshot.lastName;
-          this.photoURL = snapshot.photoURL;
-          this.currentTeamID = snapshot.currentTeam;
-          this.currentTeam = db.object('teams/' + this.currentTeamID);
-          this.currentTeam.subscribe(currentTeam=>{
+        if (!auth.emailVerified) {this.emailVerified = false}
+        else {this.emailVerified = true}
+        db.object('userInterface/'+auth.uid+'/currentTeam').subscribe(currentTeamID => {
+          db.object('teams/' + currentTeamID.$value).subscribe(currentTeamObject=>{
+            this.currentTeamName = currentTeamObject.name;
             this.db.object('appSettings/').subscribe(appSettings=>{
-              document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeam.photoURL?currentTeam.photoURL:appSettings.teamBackgroundImage) + ')';
+              document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeamObject.photoURL?currentTeamObject.photoURL:appSettings.teamBackgroundImage) + ')';
             });
           });
-          db.list('userTeams/'+this.currentUserID).subscribe(userTeams=>{
+          db.list('userTeams/'+auth.uid).subscribe(userTeams=>{
             this.globalChatActivity = false;
             console.log("loopUserTeam");
             userTeams.forEach(userTeam=>{
               if (userTeam.following) {
-                db.object('teamActivities/'+userTeam.$key).subscribe(teamActivities=>{
-                  var chatActivity = (teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
-                  if (userTeam.$key == this.currentTeamID) {
+                db.object('teamActivities/'+userTeam.$key+'/lastMessageTimestamp').subscribe(lastMessageTimestamp=>{
+                  var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
+                  if (userTeam.$key == currentTeamID.$value) {
                     if (chatActivity) {document.getElementById('activityChat').style.display = 'inherit'}
                     else {document.getElementById('activityChat').style.display = 'none'}
                   }
                   this.globalChatActivity = chatActivity?true:this.globalChatActivity;
+                  document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
                   console.log("loopActivity");
                 });
               }

@@ -24,36 +24,26 @@ import { Router } from '@angular/router';
 
 export class AddMemberComponent  {
 
-  currentUser: FirebaseObjectObservable<any>;
-  currentUserID: string;
-  firstName: string;
-  photoURL: string;
   currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   selectedUserID: string;
-  teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
   users: FirebaseListObservable<any>;
-  newMemberID: string;
-  joinTeamID: string;
-  newTeam: string;
   filter: string;
   messageAddMember: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-      this.currentUserID = auth.uid;
-      this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-      this.currentUser.subscribe(snapshot => {
-        this.firstName = snapshot.firstName;
-        this.photoURL = snapshot.photoURL;
-        this.currentTeamID = snapshot.currentTeam;
-        this.currentTeam = db.object('teams/' + this.currentTeamID);
-      });
-    });
-    this.users = db.list('users/', {
-      query:{
-        limitToFirst: 0,
+      if (auth==null){}
+      else {
+        this.db.object('userInterface/'+auth.uid).subscribe(userInterface => {
+          this.currentTeamID = userInterface.currentTeam;
+          this.currentTeam = db.object('teams/' + this.currentTeamID);
+        });
+        this.users = db.list('users/', {
+          query:{
+            limitToFirst: 0,
+          }
+        });
       }
     });
   }
@@ -69,8 +59,7 @@ export class AddMemberComponent  {
   }
 
   addMember (teamID: string, memberID: string) {
-    this.teamUsers = this.db.list('teamUsers/' + teamID);
-    this.teamUsers.update(memberID, {member: true, leader: false})
+    this.db.object('teamUsers/'+teamID+'/'+memberID).update({member: true, leader: false})
     .then(_ => this.router.navigate(['teamSettings']))
     .catch(err => this.messageAddMember="Error: You need to be leader to add a Member - You cannot add yourself if you are already in the team");
   }

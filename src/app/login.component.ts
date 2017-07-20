@@ -24,22 +24,22 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password"/>
           <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name"/>
           <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name"/>
-          <input maxlength="500" [(ngModel)]="photoURL" name="photoURL" placeholder="Paste profile image from the web here" style="font-size:9px"/>
-          <img [src]="this.photoURL" style="object-fit:contain; height:100px; width:100%">
+          <div style="font-size:10px">Find an image on the web for your profile, copy its address and paste it below. Verify that the image appears before registering.</div>
+          <input maxlength="500" [(ngModel)]="photoURL" name="photoURL" placeholder="Paste image address here"/>
+          <img [src]="photoURL" style="object-fit:contain; height:100px; width:100%">
           <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register {{messageRegister}}</button>
           </div>
           </div>
           <div [hidden]="!loggedIn">
           <button type="button" (click)="logout()">Logout {{messageLogout}}</button>
           <div [hidden]="emailVerified">
-          <div style="font-size:10px">To use this app you need to verify your email address. An email has been sent to you. After clicking the link in the email, you need to logout and login to complete the setup.</div>
+          <div style="font-size:10px">You need to verify your email address. An email has been sent to you. After clicking the link in the email, you need to logout and login to complete the setup.</div>
           <button type="button" (click)="sendEmailVerification()">Resend email verification {{messageVerification}}</button>
           </div>
           </div>
         </form>
       </div>
       <div class="cta"><a href='mailto:contactperrinn@gmail.com'>Contact PERRINN</a></div>
-      <div class="cta"><a href='https://docs.google.com/document/d/1IjmDbmcW2IDg5Kj9ENpY3_Fw-oHv3RCJ2f8ZJdbjRpk/pub'>Learn more about PERRINN</a></div>
     </div>
   </div>
   `,
@@ -110,7 +110,7 @@ export class LoginComponent  {
 
   register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string, photoURL: string) {
     this.clearAllMessages ();
-    if (email==""||password==""||passwordConfirm==""||!(password==passwordConfirm)||firstName==""||lastName==""||photoURL=="") {
+    if (email==null||password==null||passwordConfirm==null||!(password==passwordConfirm)||firstName==null||lastName==null||photoURL==null) {
         this.messageRegister="Error: You need to fill all the fields";
     }
     else {
@@ -146,7 +146,7 @@ export class LoginComponent  {
     this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
     this.db.object('teams/'+teamID).update({name: teamName, organisation: "Family and Friends"});
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    this.db.object('users/' + userID).update({currentTeam: teamID});
+    this.db.object('userInterface/' + userID).update({currentTeam: teamID});
   }
 
   clearAllMessages () {

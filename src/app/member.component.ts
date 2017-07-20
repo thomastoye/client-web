@@ -9,7 +9,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   template: `
   <ul class="members" style="float: left">
     <li class='icon' *ngFor="let user of teamUsers | async">
-      <img [src]="getPhotoURL(user.$key)" (click)="currentUser.update({focusUserID: user.$key})" style="border-radius:3px; object-fit: cover; height:45px; width:45px" routerLink="/userProfile" routerLinkActive="active">
+      <img [src]="getPhotoURL(user.$key)" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key})" style="border-radius:3px; object-fit: cover; height:45px; width:45px" routerLink="/userProfile" routerLinkActive="active">
       <div style="font-size: 9px; color: #FFF;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (NF)"}}</div>
     </li>
   </ul>
@@ -17,29 +17,21 @@ import { AngularFireAuth } from 'angularfire2/auth';
 })
 export class MemberComponent  {
 
-  currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
-  firstName= "";
-  currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
-  userTeams: FirebaseListObservable<any>;
-  teams: FirebaseListObservable<any>;
   teamUsers: FirebaseListObservable<any>;
   newMemberID: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.afAuth.authState.subscribe((auth) => {
-      if (auth == null) {
-        this.currentUserID = "";
-        this.currentTeamID = "";
+      if (auth==null){
         this.teamUsers = null;
       }
       else {
         this.currentUserID = auth.uid;
-        this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-        this.currentUser.subscribe(snapshot => {
-          this.currentTeamID = snapshot.currentTeam;
-          this.teamUsers = this.db.list('teamUsers/' + this.currentTeamID, {
+        this.db.object('userInterface/'+auth.uid+'/currentTeam').subscribe(currentTeam => {
+          this.currentTeamID = currentTeam.$value;
+          this.teamUsers = this.db.list('teamUsers/' + currentTeam.$value, {
             query:{
               orderByChild:'member',
               equalTo: true,

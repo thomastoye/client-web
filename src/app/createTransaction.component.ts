@@ -31,9 +31,6 @@ export class CreateTransactionComponent {
   currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   userTeams: FirebaseListObservable<any>;
-  teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
-  followTeamID: string;
   transactionReference: string;
   transactionAmount: number;
   selectedTeamID: string;
@@ -41,22 +38,22 @@ export class CreateTransactionComponent {
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-        if (auth == null) {
-          this.currentTeamID = "";
-        }
-        else {
-          db.object('users/' + auth.uid).subscribe( snapshot => {
-            this.transactionType = "Send to"
-            this.currentUserID = auth.uid;
-            this.currentTeamID = snapshot.currentTeam;
-            this.userTeams = db.list('userTeams/'+auth.uid, {
-              query:{
-                orderByChild:'following',
-                equalTo: true,
-              }
-            });
+      if (auth==null){
+        this.userTeams=null;
+      }
+      else {
+        db.object('userInterface/'+auth.uid).subscribe( userInterface => {
+          this.transactionType = "Send to"
+          this.currentUserID = auth.uid;
+          this.currentTeamID = userInterface.currentTeam;
+          this.userTeams = db.list('userTeams/'+auth.uid, {
+            query:{
+              orderByChild:'following',
+              equalTo: true,
+            }
           });
-        }
+        });
+      }
     });
   }
 

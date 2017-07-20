@@ -26,17 +26,14 @@ export class CreateTeamComponent {
   currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
   photoURL: string;
-  currentTeam: FirebaseObjectObservable<any>;
-  currentTeamID: string;
-  userTeams: FirebaseListObservable<any>;
-  teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
-  followTeamID: string;
   newTeam: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-      this.currentUserID = auth.uid;
+      if (auth==null){}
+      else {
+        this.currentUserID = auth.uid;
+      }
     });
   }
 
@@ -46,7 +43,7 @@ export class CreateTeamComponent {
     this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
     this.db.object('teams/'+teamID).update({name: teamName, photoURL: this.photoURL, organisation: "Family and Friends"});
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    this.db.object('users/' + userID).update({currentTeam: teamID});
+    this.db.object('userInterface/' + userID).update({currentTeam: teamID});
     this.router.navigate(['teamSettings']);
   }
 

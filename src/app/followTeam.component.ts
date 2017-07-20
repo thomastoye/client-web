@@ -17,39 +17,37 @@ import { Router } from '@angular/router';
       {{team.name}}
     </li>
   </ul>
-  <button (click)="followTeam(selectedTeamID, currentUserID)">Follow this team</button>
+  <button (click)="followTeam(selectedTeamID, currentUserID)">Follow this team {{messageFollow}}</button>
   `,
 })
 
 export class FollowTeamComponent  {
 
-  currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
   firstName: string;
   photoURL: string;
   currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   selectedTeamID: string;
-  userTeams: FirebaseListObservable<any>;
   teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
-  users: FirebaseListObservable<any>;
-  newMemberID: string;
-  followTeamID: string;
-  newTeam: string;
   filter: string;
+  messageFollow: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-      this.currentUserID = auth.uid;
-      this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-      this.currentUser.subscribe(snapshot => {
-        this.currentTeamID = snapshot.currentTeam;
-      });
-    });
-    this.teams = this.db.list('teams/', {
-      query:{
-        limitToFirst: 0,
+      if (auth==null){
+        this.teams=null;
+      }
+      else {
+        this.currentUserID = auth.uid;
+        this.db.object('userInterface/'+auth.uid).subscribe(userInterface => {
+          this.currentTeamID = userInterface.currentTeam;
+        });
+        this.teams = this.db.list('teams/', {
+          query:{
+            limitToFirst: 0,
+          }
+        });
       }
     });
   }
@@ -65,9 +63,12 @@ export class FollowTeamComponent  {
   }
 
   followTeam (teamID: string, userID: string) {
-    this.db.list('userTeams/' + userID).update(teamID, {following: true});
-    this.db.list('users/').update(userID, {currentTeam: teamID});
-    this.router.navigate(['teamSettings']);
+    if (teamID==null || teamID=="") {this.messageFollow = "Please select a team"}
+    else {
+      this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+      this.db.object('users/'+userID).update({currentTeam: teamID});
+      this.router.navigate(['teamSettings']);
+    }
   }
 
 }

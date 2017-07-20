@@ -23,36 +23,30 @@ import { Router } from '@angular/router'
   `,
 })
 export class TeamProfileComponent {
-  currentUser: FirebaseObjectObservable<any>;
-  currentUserID: string;
   photoURL: string;
-  currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
-  userTeams: FirebaseListObservable<any>;
-  teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
   followTeamID: string;
   teamName: string;
   messageSaveTeamProfile: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-      this.currentUserID = auth.uid;
-      this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-      this.currentUser.subscribe(snapshot => {
-        this.currentTeamID = snapshot.currentTeam;
-        this.currentTeam = db.object('teams/' + this.currentTeamID);
-        this.currentTeam.subscribe ((team) => {
-          this.teamName = team.name;
-          this.photoURL = team.photoURL;
+      if (auth==null){}
+      else {
+        this.db.object('userInterface/'+auth.uid).subscribe(userInterface=>{
+          this.currentTeamID = userInterface.currentTeam;
+          this.db.object('teams/' + this.currentTeamID).subscribe (team=>{
+            this.teamName = team.name;
+            this.photoURL = team.photoURL;
+          });
         });
-      });
+      }
     });
   }
 
   saveTeamProfile() {
     this.teamName = this.teamName.toUpperCase();
-    this.currentTeam.update({
+    this.db.object('teams/' + this.currentTeamID).update({
       name: this.teamName, photoURL: this.photoURL,
     })
     .then(_ => this.router.navigate(['teamSettings']))
