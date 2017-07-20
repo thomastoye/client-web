@@ -156,17 +156,13 @@ button:active {
 }
 input {
   width: 95%;
-  border: none;
+  border-width: thin;
   padding: 10px;
   margin: 5px;
   box-sizing: border-box;
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
   border-radius: 4px;
-}
-input:focus {
-  border: 1px solid #33b5e5;
-  color: #333333;
 }
 #login {
   height: 100vh;
