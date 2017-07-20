@@ -11,9 +11,9 @@ import { Router } from '@angular/router'
   <div class="user">
   <div style="float: left; width: 50%;">
   <div class="memberStatus">{{this.memberStatus}}</div>
-  <input maxlength="500" [(ngModel)]="this.firstName" style="text-transform: lowercase;" placeholder="Enter first name" />
-  <input maxlength="500" [(ngModel)]="this.lastName" style="text-transform: lowercase;" placeholder="Enter last name" />
-  <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
+  <input maxlength="500" [(ngModel)]="this.firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="Enter first name" />
+  <input maxlength="500" [(ngModel)]="this.lastName" style="text-transform: lowercase; font-weight:bold;" placeholder="Enter last name" />
+  <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image address from the web" />
   <hr>
   <button (click)="updateUserProfile()">Save profile</button>
   <button (click)="cancelMember(currentTeamID, focusUserID)" style="color:red">Cancel team membership {{message1}}</button>
