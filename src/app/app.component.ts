@@ -50,27 +50,27 @@ export class AppComponent {
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-      console.log("1");
+      console.log("loop 1");
       if (auth == null) {this.loggedIn = false}
       else {
         this.loggedIn = true;
         if (!auth.emailVerified) {this.emailVerified = false}
         else {this.emailVerified = true}
         db.object('userInterface/'+auth.uid+'/currentTeam').subscribe(currentTeamID => {
-          console.log("2");
+          console.log("loop 2");
           db.object('teams/' + currentTeamID.$value).subscribe(currentTeamObject=>{
-            console.log("3");
+            console.log("loop 3");
             this.currentTeamName = currentTeamObject.name;
             this.db.object('appSettings/').subscribe(appSettings=>{
-              console.log("4");
+              console.log("loop 4");
               document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeamObject.photoURL?currentTeamObject.photoURL:appSettings.teamBackgroundImage) + ')';
               db.list('userTeams/'+auth.uid).subscribe(userTeams=>{
-                console.log("5");
+                console.log("loop 5");
                 this.globalChatActivity = false;
                 userTeams.forEach(userTeam=>{
                   if (userTeam.following) {
                     db.object('teamActivities/'+userTeam.$key+'/lastMessageTimestamp').subscribe(lastMessageTimestamp=>{
-                      console.log("6");
+                      console.log("loop 6");
                       var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
                       if (userTeam.$key == currentTeamID.$value) {
                         if (chatActivity) {document.getElementById('activityChat').style.display = 'inherit'}

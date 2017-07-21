@@ -36,6 +36,7 @@ body {
   background-position: center;
 }
 .menu .icon {
+  cursor: pointer;
   text-align: center;
   float: left;
   width: 60px;
@@ -55,10 +56,6 @@ body {
 }
 #app_container {
   overflow-y: auto;
-}
-.selected {
-  background-color: #666 !important;
-  color: white;
 }
 .user {
   padding: 5px;
@@ -112,12 +109,8 @@ body {
   border-radius: 4px;
   padding: 5px;
 }
-.listDark li.selected:hover {
-  background-color: #BBD8DC !important;
-}
-.listDark li:hover {
-  color: #607D8B;
-  background-color: #DDD;
+.listDark .selected {
+  background-color: #666 !important;
 }
 .titleSeperator {
   background-color: #EEE;
@@ -125,12 +118,6 @@ body {
   padding: 5px;
   padding-top: 15px;
   text-align: center;
-}
-img {
-}
-img:hover {
-}
-img.active {
 }
 button {
   cursor: pointer;

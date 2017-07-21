@@ -24,29 +24,26 @@ import { Router } from '@angular/router'
   <ul class="listDark">
     <div class="title">CONFIRMED TRANSACTIONS IN</div>
     <li *ngFor="let transaction of perrinnTransactionsIn | async">
-      {{transaction.createdTimestamp | date :'medium'}}
-      {{transaction.amount | number:'1.2-2'}}
-      {{transaction.reference}}
-      {{getTeamName(transaction.receiver)}}
-      {{transaction.status}}
+      <div style="width:200px; float:left">{{transaction.createdTimestamp | date :'medium'}}</div>
+      <div style="width:100px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:200px; float:left; text-align:right">{{transaction.reference}}</div>
+      <div style="width:200px; float:left; text-align:right">{{getTeamName(transaction.sender)}}</div>
     </li>
     <div class="title">CONFIRMED TRANSACTIONS OUT</div>
     <li *ngFor="let transaction of perrinnTransactionsOut | async">
-    {{transaction.createdTimestamp | date :'medium'}}
-    {{transaction.amount | number:'1.2-2'}}
-    {{transaction.reference}}
-    {{getTeamName(transaction.receiver)}}
-    {{transaction.status}}
+      <div style="width:200px; float:left">{{transaction.createdTimestamp | date :'medium'}}</div>
+      <div style="width:100px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:200px; float:left; text-align:right">{{transaction.reference}}</div>
+      <div style="width:200px; float:left; text-align:right">{{getTeamName(transaction.receiver)}}</div>
     </li>
     <div class="title">PENDING TRANSACTIONS</div>
     <li *ngFor="let transaction of teamTransactions | async"
     [class.selected]="transaction.$key === selectedTransactionID"
     (click)="selectedTransactionID = transaction.$key; clearAllMessages()">
-    {{transaction.createdTimestamp | date :'medium'}}
-    {{transaction.amount | number:'1.2-2'}}
-    {{transaction.reference}}
-    {{getTeamName(transaction.receiver)}}
-    {{transaction.status}}
+      <div style="width:200px; float:left; text-align:right">{{transaction.createdTimestamp | date :'medium'}}</div>
+      <div style="width:200px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:200px; float:left; text-align:right">{{transaction.reference}}</div>
+      <div style="width:200px; float:left; text-align:right">{{getTeamName(transaction.receiver)}}</div>
     </li>
   </ul>
   <button (click)="this.router.navigate(['createTransaction'])">New transaction</button>
@@ -105,6 +102,7 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
       });
     }
   });
+this.verifyAllTransactionsPERRINN();
 }
 
 getTeamName (ID: string) :string {
@@ -123,6 +121,19 @@ cancelTransaction (teamID: string, transactionID: string) {
 
 clearAllMessages () {
   this.messageCancelTransaction = "";
+}
+
+verifyAllTransactionsPERRINN () {
+  firebase.database().ref('teamTransactions/').once('value').then(teamTransactions=> {
+    teamTransactions.forEach(team=>{
+      team.forEach(transaction=>{
+        var transactionKey = transaction.key;
+        var transactionAmount = transaction.val().amount;
+        console.log("transaction");
+        console.log(transactionAmount);
+      });
+    });
+  });
 }
 
 }
