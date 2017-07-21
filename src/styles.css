@@ -121,25 +121,19 @@ body {
 }
 button {
   cursor: pointer;
-  background: none;
+  background: #3586c4;
   width: 95%;
   border: 0;
   padding: 7px;
   margin: 5px;
-  color: blue;
+  color: white;
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
   border-radius: 4px;
   border-width: thin;
   border-color: white;
   border-style: solid;
-  text-align: left;
-}
-button:hover {
-  border-color: inherit;
-}
-button:active {
-  background: #acc0e0;
+  text-align:center;
 }
 input {
   width: 95%;

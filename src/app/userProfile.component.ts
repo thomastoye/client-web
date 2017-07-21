@@ -16,7 +16,7 @@ import { Router } from '@angular/router'
   <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image address from the web" />
   <hr>
   <button (click)="updateUserProfile()">Save profile</button>
-  <button (click)="cancelMember(currentTeamID, focusUserID)" style="color:red">Cancel team membership {{message1}}</button>
+  <button (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{message1}}</button>
   </div>
   <div style="float: right; width: 50%;">
   <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%">

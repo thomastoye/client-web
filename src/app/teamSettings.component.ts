@@ -22,16 +22,20 @@ import { Router } from '@angular/router';
     </li>
   </ul>
   <div class="teamProfile">
+  <div style="width: 250px;">
   <button (click)="this.router.navigate(['teamProfile'])" >Edit team profile</button>
   <button (click)="this.router.navigate(['addMember'])">Add a member to this team</button>
+  </div>
   <div class="titleSeperator">ORGANISATION</div>
-  <button>{{ (currentTeam | async)?.organisation }}</button>
+  <div style="padding:10px;">{{ (currentTeam | async)?.organisation }}</div>
   <div class="titleSeperator">PROJECTS</div>
-  <button>Add a project (coming soon)</button>
+  <div style="padding:10px;">Coming soon</div>
   <hr>
+  <div style="width: 250px;">
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
   <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
-  <button (click)="leaveTeam(currentTeamID)" style="color:red">Stop following this team {{message1}}</button>
+  <button (click)="leaveTeam(currentTeamID)" style="background:#e04e4e">Stop following this team {{message1}}</button>
+  </div>
   </div>
   `,
 })

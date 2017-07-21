@@ -14,9 +14,9 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
     <div class="module form-module">
       <div class="form">
         <form>
-          <img src="./../assets/App icons/PERRINN logo.png" style="width:100%">
+          <img src="./../assets/App icons/PERRINN logo.png" style="width:100%; padding-bottom:10px">
           <div [hidden]="loggedIn">
-          <button style="text-align:right; font-size:10px" type="button" (click)="newUser=!newUser">{{newUser?"Already have an account?":"Need a new account?"}}</button>
+          <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser">{{newUser?"Already have an account?":"Need a new account?"}}</div>
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email"/>
           <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password"/>
           <button [hidden]="newUser" type="button" (click)="login(email,password)">Login {{messageLogin}}</button>

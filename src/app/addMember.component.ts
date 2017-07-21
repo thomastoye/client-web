@@ -18,7 +18,9 @@ import { Router } from '@angular/router';
       {{user.lastName}}
     </li>
   </ul>
+  <div style="width: 250px;">
   <button (click)="addMember(currentTeamID, selectedUserID)">Add this member {{messageAddMember}}</button>
+  </div>
   `,
 })
 
