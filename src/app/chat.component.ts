@@ -14,6 +14,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'medium'}}</div>
     <div style="padding: 0 50px 10px 0;">{{message.text}}</div>
+    {{last?scrollToBottom():''}}
     </li>
   </ul>
   </div>
@@ -39,7 +40,7 @@ export class ChatComponent {
         this.currentUserID = auth.uid;
         db.object('userInterface/'+auth.uid).subscribe(userInterface => {
           this.currentTeamID = userInterface.currentTeam;
-          this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {orderByChild: 'timestampNegative', limitToFirst: 25}});
+          this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: 25}});
           this.db.object('teamUsers/'+this.currentTeamID+'/'+auth.uid).subscribe(teamUser=>{
             if (teamUser==null) {this.messageInput="You need to be a member to message this team"}
             else {this.messageInput = teamUser.member?"Message team":"You need to be a member to message this team"}
@@ -47,6 +48,11 @@ export class ChatComponent {
         });
       }
     });
+  }
+
+  scrollToBottom() {
+    var element = document.getElementById("chat-scroll");
+    element.scrollTop = element.scrollHeight;
   }
 
   timestampChatVisit(){
