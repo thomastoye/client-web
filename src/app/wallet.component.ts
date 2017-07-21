@@ -27,6 +27,7 @@ import { Router } from '@angular/router'
       {{transaction.createdTimestamp | date :'medium'}}
       {{transaction.amount | number:'1.2-2'}}
       {{transaction.reference}}
+      {{getTeamName(transaction.receiver)}}
       {{transaction.status}}
     </li>
     <div class="title">CONFIRMED TRANSACTIONS OUT</div>
@@ -34,17 +35,22 @@ import { Router } from '@angular/router'
     {{transaction.createdTimestamp | date :'medium'}}
     {{transaction.amount | number:'1.2-2'}}
     {{transaction.reference}}
+    {{getTeamName(transaction.receiver)}}
     {{transaction.status}}
     </li>
     <div class="title">PENDING TRANSACTIONS</div>
-    <li *ngFor="let transaction of teamTransactions | async">
+    <li *ngFor="let transaction of teamTransactions | async"
+    [class.selected]="transaction.$key === selectedTransactionID"
+    (click)="selectedTransactionID = transaction.$key; clearAllMessages()">
     {{transaction.createdTimestamp | date :'medium'}}
     {{transaction.amount | number:'1.2-2'}}
     {{transaction.reference}}
+    {{getTeamName(transaction.receiver)}}
     {{transaction.status}}
     </li>
   </ul>
   <button (click)="this.router.navigate(['createTransaction'])">New transaction</button>
+  <button (click)="cancelTransaction(currentTeamID, selectedTransactionID)" style="color:red">Cancel this pending transaction {{messageCancelTransaction}}</button>
   `,
 })
 export class WalletComponent {
@@ -53,6 +59,9 @@ teamTransactions: FirebaseListObservable<any>;
 perrinnTransactionsOut: FirebaseListObservable<any>;
 perrinnTransactionsIn: FirebaseListObservable<any>;
 currentBalance: number;
+messageCancelTransaction: string;
+selectedTransactionID: string;
+currentTeamID: string;
 
 constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
   this.currentBalance = 0;
@@ -63,18 +72,24 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
       this.perrinnTransactionsIn=null;
     }
     else {
-      db.object('userInterface/'+auth.uid).subscribe( userInterface => {
-        this.teamTransactions = db.list('teamTransactions/'+userInterface.currentTeam);
+      db.object('userInterface/'+auth.uid+'/currentTeam').subscribe( currentTeamID => {
+        this.currentTeamID = currentTeamID.$value;
+        this.teamTransactions = db.list('teamTransactions/'+currentTeamID.$value, {
+          query:{
+            orderByChild:'status',
+            equalTo: "pending",
+          }
+        });
         this.perrinnTransactionsOut = db.list('perrinnTransactions/', {
           query:{
             orderByChild:'sender',
-            equalTo: userInterface.currentTeam,
+            equalTo: currentTeamID.$value,
           }
         });
         this.perrinnTransactionsIn = db.list('perrinnTransactions/', {
           query:{
             orderByChild:'receiver',
-            equalTo: userInterface.currentTeam,
+            equalTo: currentTeamID.$value,
           }
         });
         this.perrinnTransactionsOut.subscribe(perrinnTransactionsOut=>{
@@ -90,6 +105,24 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
       });
     }
   });
+}
+
+getTeamName (ID: string) :string {
+  var output;
+  this.db.object('teams/' + ID).subscribe(snapshot => {
+    output = snapshot.name;
+  });
+  return output;
+}
+
+cancelTransaction (teamID: string, transactionID: string) {
+  this.db.object('teamTransactions/'+teamID+'/'+transactionID).update({status: "cancelled"})
+  .then(_ => this.messageCancelTransaction="Success: Transaction has been cancelled")
+  .catch(err => this.messageCancelTransaction="Error: Only a leader can cancel a transaction");
+}
+
+clearAllMessages () {
+  this.messageCancelTransaction = "";
 }
 
 }

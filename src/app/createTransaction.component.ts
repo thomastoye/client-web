@@ -9,9 +9,8 @@ import { Router } from '@angular/router'
   selector: 'createTransaction',
   template: `
   <div class="user">
-  <input maxlength="500" [(ngModel)]="this.transactionReference" placeholder="Enter reference" />
-  <input maxlength="500" type="number" min="1" [(ngModel)]="this.transactionAmount" placeholder="Enter amount" />
-  <button (click)="switchTransactionType()">{{transactionType}}</button>
+  <input maxlength="50" [(ngModel)]="this.transactionReference" placeholder="Reference" />
+  <input maxlength="500" type="number" onkeypress="return event.charCode>=48" [(ngModel)]="this.transactionAmount" placeholder="Amount" />
   <ul class="listDark">
     <li *ngFor="let team of userTeams | async"
     [class.selected]="team.$key === selectedTeamID"
@@ -20,7 +19,7 @@ import { Router } from '@angular/router'
       {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
     </li>
   </ul>
-  <button (click)="createTransaction()">Confirm transaction</button>
+  <button (click)="createTransaction()">Confirm transaction {{messageCreateTransaction}}</button>
   </div>
   `,
 })
@@ -34,7 +33,7 @@ export class CreateTransactionComponent {
   transactionReference: string;
   transactionAmount: number;
   selectedTeamID: string;
-  transactionType: string;
+  messageCreateTransaction: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -43,7 +42,6 @@ export class CreateTransactionComponent {
       }
       else {
         db.object('userInterface/'+auth.uid).subscribe( userInterface => {
-          this.transactionType = "Send to"
           this.currentUserID = auth.uid;
           this.currentTeamID = userInterface.currentTeam;
           this.userTeams = db.list('userTeams/'+auth.uid, {
@@ -75,20 +73,16 @@ export class CreateTransactionComponent {
 
   getUserLeader (ID: string) :string {
     var output;
-    this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
+    this.db.object('teamUsers/'+ID+'/'+this.currentUserID).subscribe(snapshot => {
       output = snapshot.leader;
     });
     return output;
   }
 
-  switchTransactionType () {
-      if (this.transactionType == "Send to") {this.transactionType = "Receive from"}
-      else {this.transactionType = "Send to"}
-  }
-
   createTransaction() {
-    this.db.list('teamTransactions/' + this.currentTeamID).push({reference: this.transactionReference, type: this.transactionType, amount: this.transactionAmount, otherTeam: this.selectedTeamID, createdTimestamp: firebase.database.ServerValue.TIMESTAMP, status: "pending"})
-    this.router.navigate(['wallet']);
+    this.db.list('teamTransactions/'+this.currentTeamID).push({reference: this.transactionReference, amount: this.transactionAmount, receiver: this.selectedTeamID, createdTimestamp: firebase.database.ServerValue.TIMESTAMP, status: "pending"})
+    .then(_ => this.router.navigate(['wallet']))
+    .catch(err => this.messageCreateTransaction="Error: Only a leader can create a transaction");
   }
 
 }

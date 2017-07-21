@@ -22,8 +22,8 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <button [hidden]="newUser" type="button" (click)="login(email,password)">Login {{messageLogin}}</button>
           <div [hidden]="!newUser">
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password"/>
-          <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name"/>
-          <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name"/>
+          <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name (lower case)"/>
+          <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name (lower case)"/>
           <div style="font-size:10px">Find an image on the web for your profile, copy its address and paste it below. Verify that the image appears before registering.</div>
           <input maxlength="500" [(ngModel)]="photoURL" name="photoURL" placeholder="Paste image address here"/>
           <img [src]="photoURL" style="object-fit:contain; height:100px; width:100%">
@@ -120,7 +120,7 @@ export class LoginComponent  {
       .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information")
       .then(_=> {
         this.afAuth.authState.subscribe((auth) => {
-          this.db.object('users/' + auth.uid).update({firstName: firstName, lastName: lastName, photoURL: photoURL})
+          this.db.object('users/' + auth.uid).update({firstName: firstName, lastName: lastName, photoURL: photoURL, createdTimestamp: firebase.database.ServerValue.TIMESTAMP})
           .catch(err => this.messageRegister="Error: We couldn't save your profile")
           .then(_ => {
             this.sendEmailVerification();
