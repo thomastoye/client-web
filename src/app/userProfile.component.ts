@@ -15,7 +15,8 @@ import { Router } from '@angular/router'
   <div [hidden]='editMode'>
   <div style="padding:10px; font-weight: bold; font-size: 16px">{{firstName}} {{lastName}}</div>
   <div style="padding:10px;">{{resume}} {{resume?"":"Add a resume here..."}}</div>
-  <button (click)="editMode=true">Edit profile</button>
+  <button [hidden]='!ownProfile' (click)="editMode=true">Edit profile</button>
+  <button (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -23,7 +24,6 @@ import { Router } from '@angular/router'
   <input maxlength="140" [(ngModel)]="resume" placeholder="Your resume (140 characters max) *" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Image address from the web *" />
   <button (click)="updateUserProfile()">Save profile</button>
-  <button (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{message1}}</button>
   </div>
   </div>
   <div style="float: right; width: 50%;">
@@ -43,7 +43,8 @@ export class UserProfileComponent {
   currentTeamID: string;
   memberStatus: string;
   leaderStatus: boolean;
-  message1: string;
+  messageCancelMembership: string;
+  ownProfile: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -53,6 +54,8 @@ export class UserProfileComponent {
         db.object('userInterface/'+auth.uid).subscribe(userInterface=>{
           this.currentTeamID = userInterface.currentTeam;
           this.focusUserID = userInterface.focusUser;
+          this.ownProfile = (this.currentUserID == this.focusUserID);
+          this.messageCancelMembership = ""
           db.object('users/' + this.focusUserID).subscribe(focusUser => {
             this.firstName = focusUser.firstName;
             this.lastName = focusUser.lastName;
@@ -88,7 +91,7 @@ export class UserProfileComponent {
   cancelMember(teamID: string, userID: string) {
     this.db.object('teamUsers/' + teamID + '/' + userID).update({member:false})
     .then(_ => this.router.navigate(['teamSettings']))
-    .catch(err => this.message1="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
+    .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
   }
 
 }
