@@ -97,14 +97,50 @@ verifyAllTransactionsPERRINN () {
     teamTransactions.forEach(team=>{
       team.forEach(transaction=>{
         if (transaction.val().status == "pending") {
-          console.log("New transaction");
-          console.log(transaction.key);
-          console.log(team.key);
-          console.log(transaction.val().receiver);
-          console.log(transaction.val().amount);
-          console.log(transaction.val().status);
-          firebase.database().ref('PERRINNTeamTransactions/'+team.key).once('value').then(teamTransactions=> {
-
+          console.log("Found pending transaction");
+          firebase.database().ref('PERRINNTeamTransactions/'+team.key).limitToLast(1).once('value').then(PERRINNTeamTransactionLast=> {
+            if (!PERRINNTeamTransactionLast.childTransaction==null) {
+              console.log("Found a parent transaction");
+              if (PERRINNTeamTransactionLast.val().balance>=transaction.val().amount) {
+                console.log("Found enough balance");
+                this.db.object('PERRINNTeamTransactions/'+team.key+'/'+transaction.key).update({
+                  parentTransaction: PERRINNTeamTransactionLast.key,
+                  amount: transaction.val().amount,
+                  receiver: transaction.val().receiver,
+                  balance: PERRINNTeamTransactionLast.val().balance-transaction.val().amount,
+                  reference: transaction.val().reference,
+                  createdTimestamp: transaction.val().createdTimestamp,
+                  verifiedTimestamp: firebase.database.ServerValue.TIMESTAMP,
+                })
+                .catch(err => console.log("Couldn't write newTransaction"))
+                .then(_ => {
+                  this.db.object('PERRINNTeamTransactions/'+team.key+'/'+PERRINNTeamTransactionLast.key).update({childTransaction: transaction.key})
+                  .catch(err => console.log("Couldn't write childTransaction"))
+                  .then(_ => {
+                    firebase.database().ref('PERRINNTeamTransactions/'+transaction.val().receiver).limitToLast(1).once('value').then(PERRINNTeamTransactionReceiverLast=> {
+                      if (!PERRINNTeamTransactionReceiverLast.childTransaction==null) {
+                        console.log("Found a parent transaction for receiver");
+                        this.db.object('PERRINNTeamTransactions/'+transaction.val().receiver+'/'+transaction.key).update({
+                          parentTransaction: PERRINNTeamTransactionReceiverLast.key,
+                          amount: transaction.val().amount,
+                          sender: team.key,
+                          balance: PERRINNTeamTransactionReceiverLast.val().balance+transaction.val().amount,
+                          reference: transaction.val().reference,
+                          createdTimestamp: transaction.val().createdTimestamp,
+                          verifiedTimestamp: firebase.database.ServerValue.TIMESTAMP,
+                        })
+                        .catch(err => console.log("Couldn't write newTransactionReceiver"))
+                        .then(_ => {
+                          this.db.object('PERRINNTeamTransactions/'+transaction.val().receiver+'/'+PERRINNTeamTransactionReceiverLast.key).update({childTransaction: transaction.key})
+                          .catch(err => console.log("Couldn't write childTransactionReceiver"))
+                          .then(_ => console.log("Transaction verification COMPLETE"));
+                        });
+                      }
+                    });
+                  });
+                });
+              }
+            }
           });
         }
       });

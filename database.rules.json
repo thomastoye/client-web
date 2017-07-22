@@ -55,7 +55,8 @@
     "userTeams": {
       ".read": "auth.token.email_verified === true",
       "$uid": {
-        ".write": "newData.exists() && auth.uid === $uid"
+        ".write": "newData.exists() && auth.uid === $uid",
+        ".indexOn": ["following"]
       }
     },
     "users": {

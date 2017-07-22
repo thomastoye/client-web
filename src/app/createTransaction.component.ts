@@ -83,7 +83,13 @@ export class CreateTransactionComponent {
   }
 
   createTransaction() {
-    this.db.list('teamTransactions/'+this.currentTeamID).push({reference: this.transactionReference, amount: this.transactionAmount, receiver: this.selectedTeamID, createdTimestamp: firebase.database.ServerValue.TIMESTAMP, status: "pending"})
+    this.db.list('teamTransactions/'+this.currentTeamID).push({
+      reference: this.transactionReference,
+      amount: this.transactionAmount,
+      receiver: this.selectedTeamID,
+      createdTimestamp: firebase.database.ServerValue.TIMESTAMP,
+      status: "pending"
+    })
     .then(_ => this.router.navigate(['wallet']))
     .catch(err => this.messageCreateTransaction="Error: Only a leader can create a transaction");
   }
