@@ -61,14 +61,23 @@ body {
   padding: 5px;
 }
 .user .memberStatus {
-  background-color: #1d7caf;
+  background-color: #3fba3b;
   color: white;
   text-align: center;
   font-size: 10px;
   padding: 3px;
   border-radius: 5px;
   width: 130px;
-  float: left;
+  margin: 5px 5px 5px 5px;
+}
+.user .leaderStatus {
+  background-color: #c67325;
+  color: white;
+  text-align: center;
+  font-size: 10px;
+  padding: 3px;
+  border-radius: 5px;
+  width: 130px;
   margin: 5px 5px 5px 5px;
 }
 .chat{

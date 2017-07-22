@@ -22,19 +22,12 @@ import { Router } from '@angular/router'
     </div>
   </div>
   <ul class="listDark">
-    <div class="title">CONFIRMED TRANSACTIONS IN</div>
-    <li *ngFor="let transaction of perrinnTransactionsIn | async">
+    <div class="title">CONFIRMED TRANSACTIONS</div>
+    <li *ngFor="let transaction of PERRINNTeamTransactions | async">
       <div style="width:200px; float:left">{{transaction.createdTimestamp | date :'medium'}}</div>
       <div style="width:100px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
       <div style="width:200px; float:left; text-align:right">{{transaction.reference}}</div>
       <div style="width:200px; float:left; text-align:right">{{getTeamName(transaction.sender)}}</div>
-    </li>
-    <div class="title">CONFIRMED TRANSACTIONS OUT</div>
-    <li *ngFor="let transaction of perrinnTransactionsOut | async">
-      <div style="width:200px; float:left">{{transaction.createdTimestamp | date :'medium'}}</div>
-      <div style="width:100px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
-      <div style="width:200px; float:left; text-align:right">{{transaction.reference}}</div>
-      <div style="width:200px; float:left; text-align:right">{{getTeamName(transaction.receiver)}}</div>
     </li>
     <div class="title">PENDING TRANSACTIONS</div>
     <li *ngFor="let transaction of teamTransactions | async"
@@ -55,8 +48,7 @@ import { Router } from '@angular/router'
 export class WalletComponent {
 
 teamTransactions: FirebaseListObservable<any>;
-perrinnTransactionsOut: FirebaseListObservable<any>;
-perrinnTransactionsIn: FirebaseListObservable<any>;
+PERRINNTeamTransactions: FirebaseListObservable<any>;
 currentBalance: number;
 messageCancelTransaction: string;
 selectedTransactionID: string;
@@ -67,44 +59,19 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
   this.afAuth.authState.subscribe((auth) => {
     if (auth==null){
       this.teamTransactions=null;
-      this.perrinnTransactionsOut=null;
-      this.perrinnTransactionsIn=null;
+      this.PERRINNTeamTransactions=null;
     }
     else {
+      if (auth.uid=="QYm5NATKa6MGD87UpNZCTl6IolX2") {this.verifyAllTransactionsPERRINN()}
       db.object('userInterface/'+auth.uid+'/currentTeam').subscribe( currentTeamID => {
         this.currentTeamID = currentTeamID.$value;
         this.teamTransactions = db.list('teamTransactions/'+currentTeamID.$value, {
-          query:{
-            orderByChild:'status',
-            equalTo: "pending",
-          }
+          query:{orderByChild:'status',equalTo: "pending"}
         });
-        this.perrinnTransactionsOut = db.list('perrinnTransactions/', {
-          query:{
-            orderByChild:'sender',
-            equalTo: currentTeamID.$value,
-          }
-        });
-        this.perrinnTransactionsIn = db.list('perrinnTransactions/', {
-          query:{
-            orderByChild:'receiver',
-            equalTo: currentTeamID.$value,
-          }
-        });
-        this.perrinnTransactionsOut.subscribe(perrinnTransactionsOut=>{
-          perrinnTransactionsOut.forEach(perrinnTransactionOut=>{
-            this.currentBalance = this.currentBalance - perrinnTransactionOut.amount
-          });
-        });
-        this.perrinnTransactionsIn.subscribe(perrinnTransactionsIn=>{
-          perrinnTransactionsIn.forEach(perrinnTransactionIn=>{
-            this.currentBalance = this.currentBalance + perrinnTransactionIn.amount
-          });
-        });
+        this.PERRINNTeamTransactions = db.list('PERRINNTeamTransactions/'+currentTeamID.$value);
       });
     }
   });
-this.verifyAllTransactionsPERRINN();
 }
 
 getTeamName (ID: string) :string {
@@ -129,10 +96,17 @@ verifyAllTransactionsPERRINN () {
   firebase.database().ref('teamTransactions/').once('value').then(teamTransactions=> {
     teamTransactions.forEach(team=>{
       team.forEach(transaction=>{
-        var transactionKey = transaction.key;
-        var transactionAmount = transaction.val().amount;
-        console.log("transaction");
-        console.log(transactionAmount);
+        if (transaction.val().status == "pending") {
+          console.log("New transaction");
+          console.log(transaction.key);
+          console.log(team.key);
+          console.log(transaction.val().receiver);
+          console.log(transaction.val().amount);
+          console.log(transaction.val().status);
+          firebase.database().ref('PERRINNTeamTransactions/'+team.key).once('value').then(teamTransactions=> {
+
+          });
+        }
       });
     });
   });

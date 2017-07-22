@@ -17,15 +17,15 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <img src="./../assets/App icons/PERRINN logo.png" style="width:100%; padding-bottom:10px">
           <div [hidden]="loggedIn">
           <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser">{{newUser?"Already have an account?":"Need a new account?"}}</div>
-          <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email"/>
-          <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password"/>
+          <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *"/>
+          <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *"/>
           <button [hidden]="newUser" type="button" (click)="login(email,password)">Login {{messageLogin}}</button>
           <div [hidden]="!newUser">
-          <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password"/>
-          <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name (lower case)"/>
-          <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name (lower case)"/>
-          <div style="font-size:10px">Find an image on the web for your profile, copy its address and paste it below. Verify that the image appears before registering.</div>
-          <input maxlength="500" [(ngModel)]="photoURL" name="photoURL" placeholder="Paste image address here"/>
+          <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *"/>
+          <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *"/>
+          <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name *"/>
+          <div style="font-size:10px; padding:5px">Find an image on the web for your profile, copy its address and paste it below. Verify that the image appears before registering.</div>
+          <input maxlength="500" [(ngModel)]="photoURL" name="photoURL" placeholder="Image address here *"/>
           <img [src]="photoURL" style="object-fit:contain; height:100px; width:100%">
           <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register {{messageRegister}}</button>
           </div>

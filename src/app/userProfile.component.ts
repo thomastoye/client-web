@@ -10,16 +10,24 @@ import { Router } from '@angular/router'
   template: `
   <div class="user">
   <div style="float: left; width: 50%;">
-  <div class="memberStatus">{{this.memberStatus}}</div>
-  <input maxlength="500" [(ngModel)]="this.firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="Enter first name" />
-  <input maxlength="500" [(ngModel)]="this.lastName" style="text-transform: lowercase; font-weight:bold;" placeholder="Enter last name" />
-  <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image address from the web" />
-  <hr>
+  <div [hidden]="!leaderStatus" class="leaderStatus">{{memberStatus}}</div>
+  <div [hidden]="leaderStatus" class="memberStatus">{{memberStatus}}</div>
+  <div [hidden]='editMode'>
+  <div style="padding:10px; font-weight: bold; font-size: 16px">{{firstName}} {{lastName}}</div>
+  <div style="padding:10px;">{{resume}} {{resume?"":"Add a resume here..."}}</div>
+  <button (click)="editMode=true">Edit profile</button>
+  </div>
+  <div [hidden]='!editMode'>
+  <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
+  <input maxlength="20" [(ngModel)]="lastName" style="text-transform: lowercase; font-weight:bold;" placeholder="last name *" />
+  <input maxlength="140" [(ngModel)]="resume" placeholder="Your resume (140 characters max) *" />
+  <input maxlength="500" [(ngModel)]="photoURL" placeholder="Image address from the web *" />
   <button (click)="updateUserProfile()">Save profile</button>
   <button (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{message1}}</button>
   </div>
+  </div>
   <div style="float: right; width: 50%;">
-  <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%">
+  <img [src]="photoURL" style="object-fit:contain; height:200px; width:100%">
   </div>
   </div>
   `,
@@ -29,9 +37,12 @@ export class UserProfileComponent {
   focusUserID: string;
   firstName: string;
   lastName: string;
+  resume: string;
   photoURL: string;
+  editMode: boolean;
   currentTeamID: string;
   memberStatus: string;
+  leaderStatus: boolean;
   message1: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
@@ -44,18 +55,19 @@ export class UserProfileComponent {
           this.focusUserID = userInterface.focusUser;
           db.object('users/' + this.focusUserID).subscribe(focusUser => {
             this.firstName = focusUser.firstName;
-            console.log(this.firstName);
             this.lastName = focusUser.lastName;
+            this.resume = focusUser.resume;
             this.photoURL = focusUser.photoURL;
+            this.editMode = false;
             db.object('teamUsers/' + this.currentTeamID+"/"+this.focusUserID).subscribe(teamFocusUser => {
               db.object('userTeams/'+this.focusUserID+'/'+this.currentTeamID).subscribe(focusUserTeam=>{
+                this.leaderStatus = teamFocusUser.leader;
                 if (focusUserTeam.following) {
                   this.memberStatus = teamFocusUser.leader ? "Leader" : "Member";
                 }
                 else {
                   this.memberStatus = teamFocusUser.leader ? "Leader (Not Following)" : "Member (Not Following)";
                 }
-                console.log(this.memberStatus);
               });
             });
           });
@@ -68,8 +80,9 @@ export class UserProfileComponent {
     this.firstName = this.firstName.toLowerCase();
     this.lastName = this.lastName.toLowerCase();
     this.db.object('users/'+this.focusUserID).update({
-      firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL
+      firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL, resume: this.resume
     });
+    this.editMode=false;
   }
 
   cancelMember(teamID: string, userID: string) {

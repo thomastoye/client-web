@@ -8,7 +8,7 @@
       ".read": "auth.token.email_verified === true",
       ".write": "newData.exists() && auth != null"
     },
-    "perrinnTransactions": {
+    "PERRINNTeamTransactions": {
       ".read": "auth.token.email_verified === true",
       ".write": "!data.exists() && newData.exists() && auth.uid === 'QYm5NATKa6MGD87UpNZCTl6IolX2'"
     },
@@ -27,12 +27,14 @@
     "teamTransactions": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null"
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null",
+        ".indexOn": ["status"]
       }
     },
     "teamUsers": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
+        ".indexOn": ["member"],
         "$uid": {
           ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && data.child('leader').val() != true) && auth != null"
         }
