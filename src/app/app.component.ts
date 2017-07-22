@@ -15,7 +15,7 @@ import { Router, NavigationEnd } from '@angular/router'
       <div class='menu' id='menu'>
         <div>
         <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
-        <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.router.navigate(['login']);">admin</div>
+        <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
         </div>
         <member></member>
         <div class='icon'>
@@ -87,6 +87,10 @@ export class AppComponent {
         });
       }
     });
+  }
+
+  logout() {
+    this.afAuth.auth.signOut()
   }
 
 }

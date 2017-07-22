@@ -89,6 +89,7 @@ export class LoginComponent  {
           }
           else {
             this.emailVerified = true;
+            this.router.navigate(['teamSettings']);
           }
         }
     });
