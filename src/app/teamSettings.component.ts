@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
   <ul class="listDark">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
-      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});">
       <div style="display: inline; float: left; height:25px; width:20px">
       <div class="activity" [hidden]="getChatActivity(team.$key)"></div>
       </div>
@@ -20,9 +20,14 @@ import { Router } from '@angular/router';
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
       <div [hidden]='team.$key!=currentTeamID' style="float:right">
+      <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
+      </div>
+      <div [hidden]='team.$key!=currentTeamID' style="float:right">
+      <div [hidden]='!moreButtons'>
       <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['addMember'])">Add member</div>
       <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['teamProfile'])">Edit profile</div>
       <div [hidden]='getUserLeader(team.$key)' class="button" (click)="leaveTeam(currentTeamID)">Stop following</div>
+      </div>
       </div>
     </li>
   </ul>
@@ -41,8 +46,10 @@ export class TeamSettingsComponent  {
   newMemberID: string;
   followTeamID: string;
   newTeam: string;
+  moreButtons: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+    this.moreButtons = false;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){
         this.userTeams=null;
