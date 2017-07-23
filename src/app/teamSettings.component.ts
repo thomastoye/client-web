@@ -14,18 +14,20 @@ import { Router } from '@angular/router';
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
       (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
-      <div style="display: inline; float: left; margin: 0 10px 0 10px; height:25px; width:25px">
+      <div style="display: inline; float: left; height:25px; width:20px">
       <div class="activity" [hidden]="getChatActivity(team.$key)"></div>
       </div>
       <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
-      {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
+      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key)?"*":""}}</div>
+      <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
+      <div [hidden]='team.$key!=currentTeamID' style="float:right">
+      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['addMember'])">Add member</div>
+      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['teamProfile'])">Edit profile</div>
+      <div [hidden]='getUserLeader(team.$key)' class="button" (click)="leaveTeam(currentTeamID)">Stop following</div>
+      </div>
     </li>
   </ul>
   <div class="teamProfile">
-  <div style="width: 250px;">
-  <button (click)="this.router.navigate(['teamProfile'])" >Edit team profile</button>
-  <button (click)="this.router.navigate(['addMember'])">Add a member to this team</button>
-  </div>
   <div class="titleSeperator">ORGANISATION</div>
   <div style="padding:10px;">{{ (currentTeam | async)?.organisation }}</div>
   <div class="titleSeperator">PROJECTS</div>
@@ -34,7 +36,6 @@ import { Router } from '@angular/router';
   <div style="width: 250px;">
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
   <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
-  <button (click)="leaveTeam(currentTeamID)" style="background:#e04e4e">Stop following this team {{message1}}</button>
   </div>
   </div>
   `,
@@ -50,7 +51,6 @@ export class TeamSettingsComponent  {
   newMemberID: string;
   followTeamID: string;
   newTeam: string;
-  message1: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -114,9 +114,7 @@ export class TeamSettingsComponent  {
   }
 
   leaveTeam(teamID: string) {
-    this.db.object('userTeams/' + this.currentUserID + '/' + teamID).update({following:false})
-    .then(_ => this.message1="You have left that team")
-    .catch(err => this.message1="Error: Team leaders cannot leave their teams");
+    this.db.object('userTeams/'+this.currentUserID+'/'+teamID).update({following:false});
   }
 
 }

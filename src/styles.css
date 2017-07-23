@@ -111,6 +111,16 @@ body {
   left: 5px;
   z-index: 1000;
 }
+.listDark .button {
+  margin: 2px 5px 2px 5px;
+  width:100px;
+  height:20px;
+  float:left;
+  text-align:center;
+  border-style:solid;
+  border-width:thin;
+  border-radius:10px
+}
 .listDark li {
   cursor: pointer;
   position: relative;

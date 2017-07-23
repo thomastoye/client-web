@@ -21,7 +21,7 @@ import { Router, NavigationEnd } from '@angular/router'
         <div class='icon'>
         <img id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px" routerLink="/chat" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Chat</div>
-        <div class='activity' id='activityChat'></div>
+        <div class='activity' [hidden]="!currentTeamChatActivity"></div>
         </div>
         <div class='icon'>
         <img src="./../assets/App icons/icon_share_01.svg" style="width:45px" routerLink="/wallet" routerLinkActive="active">
@@ -30,7 +30,7 @@ import { Router, NavigationEnd } from '@angular/router'
         <div class='icon'>
         <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;" routerLink="/teamSettings" routerLinkActive="active">
         <div style="font-size: 9px; color: #FFF;">Team</div>
-        <div class='activity' [hidden]="!this.globalChatActivity"></div>
+        <div class='activity' [hidden]="!globalChatActivity"></div>
         </div>
         </div>
         </div>
@@ -44,6 +44,7 @@ import { Router, NavigationEnd } from '@angular/router'
 })
 export class AppComponent {
   globalChatActivity: boolean;
+  currentTeamChatActivity: boolean;
   loggedIn: boolean;
   emailVerified: boolean;
   currentTeamName: string;
@@ -67,15 +68,13 @@ export class AppComponent {
               db.list('userTeams/'+auth.uid).subscribe(userTeams=>{
                 console.log("loop 5");
                 this.globalChatActivity = false;
+                this.currentTeamChatActivity = false;
                 userTeams.forEach(userTeam=>{
                   if (userTeam.following) {
                     db.object('teamActivities/'+userTeam.$key+'/lastMessageTimestamp').subscribe(lastMessageTimestamp=>{
                       console.log("loop 6");
                       var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
-                      if (userTeam.$key == currentTeamID.$value) {
-                        if (chatActivity) {document.getElementById('activityChat').style.display = 'inherit'}
-                        else {document.getElementById('activityChat').style.display = 'none'}
-                      }
+                      if (userTeam.$key==currentTeamID.$value&&chatActivity) {this.currentTeamChatActivity=true}
                       this.globalChatActivity = chatActivity?true:this.globalChatActivity;
                       document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
                     });

@@ -96,6 +96,7 @@ export class LoginComponent  {
   }
 
   login(email: string, password: string) {
+    this.newUser = false;
     this.clearAllMessages ();
     this.afAuth.auth.signInWithEmailAndPassword(email, password)
     .then(_ => this.messageLogin="Successfully logged in")
@@ -110,6 +111,7 @@ export class LoginComponent  {
   }
 
   register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string, photoURL: string) {
+    this.newUser = false;
     this.clearAllMessages ();
     if (email==null||password==null||passwordConfirm==null||!(password==passwordConfirm)||firstName==null||lastName==null||photoURL==null) {
         this.messageRegister="Error: You need to fill all the fields";
