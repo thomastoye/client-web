@@ -14,7 +14,9 @@ import { Router } from '@angular/router'
   <input maxlength="500" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name *" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web *" />
   <hr>
+  <div style="width: 250px;">
   <button (click)="createNewTeam(currentUserID, newTeam)">Create team</button>
+  </div>
   </div>
   <div style="float: right; width: 50%;">
   <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
