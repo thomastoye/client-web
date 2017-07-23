@@ -10,7 +10,13 @@ import { Router } from '@angular/router';
   selector: 'teamSettings',
   template: `
   <ul class="listDark">
-    <div class="title">MY TEAMS</div>
+    <div>
+    <div style="float:left" class="title">MY TEAMS</div>
+    <div style="float:right">
+    <div class="button" (click)="this.router.navigate(['followTeam'])">Follow a team</div>
+    <div class="button" (click)="this.router.navigate(['createTeam'])">Create a team</div>
+    </div>
+    </div>
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
       (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
@@ -27,17 +33,6 @@ import { Router } from '@angular/router';
       </div>
     </li>
   </ul>
-  <div class="teamProfile">
-  <div class="titleSeperator">ORGANISATION</div>
-  <div style="padding:10px;">{{ (currentTeam | async)?.organisation }}</div>
-  <div class="titleSeperator">PROJECTS</div>
-  <div style="padding:10px;">Coming soon</div>
-  <hr>
-  <div style="width: 250px;">
-  <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
-  <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
-  </div>
-  </div>
   `,
 })
 
