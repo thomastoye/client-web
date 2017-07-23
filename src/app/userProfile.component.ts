@@ -15,19 +15,15 @@ import { Router } from '@angular/router'
   <div [hidden]='editMode'>
   <div style="padding:10px; font-weight: bold; font-size: 16px">{{firstName}} {{lastName}}</div>
   <div style="padding:10px;">{{resume}} {{resume?"":"Add a resume here..."}}</div>
-  <div style="width: 250px;">
   <button [hidden]='!ownProfile' (click)="editMode=true">Edit profile</button>
   <button (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>
-  </div>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
   <input maxlength="20" [(ngModel)]="lastName" style="text-transform: lowercase; font-weight:bold;" placeholder="last name *" />
   <input maxlength="140" [(ngModel)]="resume" placeholder="Your resume (140 characters max) *" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Image address from the web *" />
-  <div style="width: 250px;">
   <button (click)="updateUserProfile()">Save profile</button>
-  </div>
   </div>
   </div>
   <div style="float: right; width: 50%;">

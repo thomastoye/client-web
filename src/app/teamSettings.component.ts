@@ -26,10 +26,8 @@ import { Router } from '@angular/router';
       </div>
     </li>
   </ul>
-  <div style="width: 250px;">
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
   <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
-  </div>
   `,
 })
 

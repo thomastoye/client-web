@@ -17,9 +17,7 @@ import { Router } from '@angular/router';
       {{team.name}}
     </li>
   </ul>
-  <div style="width: 250px;">
   <button (click)="followTeam(selectedTeamID, currentUserID)">Follow this team {{messageFollow}}</button>
-  </div>
   `,
 })
 

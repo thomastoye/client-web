@@ -39,10 +39,8 @@ import { Router } from '@angular/router'
       <div style="width:200px; float:left; text-align:right">{{getTeamName(transaction.receiver)}}</div>
     </li>
   </ul>
-  <div style="width: 250px;">
   <button (click)="this.router.navigate(['createTransaction'])">New transaction</button>
   <button (click)="cancelTransaction(currentTeamID, selectedTransactionID)" style="background:#e04e4e">Cancel this pending transaction {{messageCancelTransaction}}</button>
-  </div>
   `,
 })
 export class WalletComponent {

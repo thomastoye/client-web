@@ -20,9 +20,7 @@ import { Router } from '@angular/router'
       {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
     </li>
   </ul>
-  <div style="width: 250px;">
   <button (click)="createTransaction()">Confirm transaction {{messageCreateTransaction}}</button>
-  </div>
   </div>
   `,
 })

@@ -143,6 +143,7 @@ button {
   cursor: pointer;
   background: #3586c4;
   width: 95%;
+  max-width: 250px;
   border: 0;
   padding: 7px;
   margin: 5px;
