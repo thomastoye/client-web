@@ -82,7 +82,6 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
     }
     else {
       this.currentUserID = auth.uid;
-      if (auth.uid=="QYm5NATKa6MGD87UpNZCTl6IolX2") {this.PERRINNverifyAllTransactions()}
       db.object('userInterface/'+auth.uid+'/currentTeam').subscribe( currentTeamID => {
         this.currentTeamID = currentTeamID.$value;
         this.getTeamWalletBalance(this.currentTeamID).then(balance=>{

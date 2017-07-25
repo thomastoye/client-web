@@ -10,10 +10,7 @@
     },
     "PERRINNTransactions": {
       ".read": "auth.token.email_verified === true",
-      ".indexOn": ["sender","receiver"],
-      "$transactionid": {
-        ".write": "!data.exists() && newData.exists() && auth.uid === 'QYm5NATKa6MGD87UpNZCTl6IolX2'"
-      }
+      ".indexOn": ["sender","receiver"]
     },
     "teamActivities": {
       ".read": "auth.token.email_verified === true",
@@ -64,9 +61,9 @@
     },
     "users": {
       ".read": "auth.token.email_verified === true",
+      ".indexOn": ["firstName"],
       "$uid": {
-        ".write": "newData.exists() && auth.uid === $uid",
-        ".indexOn": ["firstName"]
+        ".write": "newData.exists() && auth.uid === $uid"
       }
     }
   }
