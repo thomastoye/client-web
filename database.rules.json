@@ -8,9 +8,12 @@
       ".read": "auth.token.email_verified === true",
       ".write": "newData.exists() && auth != null"
     },
-    "PERRINNTeamTransactions": {
+    "PERRINNTransactions": {
       ".read": "auth.token.email_verified === true",
-      ".write": "!data.exists() && newData.exists() && auth.uid === 'QYm5NATKa6MGD87UpNZCTl6IolX2'"
+      ".indexOn": ["sender","receiver"],
+      "$transactionid": {
+        ".write": "!data.exists() && newData.exists() && auth.uid === 'QYm5NATKa6MGD87UpNZCTl6IolX2'"
+      }
     },
     "teamActivities": {
       ".read": "auth.token.email_verified === true",

@@ -14,7 +14,7 @@ import { Router } from '@angular/router'
     </div>
     <div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
-    <div style="font-size: 30px; color: black;">{{currentBalance | number:'1.2-2'}}</div>
+    <div style="font-size: 25px; color: black;">{{currentBalance | number:'1.2-2'}}</div>
     </div>
     <div style="float: right; width: 50%; text-align: left; padding: 5px">
     <div style="color: black;">COINS</div>
@@ -22,53 +22,97 @@ import { Router } from '@angular/router'
     </div>
   </div>
   <ul class="listDark">
-    <div class="title">CONFIRMED TRANSACTIONS</div>
-    <li *ngFor="let transaction of PERRINNTeamTransactions | async">
-      <div style="width:200px; float:left">{{transaction.createdTimestamp | date :'medium'}}</div>
-      <div style="width:100px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
-      <div style="width:200px; float:left; text-align:right">{{transaction.reference}}</div>
-      <div style="width:200px; float:left; text-align:right">{{getTeamName(transaction.sender)}}</div>
+    <div class="title">RECEIVED</div>
+    <li *ngFor="let transaction of PERRINNTransactionsIN | async">
+      <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
+      <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:170px; float:left; text-align:right">{{transaction.reference}}</div>
+      <div style="width:170px; float:left; text-align:right">From {{getTeamName(transaction.sender)}}</div>
+      <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
+    </li>
+    <div class="title">SENT</div>
+    <li *ngFor="let transaction of PERRINNTransactionsOUT | async">
+      <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
+      <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:170px; float:left; text-align:right">{{transaction.reference}}</div>
+      <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
+      <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
     <div class="title">PENDING TRANSACTIONS</div>
     <li *ngFor="let transaction of teamTransactions | async"
     [class.selected]="transaction.$key === selectedTransactionID"
     (click)="selectedTransactionID = transaction.$key; clearAllMessages()">
-      <div style="width:200px; float:left; text-align:right">{{transaction.createdTimestamp | date :'medium'}}</div>
-      <div style="width:200px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
-      <div style="width:200px; float:left; text-align:right">{{transaction.reference}}</div>
-      <div style="width:200px; float:left; text-align:right">{{getTeamName(transaction.receiver)}}</div>
+      <div style="width:170px; float:left; text-align:right">{{transaction.createdTimestamp | date :'medium'}}</div>
+      <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:170px; float:left; text-align:right">{{transaction.reference}}</div>
+      <div style="width:170px; float:left; text-align:right">{{getTeamName(transaction.receiver)}}</div>
+      <div style="float:right">
+      <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
+      </div>
+      <div style="float:right">
+      <div [hidden]='!moreButtons'>
+      <div class="button" (click)="cancelTransaction(currentTeamID, selectedTransactionID)">Cancel</div>
+      </div>
+      </div>
     </li>
   </ul>
-  <button (click)="this.router.navigate(['createTransaction'])">New transaction</button>
-  <button (click)="cancelTransaction(currentTeamID, selectedTransactionID)" style="background:#e04e4e">Cancel this pending transaction {{messageCancelTransaction}}</button>
+  <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send coins</button>
   `,
 })
 export class WalletComponent {
 
 teamTransactions: FirebaseListObservable<any>;
-PERRINNTeamTransactions: FirebaseListObservable<any>;
+PERRINNTransactionsOUT: FirebaseListObservable<any>;
+PERRINNTransactionsIN: FirebaseListObservable<any>;
 currentBalance: number;
 messageCancelTransaction: string;
 selectedTransactionID: string;
 currentTeamID: string;
+moreButtons: boolean;
+currentUserID: string;
 
 constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+  this.moreButtons = false;
   this.currentBalance = 0;
   this.afAuth.authState.subscribe((auth) => {
     if (auth==null){
       this.teamTransactions=null;
-      this.PERRINNTeamTransactions=null;
+      this.PERRINNTransactionsOUT=null;
+      this.PERRINNTransactionsIN=null;
     }
     else {
-      if (auth.uid=="QYm5NATKa6MGD87UpNZCTl6IolX2") {this.verifyAllTransactionsPERRINN()}
+      this.currentUserID = auth.uid;
+      if (auth.uid=="QYm5NATKa6MGD87UpNZCTl6IolX2") {this.PERRINNverifyAllTransactions()}
       db.object('userInterface/'+auth.uid+'/currentTeam').subscribe( currentTeamID => {
         this.currentTeamID = currentTeamID.$value;
+        this.getTeamWalletBalance(this.currentTeamID).then(balance=>{
+          this.currentBalance = Number(balance);
+        });
         this.teamTransactions = db.list('teamTransactions/'+currentTeamID.$value, {
           query:{orderByChild:'status',equalTo: "pending"}
         });
-        this.PERRINNTeamTransactions = db.list('PERRINNTeamTransactions/'+currentTeamID.$value);
+        this.PERRINNTransactionsOUT = db.list('PERRINNTransactions/',{query:{orderByChild:'sender',equalTo:this.currentTeamID}});
+        this.PERRINNTransactionsIN = db.list('PERRINNTransactions/',{query:{orderByChild:'receiver',equalTo:this.currentTeamID}});
+        this.markVerifiedTransactions(this.currentTeamID);
       });
     }
+  });
+}
+
+getTeamWalletBalance (teamID:string) {
+  return new Promise(function (resolve, reject) {
+    var balance=0;
+    firebase.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(teamID).once('value').then(PERRINNTransactions=>{
+      PERRINNTransactions.forEach(transaction=>{
+        balance=balance-transaction.val().amount;
+      });
+    });
+    firebase.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(teamID).once('value').then(PERRINNTransactions=>{
+      PERRINNTransactions.forEach(transaction=>{
+        balance=balance+transaction.val().amount;
+      });
+      resolve (balance);
+    });
   });
 }
 
@@ -90,57 +134,44 @@ clearAllMessages () {
   this.messageCancelTransaction = "";
 }
 
-verifyAllTransactionsPERRINN () {
+getUserLeader (ID: string) :string {
+  var output;
+  this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
+    output = snapshot.leader;
+  });
+  return output;
+}
+
+markVerifiedTransactions (teamID:string):void {
+  firebase.database().ref('teamTransactions/'+teamID).orderByChild('status').equalTo('pending').once('value').then(teamTransactions=>{
+    teamTransactions.forEach(transaction=>{
+      console.log('need to mark this one later');
+    });
+  });
+}
+
+PERRINNverifyAllTransactions () {
   firebase.database().ref('teamTransactions/').once('value').then(teamTransactions=> {
     teamTransactions.forEach(team=>{
-      team.forEach(transaction=>{
-        if (transaction.val().status == "pending") {
+      firebase.database().ref('teamTransactions/'+team.key).orderByChild('status').equalTo('pending').once('value').then(transactions=> {
+        transactions.forEach(transaction=>{
           console.log("Found pending transaction");
-          firebase.database().ref('PERRINNTeamTransactions/'+team.key).limitToLast(1).once('value').then(PERRINNTeamTransactionLast=> {
-            if (!PERRINNTeamTransactionLast.childTransaction==null) {
-              console.log("Found a parent transaction");
-              if (PERRINNTeamTransactionLast.val().balance>=transaction.val().amount) {
-                console.log("Found enough balance");
-                this.db.object('PERRINNTeamTransactions/'+team.key+'/'+transaction.key).update({
-                  parentTransaction: PERRINNTeamTransactionLast.key,
-                  amount: transaction.val().amount,
-                  receiver: transaction.val().receiver,
-                  balance: PERRINNTeamTransactionLast.val().balance-transaction.val().amount,
-                  reference: transaction.val().reference,
-                  createdTimestamp: transaction.val().createdTimestamp,
-                  verifiedTimestamp: firebase.database.ServerValue.TIMESTAMP,
-                })
-                .catch(err => console.log("Couldn't write newTransaction"))
-                .then(_ => {
-                  this.db.object('PERRINNTeamTransactions/'+team.key+'/'+PERRINNTeamTransactionLast.key).update({childTransaction: transaction.key})
-                  .catch(err => console.log("Couldn't write childTransaction"))
-                  .then(_ => {
-                    firebase.database().ref('PERRINNTeamTransactions/'+transaction.val().receiver).limitToLast(1).once('value').then(PERRINNTeamTransactionReceiverLast=> {
-                      if (!PERRINNTeamTransactionReceiverLast.childTransaction==null) {
-                        console.log("Found a parent transaction for receiver");
-                        this.db.object('PERRINNTeamTransactions/'+transaction.val().receiver+'/'+transaction.key).update({
-                          parentTransaction: PERRINNTeamTransactionReceiverLast.key,
-                          amount: transaction.val().amount,
-                          sender: team.key,
-                          balance: PERRINNTeamTransactionReceiverLast.val().balance+transaction.val().amount,
-                          reference: transaction.val().reference,
-                          createdTimestamp: transaction.val().createdTimestamp,
-                          verifiedTimestamp: firebase.database.ServerValue.TIMESTAMP,
-                        })
-                        .catch(err => console.log("Couldn't write newTransactionReceiver"))
-                        .then(_ => {
-                          this.db.object('PERRINNTeamTransactions/'+transaction.val().receiver+'/'+PERRINNTeamTransactionReceiverLast.key).update({childTransaction: transaction.key})
-                          .catch(err => console.log("Couldn't write childTransactionReceiver"))
-                          .then(_ => console.log("Transaction verification COMPLETE"));
-                        });
-                      }
-                    });
-                  });
-                });
-              }
+          this.getTeamWalletBalance(team.key).then(balance=>{
+            if (Number(balance)>=transaction.val().amount){
+              this.db.object('PERRINNTransactions/'+transaction.key).update({
+                amount: transaction.val().amount,
+                sender: team.key,
+                receiver: transaction.val().receiver,
+                reference: transaction.val().reference,
+                createdTimestamp: transaction.val().createdTimestamp,
+                verifiedTimestamp: firebase.database.ServerValue.TIMESTAMP,
+              })
+              .then(_ => console.log("Transaction write COMPLETE"))
+              .catch(err => console.log("Couldn't write transaction"));
             }
+            else {console.log("not enough balance")}
           });
-        }
+        });
       });
     });
   });
