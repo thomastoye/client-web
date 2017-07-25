@@ -92,7 +92,6 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
         });
         this.PERRINNTransactionsOUT = db.list('PERRINNTransactions/',{query:{orderByChild:'sender',equalTo:this.currentTeamID}});
         this.PERRINNTransactionsIN = db.list('PERRINNTransactions/',{query:{orderByChild:'receiver',equalTo:this.currentTeamID}});
-        this.markVerifiedTransactions(this.currentTeamID);
       });
     }
   });
@@ -139,41 +138,6 @@ getUserLeader (ID: string) :string {
     output = snapshot.leader;
   });
   return output;
-}
-
-markVerifiedTransactions (teamID:string):void {
-  firebase.database().ref('teamTransactions/'+teamID).orderByChild('status').equalTo('pending').once('value').then(teamTransactions=>{
-    teamTransactions.forEach(transaction=>{
-      console.log('need to mark this one later');
-    });
-  });
-}
-
-PERRINNverifyAllTransactions () {
-  firebase.database().ref('teamTransactions/').once('value').then(teamTransactions=> {
-    teamTransactions.forEach(team=>{
-      firebase.database().ref('teamTransactions/'+team.key).orderByChild('status').equalTo('pending').once('value').then(transactions=> {
-        transactions.forEach(transaction=>{
-          console.log("Found pending transaction");
-          this.getTeamWalletBalance(team.key).then(balance=>{
-            if (Number(balance)>=transaction.val().amount){
-              this.db.object('PERRINNTransactions/'+transaction.key).update({
-                amount: transaction.val().amount,
-                sender: team.key,
-                receiver: transaction.val().receiver,
-                reference: transaction.val().reference,
-                createdTimestamp: transaction.val().createdTimestamp,
-                verifiedTimestamp: firebase.database.ServerValue.TIMESTAMP,
-              })
-              .then(_ => console.log("Transaction write COMPLETE"))
-              .catch(err => console.log("Couldn't write transaction"));
-            }
-            else {console.log("not enough balance")}
-          });
-        });
-      });
-    });
-  });
 }
 
 }
