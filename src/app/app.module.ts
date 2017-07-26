@@ -17,6 +17,7 @@ import { WalletComponent }  from './wallet.component';
 import { CreateTeamComponent }  from './createTeam.component';
 import { CreateTransactionComponent }  from './createTransaction.component';
 import { TeamProfileComponent }  from './teamProfile.component';
+import { BuyCoins }  from './buyCoins.component';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -45,6 +46,7 @@ export const firebaseConfig = {
     CreateTeamComponent,
     CreateTransactionComponent,
     TeamProfileComponent,
+    BuyCoins,
   ],
   imports: [
     BrowserModule,

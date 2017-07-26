@@ -10,6 +10,7 @@ import { WalletComponent } from './wallet.component';
 import { CreateTeamComponent } from './createTeam.component';
 import { CreateTransactionComponent } from './createTransaction.component';
 import { TeamProfileComponent } from './teamProfile.component';
+import { BuyCoins } from './buyCoins.component';
 
 const appRoutes: Routes = [
   { path: 'chat', component: ChatComponent },
@@ -22,6 +23,7 @@ const appRoutes: Routes = [
   { path: 'createTeam', component: CreateTeamComponent },
   { path: 'createTransaction', component: CreateTransactionComponent },
   { path: 'teamProfile', component: TeamProfileComponent },
+  { path: 'buyCoins', component: BuyCoins },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
   { path: '**', component: LoginComponent }
 ];
