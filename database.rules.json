@@ -52,6 +52,14 @@
         ".write": "newData.exists() && auth.uid === $uid"
       }
     },
+    "userPayments": {
+      "$uid": {
+        "$chargeid": {
+        ".read": "auth.uid === $uid",
+        ".write": "!data.exists() && newData.exists() && auth.uid === $uid"
+        }
+      }
+    },
     "userTeams": {
       ".read": "auth.token.email_verified === true",
       "$uid": {

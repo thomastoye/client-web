@@ -78,18 +78,4 @@ export class ChatComponent {
     this.db.object('teamMessages/'+teamID+'/'+messageID).update({timestampNegative: timestampNegative});
   }
 
-  addNegativeTimestampToAllChatMessagesPERRINN() {
-    firebase.database().ref('teamMessages/').once('value').then(teamMessages=> {
-      teamMessages.forEach(team=>{
-        team.forEach(message=>{
-          var timestamp: number;
-          var timestampNegative: number;
-          timestamp = message.val().timestamp;
-          timestampNegative = -1 * timestamp;
-          this.db.object('teamMessages/'+team.key+'/'+message.key).update({timestampNegative: timestampNegative});
-        });
-      });
-    });
-  }
-
 }
