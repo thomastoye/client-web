@@ -9,21 +9,21 @@ import { Router } from '@angular/router'
   selector: 'buyCoins',
   template: `
   <div [hidden]='!thinkingAboutIt' style="background-color:#eee">
-    <div class="sheet" style="margin:5px;">
+    <div class="sheet">
       <img src="./../assets/App icons/icon_share_03.svg" style="width:75px; float:left">
       <div class="title">{{(sheetContent1|async)?.title}}</div>
       <div class="content">{{(sheetContent1|async)?.content1}}</div>
       <div class="content">{{(sheetContent1|async)?.content2}}</div>
       <div class="content">{{(sheetContent1|async)?.content3}}</div>
     </div>
-    <div class="sheet" style="margin:5px;">
+    <div class="sheet">
       <img src="{{(sheetContent2|async)?.image}}" style="width:75px; float:left">
       <div class="title">{{(sheetContent2|async)?.title}}</div>
       <div class="content">{{(sheetContent2|async)?.content1}}</div>
       <div class="content">{{(sheetContent2|async)?.content2}}</div>
       <div class="content">{{(sheetContent2|async)?.content3}}</div>
     </div>
-    <div class="sheet" style="margin:5px;">
+    <div class="sheet">
       <img src="{{(sheetContent3|async)?.image}}" style="width:75px; float:left">
       <div class="title">{{(sheetContent3|async)?.title}}</div>
       <div class="content">{{(sheetContent3|async)?.content1}}</div>
