@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'teamSettings',
   template: `
+  <div class='sheet'>
   <ul class="listDark">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
@@ -33,6 +34,7 @@ import { Router } from '@angular/router';
   </ul>
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
   <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
+  </div>
   `,
 })
 

@@ -8,7 +8,31 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'buyCoins',
   template: `
-  <div class="titleSeperator" style="background-image: linear-gradient(145deg, rgb(13, 71, 161), rgb(66, 165, 245));">
+  <div [hidden]='!thinkingAboutIt' style="background-color:#eee">
+    <div class="sheet" style="margin:5px;">
+      <img src="./../assets/App icons/icon_share_03.svg" style="width:75px; float:left">
+      <div class="title">{{(sheetContent1|async)?.title}}</div>
+      <div class="content">{{(sheetContent1|async)?.content1}}</div>
+      <div class="content">{{(sheetContent1|async)?.content2}}</div>
+      <div class="content">{{(sheetContent1|async)?.content3}}</div>
+    </div>
+    <div class="sheet" style="margin:5px;">
+      <img src="{{(sheetContent2|async)?.image}}" style="width:75px; float:left">
+      <div class="title">{{(sheetContent2|async)?.title}}</div>
+      <div class="content">{{(sheetContent2|async)?.content1}}</div>
+      <div class="content">{{(sheetContent2|async)?.content2}}</div>
+      <div class="content">{{(sheetContent2|async)?.content3}}</div>
+    </div>
+    <div class="sheet" style="margin:5px;">
+      <img src="{{(sheetContent3|async)?.image}}" style="width:75px; float:left">
+      <div class="title">{{(sheetContent3|async)?.title}}</div>
+      <div class="content">{{(sheetContent3|async)?.content1}}</div>
+      <div class="content">{{(sheetContent3|async)?.content2}}</div>
+      <div class="content">{{(sheetContent3|async)?.content3}}</div>
+      <div style="text-align:center"><button type="button" (click)="thinkingAboutIt=false">Buy COINS now</button></div>
+    </div>
+  </div>
+  <div [hidden]='thinkingAboutIt' class="titleSeperator" style="background-image: linear-gradient(145deg, rgb(13, 71, 161), rgb(66, 165, 245));">
   <div class="module form-module">
   <div class="top">
   <img src="./../assets/App icons/icon_share_03.svg" style="width:50px">
@@ -52,19 +76,27 @@ export class BuyCoins {
   currentUserID: string;
   currentTeamID: string;
   newPaymentID: string;
+  thinkingAboutIt: boolean;
   processingPayment: boolean;
+  sheetContent1: FirebaseObjectObservable<any>;
+  sheetContent2: FirebaseObjectObservable<any>;
+  sheetContent3: FirebaseObjectObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, private _zone: NgZone) {
-    this.processingPayment = false;
-    this.newPaymentID = "";
-    this.messagePayment = "";
-    this.messagePERRINNTransaction = "";
-    this.amountCOINSPurchased=100;
-    this.amountCharge=this.amountCOINSPurchased/2*100;
-    this.currency='gbp';
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
+        this.processingPayment = false;
+        this.thinkingAboutIt = true;
+        this.newPaymentID = "";
+        this.messagePayment = "";
+        this.messagePERRINNTransaction = "";
+        this.amountCOINSPurchased=100;
+        this.amountCharge=this.amountCOINSPurchased/2*100;
+        this.currency='gbp';
+        this.sheetContent1 = db.object('appSettings/whatIsCOIN');
+        this.sheetContent2 = db.object('appSettings/howToUseCOIN');
+        this.sheetContent3 = db.object('appSettings/whyBuyCOIN');
         this.currentUserID = auth.uid;
         db.object('userInterface/'+auth.uid).subscribe(userInterface => {
           this.currentTeamID = userInterface.currentTeam;
@@ -99,13 +131,13 @@ export class BuyCoins {
           })
           .then(()=>{
             this.db.object(`/userPayments/${this.currentUserID}/${this.newPaymentID}/response/outcome`).subscribe(paymentSnapshot=>{
-              this.messagePayment = paymentSnapshot.seller_message;
+              if (paymentSnapshot.seller_message!=null) this.messagePayment = paymentSnapshot.seller_message;
             });
             this.db.object(`/userPayments/${this.currentUserID}/${this.newPaymentID}/error`).subscribe(paymentSnapshot=>{
-              this.messagePayment = paymentSnapshot.message;
+              if (paymentSnapshot.message!=null) this.messagePayment = paymentSnapshot.message;
             });
             this.db.object(`/userPayments/${this.currentUserID}/${this.newPaymentID}/PERRINNTransaction`).subscribe(transactionSnapshot=>{
-              this.messagePERRINNTransaction = transactionSnapshot.message;
+              if (transactionSnapshot.message!=null) this.messagePERRINNTransaction = transactionSnapshot.message;
             });
           });
         }

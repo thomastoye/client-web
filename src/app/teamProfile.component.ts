@@ -8,7 +8,7 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'teamProfile',
   template: `
-  <div class="user">
+  <div class="sheet">
   <div style="float: left; width: 50%;">
   <input maxlength="500" [(ngModel)]="this.teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <input maxlength="500" [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />

@@ -6,6 +6,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 @Component({
   selector: 'chat',
   template: `
+  <div class="sheet">
   <div class="chat" id="chat-scroll">
   <div>
   <ul style="list-style: none;">
@@ -19,7 +20,6 @@ import { AngularFireAuth } from 'angularfire2/auth';
   </ul>
   </div>
   </div>
-  <div class="chat-input">
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer" (click)="timestampChatVisit()">Mark all read</div>
   <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
   </div>

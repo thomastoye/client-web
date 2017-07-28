@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'addMember',
   template: `
+  <div class="sheet">
   <ul class="listDark">
   <input maxlength="500" (keydown.enter)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="Enter exact first name and press enter">
     <li *ngFor="let user of users | async"
@@ -19,6 +20,7 @@ import { Router } from '@angular/router';
     </li>
   </ul>
   <button (click)="addMember(currentTeamID, selectedUserID)">Add this member {{messageAddMember}}</button>
+  </div>
   `,
 })
 

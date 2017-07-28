@@ -8,6 +8,7 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'wallet',
   template: `
+  <div class="sheet">
   <div class="titleSeperator">
     <div>
     <img src="./../assets/App icons/icon_share_03.svg" style="width:60px">
@@ -57,6 +58,7 @@ import { Router } from '@angular/router'
     </li>
   </ul>
   <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send coins</button>
+  </div>
   `,
 })
 export class WalletComponent {

@@ -8,12 +8,10 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'createTeam',
   template: `
-  <div class="user">
+  <div class="sheet">
   <div style="float: left; width: 50%;">
-  <hr>
   <input maxlength="500" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name *" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web *" />
-  <hr>
   <button (click)="createNewTeam(currentUserID, newTeam)">Create team</button>
   </div>
   <div style="float: right; width: 50%;">

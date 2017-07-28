@@ -8,9 +8,8 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'createTransaction',
   template: `
-  <div class="titleSeperator" style="color: black;text-align:left;">
-    <div >Available balance {{currentBalance | number:'1.2-2'}} COINS</div>
-  </div>
+  <div class="sheet">
+  <div class="title" style="color: black;text-align:left;">Available balance {{currentBalance | number:'1.2-2'}} COINS</div>
   <div class="user">
   <input maxlength="50" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionReference" placeholder="Reference *" />
   <input maxlength="500" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
@@ -24,6 +23,7 @@ import { Router } from '@angular/router'
     </li>
   </ul>
   <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction {{messageCreateTransaction}}</button>
+  </div>
   </div>
   `,
 })

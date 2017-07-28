@@ -8,7 +8,7 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'userProfile',
   template: `
-  <div class="user">
+  <div class="sheet">
   <div style="float: left; width: 50%;">
   <div [hidden]="!leaderStatus" class="leaderStatus">{{memberStatus}}</div>
   <div [hidden]="leaderStatus" class="memberStatus">{{memberStatus}}</div>
