@@ -8,31 +8,34 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'buyCoins',
   template: `
-  <div [hidden]='!thinkingAboutIt' style="background-color:#eee">
+  <div [hidden]='!thinkingAboutIt'>
     <div class="sheet">
-      <img src="./../assets/App icons/icon_share_03.svg" style="width:75px; float:left">
       <div class="title">{{(sheetContent1|async)?.title}}</div>
+      <img src="./../assets/App icons/icon_share_03.svg" style="width:100px; float:left">
       <div class="content">{{(sheetContent1|async)?.content1}}</div>
       <div class="content">{{(sheetContent1|async)?.content2}}</div>
       <div class="content">{{(sheetContent1|async)?.content3}}</div>
     </div>
+    <div style="height:10px"></div>
     <div class="sheet">
-      <img src="{{(sheetContent2|async)?.image}}" style="width:75px; float:left">
       <div class="title">{{(sheetContent2|async)?.title}}</div>
+      <img src="{{(sheetContent2|async)?.image}}" style="width:100px; float:left">
       <div class="content">{{(sheetContent2|async)?.content1}}</div>
       <div class="content">{{(sheetContent2|async)?.content2}}</div>
       <div class="content">{{(sheetContent2|async)?.content3}}</div>
     </div>
+    <div style="height:10px"></div>
     <div class="sheet">
-      <img src="{{(sheetContent3|async)?.image}}" style="width:75px; float:left">
       <div class="title">{{(sheetContent3|async)?.title}}</div>
+      <img src="{{(sheetContent3|async)?.image}}" style="width:100px; float:left">
       <div class="content">{{(sheetContent3|async)?.content1}}</div>
       <div class="content">{{(sheetContent3|async)?.content2}}</div>
       <div class="content">{{(sheetContent3|async)?.content3}}</div>
       <div style="text-align:center"><button type="button" (click)="thinkingAboutIt=false">Buy COINS now</button></div>
     </div>
+    <div style="height:10px"></div>
   </div>
-  <div [hidden]='thinkingAboutIt' class="titleSeperator" style="background-image: linear-gradient(145deg, rgb(13, 71, 161), rgb(66, 165, 245));">
+  <div [hidden]='thinkingAboutIt'>
   <div class="module form-module">
   <div class="top">
   <img src="./../assets/App icons/icon_share_03.svg" style="width:50px">

@@ -9,8 +9,8 @@ import { Router } from '@angular/router'
   selector: 'wallet',
   template: `
   <div class="sheet">
-  <div class="titleSeperator">
-    <div>
+  <div class="title">
+    <div style="text-align:center">
     <img src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
     <div>
@@ -23,7 +23,7 @@ import { Router } from '@angular/router'
     </div>
   </div>
   <ul class="listDark">
-    <div class="title">RECEIVED</div>
+    <div class="listSeperator">RECEIVED</div>
     <li *ngFor="let transaction of PERRINNTransactionsIN | async">
       <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
       <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
@@ -31,7 +31,7 @@ import { Router } from '@angular/router'
       <div style="width:170px; float:left; text-align:right">From {{getTeamName(transaction.sender)}}</div>
       <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
-    <div class="title">SENT</div>
+    <div class="listSeperator">SENT</div>
     <li *ngFor="let transaction of PERRINNTransactionsOUT | async">
       <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
       <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
@@ -39,7 +39,7 @@ import { Router } from '@angular/router'
       <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
       <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
-    <div class="title">PENDING TRANSACTIONS</div>
+    <div class="listSeperator">PENDING TRANSACTIONS</div>
     <li *ngFor="let transaction of teamTransactions | async"
     [class.selected]="transaction.$key === selectedTransactionID"
     (click)="selectedTransactionID = transaction.$key; clearAllMessages()">
