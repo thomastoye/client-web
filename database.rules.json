@@ -24,6 +24,13 @@
         ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null"
       }
     },
+    "teamTransactionRequests": {
+      ".read": "auth.token.email_verified === true",
+      "$teamid": {
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null",
+        ".indexOn": ["status"]
+      }
+    },
     "teamTransactions": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {

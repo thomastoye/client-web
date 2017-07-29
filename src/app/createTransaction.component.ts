@@ -22,7 +22,7 @@ import { Router } from '@angular/router'
       {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
     </li>
   </ul>
-  <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction {{messageCreateTransaction}}</button>
+  <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction{{isUserLeader?"":" (Team leader will have to approve) "}}{{messageCreateTransaction}}</button>
   </div>
   </div>
   `,
@@ -40,9 +40,11 @@ export class CreateTransactionComponent {
   messageCreateTransaction: string;
   currentBalance: number;
   transactionInputValid: boolean;
+  isUserLeader: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.transactionInputValid = false;
+    this.isUserLeader = false;
     this.currentBalance = 0;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){
@@ -54,6 +56,9 @@ export class CreateTransactionComponent {
           this.currentTeamID = userInterface.currentTeam;
           this.getTeamWalletBalance(this.currentTeamID).then(balance=>{
             this.currentBalance = Number(balance);
+          });
+          this.db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(user => {
+            this.isUserLeader = user.leader;
           });
           this.userTeams = db.list('userTeams/'+auth.uid, {
             query:{
@@ -99,7 +104,7 @@ export class CreateTransactionComponent {
     return output;
   }
 
-  getUserLeader (ID: string) :string {
+  getUserLeader (ID: string) :boolean {
     var output;
     this.db.object('teamUsers/'+ID+'/'+this.currentUserID).subscribe(snapshot => {
       output = snapshot.leader;
@@ -108,15 +113,28 @@ export class CreateTransactionComponent {
   }
 
   createTransaction() {
-    this.db.list('teamTransactions/'+this.currentTeamID).push({
-      reference: this.transactionReference,
-      amount: this.transactionAmount,
-      receiver: this.selectedTeamID,
-      createdTimestamp: firebase.database.ServerValue.TIMESTAMP,
-      status: "pending"
-    })
-    .then(_ => this.router.navigate(['wallet']))
-    .catch(err => this.messageCreateTransaction="Error: Only a leader can create a transaction");
+    if (this.isUserLeader) {
+      this.db.list('teamTransactions/'+this.currentTeamID).push({
+        reference: this.transactionReference,
+        amount: this.transactionAmount,
+        receiver: this.selectedTeamID,
+        createdTimestamp: firebase.database.ServerValue.TIMESTAMP,
+        status: "pending"
+      })
+      .then(_ => this.router.navigate(['wallet']))
+      .catch(err => this.messageCreateTransaction="Error");
+    }
+    else {
+      this.db.list('teamTransactionRequests/'+this.currentTeamID).push({
+        reference: this.transactionReference,
+        amount: this.transactionAmount,
+        receiver: this.selectedTeamID,
+        requestedTimestamp: firebase.database.ServerValue.TIMESTAMP,
+        status: "pending"
+      })
+      .then(_ => this.router.navigate(['wallet']))
+      .catch(err => this.messageCreateTransaction="Error");
+    }
   }
 
   checkTransactionInput():void {
