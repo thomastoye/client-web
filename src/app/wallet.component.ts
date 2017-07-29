@@ -39,14 +39,14 @@ import { Router } from '@angular/router'
       <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
       <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
-    <div class="listSeperator">PENDING TRANSACTIONS</div>
+    <div class="listSeperator">PENDING</div>
     <li *ngFor="let transaction of teamTransactions | async"
     [class.selected]="transaction.$key === selectedTransactionID"
     (click)="selectedTransactionID = transaction.$key; clearAllMessages()">
       <div style="width:170px; float:left; text-align:right">{{transaction.createdTimestamp | date :'medium'}}</div>
       <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
       <div style="width:170px; float:left; text-align:right">{{transaction.reference}}</div>
-      <div style="width:170px; float:left; text-align:right">{{getTeamName(transaction.receiver)}}</div>
+      <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
       <div style="float:right">
       <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
       </div>
@@ -56,22 +56,43 @@ import { Router } from '@angular/router'
       </div>
       </div>
     </li>
+    <div class="listSeperator">AWAITING LEADER ACTION</div>
+    <li *ngFor="let transaction of teamTransactionRequests | async"
+    [class.selected]="transaction.$key === selectedTransactionRequestID"
+    (click)="selectedTransactionRequestID = transaction.$key; clearAllMessages()">
+      <div style="width:170px; float:left; text-align:right">{{transaction.requestedTimestamp | date :'medium'}}</div>
+      <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:170px; float:left; text-align:right">{{transaction.reference}}</div>
+      <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
+      <div style="float:right">
+      <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
+      </div>
+      <div style="float:right">
+      <div [hidden]='!moreButtons'>
+      <div class="button" (click)="cancelTransactionRequest(currentTeamID, selectedTransactionRequestID)">Cancel</div>
+      <div class="button" [hidden]='!isUserLeader' (click)="approveTransactionRequest(currentTeamID, selectedTransactionRequestID)">Approve</div>
+      </div>
+      </div>
+    </li>
   </ul>
-  <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send coins</button>
+  <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send coins</button>
   </div>
   `,
 })
 export class WalletComponent {
 
 teamTransactions: FirebaseListObservable<any>;
+teamTransactionRequests: FirebaseListObservable<any>;
 PERRINNTransactionsOUT: FirebaseListObservable<any>;
 PERRINNTransactionsIN: FirebaseListObservable<any>;
 currentBalance: number;
-messageCancelTransaction: string;
+message: string;
 selectedTransactionID: string;
+selectedTransactionRequestID: string;
 currentTeamID: string;
 moreButtons: boolean;
 currentUserID: string;
+isUserLeader: boolean;
 
 constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
   this.moreButtons = false;
@@ -79,8 +100,10 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
   this.afAuth.authState.subscribe((auth) => {
     if (auth==null){
       this.teamTransactions=null;
+      this.teamTransactionRequests=null;
       this.PERRINNTransactionsOUT=null;
       this.PERRINNTransactionsIN=null;
+      this.isUserLeader = false;
     }
     else {
       this.currentUserID = auth.uid;
@@ -89,7 +112,13 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
         this.getTeamWalletBalance(this.currentTeamID).then(balance=>{
           this.currentBalance = Number(balance);
         });
+        this.db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(user => {
+          this.isUserLeader = user.leader;
+        });
         this.teamTransactions = db.list('teamTransactions/'+currentTeamID.$value, {
+          query:{orderByChild:'status',equalTo: "pending"}
+        });
+        this.teamTransactionRequests = db.list('teamTransactionRequests/'+currentTeamID.$value, {
           query:{orderByChild:'status',equalTo: "pending"}
         });
         this.PERRINNTransactionsOUT = db.list('PERRINNTransactions/',{query:{orderByChild:'sender',equalTo:this.currentTeamID}});
@@ -125,19 +154,53 @@ getTeamName (ID: string) :string {
 }
 
 cancelTransaction (teamID: string, transactionID: string) {
-  this.db.object('teamTransactions/'+teamID+'/'+transactionID).update({status: "cancelled"})
-  .then(_ => this.messageCancelTransaction="Success: Transaction has been cancelled")
-  .catch(err => this.messageCancelTransaction="Error: Only a leader can cancel a transaction");
+  this.db.object('teamTransactions/'+teamID+'/'+transactionID).update({
+    status: "cancelled",
+    cancelledTimestamp: firebase.database.ServerValue.TIMESTAMP
+  })
+  .then(_ => this.message="Success")
+  .catch(err => this.message="Error");
+}
+
+cancelTransactionRequest (teamID: string, transactionID: string) {
+  this.db.object('teamTransactionRequests/'+teamID+'/'+transactionID).update({
+    status: "cancelled",
+    cancelledTimestamp: firebase.database.ServerValue.TIMESTAMP
+  })
+  .then(_ => this.message="Success")
+  .catch(err => this.message="Error");
+}
+
+approveTransactionRequest (teamID: string, transactionID: string) {
+  firebase.database().ref('teamTransactionRequests/'+teamID+'/'+transactionID).once('value').then(transaction=>{
+    this.db.object('teamTransactions/'+teamID+'/'+transactionID).update({
+      reference: transaction.val().reference,
+      amount: transaction.val().amount,
+      receiver: transaction.val().receiver,
+      requestedTimestamp: transaction.val().requestedTimestamp,
+      createdTimestamp: firebase.database.ServerValue.TIMESTAMP,
+      status: "pending"
+    })
+    .then(_ =>{
+      this.db.object('teamTransactionRequests/'+teamID+'/'+transactionID).update({
+        status: "approved",
+        approvedTimestamp: firebase.database.ServerValue.TIMESTAMP
+      })
+      .then(_ => this.message="Success")
+      .catch(err => this.message="Error");
+    })
+    .catch(err => this.message="Error");
+  });
 }
 
 clearAllMessages () {
-  this.messageCancelTransaction = "";
+  this.message = "";
 }
 
-getUserLeader (ID: string) :string {
+getUserMember (ID: string) :boolean {
   var output;
   this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
-    output = snapshot.leader;
+    output = snapshot.member;
   });
   return output;
 }

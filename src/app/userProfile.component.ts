@@ -13,7 +13,7 @@ import { Router } from '@angular/router'
   <div [hidden]="!leaderStatus" class="leaderStatus">{{memberStatus}}</div>
   <div [hidden]="leaderStatus" class="memberStatus">{{memberStatus}}</div>
   <div [hidden]='editMode'>
-  <div style="padding:10px; font-weight: bold; font-size: 16px">{{firstName}} {{lastName}}</div>
+  <div class='title'>{{firstName}} {{lastName}}</div>
   <div style="padding:10px;">{{resume}} {{resume?"":"Add a resume here..."}}</div>
   <button [hidden]='!ownProfile' (click)="editMode=true">Edit profile</button>
   <button (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>

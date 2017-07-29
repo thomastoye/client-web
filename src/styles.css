@@ -236,9 +236,15 @@ hr {
   border-radius: 3px;
 }
 .sheet .title {
-  background-color: #eee;
-  font-size: 15px;
+  font-size: 12px;
+  font-weight:bold ;
   padding: 10px;
+  border-bottom: 1px;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-style: solid;
+  border-color: #ccc;
 }
 .sheet .content {
   padding: 3px 10px 3px 10px;
