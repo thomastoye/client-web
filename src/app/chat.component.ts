@@ -17,10 +17,11 @@ import { AngularFireAuth } from 'angularfire2/auth';
     {{last?scrollToBottom():''}}
     </li>
   </ul>
-  <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer" (click)="timestampChatVisit()">Mark all read</div>
   </div>
-  <input maxlength="500" class="chat-input" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
-
+  <div class="chat-input">
+    <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer" (click)="timestampChatVisit()">Mark all read</div>
+    <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
+  </div>
   `,
 })
 export class ChatComponent {
