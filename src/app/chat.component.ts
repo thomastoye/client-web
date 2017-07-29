@@ -6,11 +6,9 @@ import { AngularFireAuth } from 'angularfire2/auth';
 @Component({
   selector: 'chat',
   template: `
-  <div class="chat-content">
-  <div class="sheet">
-  <div class="chat" id="chat-scroll">
-  <div>
-  <ul style="list-style: none;">
+  <div class="chat-content flex-content-full-size flex-container-column">
+  <div class="chat flex-container-column" id="chat-scroll">
+  <ul style="list-style: none;overflow-y:auto;">
     <li *ngFor="let message of teamMessages | async ; let last = last">
     <img [src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
@@ -19,14 +17,11 @@ import { AngularFireAuth } from 'angularfire2/auth';
     {{last?scrollToBottom():''}}
     </li>
   </ul>
-  </div>
-  <div class="chat-input">
-  <input style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" />
-  </div>
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer" (click)="timestampChatVisit()">Mark all read</div>
-  <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
   </div>
-    `,
+  <input maxlength="500" class="chat-input" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
+
+  `,
 })
 export class ChatComponent {
   draftMessage: string;

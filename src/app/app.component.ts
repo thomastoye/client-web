@@ -8,15 +8,11 @@ import { Router, NavigationEnd } from '@angular/router'
 @Component({
   selector: 'app-root',
   template: `
-  <div id='main_container'>
-    <div id='middle_column'>
-      <div [hidden]="!loggedIn">
-      <div [hidden]="!emailVerified">
-      <div class='menu' id='menu'>
   <div id='main_container' class="container-fluid">
-    <div id='middle_column' class="row">
-      <div class='menu col-sm-12'>
-      <img src="{{ (currentTeam | async)?.photoURL }}" style="height:30px; width: 100%; object-fit:cover">
+    <div id='middle_column' class="row flex-container-column">
+      <div [hidden]="!loggedIn" style="flex:0 0 20%;">
+      <div [hidden]="!emailVerified" class="flex-container-column flex-content-full-size">
+      <div class='menu col-sm-12 flex-content-full-size' id='menu'>
         <div>
         <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
         <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
@@ -39,9 +35,8 @@ import { Router, NavigationEnd } from '@angular/router'
         </div>
         </div>
       </div>
-      <div id='app_container' class="col-sm-12">
+      <div id='app_container' class="col-sm-12 flex-container-column">
         <messageCenter></messageCenter>
-      <div id='app_container'>
         <router-outlet></router-outlet>
       </div>
     </div>
