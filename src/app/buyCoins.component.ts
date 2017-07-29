@@ -11,7 +11,7 @@ import { Router } from '@angular/router'
   <div [hidden]='!thinkingAboutIt'>
     <div class="sheet">
       <div class="title">{{(sheetContent1|async)?.title}}</div>
-      <img src="./../assets/App icons/icon_share_03.svg" style="width:100px; float:left">
+      <img src="./../assets/App icons/icon_share_03.svg" style="width:75px; float:left">
       <div class="content">{{(sheetContent1|async)?.content1}}</div>
       <div class="content">{{(sheetContent1|async)?.content2}}</div>
       <div class="content">{{(sheetContent1|async)?.content3}}</div>
@@ -19,7 +19,7 @@ import { Router } from '@angular/router'
     <div style="height:10px"></div>
     <div class="sheet">
       <div class="title">{{(sheetContent2|async)?.title}}</div>
-      <img src="{{(sheetContent2|async)?.image}}" style="width:100px; float:left">
+      <img src="{{(sheetContent2|async)?.image}}" style="width:75px; float:left">
       <div class="content">{{(sheetContent2|async)?.content1}}</div>
       <div class="content">{{(sheetContent2|async)?.content2}}</div>
       <div class="content">{{(sheetContent2|async)?.content3}}</div>
@@ -27,7 +27,7 @@ import { Router } from '@angular/router'
     <div style="height:10px"></div>
     <div class="sheet">
       <div class="title">{{(sheetContent3|async)?.title}}</div>
-      <img src="{{(sheetContent3|async)?.image}}" style="width:100px; float:left">
+      <img src="{{(sheetContent3|async)?.image}}" style="width:75px; float:left">
       <div class="content">{{(sheetContent3|async)?.content1}}</div>
       <div class="content">{{(sheetContent3|async)?.content2}}</div>
       <div class="content">{{(sheetContent3|async)?.content3}}</div>
@@ -39,7 +39,10 @@ import { Router } from '@angular/router'
   <div class="module form-module">
   <div class="top">
   <img src="./../assets/App icons/icon_share_03.svg" style="width:50px">
-  <div style="color:black;padding-bottom:15px">{{amountCOINSPurchased | number:'1.2-2'}} COINS</div>
+  <div style="color:black">{{getTeamName(currentTeamID)}}</div>
+  <div [hidden]='changeAmount' style="color:black;padding-bottom:15px">{{amountCOINSPurchased | number:'1.2-2'}} COINS</div>
+  <input [hidden]='!changeAmount' [(ngModel)]="amountCOINSPurchased" type='text'>
+  <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="changeAmount=!changeAmount">{{changeAmount?"Save amount":"Change amount"}}</div>
   </div>
   <div class="form">
   <form>
@@ -55,7 +58,7 @@ import { Router } from '@angular/router'
   <input [(ngModel)]="expiryYear" style="width:30%;float:left" name="expiry-year" type="text" placeholder="YY *" (keyup)='messagePayment=""'>
   </div>
   <input [(ngModel)]="cvc" name="cvc" type="text"  placeholder="CVC *" (keyup)='messagePayment=""'>
-  <button type="button" (click)="processPayment()">Pay {{amountCharge/100 | number:'1.2-2'}} {{currency | uppercase}}</button>
+  <button type="button" (click)="processPayment()">Pay {{amountCOINSPurchased*COINPrice/100 | number:'1.2-2'}} {{currency | uppercase}}</button>
   </div>
   <div>{{messagePayment}}</div>
   <div style="padding-top:30px">{{messagePERRINNTransaction}}</div>
@@ -71,6 +74,7 @@ export class BuyCoins {
   expiryYear: string;
   cvc: string;
   amountCOINSPurchased: number;
+  COINPrice: number;
   amountCharge: number;
   currency: string;
   messagePayment: string;
@@ -80,6 +84,7 @@ export class BuyCoins {
   currentTeamID: string;
   newPaymentID: string;
   thinkingAboutIt: boolean;
+  changeAmount: boolean;
   processingPayment: boolean;
   sheetContent1: FirebaseObjectObservable<any>;
   sheetContent2: FirebaseObjectObservable<any>;
@@ -91,11 +96,13 @@ export class BuyCoins {
       else {
         this.processingPayment = false;
         this.thinkingAboutIt = true;
+        this.changeAmount = false;
         this.newPaymentID = "";
         this.messagePayment = "";
         this.messagePERRINNTransaction = "";
         this.amountCOINSPurchased=100;
         this.amountCharge=this.amountCOINSPurchased/2*100;
+        this.COINPrice = 50;
         this.currency='gbp';
         this.sheetContent1 = db.object('appSettings/whatIsCOIN');
         this.sheetContent2 = db.object('appSettings/howToUseCOIN');
@@ -123,6 +130,7 @@ export class BuyCoins {
         else {
           this.processingPayment = true;
           this.messagePayment = `Processing card...`;
+          this.amountCharge = this.amountCOINSPurchased * this.COINPrice;
           this.newPaymentID = firebase.database().ref(`/userPayments/${this.currentUserID}`).push().key;
           firebase.database().ref(`/userPayments/${this.currentUserID}/${this.newPaymentID}`)
           .update({
@@ -146,6 +154,14 @@ export class BuyCoins {
         }
       });
     });
+  }
+
+  getTeamName (ID: string) :string {
+    var output;
+    this.db.object('teams/' + ID).subscribe(snapshot => {
+      output = snapshot.name;
+    });
+    return output;
   }
 
 }
