@@ -7,8 +7,8 @@ import { AngularFireAuth } from 'angularfire2/auth';
   selector: 'chat',
   template: `
   <div class="chat-content flex-content-full-size flex-container-column">
-  <div class="chat flex-container-column" id="chat-scroll">
-  <ul style="list-style: none;overflow-y:auto;">
+  <div class="chat flex-container-column">
+  <ul style="list-style: none;overflow-y:auto;" id="chat-scroll">
     <li *ngFor="let message of teamMessages | async ; let last = last">
     <img [src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
