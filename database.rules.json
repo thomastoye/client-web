@@ -1,41 +1,77 @@
 {
   "rules": {
+    "appSettings": {
+      ".read": "true",
+      ".write": "false"
+    },
     "ids": {
-      ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
-      ".write": "auth.token.email_verified === true"
+      ".read": "auth.token.email_verified === true",
+      ".write": "newData.exists() && auth != null"
+    },
+    "PERRINNTransactions": {
+      ".read": "auth.token.email_verified === true",
+      ".indexOn": ["sender","receiver"]
+    },
+    "teamActivities": {
+      ".read": "auth.token.email_verified === true",
+      "$teamid": {
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null"
+      }
     },
     "teamMessages": {
-      ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
+      ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).exists() && auth.token.email_verified === true"
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null"
+      }
+    },
+    "teamTransactions": {
+      ".read": "auth.token.email_verified === true",
+      "$teamid": {
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null",
+        ".indexOn": ["status"]
       }
     },
     "teamUsers": {
-      ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
+      ".read": "auth.token.email_verified === true",
       "$teamid": {
+        ".indexOn": ["member"],
         "$uid": {
-          ".write": "(newData.exists()||root.child('teamUsers').child($teamid).child($uid).child('leader').val() === false) && (root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true || !root.child('teams').child($teamid).exists()) && auth.token.email_verified === true"
+          ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && data.child('leader').val() != true) && auth != null"
         }
       }
     },
     "teams": {
-      ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
+      ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth.token.email_verified === true"
+        ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true) && auth != null"
+      }
+    },
+    "userInterface": {
+      ".read": "auth.token.email_verified === true",
+      "$uid": {
+        ".write": "newData.exists() && auth.uid === $uid"
+      }
+    },
+    "userPayments": {
+      "$uid": {
+        "$chargeid": {
+        ".read": "auth.uid === $uid",
+        ".write": "!data.exists() && newData.exists() && auth.uid === $uid"
+        }
       }
     },
     "userTeams": {
-      ".read": "auth.token.email_verified === true && root.child('users').child(auth.uid).child('firstName').exists() && root.child('users').child(auth.uid).child('lastName').exists() && root.child('users').child(auth.uid).child('photoURL').exists()",
+      ".read": "auth.token.email_verified === true",
       "$uid": {
-        "$teamid": {
-          ".write": "(newData.exists()||root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === false) && auth.uid == $uid && auth.token.email_verified === true"
-	      }
+        ".write": "newData.exists() && auth.uid === $uid",
+        ".indexOn": ["following"]
       }
     },
     "users": {
       ".read": "auth.token.email_verified === true",
+      ".indexOn": ["firstName"],
       "$uid": {
-        ".write": "newData.exists() && auth.uid == $uid && auth.token.email_verified === true"
+        ".write": "newData.exists() && auth.uid === $uid"
       }
     }
   }

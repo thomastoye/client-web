@@ -8,13 +8,11 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'createTeam',
   template: `
-  <div class="user">
+  <div class="sheet">
   <div style="float: left; width: 50%;">
-  <hr>
-  <input [(ngModel)]="this.newTeam" style="text-transform: uppercase;" placeholder="Enter team name" />
-  <input [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
-  <hr>
-  <button (click)="createNewTeam()">Create team</button>
+  <input maxlength="500" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name *" />
+  <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web *" />
+  <button (click)="createNewTeam(currentUserID, newTeam)">Create team</button>
   </div>
   <div style="float: right; width: 50%;">
   <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
@@ -26,32 +24,24 @@ export class CreateTeamComponent {
   currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
   photoURL: string;
-  currentTeam: FirebaseObjectObservable<any>;
-  currentTeamID: string;
-  userTeams: FirebaseListObservable<any>;
-  teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
-  followTeamID: string;
   newTeam: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-      this.currentUserID = auth.uid;
+      if (auth==null){}
+      else {
+        this.currentUserID = auth.uid;
+      }
     });
   }
 
-  createNewTeam() {
-    this.newTeam = this.newTeam.toUpperCase();
+  createNewTeam(userID: string, teamName: string) {
+    teamName = teamName.toUpperCase();
     var teamID = this.db.list('ids/').push(true).key;
-    this.teamUsers = this.db.list('teamUsers/' + teamID);
-    this.teamUsers.update(this.currentUserID, {leader: true});
-    this.teams = this.db.list('teams/');
-    this.teams.update(teamID, {name: this.newTeam, photoURL: this.photoURL, organisation: "Family and Friends"});
-    this.userTeams = this.db.list('userTeams/' + this.currentUserID);
-    this.userTeams.update(teamID, {status: "confirmed"});
-    this.currentUser = this.db.object('users/' + this.currentUserID);
-    this.currentUser.update({currentTeam: teamID});
-    this.db.list('ids/').remove();
+    this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
+    this.db.object('teams/'+teamID).update({name: teamName, photoURL: this.photoURL, organisation: "Family and Friends"});
+    this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.db.object('userInterface/' + userID).update({currentTeam: teamID});
     this.router.navigate(['teamSettings']);
   }
 

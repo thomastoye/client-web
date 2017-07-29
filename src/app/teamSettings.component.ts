@@ -9,36 +9,31 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'teamSettings',
   template: `
-  <ul class="teams">
-    <h6 style="padding:7px; color:#AAA;">MY TEAMS</h6>
+  <div class='sheet'>
+  <ul class="listDark">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
-      (click)="currentUser.update({currentTeam: team.$key})">
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});">
+      <div style="display: inline; float: left; height:25px; width:20px">
+      <div class="activity" [hidden]="getChatActivity(team.$key)"></div>
+      </div>
       <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
-      {{getTeamName(team.$key)}}
+      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key)?"*":""}}</div>
+      <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
+      <div [hidden]='team.$key!=currentTeamID' style="float:right">
+      <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
+      </div>
+      <div [hidden]='team.$key!=currentTeamID' style="float:right">
+      <div [hidden]='!moreButtons'>
+      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['addMember'])">Add member</div>
+      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['teamProfile'])">Edit profile</div>
+      <div [hidden]='getUserLeader(team.$key)' class="button" (click)="leaveTeam(currentTeamID)">Stop following</div>
+      </div>
+      </div>
     </li>
   </ul>
-  <div class="teamProfile">
-  <div style="float: left; width: 50%;">
-  <button (click)="this.router.navigate(['teamProfile'])" >Edit team profile</button>
-  <button (click)="this.router.navigate(['addMember'])">Add a member</button>
-  </div>
-  <div class="titleSeperator">ORGANISTION</div>
-  <div style="float: left; width: 50%;">
-  <button>{{ (currentTeam | async)?.organisation }}</button>
-  </div>
-  <div class="titleSeperator">PROJECTS</div>
-  <div>
-  <div style="float: left; width: 50%;">
-  <button>Add a project (coming soon)</button>
-  </div>
-  </div>
-  <hr>
-  <div style="float: left; width: 50%;">
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
   <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
-  <button (click)="leaveTeam(currentTeamID)" style="color:red">Stop following this team</button>
-  </div>
   </div>
   `,
 })
@@ -47,30 +42,35 @@ export class TeamSettingsComponent  {
 
   currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
-  firstName: string;
-  photoURL: string;
   currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   userTeams: FirebaseListObservable<any>;
-  teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
   newMemberID: string;
   followTeamID: string;
   newTeam: string;
+  moreButtons: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+    this.moreButtons = false;
     this.afAuth.authState.subscribe((auth) => {
-      this.currentUserID = auth.uid;
-      this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-      this.currentUser.subscribe(snapshot => {
-        this.firstName = snapshot.firstName;
-        this.photoURL = snapshot.photoURL;
-        this.currentTeamID = snapshot.currentTeam;
-        this.currentTeam = db.object('teams/' + this.currentTeamID);
-      });
-      this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"));
+      if (auth==null){
+        this.userTeams=null;
+      }
+      else {
+        this.currentUserID = auth.uid;
+        this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
+        db.object('userInterface/'+auth.uid).subscribe(userInterface => {
+          this.currentTeamID = userInterface.currentTeam;
+          this.currentTeam = db.object('teams/' + this.currentTeamID);
+        });
+        this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"), {
+          query:{
+            orderByChild:'following',
+            equalTo: true,
+          }
+        });
+      }
     });
-    this.teams = db.list('teams/');
   }
 
   followTeam() {
@@ -94,13 +94,26 @@ export class TeamSettingsComponent  {
     return output;
   }
 
-  leaveTeam(teamID: string) {
-    this.userTeams.remove(teamID);
+  getUserLeader (ID: string) :string {
+    var output;
+    this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
+      output = snapshot.leader;
+    });
+    return output;
   }
 
-  addTeamMember(teamID: string, memberID: string) {
-    this.teamUsers = this.db.list('teamUsers/' + teamID);
-    this.teamUsers.update(memberID, {leader: false});
+  getChatActivity (ID: string) :boolean {
+    var output;
+    this.db.object('userTeams/' + this.currentUserID + '/' + ID).subscribe(userTeam => {
+      this.db.object('teamActivities/' + ID).subscribe(teamActivities => {
+        output = !(teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
+      });
+    });
+    return output;
+  }
+
+  leaveTeam(teamID: string) {
+    this.db.object('userTeams/'+this.currentUserID+'/'+teamID).update({following:false});
   }
 
 }

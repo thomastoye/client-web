@@ -8,8 +8,9 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'addMember',
   template: `
-  <ul class="teams">
-  <input (keydown.enter)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="Enter exact first name">
+  <div class="sheet">
+  <ul class="listDark">
+  <input maxlength="500" (keydown.enter)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="Enter exact first name and press enter">
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"
       (click)="selectedUserID = user.$key">
@@ -18,7 +19,8 @@ import { Router } from '@angular/router';
       {{user.lastName}}
     </li>
   </ul>
-  <button (click)="addMember(currentTeamID, selectedUserID)">Add this member</button>
+  <button (click)="addMember(currentTeamID, selectedUserID)">Add this member {{messageAddMember}}</button>
+  </div>
   `,
 })
 
@@ -31,49 +33,43 @@ export class AddMemberComponent  {
   currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   selectedUserID: string;
-  userTeams: FirebaseListObservable<any>;
-  teams: FirebaseListObservable<any>;
-  teamUsers: FirebaseListObservable<any>;
   users: FirebaseListObservable<any>;
-  newMemberID: string;
-  joinTeamID: string;
-  newTeam: string;
   filter: string;
+  messageAddMember: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-      this.currentUserID = auth.uid;
-      this.currentUser = db.object('users/' + (auth ? auth.uid : "logedout"));
-      this.currentUser.subscribe(snapshot => {
-        this.firstName = snapshot.firstName;
-        this.photoURL = snapshot.photoURL;
-        this.currentTeamID = snapshot.currentTeam;
-        this.currentTeam = db.object('teams/' + this.currentTeamID);
-      });
-      this.userTeams = db.list('userTeams/' + (auth ? auth.uid : "logedout"), {
-        query:{orderByChild:'name'}
-      });
+      if (auth==null){}
+      else {
+        this.db.object('userInterface/'+auth.uid).subscribe(userInterface => {
+          this.currentTeamID = userInterface.currentTeam;
+          this.currentTeam = db.object('teams/' + this.currentTeamID);
+        });
+        this.users = db.list('users/', {
+          query:{
+            limitToFirst: 0,
+          }
+        });
+      }
     });
-    this.users = db.list('users/', {
+  }
+
+  refreshUserList () {
+    this.filter = this.filter.toLowerCase();
+    this.users = this.db.list('users/', {
       query:{
         limitToFirst: 0,
       }
     });
   }
 
-    refreshUserList () {
-      this.filter = this.filter.toLowerCase();
-      this.users = this.db.list('users/', {
-        query:{
-          orderByChild:'firstName',
-          equalTo: this.filter,
-        }
-      });
-    }
-
   addMember (teamID: string, memberID: string) {
-    this.db.list('teamUsers/' + teamID).update(memberID, {leader: false});
-    this.router.navigate(['teamSettings']);
+    if (memberID==null || memberID=="") {this.messageAddMember = "Please select a member"}
+    else {
+      this.db.object('teamUsers/'+teamID+'/'+memberID).update({member: true, leader: false})
+      .then(_ => this.router.navigate(['teamSettings']))
+      .catch(err => this.messageAddMember="Error: You need to be leader to add a Member - You cannot add yourself if you are already in the team");
+    }
   }
 
 }

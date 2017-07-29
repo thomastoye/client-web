@@ -8,78 +8,90 @@ import { Router } from '@angular/router'
 @Component({
   selector: 'userProfile',
   template: `
-  <div class="user">
+  <div class="sheet">
   <div style="float: left; width: 50%;">
-  <div class="memberStatus">{{this.memberStatus}}</div>
-  <hr>
-  <input [(ngModel)]="this.firstName" style="text-transform: lowercase;" placeholder="Enter first name" />
-  <input [(ngModel)]="this.lastName" style="text-transform: lowercase;" placeholder="Enter last name" />
-  <input [(ngModel)]="this.photoURL" placeholder="Paste image from the web" />
-  <hr>
+  <div [hidden]="!leaderStatus" class="leaderStatus">{{memberStatus}}</div>
+  <div [hidden]="leaderStatus" class="memberStatus">{{memberStatus}}</div>
+  <div [hidden]='editMode'>
+  <div style="padding:10px; font-weight: bold; font-size: 16px">{{firstName}} {{lastName}}</div>
+  <div style="padding:10px;">{{resume}} {{resume?"":"Add a resume here..."}}</div>
+  <button [hidden]='!ownProfile' (click)="editMode=true">Edit profile</button>
+  <button (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>
+  </div>
+  <div [hidden]='!editMode'>
+  <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
+  <input maxlength="20" [(ngModel)]="lastName" style="text-transform: lowercase; font-weight:bold;" placeholder="last name *" />
+  <input maxlength="140" [(ngModel)]="resume" placeholder="Your resume (140 characters max) *" />
+  <input maxlength="500" [(ngModel)]="photoURL" placeholder="Image address from the web *" />
   <button (click)="updateUserProfile()">Save profile</button>
-  <button (click)="removeMember(currentTeamID, focusUserID)" style="color:red">Remove from this team</button>
+  </div>
   </div>
   <div style="float: right; width: 50%;">
-  <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
+  <img [src]="photoURL" style="object-fit:contain; height:200px; width:100%">
   </div>
   </div>
   `,
 })
 export class UserProfileComponent {
-  currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
-  focusUser: FirebaseObjectObservable<any>;
-  focusTeamUser: FirebaseObjectObservable<any>;
   focusUserID: string;
   firstName: string;
   lastName: string;
+  resume: string;
   photoURL: string;
+  editMode: boolean;
   currentTeamID: string;
   memberStatus: string;
+  leaderStatus: boolean;
+  messageCancelMembership: string;
+  ownProfile: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
-        if (auth == null) {
-          this.focusUserID = "";
-          this.currentUserID = "";
-          this.firstName = "";
-          this.lastName = "";
-          this.photoURL = "./../assets/App icons/me.png";
-          this.currentTeamID = "";
-          this.memberStatus = "";
-        }
-        else {
-          db.object('users/' + auth.uid).subscribe( snapshot => {
-            this.currentUserID = auth.uid;
-            this.currentUser = db.object('users/' + this.currentUserID);
-            this.focusUserID = snapshot.focusUserID;
-            this.focusUser = db.object('users/' + this.focusUserID);
-            this.focusUser.subscribe(snapshot2 => {
-              this.firstName = snapshot2.firstName;
-              this.lastName = snapshot2.lastName;
-              this.photoURL = snapshot2.photoURL;
-              this.currentTeamID = snapshot.currentTeam;
-            });
-            this.focusTeamUser = db.object('teamUsers/' + this.currentTeamID + "/" + this.focusUserID);
-            this.focusTeamUser.subscribe(snapshot3 => {
-              this.memberStatus = snapshot3.leader ? "Leader" : "Member";
+      if (auth==null){}
+      else {
+        this.currentUserID = auth.uid;
+        db.object('userInterface/'+auth.uid).subscribe(userInterface=>{
+          this.currentTeamID = userInterface.currentTeam;
+          this.focusUserID = userInterface.focusUser;
+          this.ownProfile = (this.currentUserID == this.focusUserID);
+          this.messageCancelMembership = ""
+          db.object('users/' + this.focusUserID).subscribe(focusUser => {
+            this.firstName = focusUser.firstName;
+            this.lastName = focusUser.lastName;
+            this.resume = focusUser.resume;
+            this.photoURL = focusUser.photoURL;
+            this.editMode = false;
+            db.object('teamUsers/' + this.currentTeamID+"/"+this.focusUserID).subscribe(teamFocusUser => {
+              db.object('userTeams/'+this.focusUserID+'/'+this.currentTeamID).subscribe(focusUserTeam=>{
+                this.leaderStatus = teamFocusUser.leader;
+                if (focusUserTeam.following) {
+                  this.memberStatus = teamFocusUser.leader ? "Leader" : "Member";
+                }
+                else {
+                  this.memberStatus = teamFocusUser.leader ? "Leader (Not Following)" : "Member (Not Following)";
+                }
+              });
             });
           });
-        }
+        });
+      }
     });
   }
 
   updateUserProfile() {
     this.firstName = this.firstName.toLowerCase();
     this.lastName = this.lastName.toLowerCase();
-    this.focusUser.update({
-      firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL
+    this.db.object('users/'+this.focusUserID).update({
+      firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL, resume: this.resume
     });
+    this.editMode=false;
   }
 
-  removeMember(teamID: string, userID: string) {
-    this.db.list('teamUsers/' + teamID).remove(userID);
-    this.router.navigate(['teamSettings']);
+  cancelMember(teamID: string, userID: string) {
+    this.db.object('teamUsers/' + teamID + '/' + userID).update({member:false})
+    .then(_ => this.router.navigate(['teamSettings']))
+    .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
   }
 
 }
