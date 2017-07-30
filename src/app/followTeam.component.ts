@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   template: `
   <div class='sheet'>
   <ul class="listDark">
-  <input maxlength="500" (keydown.enter)="refreshTeamList()" [(ngModel)]="this.filter" style="text-transform:uppercase" placeholder="Enter exact team name and press enter">
+  <input maxlength="500" (keyup)="refreshTeamList()" [(ngModel)]="this.filter" style="text-transform:uppercase" placeholder="search team name">
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
@@ -45,24 +45,24 @@ export class FollowTeamComponent  {
         this.db.object('userInterface/'+auth.uid).subscribe(userInterface => {
           this.currentTeamID = userInterface.currentTeam;
         });
-        this.teams = this.db.list('teams/', {
-          query:{
-            limitToFirst: 0,
-          }
-        });
       }
     });
   }
 
   refreshTeamList () {
     this.filter = this.filter.toUpperCase();
+    if (this.filter.length>1) {
     this.teams = this.db.list('teams/', {
       query:{
         orderByChild:'name',
-        equalTo: this.filter,
+        startAt: this.filter,
+        endAt: this.filter+"\uf8ff",
+        limitToFirst: 10
       }
     });
   }
+  else this.teams = null;
+}
 
   followTeam (teamID: string, userID: string) {
     if (teamID==null || teamID=="") {this.messageFollow = "Please select a team"}
