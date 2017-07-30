@@ -10,12 +10,12 @@ exports.verifyTransactions = functions.database.ref('/teamTransactions/{teamID}/
   var balance=0;
   admin.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(event.params.teamID).once('value').then(PERRINNTransactions=>{
     PERRINNTransactions.forEach(function(PERRINNTransaction){
-      balance-=PERRINNTransaction.val().amount;
+      balance-=Number(PERRINNTransaction.val().amount);
     });
   }).then(()=>{
     admin.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(event.params.teamID).once('value').then(PERRINNTransactions=>{
       PERRINNTransactions.forEach(function(PERRINNTransaction){
-        balance+=PERRINNTransaction.val().amount;
+        balance+=Number(PERRINNTransaction.val().amount);
       });
     }).then(()=>{
       if (balance>=transaction.amount) {
@@ -59,7 +59,7 @@ exports.createPERRINNTransactionOnPaymentComplete = functions.database.ref('/use
   if (val.seller_message=="Payment complete.") {
     admin.database().ref('userPayments/'+event.params.userID+'/'+event.params.chargeID).once('value').then(payment=>{
       admin.database().ref('teamTransactions/-KptHjRmuHZGsubRJTWJ').push({
-        reference: event.params.chargeID,
+        reference: "Payment reference: " + event.params.chargeID,
         amount: payment.val().amountCOINSPurchased,
         receiver: payment.val().team,
         createdTimestamp: admin.database.ServerValue.TIMESTAMP,

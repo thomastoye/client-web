@@ -76,12 +76,12 @@ export class CreateTransactionComponent {
       var balance=0;
       firebase.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(teamID).once('value').then(PERRINNTransactions=>{
         PERRINNTransactions.forEach(transaction=>{
-          balance=balance-transaction.val().amount;
+          balance-=Number(transaction.val().amount);
         });
       });
       firebase.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(teamID).once('value').then(PERRINNTransactions=>{
         PERRINNTransactions.forEach(transaction=>{
-          balance=balance+transaction.val().amount;
+          balance+=Number(transaction.val().amount);
         });
         resolve (balance);
       });

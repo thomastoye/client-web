@@ -146,6 +146,7 @@ button {
 }
 input {
   width: 90%;
+  height: 30px;
   border-width: thin;
   padding: 10px;
   margin: 5px 10px 5px 10px;
@@ -218,7 +219,7 @@ hr {
 .sheet .title {
   font-size: 12px;
   font-weight:bold ;
-  padding: 10px;
+  padding: 15px;
   border-bottom: 1px;
   border-top: 0;
   border-left: 0;
@@ -227,5 +228,5 @@ hr {
   border-color: #ccc;
 }
 .sheet .content {
-  padding: 3px 10px 3px 10px;
+  padding: 5px 10px 5px 10px;
 }
