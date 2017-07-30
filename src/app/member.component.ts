@@ -3,13 +3,14 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
 import * as firebase from 'firebase/app';
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { Router, NavigationEnd } from '@angular/router'
 
 @Component({
   selector: 'member',
   template: `
   <ul class="members" style="float: left">
-    <li class='icon' *ngFor="let user of teamUsers | async">
-      <img [src]="getPhotoURL(user.$key)" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key})" style="border-radius:3px; object-fit: cover; height:45px; width:45px" routerLink="/userProfile" routerLinkActive="active">
+    <li class='icon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
+      <img [src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:45px; width:45px">
       <div style="font-size: 9px; color: #FFF;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (NF)"}}</div>
     </li>
   </ul>
@@ -22,7 +23,7 @@ export class MemberComponent  {
   teamUsers: FirebaseListObservable<any>;
   newMemberID: string;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
+  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){
         this.teamUsers = null;

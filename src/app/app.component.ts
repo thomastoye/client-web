@@ -18,17 +18,17 @@ import { Router, NavigationEnd } from '@angular/router'
         <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
         </div>
         <member></member>
-        <div class='icon'>
-        <img id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px" routerLink="/chat" routerLinkActive="active">
+        <div class='icon' (click)="router.navigate(['chat'])">
+        <img id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px">
         <div style="font-size: 9px; color: #FFF;">Chat</div>
         <div class='activity' [hidden]="!currentTeamChatActivity"></div>
         </div>
-        <div class='icon'>
-        <img src="./../assets/App icons/icon_share_01.svg" style="width:45px" routerLink="/wallet" routerLinkActive="active">
+        <div class='icon' (click)="router.navigate(['wallet'])">
+        <img src="./../assets/App icons/icon_share_01.svg" style="width:45px">
         <div style="font-size: 9px; color: #FFF;">Wallet</div>
         </div>
-        <div class='icon'>
-        <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;" routerLink="/teamSettings" routerLinkActive="active">
+        <div class='icon' (click)="router.navigate(['teamSettings'])">
+        <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;">
         <div style="font-size: 9px; color: #FFF;">Team</div>
         <div class='activity' [hidden]="!globalChatActivity"></div>
         </div>
