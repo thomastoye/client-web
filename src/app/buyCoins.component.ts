@@ -10,23 +10,35 @@ import { Router } from '@angular/router'
   template: `
   <div [hidden]='!thinkingAboutIt'>
     <div class="sheet">
+      <div style="width:33%;max-width:200px;float:left;text-align:center;padding-top:25px">
+      <img src="./../assets/App icons/icon_share_03.svg" style="width:100%;max-width:100px">
+      </div>
+      <div style="width:66%">
       <div class="title">{{(sheetContent1|async)?.title}}</div>
-      <img src="./../assets/App icons/icon_share_03.svg" style="width:100px; float:left">
       <div class="content">{{(sheetContent1|async)?.content1}}</div>
       <div class="content">{{(sheetContent1|async)?.content2}}</div>
       <div class="content">{{(sheetContent1|async)?.content3}}</div>
+      </div>
       <div style="height:50px"></div>
+      <div style="width:33%;max-width:200px;float:left">
+      <img src="{{(sheetContent2|async)?.image}}" style="width:100%;">
+      </div>
+      <div style="width:66%">
       <div class="title">{{(sheetContent2|async)?.title}}</div>
-      <img src="{{(sheetContent2|async)?.image}}" style="width:100px; float:left">
       <div class="content">{{(sheetContent2|async)?.content1}}</div>
       <div class="content">{{(sheetContent2|async)?.content2}}</div>
       <div class="content">{{(sheetContent2|async)?.content3}}</div>
+      </div>
       <div style="height:50px"></div>
+      <div style="width:33%;max-width:200px;float:left">
+      <img src="{{(sheetContent3|async)?.image}}" style="width:100%;">
+      </div>
+      <div style="width:66%">
       <div class="title">{{(sheetContent3|async)?.title}}</div>
-      <img src="{{(sheetContent3|async)?.image}}" style="width:100px; float:left">
       <div class="content">{{(sheetContent3|async)?.content1}}</div>
       <div class="content">{{(sheetContent3|async)?.content2}}</div>
       <div class="content">{{(sheetContent3|async)?.content3}}</div>
+      </div>
       <div style="height:50px"></div>
       <div style="text-align:center"><button type="button" (click)="refreshAmountCharge();thinkingAboutIt=false;enteringAmount=true">Buy COINS now</button></div>
     </div>
@@ -41,8 +53,8 @@ import { Router } from '@angular/router'
         <li *ngFor="let currency of currencyList | async"
           [class.selected]="currency.$key === currentCurrencyID"
           (click)="currentCurrencyID = currency.$key;refreshAmountCharge();">
-          <div style="width:150px;height:20px;float:left;">{{currency.designation}}</div>
-          <div style="width:40px;height:20px;float:left;">{{currency.code}}</div>
+          <div style="width:200px;height:20px;float:left;">{{currency.designation}}</div>
+          <div style="width:200px;height:20px;float:left;">1 COIN costs {{1/currency.toCOIN|number:'1.2-2'}} {{currency.code}}</div>
         </li>
       </ul>
       <div class="content" style="text-align:center; padding-top:20px">{{amountCharge/100 | number:'1.2-2'}} {{currentCurrencyID | uppercase}} to be paid.</div>

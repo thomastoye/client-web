@@ -9,12 +9,13 @@ import { AngularFireAuth } from 'angularfire2/auth';
   <div class="sheet">
   <div class="chat" id="chat-scroll">
   <div>
+  <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+25;this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async ; let last = last">
     <img [src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'medium'}}</div>
-    <div style="padding: 0 50px 10px 0;">{{message.text}}</div>
+    <div style="padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
     {{last?scrollToBottom():''}}
     </li>
   </ul>
@@ -32,15 +33,18 @@ export class ChatComponent {
   currentTeamID: string;
   newMemberID: string;
   messageInput: string;
+  messageNumberDisplay: number;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
+    this.messageNumberDisplay = 25;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
         this.currentUserID = auth.uid;
         db.object('userInterface/'+auth.uid).subscribe(userInterface => {
+          this.messageNumberDisplay = 25;
           this.currentTeamID = userInterface.currentTeam;
-          this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: 25}});
+          this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: this.messageNumberDisplay}});
           this.db.object('teamUsers/'+this.currentTeamID+'/'+auth.uid).subscribe(teamUser=>{
             if (teamUser==null) {this.messageInput="You need to be a member to message this team"}
             else {this.messageInput = teamUser.member?"Message team":"You need to be a member to message this team"}
