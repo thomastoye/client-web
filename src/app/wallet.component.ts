@@ -18,6 +18,7 @@ import { Router } from '@angular/router'
     <div style="font-size: 25px; color: black;">{{currentBalance | number:'1.2-2'}}</div>
     </div>
     <div style="float: right; width: 50%; text-align: left; padding: 5px">
+    <button type="button" (click)="router.navigate(['buyCoins'])" style="margin:0;float:right;width:100px;background-color:#43c14b">Buy COINS</button>
     <div style="color: black;">COINS</div>
     </div>
     </div>
@@ -75,7 +76,7 @@ import { Router } from '@angular/router'
       </div>
     </li>
   </ul>
-  <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send coins</button>
+  <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send COINS</button>
   </div>
   `,
 })
