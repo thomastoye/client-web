@@ -77,9 +77,9 @@ export class ChatComponent {
     var timestampNegative: number;
     this.db.object('teamMessages/'+teamID+'/'+messageID).subscribe(message=>{
       timestamp = message.timestamp;
+      timestampNegative = -1 * timestamp;
+      this.db.object('teamMessages/'+teamID+'/'+messageID).update({timestampNegative: timestampNegative});
     });
-    timestampNegative = -1 * timestamp;
-    this.db.object('teamMessages/'+teamID+'/'+messageID).update({timestampNegative: timestampNegative});
   }
 
 }

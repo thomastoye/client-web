@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
       [class.selected]="team.$key === currentTeamID"
       (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});">
       <div style="display: inline; float: left; height:25px; width:20px">
-      <div class="activity" [hidden]="getChatActivity(team.$key)"></div>
+      <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key)?"*":""}}</div>
@@ -46,7 +46,6 @@ export class TeamSettingsComponent  {
   currentTeamID: string;
   userTeams: FirebaseListObservable<any>;
   newMemberID: string;
-  followTeamID: string;
   newTeam: string;
   moreButtons: boolean;
 
@@ -71,11 +70,6 @@ export class TeamSettingsComponent  {
         });
       }
     });
-  }
-
-  followTeam() {
-    this.userTeams.update(this.followTeamID, {status: "confirmed"});
-    this.currentUser.update({currentTeam: this.followTeamID});
   }
 
   getTeamName (ID: string) :string {
@@ -103,10 +97,10 @@ export class TeamSettingsComponent  {
   }
 
   getChatActivity (ID: string) :boolean {
-    var output;
+    var output = false;
     this.db.object('userTeams/' + this.currentUserID + '/' + ID).subscribe(userTeam => {
       this.db.object('teamActivities/' + ID).subscribe(teamActivities => {
-        output = !(teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
+        output = teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp;
       });
     });
     return output;
