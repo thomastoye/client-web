@@ -6,7 +6,7 @@
     },
     "ids": {
       ".read": "auth.token.email_verified === true",
-      ".write": "newData.exists() && auth != null"
+      ".write": "newData.exists() && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
     },
     "PERRINNTransactions": {
       ".read": "auth.token.email_verified === true",
@@ -27,14 +27,14 @@
     "teamTransactionRequests": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null",
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'",
         ".indexOn": ["status"]
       }
     },
     "teamTransactions": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null",
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'",
         ".indexOn": ["status"]
       }
     },
@@ -43,34 +43,34 @@
       "$teamid": {
         ".indexOn": ["member"],
         "$uid": {
-          ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && data.child('leader').val() != true) && auth != null"
+          ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && data.child('leader').val() != true) && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
         }
       }
     },
     "teams": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true) && auth != null"
+        ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true) && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
       }
     },
     "userInterface": {
       ".read": "auth.token.email_verified === true",
       "$uid": {
-        ".write": "newData.exists() && auth.uid === $uid"
+        ".write": "newData.exists() && auth.uid === $uid && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
       }
     },
     "userPayments": {
       "$uid": {
         "$chargeid": {
         ".read": "auth.uid === $uid",
-        ".write": "!data.exists() && newData.exists() && auth.uid === $uid"
+        ".write": "!data.exists() && newData.exists() && auth.uid === $uid && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
         }
       }
     },
     "userTeams": {
       ".read": "auth.token.email_verified === true",
       "$uid": {
-        ".write": "newData.exists() && auth.uid === $uid",
+        ".write": "newData.exists() && auth.uid === $uid && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'",
         ".indexOn": ["following"]
       }
     },
@@ -78,7 +78,7 @@
       ".read": "auth.token.email_verified === true",
       ".indexOn": ["firstName"],
       "$uid": {
-        ".write": "newData.exists() && auth.uid === $uid"
+        ".write": "newData.exists() && auth.uid === $uid && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
       }
     }
   }

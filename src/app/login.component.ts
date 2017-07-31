@@ -20,6 +20,7 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *"/>
           <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *"/>
           <button [hidden]="newUser" type="button" (click)="login(email,password)">Login {{messageLogin}}</button>
+          <button [hidden]="newUser" type="button" (click)="login('contactperrinn@gmail.com','contactperrinn')" style="background-color:#43c14b">Enter as visitor to discover PERRINN and chat with us</button>
           <div [hidden]="!newUser">
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *"/>
           <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *"/>
