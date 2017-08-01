@@ -16,7 +16,7 @@ import { Router } from '@angular/router'
   <div class='title'>{{firstName}} {{lastName}}</div>
   <div style="padding:10px;">{{resume}} {{resume?"":"Add a resume here..."}}</div>
   <button [hidden]='!ownProfile' (click)="editMode=true">Edit profile</button>
-  <button (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>
+  <button [hidden]='!getUserLeader(currentTeamID)' (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -92,6 +92,14 @@ export class UserProfileComponent {
     this.db.object('teamUsers/' + teamID + '/' + userID).update({member:false})
     .then(_ => this.router.navigate(['teamSettings']))
     .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
+  }
+
+  getUserLeader (ID: string) :string {
+    var output;
+    this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
+      output = snapshot.leader;
+    });
+    return output;
   }
 
 }
