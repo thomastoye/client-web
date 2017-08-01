@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   selector: 'teamSettings',
   template: `
   <div class='sheet'>
-  <ul class="listDark">
+  <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
       (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});">
@@ -45,8 +45,6 @@ export class TeamSettingsComponent  {
   currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   userTeams: FirebaseListObservable<any>;
-  newMemberID: string;
-  newTeam: string;
   moreButtons: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {

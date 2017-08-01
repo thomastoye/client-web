@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'addMember',
   template: `
   <div class="sheet">
-  <ul class="listDark">
+  <ul class="listLight">
   <input maxlength="500" (keyup)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="search first name">
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"

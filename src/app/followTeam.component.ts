@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'followTeam',
   template: `
   <div class='sheet'>
-  <ul class="listDark">
+  <ul class="listLight">
   <input maxlength="500" (keyup)="refreshTeamList()" [(ngModel)]="this.filter" style="text-transform:uppercase" placeholder="search team name">
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
@@ -68,7 +68,7 @@ export class FollowTeamComponent  {
     if (teamID==null || teamID=="") {this.messageFollow = "Please select a team"}
     else {
       this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-      this.db.object('users/'+userID).update({currentTeam: teamID});
+      this.db.object('userInterface/'+userID).update({currentTeam: teamID});
       this.router.navigate(['teamSettings']);
     }
   }

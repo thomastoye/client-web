@@ -23,7 +23,7 @@ import { Router } from '@angular/router'
     </div>
     </div>
   </div>
-  <ul class="listDark">
+  <ul class="listLight">
     <div class="listSeperator">RECEIVED</div>
     <li *ngFor="let transaction of PERRINNTransactionsIN | async">
       <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>

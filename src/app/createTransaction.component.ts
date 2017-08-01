@@ -13,7 +13,7 @@ import { Router } from '@angular/router'
   <div class="user">
   <input maxlength="50" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionReference" placeholder="Reference *" />
   <input maxlength="50" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
-  <ul class="listDark">
+  <ul class="listLight">
     <div class="listSeperator">SELECT RECEIVING TEAM</div>
     <li *ngFor="let team of userTeams | async"
     [class.selected]="team.$key === selectedTeamID"

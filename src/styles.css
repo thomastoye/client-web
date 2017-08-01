@@ -134,6 +134,53 @@ body {
 .listDark .selected {
   background-color: #666 !important;
 }
+.listLight {
+  background: white;
+  color: #666;
+  padding: 10px;
+  list-style-type: none;
+}
+.listLight .listSeperator {
+  padding:7px;
+  color:#aaa;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 1px;
+  border-style: solid;
+}
+.listLight .activity {
+  height: 12px;
+  width: 12px;
+  background-color: red;
+  border-radius: 6px;
+  position: relative;
+  top: 5px;
+  left: 5px;
+  z-index: 1000;
+}
+.listLight .button {
+  cursor: pointer;
+  margin: 2px 5px 2px 5px;
+  width:100px;
+  height:20px;
+  float:left;
+  text-align:center;
+  border-style:solid;
+  border-width:thin;
+  border-radius:10px;
+  user-select: none;
+}
+.listLight li {
+  cursor: pointer;
+  position: relative;
+  left: 0;
+  border-radius: 4px;
+  padding: 5px;
+}
+.listLight .selected {
+  background-color: #eee !important;
+}
 button {
   cursor: pointer;
   background: #3586c4;
