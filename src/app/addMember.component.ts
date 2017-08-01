@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"
       (click)="selectedUserID = user.$key">
-      <img [src]="user.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
+      <img (error)="errorHandler($event)"[src]="user.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
       {{user.firstName}}
       {{user.lastName}}
     </li>
@@ -67,6 +67,10 @@ export class AddMemberComponent  {
       .then(_ => this.router.navigate(['teamSettings']))
       .catch(err => this.messageAddMember="Error: You need to be leader to add a Member - You cannot add yourself if you are already in the team");
     }
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

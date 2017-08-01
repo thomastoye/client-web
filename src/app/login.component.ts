@@ -14,7 +14,7 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
     <div class="module form-module">
       <div class="form">
         <form>
-          <img src="./../assets/App icons/PERRINN logo.png" style="width:100%; padding-bottom:10px">
+          <img (error)="errorHandler($event)" src="./../assets/App icons/PERRINN logo.png" style="width:100%; padding-bottom:10px">
           <div [hidden]="loggedIn">
           <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser">{{newUser?"Already have an account?":"Need a new account?"}}</div>
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *"/>
@@ -27,7 +27,7 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name *"/>
           <div style="font-size:10px; padding:5px">Find an image on the web for your profile, copy its address and paste it below. Verify that the image appears before registering.</div>
           <input maxlength="500" [(ngModel)]="photoURL" name="photoURL" placeholder="Image address here *"/>
-          <img [src]="photoURL" style="object-fit:contain; height:100px; width:100%">
+          <img (error)="errorHandler($event)"[src]="photoURL" style="object-fit:contain; height:100px; width:100%">
           <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register {{messageRegister}}</button>
           </div>
           </div>
@@ -158,6 +158,10 @@ export class LoginComponent  {
     this.messageLogout = "";
     this.messageRegister = "";
     this.messageVerification = "";
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

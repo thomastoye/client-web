@@ -19,16 +19,16 @@ import { Router, NavigationEnd } from '@angular/router'
         </div>
         <member></member>
         <div class='icon' (click)="router.navigate(['chat'])">
-        <img id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px">
+        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px">
         <div style="font-size: 9px; color: #FFF;">Chat</div>
         <div class='activity' [hidden]="!currentTeamChatActivity"></div>
         </div>
         <div class='icon' (click)="router.navigate(['wallet'])">
-        <img src="./../assets/App icons/icon_share_01.svg" style="width:45px">
+        <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:45px">
         <div style="font-size: 9px; color: #FFF;">Wallet</div>
         </div>
         <div class='icon' (click)="router.navigate(['teamSettings'])">
-        <img src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;">
+        <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;">
         <div style="font-size: 9px; color: #FFF;">Team</div>
         <div class='activity' [hidden]="!globalChatActivity"></div>
         </div>
@@ -90,6 +90,10 @@ export class AppComponent {
 
   logout() {
     this.afAuth.auth.signOut()
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

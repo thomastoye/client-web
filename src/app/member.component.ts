@@ -10,7 +10,7 @@ import { Router, NavigationEnd } from '@angular/router'
   template: `
   <ul class="members" style="float: left">
     <li class='icon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-      <img [src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:45px; width:45px">
+      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:45px; width:45px">
       <div style="font-size: 9px; color: #FFF;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (NF)"}}</div>
     </li>
   </ul>
@@ -67,6 +67,10 @@ export class MemberComponent  {
       output = snapshot.photoURL;
     });
     return output;
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

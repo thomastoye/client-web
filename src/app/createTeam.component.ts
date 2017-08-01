@@ -15,7 +15,7 @@ import { Router } from '@angular/router'
   <button (click)="createNewTeam(currentUserID, newTeam)">Create team</button>
   </div>
   <div style="float: right; width: 50%;">
-  <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
+  <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
   </div>
   </div>
   `,
@@ -43,6 +43,10 @@ export class CreateTeamComponent {
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
     this.db.object('userInterface/' + userID).update({currentTeam: teamID});
     this.router.navigate(['teamSettings']);
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

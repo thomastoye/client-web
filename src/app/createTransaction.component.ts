@@ -18,7 +18,7 @@ import { Router } from '@angular/router'
     <li *ngFor="let team of userTeams | async"
     [class.selected]="team.$key === selectedTeamID"
     (click)="selectedTeamID = team.$key;checkTransactionInput()">
-      <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+      <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
     </li>
   </ul>
@@ -143,6 +143,10 @@ export class CreateTransactionComponent {
                                   this.transactionAmount<=this.currentBalance&&
                                   this.selectedTeamID!=null&&this.selectedTeamID!=""&&
                                   this.selectedTeamID!=this.currentTeamID);
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

@@ -27,15 +27,15 @@ import { Router } from '@angular/router'
   </div>
   </div>
   <div style="float: right; width: 50%;">
-  <img [src]="photoURL" style="object-fit:contain; height:200px; width:100%">
+  <img (error)="errorHandler($event)" [src]="photoURL" style="object-fit:contain; height:200px; width:100%">
   </div>
   <div style="height:30px;width:100%"></div>
   <ul class="listLight">
-    <div class="listSeperator">Teams that {{firstName}} follows:</div>
+    <div class="listSeperator">{{firstName}} follows:</div>
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
-      <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,focusUserID)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
       <div [hidden]='team.$key!=selectedTeamID' style="float:right">
@@ -147,6 +147,10 @@ export class UserProfileComponent {
       this.db.object('userInterface/'+userID).update({currentTeam: teamID});
       this.router.navigate(['teamSettings']);
     }
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

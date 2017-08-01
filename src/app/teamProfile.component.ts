@@ -15,7 +15,7 @@ import { Router } from '@angular/router'
   <button (click)="saveTeamProfile()">Save team profile {{messageSaveTeamProfile}}</button>
   </div>
   <div style="float: right; width: 50%;">
-  <img [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
+  <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
   </div>
   </div>
   `,
@@ -52,6 +52,10 @@ export class TeamProfileComponent {
     .then(_ => this.router.navigate(['teamSettings']))
     .catch(err => this.messageSaveTeamProfile="Error: Only leaders can save team profile");
 
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

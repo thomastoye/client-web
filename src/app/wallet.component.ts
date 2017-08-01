@@ -11,7 +11,7 @@ import { Router } from '@angular/router'
   <div class="sheet">
   <div class="title">
     <div style="text-align:center">
-    <img src="./../assets/App icons/icon_share_03.svg" style="width:60px">
+    <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
     <div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
@@ -204,6 +204,10 @@ getUserMember (ID: string) :boolean {
     output = snapshot.member;
   });
   return output;
+}
+
+errorHandler(event) {
+  event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
 }
 
 }

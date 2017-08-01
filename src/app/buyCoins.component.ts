@@ -11,7 +11,7 @@ import { Router } from '@angular/router'
   <div [hidden]='!thinkingAboutIt'>
     <div class="sheet">
       <div style="width:33%;max-width:200px;float:left;text-align:center;padding-top:25px">
-      <img src="./../assets/App icons/icon_share_03.svg" style="width:100%;max-width:100px">
+      <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:100%;max-width:100px">
       </div>
       <div style="width:66%">
       <div class="title">{{(sheetContent1|async)?.title}}</div>
@@ -21,7 +21,7 @@ import { Router } from '@angular/router'
       </div>
       <div style="height:50px"></div>
       <div style="width:33%;max-width:200px;float:left">
-      <img src="{{(sheetContent2|async)?.image}}" style="width:100%;">
+      <img (error)="errorHandler($event)" src="{{(sheetContent2|async)?.image}}" style="width:100%;">
       </div>
       <div style="width:66%">
       <div class="title">{{(sheetContent2|async)?.title}}</div>
@@ -31,7 +31,7 @@ import { Router } from '@angular/router'
       </div>
       <div style="height:50px"></div>
       <div style="width:33%;max-width:200px;float:left">
-      <img src="{{(sheetContent3|async)?.image}}" style="width:100%;">
+      <img (error)="errorHandler($event)" src="{{(sheetContent3|async)?.image}}" style="width:100%;">
       </div>
       <div style="width:66%">
       <div class="title">{{(sheetContent3|async)?.title}}</div>
@@ -65,16 +65,16 @@ import { Router } from '@angular/router'
   <div class="module form-module">
   <div class="top">
   <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="enteringAmount=true;enteringCardDetails=false">back</div>
-  <img src="./../assets/App icons/icon_share_03.svg" style="width:50px">
+  <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:50px">
   <div style="color:black">{{getTeamName(currentTeamID)}}</div>
   <div style="color:black;padding-bottom:15px">{{amountCOINSPurchased | number:'1.2-2'}} COINS</div>
   </div>
   <div class="form">
   <form>
   <div style="text-align:left;padding:0 0 20px 10px;float:left">Safe transfer</div>
-  <img src="./../assets/App icons/Payment Method Icons/Light Color/22.png" style="width:40px;float:right;margin-right:10px">
-  <img src="./../assets/App icons/Payment Method Icons/Light Color/2.png" style="width:40px;float:right">
-  <img src="./../assets/App icons/Payment Method Icons/Light Color/1.png" style="width:40px;float:right">
+  <img (error)="errorHandler($event)" src="./../assets/App icons/Payment Method Icons/Light Color/22.png" style="width:40px;float:right;margin-right:10px">
+  <img (error)="errorHandler($event)" src="./../assets/App icons/Payment Method Icons/Light Color/2.png" style="width:40px;float:right">
+  <img (error)="errorHandler($event)" src="./../assets/App icons/Payment Method Icons/Light Color/1.png" style="width:40px;float:right">
   <input [(ngModel)]="cardNumber" name="card-number" type="text" placeholder="Card number *" (keyup)='messagePayment=""'>
   <div>
   <input [(ngModel)]="expiryMonth" style="width:30%;float:left" name="expiry-month" type="text" placeholder="MM *" (keyup)='messagePayment=""'>
@@ -197,6 +197,10 @@ export class BuyCoins {
     firebase.database().ref('appSettings/currencyList/'+this.currentCurrencyID).once('value').then(currency=>{
       this.amountCharge = Number((this.amountCOINSPurchased / currency.val().toCOIN * 100).toFixed(0));
     });
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

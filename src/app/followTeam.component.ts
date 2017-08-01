@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
-      <img [src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
+      <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
       {{team.name}}
     </li>
   </ul>
@@ -71,6 +71,10 @@ export class FollowTeamComponent  {
       this.db.object('userInterface/'+userID).update({currentTeam: teamID});
       this.router.navigate(['teamSettings']);
     }
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }

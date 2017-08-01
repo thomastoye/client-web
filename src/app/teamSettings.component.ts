@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
       <div style="display: inline; float: left; height:25px; width:20px">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
-      <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+      <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
       <div [hidden]='team.$key!=currentTeamID' style="float:right">
@@ -106,6 +106,10 @@ export class TeamSettingsComponent  {
 
   leaveTeam(teamID: string) {
     this.db.object('userTeams/'+this.currentUserID+'/'+teamID).update({following:false});
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
 }
