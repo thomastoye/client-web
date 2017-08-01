@@ -53,6 +53,7 @@ body {
   height: 65px;
   padding-top: 5px;
   margin: 10px 5px 10px 0;
+  user-select: none;
 }
 .menu .icon .activity {
   height: 12px;
@@ -73,6 +74,7 @@ body {
   border-radius: 5px;
   width: 130px;
   margin: 10px;
+  user-select: none;
 }
 .leaderStatus {
   background-color: #d1d12e;
@@ -83,6 +85,7 @@ body {
   border-radius: 5px;
   width: 130px;
   margin: 10px;
+  user-select: none;
 }
 .chat{
   overflow-y: auto;
@@ -118,7 +121,8 @@ body {
   text-align:center;
   border-style:solid;
   border-width:thin;
-  border-radius:10px
+  border-radius:10px;
+  user-select: none;
 }
 .listDark li {
   cursor: pointer;
@@ -143,6 +147,7 @@ button {
   transition: 0.3s ease;
   border-radius: 4px;
   text-align:center;
+  user-select: none;
 }
 input {
   width: 90%;
@@ -229,4 +234,9 @@ hr {
 }
 .sheet .content {
   padding: 5px 10px 5px 10px;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

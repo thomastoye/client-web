@@ -47,7 +47,7 @@ import { Router } from '@angular/router'
   <div [hidden]='!enteringAmount'>
     <div class="sheet">
       <div class='title' style='float:left'>How many COINS would you like to buy?</div>
-      <input (keyup)="refreshAmountCharge()" style='width:100px' [(ngModel)]="amountCOINSPurchased" type='text'>
+      <input maxlength="50" type="number" onkeypress="return event.charCode>=48" (keyup)="refreshAmountCharge()" style='width:100px;' [(ngModel)]="amountCOINSPurchased">
       <ul class='listDark' style='margin-top:20px'>
         <div class="listSeperator">What currency would you like to pay in?</div>
         <li *ngFor="let currency of currencyList | async"
