@@ -37,7 +37,7 @@ exports.verifyTransactions = functions.database.ref('/teamTransactions/{teamID}/
   });
 });
 
-exports.createStripeCharge = functions.database.ref('/userPayments/{userID}/{chargeID}').onCreate(event => {
+exports.createStripeCharge = functions.database.ref('/teamPayments/{userID}/{chargeID}').onCreate(event => {
   const val = event.data.val();
   if (val === null || val.id || val.error) return null;
   const amount = val.amountCharge;
@@ -54,10 +54,10 @@ exports.createStripeCharge = functions.database.ref('/userPayments/{userID}/{cha
   });
 });
 
-exports.createPERRINNTransactionOnPaymentComplete = functions.database.ref('/userPayments/{userID}/{chargeID}/response/outcome').onCreate(event => {
+exports.createPERRINNTransactionOnPaymentComplete = functions.database.ref('/teamPayments/{userID}/{chargeID}/response/outcome').onCreate(event => {
   const val = event.data.val();
   if (val.seller_message=="Payment complete.") {
-    admin.database().ref('userPayments/'+event.params.userID+'/'+event.params.chargeID).once('value').then(payment=>{
+    admin.database().ref('teamPayments/'+event.params.userID+'/'+event.params.chargeID).once('value').then(payment=>{
       admin.database().ref('teamTransactions/-KptHjRmuHZGsubRJTWJ').push({
         reference: "Payment reference: " + event.params.chargeID,
         amount: payment.val().amountCOINSPurchased,
@@ -65,7 +65,7 @@ exports.createPERRINNTransactionOnPaymentComplete = functions.database.ref('/use
         createdTimestamp: admin.database.ServerValue.TIMESTAMP,
         status: "pending"
       }).then(()=>{
-        return admin.database().ref('userPayments/'+event.params.userID+'/'+event.params.chargeID+'/PERRINNTransaction').update({
+        return admin.database().ref('teamPayments/'+event.params.userID+'/'+event.params.chargeID+'/PERRINNTransaction').update({
           message: "COINS have been transfered to your team wallet."
         });
       });

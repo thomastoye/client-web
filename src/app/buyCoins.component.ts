@@ -58,7 +58,10 @@ import { Router } from '@angular/router'
         </li>
       </ul>
       <div class="content" style="text-align:center; padding-top:20px">{{amountCharge/100 | number:'1.2-2'}} {{currentCurrencyID | uppercase}} to be paid.</div>
-      <div style="text-align:center"><button type="button" (click)="enteringAmount=false;enteringCardDetails=true">Proceed to payment</button></div>
+      <div style="text-align:center">
+        <button [hidden]='!isUserLeader' type="button" (click)="enteringAmount=false;enteringCardDetails=true">Proceed to payment</button>
+        <div class='content' [hidden]='isUserLeader' style='font-weight:bold'>You need to be leader to buy COINS for this team.</div>
+      </div>
     </div>
   </div>
   <div [hidden]='!enteringCardDetails'>
@@ -106,7 +109,6 @@ export class BuyCoins {
   currentCurrencyID: string;
   messagePayment: string;
   messagePERRINNTransaction: string;
-  currentUser: FirebaseObjectObservable<any>;
   currencyList: FirebaseListObservable<any>;
   currentUserID: string;
   currentTeamID: string;
@@ -118,11 +120,14 @@ export class BuyCoins {
   sheetContent1: FirebaseObjectObservable<any>;
   sheetContent2: FirebaseObjectObservable<any>;
   sheetContent3: FirebaseObjectObservable<any>;
+  isUserLeader: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, private _zone: NgZone) {
+    this.isUserLeader = false;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
+        this.currentUserID = auth.uid;
         this.thinkingAboutIt = true;
         this.enteringAmount = false;
         this.enteringCardDetails = false;
@@ -135,10 +140,12 @@ export class BuyCoins {
         this.sheetContent1 = db.object('appSettings/whatIsCOIN');
         this.sheetContent2 = db.object('appSettings/howToUseCOIN');
         this.sheetContent3 = db.object('appSettings/whyBuyCOIN');
-        this.currentUserID = auth.uid;
         this.currencyList = db.list('appSettings/currencyList');
         db.object('userInterface/'+auth.uid).subscribe(userInterface => {
           this.currentTeamID = userInterface.currentTeam;
+          this.db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(user => {
+            this.isUserLeader = user.leader;
+          });
         });
       }
     });
@@ -159,8 +166,8 @@ export class BuyCoins {
           this.enteringCardDetails = false;
           this.processingPayment = true;
           this.messagePayment = `Processing card...`;
-          this.newPaymentID = firebase.database().ref(`/userPayments/${this.currentUserID}`).push().key;
-          firebase.database().ref(`/userPayments/${this.currentUserID}/${this.newPaymentID}`)
+          this.newPaymentID = firebase.database().ref(`/teamPayments/${this.currentUserID}`).push().key;
+          firebase.database().ref(`/teamPayments/${this.currentUserID}/${this.newPaymentID}`)
           .update({
             source: response.id,
             amountCOINSPurchased: this.amountCOINSPurchased,
@@ -169,14 +176,14 @@ export class BuyCoins {
             team: this.currentTeamID,
           })
           .then(()=>{
-            this.db.object(`/userPayments/${this.currentUserID}/${this.newPaymentID}/response/outcome`).subscribe(paymentSnapshot=>{
+            this.db.object(`/teamPayments/${this.currentUserID}/${this.newPaymentID}/response/outcome`).subscribe(paymentSnapshot=>{
               if (paymentSnapshot.seller_message!=null) this.messagePayment = paymentSnapshot.seller_message;
               if (this.messagePayment == "Payment complete.") this.messagePERRINNTransaction = "We are now sending COINS to your team...";
             });
-            this.db.object(`/userPayments/${this.currentUserID}/${this.newPaymentID}/error`).subscribe(paymentSnapshot=>{
+            this.db.object(`/teamPayments/${this.currentUserID}/${this.newPaymentID}/error`).subscribe(paymentSnapshot=>{
               if (paymentSnapshot.message!=null) this.messagePayment = paymentSnapshot.message;
             });
-            this.db.object(`/userPayments/${this.currentUserID}/${this.newPaymentID}/PERRINNTransaction`).subscribe(transactionSnapshot=>{
+            this.db.object(`/teamPayments/${this.currentUserID}/${this.newPaymentID}/PERRINNTransaction`).subscribe(transactionSnapshot=>{
               if (transactionSnapshot.message!=null) this.messagePERRINNTransaction = transactionSnapshot.message;
             });
           });
