@@ -25,10 +25,10 @@
       }
     },
     "teamPayments": {
-      "$uid": {
+      "$teamid": {
         "$chargeid": {
-        ".read": "auth.token.email_verified === true && auth.uid === $uid",
-        ".write": "!data.exists() && newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'",
+        ".read": "auth.token.email_verified === true",
+        ".write": "!data.exists() && newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
         }
       }
     },
