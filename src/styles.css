@@ -21,7 +21,7 @@ body {
 }
 #app_container {
   overflow-y: auto;
-  padding: 10px 5px 10px 5px;
+  padding: 10px 0 10px 0;
   background-color: #f9f9f9;
 }
 #login {
@@ -266,7 +266,6 @@ hr {
   max-width: 800px;
   background-color: white;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 .sheet .title {
   font-size: 12px;
