@@ -14,6 +14,8 @@ import { Router } from '@angular/router'
   <div class='title'>{{name}}</div>
   <div style="padding:10px;">{{goal}} {{goal?"":"Add a goal here..."}}</div>
   <button [hidden]='!ownProject' (click)="editMode=true">Edit project</button>
+  <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Add project</button>
+  <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create project</button>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -44,7 +46,7 @@ import { Router } from '@angular/router'
 })
 export class ProjectProfileComponent {
   currentUserID: string;
-  focusProjectID: string;
+  currentProjectID: string;
   name: string;
   goal: string;
   photoURL: string;
@@ -64,19 +66,21 @@ export class ProjectProfileComponent {
         this.currentUserID = auth.uid;
         db.object('userInterface/'+auth.uid).subscribe(userInterface=>{
           this.currentTeamID = userInterface.currentTeam;
-          this.focusProjectID = userInterface.focusProject;
-          this.messageCancelMembership = ""
-          db.object('projects/' + this.focusProjectID).subscribe(focusProject => {
-            this.name = focusProject.name;
-            this.goal = focusProject.goal;
-            this.photoURL = focusProject.photoURL;
-            this.editMode = false;
-          });
-          this.projectTeams = db.list('projectTeams/' + this.focusProjectID, {
-            query:{
-              orderByChild:'member',
-              equalTo: true,
-            }
+          db.object('teamProjects/' + this.currentTeamID).subscribe(teamProjects => {
+            this.currentProjectID = teamProjects.project;
+            this.messageCancelMembership = ""
+            db.object('projects/' + this.currentProjectID).subscribe(focusProject => {
+              this.name = focusProject.name;
+              this.goal = focusProject.goal;
+              this.photoURL = focusProject.photoURL;
+              this.editMode = false;
+            });
+            this.projectTeams = db.list('projectTeams/' + this.currentProjectID, {
+              query:{
+                orderByChild:'member',
+                equalTo: true,
+              }
+            });
           });
         });
       }
@@ -85,7 +89,7 @@ export class ProjectProfileComponent {
 
   updateProjectProfile() {
     this.name = this.name.toUpperCase();
-    this.db.object('projects/'+this.focusProjectID).update({
+    this.db.object('projects/'+this.currentProjectID).update({
       name: this.name, photoURL: this.photoURL, goal: this.goal
     });
     this.editMode=false;

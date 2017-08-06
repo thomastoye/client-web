@@ -21,6 +21,10 @@ import { Router, NavigationEnd } from '@angular/router'
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:45px">
         <div style="font-size: 9px; color: #FFF;">Members</div>
         </div>
+        <div class='icon' (click)="router.navigate(['projectProfile'])">
+        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:45px">
+        <div style="font-size: 9px; color: #FFF;">Project</div>
+        </div>
         <div class='icon' (click)="router.navigate(['chat'])">
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px">
         <div style="font-size: 9px; color: #FFF;">Chat</div>
