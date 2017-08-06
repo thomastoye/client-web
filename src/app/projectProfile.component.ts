@@ -14,7 +14,6 @@ import { Router } from '@angular/router'
   <div class='title'>{{name}}</div>
   <div style="padding:10px;">{{goal}} {{goal?"":"Add a goal here..."}}</div>
   <button [hidden]='!ownProject' (click)="editMode=true">Edit project</button>
-  <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel project membership {{messageCancelMembership}}</button>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -33,7 +32,7 @@ import { Router } from '@angular/router'
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
-      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,focusUserID)?"*":""}}</div>
+      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
       <div [hidden]='team.$key!=selectedTeamID' style="float:right">
       <div class="button" (click)="followTeam(selectedTeamID,currentUserID)">Follow</div>
