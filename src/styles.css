@@ -181,11 +181,6 @@ body {
 .listLight .selected {
   background-color: #eee !important;
 }
-.listLight .project {
-  color: #3f6eba;
-  text-decoration: underline;
-  float:left;
-}
 button {
   cursor: pointer;
   background: #3586c4;
