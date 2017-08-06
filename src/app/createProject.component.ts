@@ -10,10 +10,10 @@ import { Router } from '@angular/router'
   template: `
   <div class="sheet">
   <div style="float: left; width: 50%;">
-  <input maxlength="50" [(ngModel)]="newProject" style="text-transform: uppercase;" placeholder="Enter project name *" />
+  <input maxlength="50" [(ngModel)]="projectName" style="text-transform: uppercase;" placeholder="Enter project name *" />
   <input maxlength="140" [(ngModel)]="projectGoal" placeholder="Enter project goal *" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web *" />
-  <button style="background-color:#c69b00" (click)="createNewProject(currentTeamID, newProject)">Create project</button>
+  <button style="background-color:#c69b00" (click)="createProject(currentTeamID, projectName)">Create project</button>
   </div>
   <div style="float: right; width: 50%;">
   <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
@@ -25,7 +25,7 @@ export class CreateProjectComponent {
   currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
   photoURL: string;
-  newProject: string;
+  projectName: string;
   projectGoal: string;
   currentTeamID: string;
 
@@ -41,13 +41,13 @@ export class CreateProjectComponent {
     });
   }
 
-  createNewProject(teamID: string, projectName: string) {
+  createProject(teamID: string, projectName: string) {
     projectName = projectName.toUpperCase();
     var projectID = this.db.list('ids/').push(true).key;
     this.db.object('projectTeams/'+projectID+'/'+teamID).update({member: true, leader: true});
     this.db.object('projects/'+projectID).update({name: projectName, goal: this.projectGoal, photoURL: this.photoURL});
-    this.db.object('teamProjects/'+teamID).update({project: projectID});
-    this.router.navigate(['teamSettings']);
+    this.db.object('teamProjects/'+teamID+'/'+projectID).update({following: true});
+    this.router.navigate(['projects']);
   }
 
   errorHandler(event) {

@@ -6,7 +6,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { Router, NavigationEnd } from '@angular/router'
 
 @Component({
-  selector: 'members',
+  selector: 'users',
   template: `
   <div class='sheet'>
     <ul class='listLight'>
@@ -19,7 +19,7 @@ import { Router, NavigationEnd } from '@angular/router'
   </div>
 `,
 })
-export class MembersComponent  {
+export class UsersComponent  {
 
   currentUserID: string;
   currentTeamID: string;

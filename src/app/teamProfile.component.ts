@@ -49,7 +49,7 @@ export class TeamProfileComponent {
     this.db.object('teams/' + this.currentTeamID).update({
       name: this.teamName, photoURL: this.photoURL,
     })
-    .then(_ => this.router.navigate(['teamSettings']))
+    .then(_ => this.router.navigate(['teams']))
     .catch(err => this.messageSaveTeamProfile="Error: Only leaders can save team profile");
 
   }

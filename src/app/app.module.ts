@@ -6,13 +6,15 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { TeamSettingsComponent }  from './teamSettings.component';
-import { MembersComponent }  from './members.component';
+import { TeamsComponent }  from './teams.component';
+import { UsersComponent }  from './users.component';
 import { ChatComponent }  from './chat.component';
 import { LoginComponent }  from './login.component';
 import { UserProfileComponent }  from './userProfile.component';
 import { ProjectProfileComponent }  from './projectProfile.component';
+import { ProjectsComponent }  from './projects.component';
 import { AddMemberComponent }  from './addMember.component';
+import { AddTeamComponent }  from './addTeam.component';
 import { FollowTeamComponent }  from './followTeam.component';
 import { FollowProjectComponent }  from './followProject.component';
 import { WalletComponent }  from './wallet.component';
@@ -39,13 +41,15 @@ export const firebaseConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    TeamSettingsComponent,
-    MembersComponent,
+    TeamsComponent,
+    UsersComponent,
     ChatComponent,
     LoginComponent,
     UserProfileComponent,
     ProjectProfileComponent,
+    ProjectsComponent,
     AddMemberComponent,
+    AddTeamComponent,
     FollowTeamComponent,
     FollowProjectComponent,
     WalletComponent,

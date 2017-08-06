@@ -17,13 +17,13 @@ import { Router, NavigationEnd } from '@angular/router'
         <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
         <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
         </div>
-        <div class='icon' (click)="router.navigate(['members'])">
+        <div class='icon' (click)="router.navigate(['users'])">
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:45px">
         <div style="font-size: 9px; color: #FFF;">Members</div>
         </div>
-        <div class='icon' (click)="router.navigate(['projectProfile'])">
+        <div class='icon' (click)="router.navigate(['projects'])">
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:45px">
-        <div style="font-size: 9px; color: #FFF;">Project</div>
+        <div style="font-size: 9px; color: #FFF;">Projects</div>
         </div>
         <div class='icon' (click)="router.navigate(['chat'])">
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px">
@@ -34,7 +34,7 @@ import { Router, NavigationEnd } from '@angular/router'
         <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:45px">
         <div style="font-size: 9px; color: #FFF;">Wallet</div>
         </div>
-        <div class='icon' (click)="router.navigate(['teamSettings'])">
+        <div class='icon' (click)="router.navigate(['teams'])">
         <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;">
         <div style="font-size: 9px; color: #FFF;">Teams</div>
         <div class='activity' [hidden]="!globalChatActivity"></div>

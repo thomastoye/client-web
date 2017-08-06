@@ -112,7 +112,7 @@ export class UserProfileComponent {
 
   cancelMember(teamID: string, userID: string) {
     this.db.object('teamUsers/' + teamID + '/' + userID).update({member:false})
-    .then(_ => this.router.navigate(['teamSettings']))
+    .then(_ => this.router.navigate(['teams']))
     .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
   }
 
@@ -145,7 +145,7 @@ export class UserProfileComponent {
     else {
       this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
       this.db.object('userInterface/'+userID).update({currentTeam: teamID});
-      this.router.navigate(['teamSettings']);
+      this.router.navigate(['teams']);
     }
   }
 

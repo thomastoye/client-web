@@ -64,7 +64,7 @@ export class AddMemberComponent  {
     if (memberID==null || memberID=="") {this.messageAddMember = "Please select a member"}
     else {
       this.db.object('teamUsers/'+teamID+'/'+memberID).update({member: true, leader: false})
-      .then(_ => this.router.navigate(['teamSettings']))
+      .then(_ => this.router.navigate(['members']))
       .catch(err => this.messageAddMember="Error: You need to be leader to add a Member - You cannot add yourself if you are already in the team");
     }
   }

@@ -2,11 +2,13 @@ import { NgModule }              from '@angular/core';
 import { RouterModule, Routes }  from '@angular/router';
 import { LoginComponent }   from './login.component';
 import { ChatComponent } from './chat.component';
-import { MembersComponent } from './members.component';
+import { UsersComponent } from './users.component';
 import { UserProfileComponent } from './userProfile.component';
 import { ProjectProfileComponent } from './projectProfile.component';
-import { TeamSettingsComponent } from './teamSettings.component';
+import { ProjectsComponent } from './projects.component';
+import { TeamsComponent } from './teams.component';
 import { AddMemberComponent } from './addMember.component';
+import { AddTeamComponent } from './addTeam.component';
 import { FollowTeamComponent } from './followTeam.component';
 import { FollowProjectComponent } from './followProject.component';
 import { WalletComponent } from './wallet.component';
@@ -18,12 +20,14 @@ import { BuyCoins } from './buyCoins.component';
 
 const appRoutes: Routes = [
   { path: 'chat', component: ChatComponent },
-  { path: 'members', component: MembersComponent },
+  { path: 'users', component: UsersComponent },
   { path: 'userProfile', component: UserProfileComponent },
   { path: 'projectProfile', component: ProjectProfileComponent },
+  { path: 'projects', component: ProjectsComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'teamSettings', component: TeamSettingsComponent },
+  { path: 'teams', component: TeamsComponent },
   { path: 'addMember', component: AddMemberComponent },
+  { path: 'addTeam', component: AddTeamComponent },
   { path: 'followTeam', component: FollowTeamComponent },
   { path: 'followProject', component: FollowProjectComponent },
   { path: 'wallet', component: WalletComponent },

@@ -14,8 +14,6 @@ import { Router } from '@angular/router'
   <div class='title'>{{name}}</div>
   <div style="padding:10px;">{{goal}} {{goal?"":"Add a goal here..."}}</div>
   <button [hidden]='!ownProject' (click)="editMode=true">Edit project</button>
-  <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Add project</button>
-  <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create project</button>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -41,12 +39,13 @@ import { Router } from '@angular/router'
       </div>
     </li>
   </ul>
+  <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="this.router.navigate(['addTeam'])" style="background-color:#c69b00">Add a team</button>
   </div>
   `,
 })
 export class ProjectProfileComponent {
   currentUserID: string;
-  currentProjectID: string;
+  focusProjectID: string;
   name: string;
   goal: string;
   photoURL: string;
@@ -66,21 +65,19 @@ export class ProjectProfileComponent {
         this.currentUserID = auth.uid;
         db.object('userInterface/'+auth.uid).subscribe(userInterface=>{
           this.currentTeamID = userInterface.currentTeam;
-          db.object('teamProjects/' + this.currentTeamID).subscribe(teamProjects => {
-            this.currentProjectID = teamProjects.project;
-            this.messageCancelMembership = ""
-            db.object('projects/' + this.currentProjectID).subscribe(focusProject => {
-              this.name = focusProject.name;
-              this.goal = focusProject.goal;
-              this.photoURL = focusProject.photoURL;
-              this.editMode = false;
-            });
-            this.projectTeams = db.list('projectTeams/' + this.currentProjectID, {
-              query:{
-                orderByChild:'member',
-                equalTo: true,
-              }
-            });
+          this.focusProjectID = userInterface.focusProject;
+          this.messageCancelMembership = ""
+          db.object('projects/' + this.focusProjectID).subscribe(focusProject => {
+            this.name = focusProject.name;
+            this.goal = focusProject.goal;
+            this.photoURL = focusProject.photoURL;
+            this.editMode = false;
+          });
+          this.projectTeams = db.list('projectTeams/' + this.focusProjectID, {
+            query:{
+              orderByChild:'member',
+              equalTo: true,
+            }
           });
         });
       }
@@ -89,7 +86,7 @@ export class ProjectProfileComponent {
 
   updateProjectProfile() {
     this.name = this.name.toUpperCase();
-    this.db.object('projects/'+this.currentProjectID).update({
+    this.db.object('projects/'+this.focusProjectID).update({
       name: this.name, photoURL: this.photoURL, goal: this.goal
     });
     this.editMode=false;
@@ -97,7 +94,7 @@ export class ProjectProfileComponent {
 
   cancelMember(projectID: string, teamID: string) {
     this.db.object('projectTeams/' + projectID + '/' + teamID).update({member:false})
-    .then(_ => this.router.navigate(['teamSettings']))
+    .then(_ => this.router.navigate(['teams']))
     .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
   }
 
@@ -123,15 +120,6 @@ export class ProjectProfileComponent {
       output = snapshot.photoURL;
     });
     return output;
-  }
-
-  followTeam (teamID: string, userID: string) {
-    if (teamID==null || teamID=="") {return null}
-    else {
-      this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-      this.db.object('userInterface/'+userID).update({currentTeam: teamID});
-      this.router.navigate(['teamSettings']);
-    }
   }
 
   errorHandler(event) {

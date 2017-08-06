@@ -6,52 +6,55 @@ import * as firebase from 'firebase/app';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'followProject',
+  selector: 'addTeam',
   template: `
   <div class='sheet'>
   <ul class="listLight">
-  <input maxlength="500" (keyup)="refreshProjectList()" [(ngModel)]="this.filter" style="text-transform:uppercase" placeholder="search project name">
-    <li *ngFor="let project of projects | async"
-      [class.selected]="project.$key === selectedProjectID"
-      (click)="selectedProjectID = project.$key">
-      <img (error)="errorHandler($event)"[src]="project.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
-      {{project.name}}
+  <input maxlength="500" (keyup)="refreshTeamList()" [(ngModel)]="this.filter" style="text-transform:uppercase" placeholder="search team name">
+    <li *ngFor="let team of teams | async"
+      [class.selected]="team.$key === selectedTeamID"
+      (click)="selectedTeamID = team.$key">
+      <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
+      {{team.name}}
     </li>
   </ul>
-  <button style="background-color:#c69b00" (click)="followProject(selectedProjectID, currentTeamID)">Follow this project {{messageFollow}}</button>
+  <button (click)="addTeam(selectedTeamID, focusProjectID)">Add this team {{messageFollow}}</button>
   </div>
   `,
 })
 
-export class FollowProjectComponent  {
+export class AddTeamComponent  {
 
   currentUserID: string;
   firstName: string;
   photoURL: string;
+  currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
-  selectedProjectID: string;
-  projects: FirebaseListObservable<any>;
+  selectedTeamID: string;
+  focusProjectID: string;
+  teams: FirebaseListObservable<any>;
   filter: string;
   messageFollow: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){
-        this.projects=null;
+        this.teams=null;
       }
       else {
         this.currentUserID = auth.uid;
         this.db.object('userInterface/'+auth.uid).subscribe(userInterface => {
           this.currentTeamID = userInterface.currentTeam;
+          this.focusProjectID = userInterface.focusProject;
         });
       }
     });
   }
 
-  refreshProjectList () {
+  refreshTeamList () {
     this.filter = this.filter.toUpperCase();
     if (this.filter.length>1) {
-    this.projects = this.db.list('projects/', {
+    this.teams = this.db.list('teams/', {
       query:{
         orderByChild:'name',
         startAt: this.filter,
@@ -60,14 +63,14 @@ export class FollowProjectComponent  {
       }
     });
   }
-  else this.projects = null;
+  else this.teams = null;
 }
 
-  followProject (projectID: string, teamID: string) {
-    if (projectID==null || projectID=="") {this.messageFollow = "Please select a project"}
+  addTeam (teamID: string, projectID: string) {
+    if (teamID==null || teamID=="") {this.messageFollow = "Please select a team"}
     else {
-      this.db.object('teamProjects/'+teamID+'/'+projectID).update({following: true});
-      this.router.navigate(['projects']);
+      this.db.object('projectTeams/'+projectID+'/'+teamID).update({member: true, leader: false});
+      this.router.navigate(['projectProfile']);
     }
   }
 

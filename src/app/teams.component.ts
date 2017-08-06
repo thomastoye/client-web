@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 
 
 @Component({
-  selector: 'teamSettings',
+  selector: 'teams',
   template: `
   <div class='sheet'>
   <ul class="listLight">
@@ -37,7 +37,7 @@ import { Router } from '@angular/router';
   `,
 })
 
-export class TeamSettingsComponent  {
+export class TeamsComponent  {
 
   currentUser: FirebaseObjectObservable<any>;
   currentUserID: string;
