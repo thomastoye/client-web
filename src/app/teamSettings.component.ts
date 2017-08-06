@@ -20,13 +20,15 @@ import { Router } from '@angular/router';
       <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
+      <div class='project' (click)="db.object('userInterface/'+currentUserID).update({focusProject: getTeamProjectID(team.$key)});this.router.navigate(['projectProfile'])">{{getTeamProjectName(getTeamProjectID(team.$key))}}</div>
       <div [hidden]='team.$key!=currentTeamID' style="float:right">
       <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
       </div>
       <div [hidden]='team.$key!=currentTeamID' style="float:right">
       <div [hidden]='!moreButtons'>
-      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['addMember'])">Add member</div>
-      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['teamProfile'])">Edit profile</div>
+      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['teamProfile'])">Edit</div>
+      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['followProject'])" style="color:#c69b00">Add project</div>
+      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['createProject'])" style="color:#c69b00">Create project</div>
       <div [hidden]='getUserLeader(team.$key)' class="button" (click)="leaveTeam(currentTeamID)">Stop following</div>
       </div>
       </div>
@@ -73,6 +75,22 @@ export class TeamSettingsComponent  {
   getTeamName (ID: string) :string {
     var output;
     this.db.object('teams/' + ID).subscribe(snapshot => {
+      output = snapshot.name;
+    });
+    return output;
+  }
+
+  getTeamProjectID (ID: string) :string {
+    var output;
+    this.db.object('teamProjects/' + ID).subscribe(snapshot => {
+      output = snapshot.project;
+    });
+    return output;
+  }
+
+  getTeamProjectName (ID: string) :string {
+    var output;
+    this.db.object('projects/' + ID).subscribe(snapshot => {
       output = snapshot.name;
     });
     return output;

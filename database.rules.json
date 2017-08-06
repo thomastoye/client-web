@@ -12,6 +12,22 @@
       ".read": "auth.token.email_verified === true",
       ".indexOn": ["sender","receiver"]
     },
+    "projectTeams": {
+      ".read": "auth.token.email_verified === true",
+      "$projectid": {
+        ".indexOn": ["member"],
+        "$teamid": {
+          ".write": "(!data.exists() || newData.exists() && root.child('projectTeams').child($projectid).child(root.child('userInterface').child(auth.uid).child('currentTeam').val()).child('leader').val() === true && root.child('teamUsers').child(root.child('userInterface').child(auth.uid).child('currentTeam').val()).child(auth.uid).child('member').val() === true && data.child('leader').val() != true) && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
+        }
+      }
+    },
+    "projects": {
+      ".read": "auth.token.email_verified === true",
+      ".indexOn": ["name"],
+      "$projectid": {
+        ".write": "(!data.exists() || newData.exists() && root.child('projectTeams').child($projectid).child(root.child('userInterface').child(auth.uid).child('currentTeam').val()).child('leader').val() === true && root.child('teamUsers').child(root.child('userInterface').child(auth.uid).child('currentTeam').val()).child(auth.uid).child('member').val() === true) && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
+      }
+    },
     "teamActivities": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
@@ -27,8 +43,16 @@
     "teamPayments": {
       "$teamid": {
         "$chargeid": {
-        ".read": "auth.token.email_verified === true",
-        ".write": "!data.exists() && newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
+          ".read": "auth.token.email_verified === true",
+          ".write": "!data.exists() && newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
+        }
+      }
+    },
+    "teamProjects": {
+      ".read": "auth.token.email_verified === true",
+      "$teamid": {
+        "$projectid": {
+          ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
         }
       }
     },
@@ -57,6 +81,7 @@
     },
     "teams": {
       ".read": "auth.token.email_verified === true",
+      ".indexOn": ["name"],
       "$teamid": {
         ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true) && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
       }

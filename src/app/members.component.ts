@@ -6,17 +6,20 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { Router, NavigationEnd } from '@angular/router'
 
 @Component({
-  selector: 'member',
+  selector: 'members',
   template: `
-  <ul class="members" style="float: left">
-    <li class='icon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:45px; width:45px">
-      <div style="font-size: 9px; color: #FFF;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (NF)"}}</div>
-    </li>
-  </ul>
+  <div class='sheet'>
+    <ul class='listLight'>
+      <li class='icon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
+        <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; border-radius:3px; object-fit: cover; height:60px; width:60px">
+        <div style="width:150px;height:25px;float:left;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (NF)"}}</div>
+      </li>
+    </ul>
+    <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['addMember'])">Add member</button>
+  </div>
 `,
 })
-export class MemberComponent  {
+export class MembersComponent  {
 
   currentUserID: string;
   currentTeamID: string;
@@ -65,6 +68,14 @@ export class MemberComponent  {
     var output;
     this.db.object('users/' + ID).subscribe(snapshot => {
       output = snapshot.photoURL;
+    });
+    return output;
+  }
+
+  getUserLeader (ID: string) :string {
+    var output;
+    this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
+      output = snapshot.leader;
     });
     return output;
   }

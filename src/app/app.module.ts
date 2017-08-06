@@ -7,14 +7,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { TeamSettingsComponent }  from './teamSettings.component';
-import { MemberComponent }  from './member.component';
+import { MembersComponent }  from './members.component';
 import { ChatComponent }  from './chat.component';
 import { LoginComponent }  from './login.component';
 import { UserProfileComponent }  from './userProfile.component';
+import { ProjectProfileComponent }  from './projectProfile.component';
 import { AddMemberComponent }  from './addMember.component';
 import { FollowTeamComponent }  from './followTeam.component';
+import { FollowProjectComponent }  from './followProject.component';
 import { WalletComponent }  from './wallet.component';
 import { CreateTeamComponent }  from './createTeam.component';
+import { CreateProjectComponent }  from './createProject.component';
 import { CreateTransactionComponent }  from './createTransaction.component';
 import { TeamProfileComponent }  from './teamProfile.component';
 import { BuyCoins }  from './buyCoins.component';
@@ -37,14 +40,17 @@ export const firebaseConfig = {
   declarations: [
     AppComponent,
     TeamSettingsComponent,
-    MemberComponent,
+    MembersComponent,
     ChatComponent,
     LoginComponent,
     UserProfileComponent,
+    ProjectProfileComponent,
     AddMemberComponent,
     FollowTeamComponent,
+    FollowProjectComponent,
     WalletComponent,
     CreateTeamComponent,
+    CreateProjectComponent,
     CreateTransactionComponent,
     TeamProfileComponent,
     BuyCoins,

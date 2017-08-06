@@ -17,7 +17,10 @@ import { Router, NavigationEnd } from '@angular/router'
         <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
         <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
         </div>
-        <member></member>
+        <div class='icon' (click)="router.navigate(['members'])">
+        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:45px">
+        <div style="font-size: 9px; color: #FFF;">Members</div>
+        </div>
         <div class='icon' (click)="router.navigate(['chat'])">
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px">
         <div style="font-size: 9px; color: #FFF;">Chat</div>
@@ -29,7 +32,7 @@ import { Router, NavigationEnd } from '@angular/router'
         </div>
         <div class='icon' (click)="router.navigate(['teamSettings'])">
         <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;">
-        <div style="font-size: 9px; color: #FFF;">Team</div>
+        <div style="font-size: 9px; color: #FFF;">Teams</div>
         <div class='activity' [hidden]="!globalChatActivity"></div>
         </div>
         </div>

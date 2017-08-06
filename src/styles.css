@@ -39,7 +39,7 @@ body {
   vertical-align: middle;
 }
 .menu {
-  min-height: 100px;
+  height: 100px;
   color: #FFF;
   background-image: linear-gradient(145deg, rgb(13, 71, 161), rgb(66, 165, 245));
   background-size:cover;
@@ -180,6 +180,11 @@ body {
 }
 .listLight .selected {
   background-color: #eee !important;
+}
+.listLight .project {
+  color: #3f6eba;
+  text-decoration: underline;
+  float:left;
 }
 button {
   cursor: pointer;
