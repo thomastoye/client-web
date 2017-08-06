@@ -15,8 +15,8 @@ import { Router, NavigationEnd } from '@angular/router'
         <div style="height:25px;font-size:10px">{{getProjectName(project.$key)}}{{(getTeamLeader(project.$key,currentTeamID)? " **" : "") }}</div>
       </li>
     </ul>
-    <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
-    <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
+    <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
+    <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
   </div>
 `,
 })
