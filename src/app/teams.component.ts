@@ -17,9 +17,9 @@ import { Router } from '@angular/router';
       <div style="display: inline; float: left; height:25px; width:20px">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
-      <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
-      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key)?"*":""}}</div>
-      <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
+      <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:35px; width:35px">
+      <div style="width:15px;height:15px;float:left;">{{getUserLeader(team.$key)?"*":""}}</div>
+      <div style="width:200px;height:15px;float:left;">{{getTeamName(team.$key)}}</div>
       <div [hidden]='team.$key!=currentTeamID' style="float:right">
       <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
       </div>

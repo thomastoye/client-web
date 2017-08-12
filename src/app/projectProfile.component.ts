@@ -33,7 +33,7 @@ import { Router } from '@angular/router'
       (click)="selectedTeamID = team.$key">
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
-      <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
+      <div style="width:300px;height:25px;float:left;">{{getTeamName(team.$key)}}{{(getTeamLeader(currentProjectID,team.$key)? " **" : "")}}{{getTeamFollowing(team.$key,currentProjectID)?"":" (Not Following)"}}</div>
       <div [hidden]='team.$key!=selectedTeamID' style="float:right">
       <div class="button" (click)="followTeam(selectedTeamID,currentUserID)">Follow</div>
       </div>
@@ -45,7 +45,7 @@ import { Router } from '@angular/router'
 })
 export class ProjectProfileComponent {
   currentUserID: string;
-  focusProjectID: string;
+  currentProjectID: string;
   name: string;
   goal: string;
   photoURL: string;
@@ -65,15 +65,15 @@ export class ProjectProfileComponent {
         this.currentUserID = auth.uid;
         db.object('userInterface/'+auth.uid).subscribe(userInterface=>{
           this.currentTeamID = userInterface.currentTeam;
-          this.focusProjectID = userInterface.focusProject;
+          this.currentProjectID = userInterface.focusProject;
           this.messageCancelMembership = ""
-          db.object('projects/' + this.focusProjectID).subscribe(focusProject => {
+          db.object('projects/' + this.currentProjectID).subscribe(focusProject => {
             this.name = focusProject.name;
             this.goal = focusProject.goal;
             this.photoURL = focusProject.photoURL;
             this.editMode = false;
           });
-          this.projectTeams = db.list('projectTeams/' + this.focusProjectID, {
+          this.projectTeams = db.list('projectTeams/' + this.currentProjectID, {
             query:{
               orderByChild:'member',
               equalTo: true,
@@ -86,7 +86,7 @@ export class ProjectProfileComponent {
 
   updateProjectProfile() {
     this.name = this.name.toUpperCase();
-    this.db.object('projects/'+this.focusProjectID).update({
+    this.db.object('projects/'+this.currentProjectID).update({
       name: this.name, photoURL: this.photoURL, goal: this.goal
     });
     this.editMode=false;
@@ -106,6 +106,22 @@ export class ProjectProfileComponent {
     return output;
   }
 
+  getTeamLeader (projectID: string, teamID: string) :string {
+    var output;
+    this.db.object('projectTeams/' + projectID + '/' + teamID).subscribe(snapshot => {
+      output = snapshot.leader;
+    });
+    return output;
+  }
+
+  getTeamFollowing (teamID: string, projectID: string) :boolean {
+    var output;
+    this.db.object('teamProjects/' + teamID + '/' + projectID).subscribe(snapshot => {
+      output = snapshot.following
+    });
+    return output;
+  }
+
   getTeamName (ID: string) :string {
     var output;
     this.db.object('teams/' + ID).subscribe(snapshot => {
@@ -120,6 +136,15 @@ export class ProjectProfileComponent {
       output = snapshot.photoURL;
     });
     return output;
+  }
+
+  followTeam (teamID: string, userID: string) {
+    if (teamID==null || teamID=="") {return null}
+    else {
+      this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+      this.db.object('userInterface/'+userID).update({currentTeam: teamID});
+      this.router.navigate(['teams']);
+    }
   }
 
   errorHandler(event) {

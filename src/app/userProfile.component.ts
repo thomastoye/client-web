@@ -39,6 +39,7 @@ import { Router } from '@angular/router'
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,focusUserID)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
       <div [hidden]='team.$key!=selectedTeamID' style="float:right">
+      <div class="button" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">Visit</div>
       <div class="button" (click)="followTeam(selectedTeamID,currentUserID)">Follow</div>
       </div>
     </li>
