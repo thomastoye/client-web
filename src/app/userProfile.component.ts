@@ -14,7 +14,7 @@ import { Router } from '@angular/router'
   <div [hidden]="leaderStatus" class="memberStatus">{{memberStatus}}</div>
   <div [hidden]='editMode'>
   <div class='title'>{{firstName}} {{lastName}}</div>
-  <div style="padding:10px;">{{resume}} {{resume?"":"Add a resume here..."}}</div>
+  <div style="padding:10px;" [innerHTML]="resume | linky"></div>
   <button [hidden]='!ownProfile' (click)="editMode=true">Edit profile</button>
   <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>
   </div>
@@ -113,7 +113,7 @@ export class UserProfileComponent {
 
   cancelMember(teamID: string, userID: string) {
     this.db.object('teamUsers/' + teamID + '/' + userID).update({member:false})
-    .then(_ => this.router.navigate(['teams']))
+    .then(_ => this.router.navigate(['users']))
     .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
   }
 

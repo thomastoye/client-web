@@ -12,8 +12,8 @@ import { Router } from '@angular/router'
   <div style="float: left; width: 50%;">
   <div [hidden]='editMode'>
   <div class='title'>{{name}}</div>
-  <div style="padding:10px;">{{goal}} {{goal?"":"Add a goal here..."}}</div>
-  <button [hidden]='!ownProject' (click)="editMode=true">Edit project</button>
+  <div style="padding:10px;" [innerHTML]="goal | linky"></div>
+  <button [hidden]='!teamAndProjectLeader' (click)="editMode=true">Edit project</button>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -35,6 +35,7 @@ import { Router } from '@angular/router'
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
       <div style="width:300px;height:25px;float:left;">{{getTeamName(team.$key)}}{{(getTeamLeader(currentProjectID,team.$key)? " **" : "")}}{{getTeamFollowing(team.$key,currentProjectID)?"":" (Not Following)"}}</div>
       <div [hidden]='team.$key!=selectedTeamID' style="float:right">
+      <div class="button" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">Visit</div>
       <div class="button" (click)="followTeam(selectedTeamID,currentUserID)">Follow</div>
       </div>
     </li>
@@ -54,7 +55,7 @@ export class ProjectProfileComponent {
   memberStatus: string;
   leaderStatus: boolean;
   messageCancelMembership: string;
-  ownProject: boolean;
+  teamAndProjectLeader: boolean;
   projectTeams: FirebaseListObservable<any>;
   selectedTeamID: string;
 
@@ -72,6 +73,11 @@ export class ProjectProfileComponent {
             this.goal = focusProject.goal;
             this.photoURL = focusProject.photoURL;
             this.editMode = false;
+            db.object('projectTeams/'+this.currentProjectID+'/'+this.currentTeamID).subscribe(projectTeam => {
+              db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(teamUser => {
+                this.teamAndProjectLeader=(teamUser.leader && projectTeam.leader); 
+              });
+            });
           });
           this.projectTeams = db.list('projectTeams/' + this.currentProjectID, {
             query:{

@@ -100,7 +100,7 @@ body {
 }
 .chat{
   overflow-y: auto;
-  height: 400px;
+  height: 350px;
   padding: 5px;
 }
 .listDark {
