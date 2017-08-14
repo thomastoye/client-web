@@ -25,9 +25,6 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *"/>
           <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *"/>
           <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name *"/>
-          <div style="font-size:10px; padding:5px">Find an image on the web for your profile, copy its address and paste it below. Verify that the image appears before registering.</div>
-          <input maxlength="500" [(ngModel)]="photoURL" name="photoURL" placeholder="Image address here *"/>
-          <img (error)="errorHandler($event)"[src]="photoURL" style="object-fit:contain; height:100px; width:100%">
           <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register {{messageRegister}}</button>
           </div>
           </div>
@@ -69,6 +66,7 @@ export class LoginComponent  {
     public afAuth: AngularFireAuth,
     public db: AngularFireDatabase
   ) {
+    this.photoURL="./../assets/App icons/me.png";
     this.newUser = false;
     this.afAuth.authState.subscribe((auth) => {
         if (auth == null) {

@@ -17,7 +17,7 @@ import { Router } from '@angular/router'
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
-  <input maxlength="140" [(ngModel)]="goal" placeholder="Project goal (140 characters max) *" />
+  <input maxlength="500" [(ngModel)]="goal" placeholder="Project goal (500 characters max) *" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Image address from the web *" />
   <button (click)="updateProjectProfile()">Save profile</button>
   </div>
@@ -75,7 +75,7 @@ export class ProjectProfileComponent {
             this.editMode = false;
             db.object('projectTeams/'+this.currentProjectID+'/'+this.currentTeamID).subscribe(projectTeam => {
               db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(teamUser => {
-                this.teamAndProjectLeader=(teamUser.leader && projectTeam.leader); 
+                this.teamAndProjectLeader=(teamUser.leader && projectTeam.leader);
               });
             });
           });
