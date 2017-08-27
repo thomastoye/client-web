@@ -17,7 +17,7 @@ import { Router } from '@angular/router'
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
-      <div style="width:200px;height:25px;float:left;">{{team.balance | number:'1.2-2'}}</div>
+      <div style="width:80px;height:25px;float:left; text-align:right;">{{team.balance | number:'1.2-2'}}</div>
       <div [hidden]='team.$key!=selectedTeamID' style="float:right">
       <div class="button" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">Visit</div>
       <div class="button" (click)="followTeam(selectedTeamID,currentUserID)">Follow</div>
