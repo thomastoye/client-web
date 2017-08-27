@@ -139,7 +139,7 @@ export class CreateTransactionComponent {
 
   checkTransactionInput():void {
     this.transactionInputValid = (this.transactionReference!=null&&this.transactionReference!=""&&
-                                  this.transactionAmount!=null&&this.transactionAmount!=0&&
+                                  this.transactionAmount!=null&&this.transactionAmount>0&&
                                   this.transactionAmount<=this.currentBalance&&
                                   this.selectedTeamID!=null&&this.selectedTeamID!=""&&
                                   this.selectedTeamID!=this.currentTeamID);

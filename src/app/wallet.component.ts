@@ -21,6 +21,7 @@ import { Router } from '@angular/router'
     <button type="button" (click)="router.navigate(['buyCoins'])" style="margin:0;float:right;width:100px;background-color:#43c14b">Buy COINS</button>
     <div style="color: black;">COINS</div>
     </div>
+    <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['PERRINNTeamBalance'])">COIN info</div>
     </div>
   </div>
   <ul class="listLight">

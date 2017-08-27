@@ -72,3 +72,29 @@ exports.createPERRINNTransactionOnPaymentComplete = functions.database.ref('/tea
     });
   }
 });
+
+exports.updateTeamBalance = functions.database.ref('/PERRINNTransactions/{transactionID}').onWrite(event => {
+  var totalCOIN=0;
+  admin.database().ref('teams/').once('value').then(teams=>{
+    teams.forEach(function(team){
+      var balance=0;
+      admin.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(team.key).once('value').then(PERRINNTransactions=>{
+        PERRINNTransactions.forEach(function(PERRINNTransaction){
+          balance-=Number(PERRINNTransaction.val().amount);
+          totalCOIN-=Number(PERRINNTransaction.val().amount);
+        });
+      }).then(()=>{
+        admin.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(team.key).once('value').then(PERRINNTransactions=>{
+          PERRINNTransactions.forEach(function(PERRINNTransaction){
+            balance+=Number(PERRINNTransaction.val().amount);
+            totalCOIN+=Number(PERRINNTransaction.val().amount);
+          });
+        }).then(()=>{
+          admin.database().ref('PERRINNTeamBalance/'+team.key).update({balance:balance});
+          admin.database().ref('PERRINNTeamBalance/'+team.key).update({balanceNegative:-balance});
+          admin.database().ref('PERRINNTeamBalance/').update({totalCOIN:totalCOIN});
+        });
+      });
+    });
+  });
+});
