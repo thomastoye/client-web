@@ -8,6 +8,9 @@
       ".read": "auth.token.email_verified === true",
       ".write": "newData.exists() && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
     },
+    "PERRINNStatistics": {
+      ".read": "auth.token.email_verified === true"
+    },
     "PERRINNTeamBalance": {
       ".read": "auth.token.email_verified === true",
       ".indexOn": ["balance"]

@@ -92,7 +92,7 @@ exports.updateTeamBalance = functions.database.ref('/PERRINNTransactions/{transa
         }).then(()=>{
           admin.database().ref('PERRINNTeamBalance/'+team.key).update({balance:balance});
           admin.database().ref('PERRINNTeamBalance/'+team.key).update({balanceNegative:-balance});
-          admin.database().ref('PERRINNTeamBalance/').update({totalCOIN:totalCOIN});
+          admin.database().ref('PERRINNStatistics/').update({totalCOIN:totalCOIN});
         });
       });
     });

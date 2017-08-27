@@ -54,7 +54,7 @@ export class PERRINNTeamBalance {
             orderByChild:'balanceNegative',
           }
         });
-        this.db.object('PERRINNTeamBalance/totalCOIN').subscribe(totalCOIN => {
+        this.db.object('PERRINNStatistics/totalCOIN').subscribe(totalCOIN => {
           this.totalCOIN = totalCOIN.$value;
         });
       }
