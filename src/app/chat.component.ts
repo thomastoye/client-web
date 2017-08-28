@@ -23,14 +23,21 @@ import { AngularFireAuth } from 'angularfire2/auth';
     </li>
   </ul>
   </div>
+  <ul style="list-style: none;">
+    <li *ngFor="let author of draftMessageAuthors | async">
+    <div [hidden]="!author.draftMessage" style="padding-left:25px;font-weight:bold">{{(db.object('users/'+author.$key)|async)?.firstName}} ...</div>
+    </li>
+  </ul>
   </div>
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer" (click)="timestampChatVisit()">Mark all read</div>
-  <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
+  <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
   </div>
     `,
 })
 export class ChatComponent {
   draftMessage: string;
+  draftMessageDB: boolean;
+  draftMessageAuthors: FirebaseListObservable<any>;
   teamMessages: FirebaseListObservable<any>;
   currentUserID: string;
   currentTeamID: string;
@@ -41,6 +48,7 @@ export class ChatComponent {
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.messageNumberDisplay = 25;
+    this.draftMessageDB=false;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
@@ -49,6 +57,7 @@ export class ChatComponent {
           this.messageNumberDisplay = 25;
           this.currentTeamID = userInterface.currentTeam;
           this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: this.messageNumberDisplay}});
+          this.draftMessageAuthors = this.db.list('teamActivities/'+this.currentTeamID+'/draftMessages/');
           this.db.object('teamUsers/'+this.currentTeamID+'/'+auth.uid).subscribe(teamUser=>{
             if (teamUser==null) {this.messageInput="You need to be a member to message this team"}
             else {this.messageInput = teamUser.member?"Message team":"You need to be a member to message this team"}
@@ -87,6 +96,13 @@ export class ChatComponent {
       timestampNegative = -1 * timestamp;
       this.db.object('teamMessages/'+teamID+'/'+messageID).update({timestampNegative: timestampNegative});
     });
+  }
+
+  updateDraftMessageDB () {
+    if ((this.draftMessage!="")!=this.draftMessageDB) {
+      this.db.object('teamActivities/'+this.currentTeamID+'/draftMessages/'+this.currentUserID).update({draftMessage:this.draftMessage!=""});
+    }
+    this.draftMessageDB=(this.draftMessage!="");
   }
 
   errorHandler(event) {

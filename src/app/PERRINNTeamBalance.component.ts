@@ -52,6 +52,7 @@ export class PERRINNTeamBalance {
         this.PERRINNTeamBalance = db.list('PERRINNTeamBalance/', {
           query:{
             orderByChild:'balanceNegative',
+            limitToFirst: 25,
           }
         });
         this.db.object('PERRINNStatistics/totalCOIN').subscribe(totalCOIN => {
