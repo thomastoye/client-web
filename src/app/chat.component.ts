@@ -25,7 +25,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   </div>
   <ul style="list-style: none;">
     <li *ngFor="let author of draftMessageAuthors | async">
-    <div [hidden]="!author.draftMessage" style="padding-left:25px;font-weight:bold">{{(db.object('users/'+author.$key)|async)?.firstName}} ...</div>
+    <div [hidden]="!author.draftMessage||author.$key==currentUserID" style="padding-left:25px;font-weight:bold">{{(db.object('users/'+author.$key)|async)?.firstName}} ...</div>
     </li>
   </ul>
   </div>
