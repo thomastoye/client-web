@@ -17,7 +17,7 @@ import { CreateProjectComponent } from './createProject.component';
 import { CreateTransactionComponent } from './createTransaction.component';
 import { TeamProfileComponent } from './teamProfile.component';
 import { BuyCoins } from './buyCoins.component';
-import { PERRINNTeamBalance } from './PERRINNTeamBalance.component';
+import { COINinfo } from './COINinfo.component';
 
 const appRoutes: Routes = [
   { path: 'chat', component: ChatComponent },
@@ -37,7 +37,7 @@ const appRoutes: Routes = [
   { path: 'createTransaction', component: CreateTransactionComponent },
   { path: 'teamProfile', component: TeamProfileComponent },
   { path: 'buyCoins', component: BuyCoins },
-  { path: 'PERRINNTeamBalance', component: PERRINNTeamBalance },
+  { path: 'COINinfo', component: COINinfo },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
   { path: '**', component: LoginComponent }
 ];

@@ -6,9 +6,13 @@ import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
 
 @Component({
-  selector: 'PERRINNTeamBalance',
+  selector: 'COINinfo',
   template: `
   <div class="sheet">
+    <div [class.selected]="sheetNumber===1" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=1">COIN ownership</div>
+    <div [class.selected]="sheetNumber===2" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=2">COIN price</div>
+  </div>
+  <div class="sheet" [hidden]="sheetNumber!=1">
   <div class="title" style="color: black;text-align:left;">There are {{totalCOIN | number:'1.2-2'}} COINS in circulation</div>
   <ul class="listLight">
     <li *ngFor="let team of PERRINNTeamBalance | async"
@@ -25,9 +29,12 @@ import { Router } from '@angular/router'
     </li>
   </ul>
   </div>
+  <div class="sheet" [hidden]="sheetNumber!=2">
+  <iframe width='100%' height='2000' src="https://goo.gl/urwsGe"></iframe>
+  </div>
   `,
 })
-export class PERRINNTeamBalance {
+export class COINinfo {
   currentUserID: string;
   focusUserID: string;
   firstName: string;
@@ -43,8 +50,10 @@ export class PERRINNTeamBalance {
   PERRINNTeamBalance: FirebaseListObservable<any>;
   selectedTeamID: string;
   totalCOIN: number;
+  sheetNumber: number;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+    this.sheetNumber=1;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
