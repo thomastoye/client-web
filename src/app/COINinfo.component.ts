@@ -11,6 +11,7 @@ import { Router } from '@angular/router'
   <div class="sheet">
     <div [class.selected]="sheetNumber===1" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=1">COIN ownership</div>
     <div [class.selected]="sheetNumber===2" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=2">COIN price</div>
+    <div [class.selected]="sheetNumber===3" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=3">initial COIN offering</div>
   </div>
   <div class="sheet" [hidden]="sheetNumber!=1">
   <div class="title" style="color: black;text-align:left;">There are {{totalCOIN | number:'1.2-2'}} COINS in circulation</div>
@@ -28,9 +29,13 @@ import { Router } from '@angular/router'
       </div>
     </li>
   </ul>
+  <div style="color:blue;padding:10px 0 10px 0;cursor:pointer;text-align:center" (click)="teamNumberDisplay=teamNumberDisplay+25;PERRINNTeamBalance=db.list('PERRINNTeamBalance/',{query:{orderByChild:'balanceNegative',limitToFirst:teamNumberDisplay}})">More teams</div>
   </div>
   <div class="sheet" [hidden]="sheetNumber!=2">
-  <iframe width='100%' height='2000' src="https://goo.gl/urwsGe"></iframe>
+  <iframe width='100%' height='3000' src="https://goo.gl/urwsGe"></iframe>
+  </div>
+  <div class="sheet" [hidden]="sheetNumber!=3">
+  <iframe width='100%' height='3000' src="https://goo.gl/zqASv7"></iframe>
   </div>
   `,
 })
@@ -51,8 +56,10 @@ export class COINinfo {
   selectedTeamID: string;
   totalCOIN: number;
   sheetNumber: number;
+  teamNumberDisplay: number;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+    this.teamNumberDisplay=25;
     this.sheetNumber=1;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
@@ -61,7 +68,7 @@ export class COINinfo {
         this.PERRINNTeamBalance = db.list('PERRINNTeamBalance/', {
           query:{
             orderByChild:'balanceNegative',
-            limitToFirst: 25,
+            limitToFirst: this.teamNumberDisplay,
           }
         });
         this.db.object('PERRINNStatistics/totalCOIN').subscribe(totalCOIN => {
