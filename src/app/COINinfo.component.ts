@@ -9,12 +9,13 @@ import { Router } from '@angular/router'
   selector: 'COINinfo',
   template: `
   <div class="sheet">
-    <div [class.selected]="sheetNumber===1" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=1">COIN ownership</div>
-    <div [class.selected]="sheetNumber===2" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=2">COIN price</div>
-    <div [class.selected]="sheetNumber===3" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=3">initial COIN offering</div>
+    <div [class.selected]="sheetNumber===1" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=1">initial COIN offering</div>
+    <div [class.selected]="sheetNumber===2" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=2">COIN ownership</div>
+    <div [class.selected]="sheetNumber===3" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=3">COIN price</div>
   </div>
-  <div class="sheet" [hidden]="sheetNumber!=1">
+  <div class="sheet" [hidden]="sheetNumber!=2">
   <div class="title" style="color: black;text-align:left;">There are {{totalCOIN | number:'1.2-2'}} COINS in circulation</div>
+  <div [hidden]="loggedIn" style="padding:25px">Please login to access this information</div>
   <ul class="listLight">
     <li *ngFor="let team of PERRINNTeamBalance | async"
       [class.selected]="team.$key === selectedTeamID"
@@ -31,10 +32,10 @@ import { Router } from '@angular/router'
   </ul>
   <div style="color:blue;padding:10px 0 10px 0;cursor:pointer;text-align:center" (click)="teamNumberDisplay=teamNumberDisplay+25;PERRINNTeamBalance=db.list('PERRINNTeamBalance/',{query:{orderByChild:'balanceNegative',limitToFirst:teamNumberDisplay}})">More teams</div>
   </div>
-  <div class="sheet" [hidden]="sheetNumber!=2">
+  <div class="sheet" [hidden]="sheetNumber!=3">
   <iframe width='100%' height='3000' src="https://goo.gl/urwsGe"></iframe>
   </div>
-  <div class="sheet" [hidden]="sheetNumber!=3">
+  <div class="sheet" [hidden]="sheetNumber!=1">
   <iframe width='100%' height='3000' src="https://goo.gl/zqASv7"></iframe>
   </div>
   `,
@@ -57,13 +58,15 @@ export class COINinfo {
   totalCOIN: number;
   sheetNumber: number;
   teamNumberDisplay: number;
+  loggedIn: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.teamNumberDisplay=25;
     this.sheetNumber=1;
     this.afAuth.authState.subscribe((auth) => {
-      if (auth==null){}
+      if (auth==null){this.loggedIn=false}
       else {
+        this.loggedIn=true;
         this.currentUserID = auth.uid;
         this.PERRINNTeamBalance = db.list('PERRINNTeamBalance/', {
           query:{

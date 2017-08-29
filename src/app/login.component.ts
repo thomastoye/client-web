@@ -12,8 +12,8 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
   template: `
   <div id="login">
     <div style="background-color:#00a30a;color:white;text-align:center;padding:10px;margin-bottom:15px">
-    <div style="font-size:25px">PERRINN initial COIN offering is now live</div>
-    <a href="https://goo.gl/zqASv7" target="_blank" style="content-align:center;color:white;">learn more</a>
+    <div style="font-size:25px">PERRINN initial COIN offering is now live!</div>
+    <div style="text-decoration:underline;cursor:pointer;" (click)="router.navigate(['COINinfo']);">learn more</div>
     </div>
     <div class="module form-module">
       <div class="form">
