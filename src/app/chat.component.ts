@@ -20,7 +20,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
-    {{last?scrollToBottom():''}}
+    {{last?scrollToBottom(message.timestamp):''}}
     </li>
   </ul>
   </div>
@@ -49,6 +49,7 @@ export class ChatComponent {
   messageInput: string;
   messageNumberDisplay: number;
   lastChatVisitTimestamp: number;
+  scrollMessageTimestamp: number;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.messageNumberDisplay = 25;
@@ -74,9 +75,12 @@ export class ChatComponent {
     });
   }
 
-  scrollToBottom() {
-    var element = document.getElementById("chat-scroll");
-    element.scrollTop = element.scrollHeight;
+  scrollToBottom(scrollMessageTimestamp: number) {
+    if (scrollMessageTimestamp!=this.scrollMessageTimestamp) {
+      var element = document.getElementById("chat-scroll");
+      element.scrollTop = element.scrollHeight;
+      this.scrollMessageTimestamp=scrollMessageTimestamp;
+    }
   }
 
   timestampChatVisit(){
