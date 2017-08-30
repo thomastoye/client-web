@@ -31,10 +31,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   </ul>
   </div>
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer" (click)="timestampChatVisit()">Mark all read</div>
-  <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
-  <!-- NEED TO WORK ON THIS LATER
-  <div class="inputText" contenteditable="true" aria-multiline="true" (keydown.enter)="addMessage()" (keyup)="updateDraftMessageDB()" (input)="draftMessage=$event.target.innerText"></div>
-  -->
+  <textarea class="inputText" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
   </div>
     `,
 })
@@ -88,11 +85,12 @@ export class ChatComponent {
   }
 
   addMessage() {
+    this.draftMessage = this.draftMessage.replace(/(\r\n|\n|\r)/gm,"");
     if (this.draftMessage!="") {
-    this.db.object('teamActivities/'+this.currentTeamID).update({lastMessageTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    var messageKey = this.db.list('teamMessages/' + this.currentTeamID).push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, author: this.currentUserID}).key;
-    this.addMessageTimestampNegative (this.currentTeamID, messageKey);
-    this.draftMessage = "";
+      this.db.object('teamActivities/'+this.currentTeamID).update({lastMessageTimestamp: firebase.database.ServerValue.TIMESTAMP});
+      var messageKey = this.db.list('teamMessages/' + this.currentTeamID).push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, author: this.currentUserID}).key;
+      this.addMessageTimestampNegative (this.currentTeamID, messageKey);
+      this.draftMessage = "";
     }
   }
 

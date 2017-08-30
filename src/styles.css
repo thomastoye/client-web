@@ -231,6 +231,7 @@ input {
   padding: 9px;
   margin: 5px 10px 5px 10px;
   border-radius: 4px;
+  resize: none;
 }
 .message {
   font-size: 10px;
