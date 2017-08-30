@@ -218,6 +218,14 @@ input {
   transition: 0.3s ease;
   border-radius: 4px;
 }
+.inputText {
+  width: 90%;
+  border-style: solid;
+  border-width: thin;
+  padding: 9px;
+  margin: 5px 10px 5px 10px;
+  border-radius: 4px;
+}
 .message {
   font-size: 10px;
   background: #1db217;

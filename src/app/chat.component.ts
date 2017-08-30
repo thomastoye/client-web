@@ -31,6 +31,9 @@ import { AngularFireAuth } from 'angularfire2/auth';
   </div>
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer" (click)="timestampChatVisit()">Mark all read</div>
   <input maxlength="500" style="border-style: solid; border-width: thin;" type="text" (keydown.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}} />
+  <!-- NEED TO WORK ON THIS LATER
+  <div class="inputText" contenteditable="true" aria-multiline="true" (keydown.enter)="addMessage()" (keyup)="updateDraftMessageDB()" (input)="draftMessage=$event.target.innerText"></div>
+  -->
   </div>
     `,
 })

@@ -66,7 +66,7 @@ export class LoginComponent  {
   newUser: boolean;
 
   constructor(
-    private router: Router,
+    public router: Router,
     public afAuth: AngularFireAuth,
     public db: AngularFireDatabase
   ) {
