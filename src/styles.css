@@ -103,6 +103,12 @@ body {
   height: 350px;
   padding: 5px;
 }
+.chat .newDay{
+  text-align: center;
+  padding: 15px;
+  color: #777;
+  text-decoration: underline;
+}
 .listDark {
   background: #222;
   color: white;

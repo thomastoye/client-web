@@ -11,13 +11,14 @@ import { AngularFireAuth } from 'angularfire2/auth';
   <div>
   <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+25;this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
-    <li *ngFor="let message of teamMessages | async ; let last = last">
+    <li *ngFor="let message of teamMessages | async ; let last = last ; let i = index">
+    <div class="newDay" *ngIf="((teamMessages|async)[i]?.timestamp|date:'yMd')!=((teamMessages|async)[i-1]?.timestamp|date:'yMd')">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
     <div style="display: inline; float: left; height:35px; width:2px">
     <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red"></div>
     </div>
     <img (error)="errorHandler($event)"[src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
-    <div style="color: #AAA;">{{message.timestamp | date:'medium'}}</div>
+    <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
     {{last?scrollToBottom():''}}
     </li>
