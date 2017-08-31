@@ -15,7 +15,11 @@ import { Router, NavigationEnd } from '@angular/router'
         <div style="width:150px;height:25px;float:left;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (Not Following)"}}</div>
       </li>
     </ul>
-    <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['addMember'])">Add member</button>
+    <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
+      <li class='icon' (click)="this.router.navigate(['addMember'])">
+        <div style="border-style:solid;border-width:thin;line-height:50px;font-size:40px;text-align:center;display:inline;float:left;margin: 0 10px 0 10px;opacity:1;border-radius:30px;object-fit:cover;height:60px;width:60px">+</div>
+      </li>
+    </ul>
   </div>
 `,
 })
