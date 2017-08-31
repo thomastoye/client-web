@@ -9,17 +9,21 @@ import { Router, NavigationEnd } from '@angular/router'
   selector: 'users',
   template: `
   <div class='sheet'>
-    <ul class='listLight'>
-      <li class='icon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-        <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; border-radius:3px; object-fit: cover; height:60px; width:60px">
-        <div style="width:150px;height:25px;float:left;">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (Not Following)"}}</div>
-      </li>
-    </ul>
-    <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
-      <li class='icon' (click)="this.router.navigate(['addMember'])">
-        <div style="border-style:solid;border-width:thin;line-height:50px;font-size:40px;text-align:center;display:inline;float:left;margin: 0 10px 0 10px;opacity:1;border-radius:30px;object-fit:cover;height:60px;width:60px">+</div>
-      </li>
-    </ul>
+    <div style="float: right;">
+      <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
+        <li class='icon' (click)="this.router.navigate(['addMember'])">
+          <div style="border-style:solid;border-width:thin;line-height:35px;font-size:20px;text-align:center;display:inline;float:right;margin: 0 10px 0 10px;opacity:1;border-radius:20px;object-fit:cover;height:40px;width:40px">+</div>
+        </li>
+      </ul>
+    </div>
+    <div style="float: left;">
+      <ul class='listLight'>
+        <li class='userIcon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
+          <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:60px; width:60px">
+          <div>{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (Not Following)"}}</div>
+        </li>
+      </ul>
+    </div>
   </div>
 `,
 })
