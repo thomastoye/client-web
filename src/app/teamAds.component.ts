@@ -6,45 +6,30 @@ import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
 
 @Component({
-  selector: 'COINinfo',
+  selector: 'teamAds',
   template: `
-  <div class="sheet">
-    <div [class.selected]="sheetNumber===1" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=1">ICO</div>
-    <div [class.selected]="sheetNumber===2" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=2">earn COIN</div>
-    <div [class.selected]="sheetNumber===3" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=3">COIN ownership</div>
-    <div [class.selected]="sheetNumber===4" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=4">COIN price</div>
-  </div>
-  <div class="sheet" [hidden]="sheetNumber!=1">
-  <iframe width='100%' height='3000' src="https://goo.gl/zqASv7"></iframe>
-  </div>
-  <div class="sheet" [hidden]="sheetNumber!=2">
-  <iframe width='100%' height='3000' src="https://goo.gl/EH8LC7"></iframe>
-  </div>
-  <div class="sheet" [hidden]="sheetNumber!=3">
-  <div class="title" style="color: black;text-align:left;">There are {{totalCOIN | number:'1.2-2'}} COINS in circulation</div>
-  <div [hidden]="loggedIn" style="padding:25px">Please login to access this information</div>
+  <div class='sheet'>
   <ul class="listLight">
-    <li *ngFor="let team of PERRINNTeamBalance | async"
+    <li class='sheet' style='max-width:350px;float:left;margin:10px' *ngFor="let team of teamAds | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
-      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:100px; width:100px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
-      <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
-      <div style="width:80px;height:25px;float:left; text-align:right;">{{team.balance | number:'1.2-2'}}</div>
+      <div style="width:200px;height:25px;">{{getTeamName(team.$key)}}</div>
+      <div style="height:25px;color:#444">{{getTeamBalance(team.$key) | number:'1.2-2'}} COINS</div>
+      <div style="height:25px;color:blue">{{team.memberAdTimestamp | date:'yMd'}}</div>
       <div [hidden]='team.$key!=selectedTeamID' style="float:right">
       <div class="button" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">Visit</div>
       <div class="button" (click)="followTeam(selectedTeamID,currentUserID)">Follow</div>
       </div>
+      <textarea class="textAreaAdvert" readonly rows="10" maxlength="500">{{team.memberAdText}}</textarea>
     </li>
   </ul>
-  <div style="color:blue;padding:10px 0 10px 0;cursor:pointer;text-align:center" (click)="teamNumberDisplay=teamNumberDisplay+25;PERRINNTeamBalance=db.list('PERRINNTeamBalance/',{query:{orderByChild:'balanceNegative',limitToFirst:teamNumberDisplay}})">More</div>
-  </div>
-  <div class="sheet" [hidden]="sheetNumber!=4">
-  <iframe width='100%' height='3000' src="https://goo.gl/urwsGe"></iframe>
+  <div style="color:blue;padding:10px 0 10px 0;cursor:pointer;text-align:center" (click)="teamNumberDisplay=teamNumberDisplay+25;teamAds=db.list('teamAds/',{query:{orderByChild:'memberAdVisible',equalTo:true,limitToFirst:teamNumberDisplay}})">More</div>
   </div>
   `,
 })
-export class COINinfo {
+export class TeamAds {
   currentUserID: string;
   focusUserID: string;
   firstName: string;
@@ -57,7 +42,7 @@ export class COINinfo {
   leaderStatus: boolean;
   messageCancelMembership: string;
   ownProfile: boolean;
-  PERRINNTeamBalance: FirebaseListObservable<any>;
+  teamAds: FirebaseListObservable<any>;
   selectedTeamID: string;
   totalCOIN: number;
   sheetNumber: number;
@@ -72,9 +57,10 @@ export class COINinfo {
       else {
         this.loggedIn=true;
         this.currentUserID = auth.uid;
-        this.PERRINNTeamBalance = db.list('PERRINNTeamBalance/', {
+        this.teamAds = db.list('teamAds/', {
           query:{
-            orderByChild:'balanceNegative',
+            orderByChild:'memberAdVisible',
+            equalTo: true,
             limitToFirst: this.teamNumberDisplay,
           }
         });
@@ -105,6 +91,14 @@ export class COINinfo {
     var output;
     this.db.object('teams/' + ID).subscribe(snapshot => {
       output = snapshot.photoURL;
+    });
+    return output;
+  }
+
+  getTeamBalance (ID: string) :string {
+    var output;
+    this.db.object('PERRINNTeamBalance/' + ID).subscribe(snapshot => {
+      output = snapshot.balance;
     });
     return output;
   }

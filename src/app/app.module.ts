@@ -24,6 +24,7 @@ import { CreateTransactionComponent }  from './createTransaction.component';
 import { TeamProfileComponent }  from './teamProfile.component';
 import { BuyCoins }  from './buyCoins.component';
 import { COINinfo }  from './COINinfo.component';
+import { TeamAds }  from './teamAds.component';
 import { LinkyModule } from 'angular-linky';
 
 import { AngularFireModule } from 'angularfire2';
@@ -60,6 +61,7 @@ export const firebaseConfig = {
     TeamProfileComponent,
     BuyCoins,
     COINinfo,
+    TeamAds,
   ],
   imports: [
     BrowserModule,
