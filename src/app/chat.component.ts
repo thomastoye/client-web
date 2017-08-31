@@ -31,7 +31,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   </ul>
   </div>
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer" (click)="timestampChatVisit()">Mark all read</div>
-  <textarea class="inputText" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
+  <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
   </div>
     `,
 })

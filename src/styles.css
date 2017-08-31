@@ -234,7 +234,7 @@ input {
   transition: 0.3s ease;
   border-radius: 4px;
 }
-.inputText {
+.textAreaChat {
   width: 90%;
   border-style: solid;
   border-width: thin;
@@ -243,6 +243,16 @@ input {
   border-radius: 4px;
   resize: none;
   overflow-y: scroll;
+}
+.textAreaAdvert {
+  width: 90%;
+  border-style: none;
+  padding: 9px;
+  margin: 5px 10px 5px 10px;
+  resize: none;
+  overflow-y: scroll;
+  color: #201c5b;
+  background-color: #d3e8d4;
 }
 .message {
   font-size: 10px;

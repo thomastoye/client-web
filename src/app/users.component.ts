@@ -9,20 +9,26 @@ import { Router, NavigationEnd } from '@angular/router'
   selector: 'users',
   template: `
   <div class='sheet'>
+    <div style="float: left;">
+      <ul class='listLight'>
+        <li class='userIcon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
+          <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:60px; width:60px">
+          <div>{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,currentTeamID)?"":" (Not Following)"}}</div>
+        </li>
+      </ul>
+    </div>
     <div style="float: right;">
       <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
         <li class='icon' (click)="this.router.navigate(['addMember'])">
           <div style="border-style:solid;border-width:thin;line-height:35px;font-size:20px;text-align:center;display:inline;float:right;margin: 0 10px 0 10px;opacity:1;border-radius:20px;object-fit:cover;height:40px;width:40px">+</div>
         </li>
-      </ul>
-    </div>
-    <div style="float: left;">
-      <ul class='listLight'>
-        <li class='userIcon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-          <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:60px; width:60px">
-          <div>{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,this.currentTeamID)?"":" (Not Following)"}}</div>
+        <li class='icon' (click)="db.object('teamAds/'+currentTeamID).update({memberAdVisible:!memberAdVisible})">
+          <div style="border-style:solid;border-width:thin;line-height:35px;font-size:20px;text-align:center;display:inline;float:right;margin: 0 10px 0 10px;opacity:1;border-radius:20px;object-fit:cover;height:40px;width:40px">Ad</div>
         </li>
       </ul>
+    </div>
+    <div [hidden]='!memberAdVisible' style="clear:left">
+      <textarea class="textAreaAdvert" style="max-width:400px" rows="12" maxlength="500" [(ngModel)]="memberAdText" (keyup)="db.object('teamAds/'+currentTeamID).update({memberAdText:memberAdText})" placeholder="Looking for new Members or Leaders for your team? Write an advert here."></textarea>
     </div>
   </div>
 `,
@@ -33,9 +39,12 @@ export class UsersComponent  {
   currentTeamID: string;
   teamUsers: FirebaseListObservable<any>;
   newMemberID: string;
+  memberAdText: string;
+  memberAdVisible: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
+      this.memberAdVisible=false;
       if (auth==null){
         this.teamUsers = null;
       }
@@ -43,6 +52,12 @@ export class UsersComponent  {
         this.currentUserID = auth.uid;
         this.db.object('userInterface/'+auth.uid+'/currentTeam').subscribe(currentTeam => {
           this.currentTeamID = currentTeam.$value;
+          this.db.object('teamAds/'+this.currentTeamID+'/memberAdText').subscribe(memberAdText => {
+            this.memberAdText = memberAdText.$value;
+          });
+          this.db.object('teamAds/'+this.currentTeamID+'/memberAdVisible').subscribe(memberAdVisible => {
+            this.memberAdVisible = memberAdVisible.$value;
+          });
           this.teamUsers = this.db.list('teamUsers/' + currentTeam.$value, {
             query:{
               orderByChild:'member',
