@@ -250,6 +250,7 @@ input {
   overflow-y: scroll;
   color: #201c5b;
   background-color: #d3e8d4;
+  border-radius: 0px;
 }
 .message {
   font-size: 10px;
