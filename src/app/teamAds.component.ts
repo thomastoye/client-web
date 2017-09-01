@@ -10,12 +10,12 @@ import { Router } from '@angular/router'
   template: `
   <div class='sheet'>
   <ul class="listLight">
-    <li class='sheet' style='max-width:350px;float:left;margin:10px' *ngFor="let team of teamAds | async"
+    <li style='float:left;margin:10px' *ngFor="let team of teamAds | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
-      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:100px; width:100px">
+      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0; opacity: 1; object-fit: cover; height:100px; width:100px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
-      <div style="width:200px;height:25px;">{{getTeamName(team.$key)}}</div>
+      <div style="width:225px;height:25px;">{{getTeamName(team.$key)}}</div>
       <div style="height:25px;color:#444">{{getTeamBalance(team.$key) | number:'1.2-2'}} COINS</div>
       <div style="height:25px;color:blue">{{team.memberAdTimestamp | date:'yMd'}}</div>
       <div [hidden]='team.$key!=selectedTeamID' style="float:right">
