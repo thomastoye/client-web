@@ -24,13 +24,13 @@ import { AngularFireAuth } from 'angularfire2/auth';
     </li>
   </ul>
   </div>
+  </div>
+  <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style: none;">
     <li *ngFor="let author of draftMessageAuthors | async">
-    <div [hidden]="!author.draftMessage||author.$key==currentUserID" style="padding-left:25px;font-weight:bold">{{(db.object('users/'+author.$key)|async)?.firstName}} ...</div>
+    <div [hidden]="!author.draftMessage||author.$key==currentUserID" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{(db.object('users/'+author.$key)|async)?.firstName}}...</div>
     </li>
   </ul>
-  </div>
-  <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer" (click)="timestampChatVisit()">Mark all read</div>
   <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
   </div>
     `,
