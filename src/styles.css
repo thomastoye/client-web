@@ -155,7 +155,6 @@ body {
   cursor: pointer;
   position: relative;
   left: 0;
-  border-radius: 4px;
   padding: 5px;
 }
 .listDark .selected {
@@ -202,7 +201,6 @@ body {
   cursor: pointer;
   position: relative;
   left: 0;
-  border-radius: 4px;
   padding: 5px;
 }
 .listLight .selected {
