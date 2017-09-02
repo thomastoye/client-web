@@ -252,6 +252,19 @@ input {
   background-color: #d3e8d4;
   border-radius: 0px;
 }
+.cornerButton {
+  border-style:solid;
+  border-width:thin;
+  line-height:35px;
+  font-size:20px;
+  text-align:center;
+  margin: 0 10px 0 10px;
+  background-color:#FEF;
+  border-color:#AAA;
+  border-radius:3px;
+  height:40px;
+  width:40px
+}
 .message {
   font-size: 10px;
   background: #1db217;

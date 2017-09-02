@@ -10,7 +10,7 @@ import { Router } from '@angular/router'
   template: `
   <div class='sheet'>
   <ul class="listLight">
-    <li style='float:left;margin:10px' *ngFor="let team of teamAds | async"
+    <li [hidden]="!team.memberAdText" style='float:left;margin:10px' *ngFor="let team of teamAds | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0; opacity: 1; object-fit: cover; height:100px; width:100px">

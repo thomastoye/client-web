@@ -19,11 +19,11 @@ import { Router, NavigationEnd } from '@angular/router'
     </div>
     <div style="float: right;">
       <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
-        <li class='icon' (click)="this.router.navigate(['addMember'])">
-          <div style="border-style:solid;border-width:thin;line-height:35px;font-size:20px;text-align:center;display:inline;float:right;margin: 0 10px 0 10px;opacity:1;border-radius:20px;object-fit:cover;height:40px;width:40px">+</div>
+        <li (click)="this.router.navigate(['addMember'])">
+          <div class='cornerButton' style="float:right">+</div>
         </li>
-        <li class='icon' (click)="db.object('teamAds/'+currentTeamID).update({memberAdVisible:!memberAdVisible})">
-          <div style="border-style:solid;border-width:thin;line-height:35px;font-size:20px;text-align:center;display:inline;float:right;margin: 0 10px 0 10px;opacity:1;border-radius:20px;object-fit:cover;height:40px;width:40px">Ad</div>
+        <li (click)="db.object('teamAds/'+currentTeamID).update({memberAdVisible:!memberAdVisible})">
+          <div class='cornerButton' style="float:right">Ad</div>
         </li>
       </ul>
     </div>
