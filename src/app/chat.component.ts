@@ -12,7 +12,9 @@ import { AngularFireAuth } from 'angularfire2/auth';
   <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+25;this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async ; let last = last ; let i = index">
+    <!-- DISPLAY WORK BUT CREATES LOTS OF CONSOLE ERRORS AND SLOW DOWN - WILL NEED FIXING
     <div class="newDay" *ngIf="((teamMessages|async)[i]?.timestamp|date:'yMd')!=((teamMessages|async)[i-1]?.timestamp|date:'yMd')">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
+    -->
     <div style="display: inline; float: left; height:35px; width:2px">
     <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red"></div>
     </div>
@@ -32,11 +34,17 @@ import { AngularFireAuth } from 'angularfire2/auth';
     </li>
   </ul>
   <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
+  <!-- WORK IN PROGRESS
+  <input type="file" id="filePicker" (change)="handleFileSelect($event)">
+  <textarea id="base64textarea" placeholder="Base64 will appear here" cols="50" rows="15">{{draftImage}}</textarea>
+  <div>{{draftImage.length|number}}</div>
   </div>
+  -->
     `,
 })
 export class ChatComponent {
   draftMessage: string;
+  draftImage: string;
   draftMessageDB: boolean;
   draftMessageAuthors: FirebaseListObservable<any>;
   teamMessages: FirebaseListObservable<any>;
@@ -115,4 +123,42 @@ export class ChatComponent {
     event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
+  handleFileSelect(evt){
+    var files = evt.target.files;
+    var file = files[0];
+    if (files && file) {
+      var reader = new FileReader();
+      reader.onload =this._handleReaderLoaded.bind(this);
+      reader.readAsBinaryString(file);
+    }
+  }
+
+  _handleReaderLoaded(readerEvt) {
+  var binaryString = this.resize(readerEvt.target.result);
+  this.draftImage= btoa(binaryString);
+  console.log(btoa(binaryString));
+  }
+
+  resize (img, MAX_WIDTH:number = 500, MAX_HEIGHT:number = 500){
+    var canvas = document.createElement("canvas");
+    var width = img.width;
+    var height = img.height;
+    if (width > height) {
+      if (width > MAX_WIDTH) {
+        height *= MAX_WIDTH / width;
+        width = MAX_WIDTH;
+      }
+    } else {
+      if (height > MAX_HEIGHT) {
+        width *= MAX_HEIGHT / height;
+        height = MAX_HEIGHT;
+      }
+    }
+    canvas.width = width;
+    canvas.height = height;
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, width, height);
+    var dataUrl = canvas.toDataURL('image/jpeg');
+    return dataUrl
+  }
 }
