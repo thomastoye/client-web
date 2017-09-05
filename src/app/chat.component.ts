@@ -20,7 +20,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
     </div>
     <img (error)="errorHandler($event)"[src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
-    <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
+    <div style="color: #AAA;">{{message.timestamp | date:'yMMMdjms'}}</div>
     <div style="padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
     {{last?scrollToBottom(message.timestamp):''}}
     </li>
