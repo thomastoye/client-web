@@ -19,7 +19,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
     <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red"></div>
     </div>
     <img (error)="errorHandler($event)"[src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
-    <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{(db.object('users/' + message.author) | async)?.firstName}}</div>
+    <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{getFirstName(message.author)}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'yMMMdjms'}}</div>
     <div style="padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
     {{last?scrollToBottom(message.timestamp):''}}
@@ -30,14 +30,15 @@ import { AngularFireAuth } from 'angularfire2/auth';
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style: none;">
     <li *ngFor="let author of draftMessageAuthors | async">
-    <div [hidden]="!author.draftMessage||author.$key==currentUserID" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{(db.object('users/'+author.$key)|async)?.firstName}}...</div>
+    <div [hidden]="!author.draftMessage||author.$key==currentUserID" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{getFirstName(author.$key)}}...</div>
     </li>
   </ul>
   <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
   <!-- WORK IN PROGRESS
   <input type="file" id="filePicker" (change)="handleFileSelect($event)">
-  <textarea id="base64textarea" placeholder="Base64 will appear here" cols="50" rows="15">{{draftImage}}</textarea>
   <div>{{draftImage.length|number}}</div>
+  <textarea id="base64textarea" placeholder="Base64 will appear here" cols="50" rows="15">{{draftImage}}</textarea>
+  <img (error)="errorHandler($event)" [src]="draftImage" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: contain; max-width:80%">
   </div>
   -->
     `,
@@ -59,6 +60,7 @@ export class ChatComponent {
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.messageNumberDisplay = 25;
     this.draftMessageDB=false;
+    this.draftImage='';
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
@@ -119,6 +121,14 @@ export class ChatComponent {
     this.draftMessageDB=(this.draftMessage!="");
   }
 
+  getFirstName (ID: string) :string {
+    var output;
+    this.db.object('users/' + ID).subscribe(snapshot => {
+      output = snapshot.firstName;
+    });
+    return output;
+  }
+
   errorHandler(event) {
     event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
@@ -135,8 +145,7 @@ export class ChatComponent {
 
   _handleReaderLoaded(readerEvt) {
   var binaryString = this.resize(readerEvt.target.result);
-  this.draftImage= btoa(binaryString);
-  console.log(btoa(binaryString));
+  this.draftImage= 'data:image/jpeg;base64,' + btoa(binaryString);
   }
 
   resize (img, MAX_WIDTH:number = 500, MAX_HEIGHT:number = 500){
