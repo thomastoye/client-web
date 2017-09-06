@@ -28,7 +28,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style: none;">
     <li *ngFor="let author of draftMessageAuthors | async">
-    <div [hidden]="!author.draftMessage||author.$key==currentUserID" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{getFirstName(author.$key)}}...</div>
+    <div [hidden]="!author.draftMessage||author.$key==currentUserID" *ngIf="isDraftMessageRecent(author.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{getFirstName(author.$key)}}...</div>
     </li>
   </ul>
   <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
@@ -84,9 +84,13 @@ export class ChatComponent {
 
   isMessageNewGroup (messageTimestamp) {
     var isMessageNewGroup: boolean;
-    isMessageNewGroup= (Math.abs(messageTimestamp-this.previousMessageTimestamp)>1000*60*60*4);
+    isMessageNewGroup= Math.abs(messageTimestamp-this.previousMessageTimestamp)>1000*60*60*4;
     this.previousMessageTimestamp=messageTimestamp;
     return isMessageNewGroup;
+  }
+
+  isDraftMessageRecent (draftMessageTimestamp) {
+    return (Date.now()-draftMessageTimestamp)<1000*60;
   }
 
   scrollToBottom(scrollMessageTimestamp: number) {
@@ -123,7 +127,7 @@ export class ChatComponent {
 
   updateDraftMessageDB () {
     if ((this.draftMessage!="")!=this.draftMessageDB) {
-      this.db.object('teamActivities/'+this.currentTeamID+'/draftMessages/'+this.currentUserID).update({draftMessage:this.draftMessage!=""});
+      this.db.object('teamActivities/'+this.currentTeamID+'/draftMessages/'+this.currentUserID).update({draftMessage:this.draftMessage!="",draftMessageTimestamp:firebase.database.ServerValue.TIMESTAMP});
     }
     this.draftMessageDB=(this.draftMessage!="");
   }
