@@ -111,7 +111,6 @@ export class AppComponent {
   followTeam () {
     this.db.object('userTeams/'+this.currentUserID+'/'+this.currentTeamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
     this.db.object('userInterface/'+this.currentUserID).update({currentTeam: this.currentTeamID});
-    this.router.navigate(['teams']);
   }
 
   errorHandler(event) {

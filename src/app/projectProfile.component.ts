@@ -20,6 +20,7 @@ import { Router } from '@angular/router'
   <input maxlength="500" [(ngModel)]="goal" placeholder="Project goal (500 characters max) *" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Image address from the web *" />
   <button (click)="updateProjectProfile()">Save profile</button>
+  <button [hidden]='!teamAndProjectLeader' *ngIf="editMode" (click)="this.router.navigate(['addTeam'])" style="background-color:#c69b00">Add a team</button>
   </div>
   </div>
   <div style="float: right; width: 50%;">
@@ -34,9 +35,9 @@ import { Router } from '@angular/router'
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
       <div style="width:300px;height:25px;float:left;">{{getTeamName(team.$key)}}{{(getTeamLeader(currentProjectID,team.$key)? " **" : "")}}{{getTeamFollowing(team.$key,currentProjectID)?"":" (Not Following)"}}</div>
+      <button [hidden]='!teamAndProjectLeader' *ngIf="editMode" style="float:right" (click)="db.object('projectTeams/'+currentProjectID+'/'+team.$key).update({member:false,leader:false});" style="background-color:red">Remove</button>
     </li>
   </ul>
-  <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="this.router.navigate(['addTeam'])" style="background-color:#c69b00">Add a team</button>
   </div>
   `,
 })
