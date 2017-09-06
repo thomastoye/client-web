@@ -18,7 +18,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
     <div style="display: inline; float: left; height:35px; width:2px">
     <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red"></div>
     </div>
-    <img (error)="errorHandler($event)"[src]="(db.object('users/' + message.author) | async)?.photoURL" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
+    <img (error)="errorHandler($event)" [src]="getPhotoURL(message.author)" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{getFirstName(message.author)}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'yMMMdjms'}}</div>
     <div style="padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
@@ -125,6 +125,14 @@ export class ChatComponent {
     var output;
     this.db.object('users/' + ID).subscribe(snapshot => {
       output = snapshot.firstName;
+    });
+    return output;
+  }
+
+  getPhotoURL (ID: string) :string {
+    var output;
+    this.db.object('users/' + ID).subscribe(snapshot => {
+      output = snapshot.photoURL;
     });
     return output;
   }
