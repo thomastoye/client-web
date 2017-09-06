@@ -12,15 +12,13 @@ import { AngularFireAuth } from 'angularfire2/auth';
   <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+25;this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async ; let last = last ; let i = index">
-    <!-- DISPLAY WORK BUT CREATES LOTS OF CONSOLE ERRORS AND SLOW DOWN - WILL NEED FIXING
-    <div class="newDay" *ngIf="((teamMessages|async)[i]?.timestamp|date:'yMd')!=((teamMessages|async)[i-1]?.timestamp|date:'yMd')">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
-    -->
+    <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
     <div style="display: inline; float: left; height:35px; width:2px">
     <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red"></div>
     </div>
     <img (error)="errorHandler($event)" [src]="getPhotoURL(message.author)" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{getFirstName(message.author)}}</div>
-    <div style="color: #AAA;">{{message.timestamp | date:'yMMMdjms'}}</div>
+    <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
     {{last?scrollToBottom(message.timestamp):''}}
     </li>
@@ -56,8 +54,10 @@ export class ChatComponent {
   messageNumberDisplay: number;
   lastChatVisitTimestamp: number;
   scrollMessageTimestamp: number;
+  previousMessageTimestamp: number;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
+    this.previousMessageTimestamp=0;
     this.messageNumberDisplay = 25;
     this.draftMessageDB=false;
     this.draftImage='';
@@ -80,6 +80,13 @@ export class ChatComponent {
         });
       }
     });
+  }
+
+  isMessageNewGroup (messageTimestamp) {
+    var isMessageNewGroup: boolean;
+    isMessageNewGroup= (Math.abs(messageTimestamp-this.previousMessageTimestamp)>1000*60*60*4);
+    this.previousMessageTimestamp=messageTimestamp;
+    return isMessageNewGroup;
   }
 
   scrollToBottom(scrollMessageTimestamp: number) {
