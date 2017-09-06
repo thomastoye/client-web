@@ -39,6 +39,7 @@ import { Router, NavigationEnd } from '@angular/router'
         <div style="font-size: 9px; color: #FFF;">Teams</div>
         <div class='activity' [hidden]="!globalChatActivity"></div>
         </div>
+        <div [hidden]='followingCurrentTeam' style="padding: 5px 10px 5px 10px; color:white;border-style:solid;border-width:thin;clear:left;float: right; cursor: pointer" (click)="followTeam ();">FOLLOW</div>
         </div>
         </div>
       </div>
@@ -55,16 +56,22 @@ export class AppComponent {
   loggedIn: boolean;
   emailVerified: boolean;
   currentTeamName: string;
+  followingCurrentTeam: boolean;
+  currentUserID: string;
+  currentTeamID: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+    this.followingCurrentTeam=true;
     this.afAuth.authState.subscribe((auth) => {
       console.log("loop 1");
       if (auth == null) {this.loggedIn = false}
       else {
+        this.currentUserID = auth.uid;
         this.loggedIn = true;
         if (!auth.emailVerified) {this.emailVerified = false}
         else {this.emailVerified = true}
         db.object('userInterface/'+auth.uid+'/currentTeam').subscribe(currentTeamID => {
+          this.currentTeamID=currentTeamID.$value;
           console.log("loop 2");
           db.object('teams/' + currentTeamID.$value).subscribe(currentTeamObject=>{
             console.log("loop 3");
@@ -74,6 +81,7 @@ export class AppComponent {
               document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeamObject.photoURL?currentTeamObject.photoURL:appSettings.teamBackgroundImage) + ')';
               db.list('userTeams/'+auth.uid).subscribe(userTeams=>{
                 console.log("loop 5");
+                this.followingCurrentTeam=false;
                 this.globalChatActivity = false;
                 this.currentTeamChatActivity = false;
                 userTeams.forEach(userTeam=>{
@@ -82,6 +90,7 @@ export class AppComponent {
                       console.log("loop 6");
                       var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
                       if (userTeam.$key==currentTeamID.$value&&chatActivity) {this.currentTeamChatActivity=true}
+                      if (userTeam.$key==currentTeamID.$value) {this.followingCurrentTeam=userTeam.following}
                       this.globalChatActivity = chatActivity?true:this.globalChatActivity;
                       document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
                     });
@@ -97,6 +106,12 @@ export class AppComponent {
 
   logout() {
     this.afAuth.auth.signOut()
+  }
+
+  followTeam () {
+    this.db.object('userTeams/'+this.currentUserID+'/'+this.currentTeamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.db.object('userInterface/'+this.currentUserID).update({currentTeam: this.currentTeamID});
+    this.router.navigate(['teams']);
   }
 
   errorHandler(event) {

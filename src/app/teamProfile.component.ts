@@ -23,7 +23,6 @@ import { Router } from '@angular/router'
 export class TeamProfileComponent {
   photoURL: string;
   currentTeamID: string;
-  followTeamID: string;
   teamName: string;
   editMode: boolean;
   messageSaveTeamProfile: string;

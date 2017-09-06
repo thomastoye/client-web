@@ -34,14 +34,10 @@ import { Router } from '@angular/router'
     <div class="listSeperator">{{firstName}} follows:</div>
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === selectedTeamID"
-      (click)="selectedTeamID = team.$key">
+      (click)="selectedTeamID=team.$key;db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,focusUserID)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
-      <div [hidden]='team.$key!=selectedTeamID' style="float:right">
-      <div class="button" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">Visit</div>
-      <div class="button" (click)="followTeam(selectedTeamID,currentUserID)">Follow</div>
-      </div>
     </li>
   </ul>
   </div>
@@ -139,15 +135,6 @@ export class UserProfileComponent {
       output = snapshot.photoURL;
     });
     return output;
-  }
-
-  followTeam (teamID: string, userID: string) {
-    if (teamID==null || teamID=="") {return null}
-    else {
-      this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-      this.db.object('userInterface/'+userID).update({currentTeam: teamID});
-      this.router.navigate(['teams']);
-    }
   }
 
   errorHandler(event) {

@@ -30,14 +30,10 @@ import { Router } from '@angular/router'
     <div class="listSeperator">{{name}} teams:</div>
     <li *ngFor="let team of projectTeams | async"
       [class.selected]="team.$key === selectedTeamID"
-      (click)="selectedTeamID = team.$key">
+      (click)="selectedTeamID = team.$key;db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
       <div style="width:300px;height:25px;float:left;">{{getTeamName(team.$key)}}{{(getTeamLeader(currentProjectID,team.$key)? " **" : "")}}{{getTeamFollowing(team.$key,currentProjectID)?"":" (Not Following)"}}</div>
-      <div [hidden]='team.$key!=selectedTeamID' style="float:right">
-      <div class="button" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">Visit</div>
-      <div class="button" (click)="followTeam(selectedTeamID,currentUserID)">Follow</div>
-      </div>
     </li>
   </ul>
   <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="this.router.navigate(['addTeam'])" style="background-color:#c69b00">Add a team</button>
@@ -142,15 +138,6 @@ export class ProjectProfileComponent {
       output = snapshot.photoURL;
     });
     return output;
-  }
-
-  followTeam (teamID: string, userID: string) {
-    if (teamID==null || teamID=="") {return null}
-    else {
-      this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-      this.db.object('userInterface/'+userID).update({currentTeam: teamID});
-      this.router.navigate(['teams']);
-    }
   }
 
   errorHandler(event) {
