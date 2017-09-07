@@ -62,6 +62,7 @@ export class ChatComponent {
     this.messageNumberDisplay = 25;
     this.draftMessageDB=false;
     this.draftImage="";
+    this.draftMessage="";
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
