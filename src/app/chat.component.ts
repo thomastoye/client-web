@@ -15,14 +15,15 @@ import { Ng2ImgMaxService } from 'ng2-img-max';
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async ; let last = last ; let i = index">
     <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
+    <div style="display: inline; float: left; height:35px; width:5px"></div>
     <div style="display: inline; float: left; height:35px; width:2px">
-    <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red"></div>
+    <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red;"></div>
     </div>
     <img (error)="errorHandler($event)" [src]="getPhotoURL(message.author)" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{getFirstName(message.author)}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
-    <img *ngIf="message.image!" [src]="sanitizer.bypassSecurityTrustUrl(message.image)" style="clear:left;width:80%;max-height:300px;object-fit:contain;padding: 0 50px 10px 0;">
+    <img *ngIf="message.image!" [src]="sanitizer.bypassSecurityTrustUrl(message.image)" style="clear:left;width:100%;max-height:300px;object-fit:contain;padding: 0 0 10px 0">
     {{last?scrollToBottom(message.timestamp):''}}
     </li>
   </ul>

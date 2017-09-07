@@ -111,7 +111,6 @@ body {
 .chat{
   overflow-y: auto;
   height: 350px;
-  padding: 5px;
 }
 .chat .newDay{
   text-align: center;
