@@ -22,6 +22,7 @@ import { Ng2ImgMaxService } from 'ng2-img-max';
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{getFirstName(message.author)}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
+    <img *ngIf="message.image!" [src]="sanitizer.bypassSecurityTrustUrl(message.image)" style="clear:left;width:80%;max-height:300px;object-fit:contain;padding: 0 50px 10px 0;">
     {{last?scrollToBottom(message.timestamp):''}}
     </li>
   </ul>
@@ -33,10 +34,9 @@ import { Ng2ImgMaxService } from 'ng2-img-max';
     <div [hidden]="!author.draftMessage||author.$key==currentUserID" *ngIf="isDraftMessageRecent(author.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{getFirstName(author.$key)}}...</div>
     </li>
   </ul>
+  <input type="file" name="file" id="file" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+  <label for="file" style="float:right;padding:5px 35px 5px 0px;">Post an image</label>
   <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
-  <input type="file" (change)="onImageChange($event)" accept="image/*">
-  <div style="float:right;padding:15px">{{draftImage.length/1000|number:'1.0-0'}}kb</div>
-  <img *ngIf="draftImage" [src]="sanitizer.bypassSecurityTrustUrl(draftImage)" style="clear:left;width:70%;max-height:300px;object-fit:contain;">
   </div>
     `,
 })
@@ -107,11 +107,12 @@ export class ChatComponent {
 
   addMessage() {
     this.draftMessage = this.draftMessage.replace(/(\r\n|\n|\r)/gm,"");
-    if (this.draftMessage!="") {
+    if (this.draftMessage!=""||this.draftImage!="") {
       this.db.object('teamActivities/'+this.currentTeamID).update({lastMessageTimestamp: firebase.database.ServerValue.TIMESTAMP});
-      var messageKey = this.db.list('teamMessages/' + this.currentTeamID).push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, author: this.currentUserID}).key;
+      var messageKey = this.db.list('teamMessages/' + this.currentTeamID).push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, image:this.draftImage, author: this.currentUserID}).key;
       this.addMessageTimestampNegative (this.currentTeamID, messageKey);
       this.draftMessage = "";
+      this.draftImage = "";
     }
   }
 
@@ -171,6 +172,7 @@ export class ChatComponent {
     reader.readAsDataURL(file);
     reader.onload = () => {
       this.draftImage = reader.result;
+      this.addMessage();
     };
   }
 
