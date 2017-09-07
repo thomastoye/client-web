@@ -12,35 +12,37 @@ import { Router, NavigationEnd } from '@angular/router'
     <div id='middle_column'>
       <div [hidden]="!loggedIn">
       <div [hidden]="!emailVerified">
-      <div class='menu' id='menu'>
-        <div>
-        <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
-        <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
-        </div>
-        <div class='icon' (click)="router.navigate(['users'])">
-        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:45px">
+      <div class='menu' style="min-height:0px;">
+        <div style="width:250px;display:block;margin: 0 auto;">
+        <div class='iconSmall' (click)="router.navigate(['users'])">
+        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:25px">
         <div style="font-size: 9px; color: #FFF;">Members</div>
         </div>
-        <div class='icon' (click)="router.navigate(['projects'])">
-        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:45px">
+        <div class='iconSmall' (click)="router.navigate(['projects'])">
+        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
         <div style="font-size: 9px; color: #FFF;">Projects</div>
         </div>
-        <div class='icon' (click)="router.navigate(['chat'])">
-        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:45px">
+        <div class='iconSmall' (click)="router.navigate(['chat'])">
+        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:25px">
         <div style="font-size: 9px; color: #FFF;">Chat</div>
         <div class='activity' [hidden]="!currentTeamChatActivity"></div>
         </div>
-        <div class='icon' (click)="router.navigate(['wallet'])">
-        <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:45px">
+        <div class='iconSmall' (click)="router.navigate(['wallet'])">
+        <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:25px">
         <div style="font-size: 9px; color: #FFF;">Wallet</div>
         </div>
-        <div class='icon' (click)="router.navigate(['teams'])">
-        <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:45px; border-radius:3px;">
+        <div class='iconSmall' (click)="router.navigate(['teams'])">
+        <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:25px; border-radius:3px;">
         <div style="font-size: 9px; color: #FFF;">Teams</div>
         <div class='activity' [hidden]="!globalChatActivity"></div>
         </div>
-        <div [hidden]='followingCurrentTeam' style="padding: 5px 10px 5px 10px; color:white;border-style:solid;border-width:thin;clear:left;float: right; cursor: pointer" (click)="followTeam ();">FOLLOW</div>
         </div>
+      </div>
+      <div class='menu' id='menu' style="min-height:0px">
+        <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
+        <div [hidden]='followingCurrentTeam' style="padding: 1px 10px 1px 10px; color:white;border-style:solid;border-width:thin;float: left; cursor: pointer" (click)="followTeam ();">FOLLOW</div>
+        <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
+      </div>
         </div>
       </div>
       <div id='app_container'>
