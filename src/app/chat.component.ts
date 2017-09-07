@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Ng2ImgMaxService } from 'ng2-img-max';
 
 @Component({
   selector: 'chat',
@@ -32,17 +34,15 @@ import { AngularFireAuth } from 'angularfire2/auth';
     </li>
   </ul>
   <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
-  <!-- WORK IN PROGRESS
-  <input type="file" id="filePicker" (change)="handleFileSelect($event)">
-  <div>{{draftImage.length|number}}</div>
-  <textarea id="base64textarea" placeholder="Base64 will appear here" cols="50" rows="15">{{draftImage}}</textarea>
-  <img (error)="errorHandler($event)" [src]="draftImage" style="display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: contain; max-width:80%">
+  <input type="file" (change)="onImageChange($event)" accept="image/*">
+  <div style="float:right;padding:15px">{{draftImage.length/1000|number:'1.0-0'}}kb</div>
+  <img *ngIf="draftImage" [src]="sanitizer.bypassSecurityTrustUrl(draftImage)" style="clear:left;width:70%;max-height:300px;object-fit:contain;">
   </div>
-  -->
     `,
 })
 export class ChatComponent {
   draftMessage: string;
+  uploadedImage: File;
   draftImage: string;
   draftMessageDB: boolean;
   draftMessageAuthors: FirebaseListObservable<any>;
@@ -56,11 +56,11 @@ export class ChatComponent {
   scrollMessageTimestamp: number;
   previousMessageTimestamp: number;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
+  constructor(private ng2ImgMax: Ng2ImgMaxService, public sanitizer: DomSanitizer, public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.previousMessageTimestamp=0;
     this.messageNumberDisplay = 25;
     this.draftMessageDB=false;
-    this.draftImage='';
+    this.draftImage="";
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
@@ -152,41 +152,26 @@ export class ChatComponent {
     event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
   }
 
-  handleFileSelect(evt){
-    var files = evt.target.files;
-    var file = files[0];
-    if (files && file) {
-      var reader = new FileReader();
-      reader.onload =this._handleReaderLoaded.bind(this);
-      reader.readAsBinaryString(file);
-    }
+  onImageChange(event) {
+    let image = event.target.files[0];
+
+    this.ng2ImgMax.resizeImage(image, 500, 500).subscribe(
+      result => {
+        this.uploadedImage = new File([result], result.name);
+        this.getDraftImage(this.uploadedImage);
+      },
+      error => {
+        console.log('😢 Oh no!', error);
+      }
+    );
   }
 
-  _handleReaderLoaded(readerEvt) {
-  var binaryString = this.resize(readerEvt.target.result);
-  this.draftImage= 'data:image/jpeg;base64,' + btoa(binaryString);
+  getDraftImage(file: File) {
+    const reader: FileReader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      this.draftImage = reader.result;
+    };
   }
 
-  resize (img, MAX_WIDTH:number = 500, MAX_HEIGHT:number = 500){
-    var canvas = document.createElement("canvas");
-    var width = img.width;
-    var height = img.height;
-    if (width > height) {
-      if (width > MAX_WIDTH) {
-        height *= MAX_WIDTH / width;
-        width = MAX_WIDTH;
-      }
-    } else {
-      if (height > MAX_HEIGHT) {
-        width *= MAX_HEIGHT / height;
-        height = MAX_HEIGHT;
-      }
-    }
-    canvas.width = width;
-    canvas.height = height;
-    var ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, width, height);
-    var dataUrl = canvas.toDataURL('image/jpeg');
-    return dataUrl
-  }
 }

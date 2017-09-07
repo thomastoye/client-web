@@ -31,6 +31,8 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
+import { Ng2ImgMaxModule } from 'ng2-img-max';
+
 // Must export the config
 export const firebaseConfig = {
   apiKey: "AIzaSyAoG3PvimV926EgWlGvpzXrZAkOi1uWdcs",
@@ -72,6 +74,7 @@ export const firebaseConfig = {
     AngularFireAuthModule,
     AppRoutingModule,
     LinkyModule,
+    Ng2ImgMaxModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
