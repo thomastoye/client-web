@@ -60,7 +60,6 @@ body {
   padding: 0;
 }
 .menu {
-  min-height: 100px;
   color: #FFF;
   background-image: linear-gradient(145deg, rgb(13, 71, 161), rgb(66, 165, 245));
   background-size:cover;
@@ -80,10 +79,10 @@ body {
   cursor: pointer;
   text-align: center;
   float: left;
-  width: 50px;
+  width: 55px;
   height: 45px;
   padding-top: 5px;
-  margin: 5px 0px 5px 0;
+  margin: 2px 0px 2px 0;
   user-select: none;
 }
 .menu .iconSmall .selected{
@@ -133,7 +132,7 @@ background-color: blue;
 }
 .chat{
   overflow-y: auto;
-  height: 400px;
+  height: 375px;
 }
 .chat .newDay{
   text-align: center;

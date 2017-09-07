@@ -12,8 +12,13 @@ import { Router, NavigationEnd } from '@angular/router'
     <div id='middle_column'>
       <div [hidden]="!loggedIn">
       <div [hidden]="!emailVerified">
-      <div class='menu' style="min-height:0px;">
-        <div style="width:250px;display:block;margin: 0 auto;">
+      <div class='menu' id='menu'>
+        <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
+        <div [hidden]='followingCurrentTeam' style="padding: 1px 10px 1px 10px; color:white;border-style:solid;border-width:thin;float: left; cursor: pointer" (click)="followTeam ();">FOLLOW</div>
+        <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
+      </div>
+      <div class='menu'>
+        <div style="width:275px;display:block;margin: 0 auto;">
         <div class='iconSmall' (click)="router.navigate(['users'])">
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:25px">
         <div style="font-size: 9px; color: #FFF;">Members</div>
@@ -38,12 +43,7 @@ import { Router, NavigationEnd } from '@angular/router'
         </div>
         </div>
       </div>
-      <div class='menu' id='menu' style="min-height:0px">
-        <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
-        <div [hidden]='followingCurrentTeam' style="padding: 1px 10px 1px 10px; color:white;border-style:solid;border-width:thin;float: left; cursor: pointer" (click)="followTeam ();">FOLLOW</div>
-        <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
       </div>
-        </div>
       </div>
       <div id='app_container'>
         <router-outlet></router-outlet>
