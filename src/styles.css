@@ -21,7 +21,7 @@ body {
 }
 #app_container {
   overflow-y: auto;
-  padding: 5px 0 0 0;
+  padding: 5px 0 5px 0;
   background-color: #f9f9f9;
 }
 #login {
@@ -81,12 +81,11 @@ body {
   float: left;
   width: 55px;
   height: 45px;
-  padding-top: 5px;
-  margin: 2px 0px 2px 0;
+  padding: 3px 0 1px 0;
   user-select: none;
 }
-.menu .iconSmall .selected{
-background-color: blue;
+.menu .selected {
+  background-color: #265cb5;
 }
 .menu .icon .activity {
   height: 12px;

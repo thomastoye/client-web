@@ -19,24 +19,24 @@ import { Router, NavigationEnd } from '@angular/router'
       </div>
       <div class='menu'>
         <div style="width:275px;display:block;margin: 0 auto;">
-        <div class='iconSmall' (click)="router.navigate(['users'])">
+        <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['users']);selectedIcon=1">
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:25px">
         <div style="font-size: 9px; color: #FFF;">Members</div>
         </div>
-        <div class='iconSmall' (click)="router.navigate(['projects'])">
+        <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['projects']);selectedIcon=2">
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
         <div style="font-size: 9px; color: #FFF;">Projects</div>
         </div>
-        <div class='iconSmall' (click)="router.navigate(['chat'])">
+        <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['chat']);selectedIcon=3">
         <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:25px">
         <div style="font-size: 9px; color: #FFF;">Chat</div>
         <div class='activity' [hidden]="!currentTeamChatActivity"></div>
         </div>
-        <div class='iconSmall' (click)="router.navigate(['wallet'])">
+        <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="router.navigate(['wallet']);selectedIcon=4">
         <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:25px">
         <div style="font-size: 9px; color: #FFF;">Wallet</div>
         </div>
-        <div class='iconSmall' (click)="router.navigate(['teams'])">
+        <div class='iconSmall' [class.selected]="selectedIcon===5" (click)="router.navigate(['teams']);selectedIcon=5">
         <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:25px; border-radius:3px;">
         <div style="font-size: 9px; color: #FFF;">Teams</div>
         <div class='activity' [hidden]="!globalChatActivity"></div>
@@ -61,6 +61,7 @@ export class AppComponent {
   followingCurrentTeam: boolean;
   currentUserID: string;
   currentTeamID: string;
+  selectedIcon: number;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.followingCurrentTeam=true;
