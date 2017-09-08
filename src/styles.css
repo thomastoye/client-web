@@ -81,7 +81,7 @@ body {
   float: left;
   width: 55px;
   height: 45px;
-  padding: 3px 0 1px 0;
+  padding: 4px 0 3px 0;
   user-select: none;
 }
 .menu .selected {
@@ -98,12 +98,12 @@ body {
   z-index: 1000;
 }
 .menu .iconSmall .activity {
-  height: 12px;
-  width: 12px;
+  height: 10px;
+  width: 10px;
   background-color: red;
-  border-radius: 6px;
+  border-radius: 5px;
   position: relative;
-  top: -44px;
+  top: -42px;
   left: 34px;
   z-index: 1000;
 }
