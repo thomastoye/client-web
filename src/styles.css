@@ -4,7 +4,8 @@
   font-weight: 100;
   margin: 0;
   padding: 0px;
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 20px;
   overflow: hidden;
   -webkit-overflow-scrolling: touch;
 }

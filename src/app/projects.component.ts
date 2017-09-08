@@ -12,7 +12,7 @@ import { Router, NavigationEnd } from '@angular/router'
     <ul>
       <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="db.object('userInterface/'+currentUserID).update({focusProject: project.$key});router.navigate(['projectProfile'])">
         <img (error)="errorHandler($event)"[src]="getPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px">
-        <div style="height:25px;font-size:10px">{{getProjectName(project.$key)}}{{(getTeamLeader(project.$key,currentTeamID)? " **" : "")}}</div>
+        <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}{{(getTeamLeader(project.$key,currentTeamID)? " **" : "")}}</div>
       </li>
     </ul>
     <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>

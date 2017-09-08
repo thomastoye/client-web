@@ -27,7 +27,7 @@ import { DomSanitizer } from '@angular/platform-browser';
     {{last?scrollToBottom(message.timestamp):''}}
     </li>
   </ul>
-  <div style="height:90px;width:100%"></div>
+  <div style="height:125px;width:100%"></div>
   </div>
   </div>
   </div>
