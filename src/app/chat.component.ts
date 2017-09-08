@@ -32,7 +32,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   </div>
   </div>
   <div style="position: fixed;bottom: 0;width:100%;">
-  <div class="sheet">
+  <div class="sheet" style="box-shadow:none">
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style:none;float:left;">
     <li *ngFor="let author of draftMessageAuthors | async">
