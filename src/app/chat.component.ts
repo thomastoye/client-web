@@ -25,7 +25,7 @@ import { Router, NavigationEnd } from '@angular/router'
     <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
     <a href="{{message.image}}">
-    <img [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0;">
+    <img *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0;">
     </a>
     {{last?scrollToBottom(message.timestamp):''}}
     </li>
