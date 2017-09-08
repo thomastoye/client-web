@@ -27,8 +27,12 @@ import { DomSanitizer } from '@angular/platform-browser';
     {{last?scrollToBottom(message.timestamp):''}}
     </li>
   </ul>
+  <div style="height:90px;width:100%"></div>
   </div>
   </div>
+  </div>
+  <div style="position: fixed;bottom: 0;width:100%;">
+  <div class="sheet">
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style:none;float:left;">
     <li *ngFor="let author of draftMessageAuthors | async">
@@ -39,6 +43,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   <label for="file" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">Post an image</label>
   <progress value='0' max='100' id='uploader' style="float:right;width:30%;margin:5px 0px 0px 0px;">0%</progress>
   <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
+  </div>
   </div>
     `,
 })

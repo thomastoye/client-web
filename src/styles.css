@@ -20,7 +20,6 @@ body {
   height: 100%;
 }
 #app_container {
-  overflow-y: auto;
   padding: 5px 0 5px 0;
   background-color: #f9f9f9;
 }
@@ -128,10 +127,6 @@ body {
   width: 130px;
   margin: 10px;
   user-select: none;
-}
-.chat{
-  overflow-y: auto;
-  height: 65vh;
 }
 .chat .newDay{
   text-align: center;
