@@ -11,7 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   <div class="sheet">
   <div class="chat" id="chat-scroll">
   <div>
-  <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+25;this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: messageNumberDisplay}});">More messages</div>
+  <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async ; let last = last ; let i = index">
     <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
@@ -64,7 +64,6 @@ export class ChatComponent {
 
   constructor(public sanitizer: DomSanitizer, public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.previousMessageTimestamp=0;
-    this.messageNumberDisplay = 25;
     this.draftMessageDB=false;
     this.draftImage="";
     this.draftMessage="";
@@ -73,7 +72,7 @@ export class ChatComponent {
       else {
         this.currentUserID = auth.uid;
         db.object('userInterface/'+auth.uid).subscribe(userInterface => {
-          this.messageNumberDisplay = 25;
+          this.messageNumberDisplay = 15;
           this.currentTeamID = userInterface.currentTeam;
           this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: this.messageNumberDisplay}});
           this.draftMessageAuthors = this.db.list('teamActivities/'+this.currentTeamID+'/draftMessages/');
@@ -106,7 +105,7 @@ export class ChatComponent {
 
   scrollToBottom(scrollMessageTimestamp: number) {
     if (scrollMessageTimestamp!=this.scrollMessageTimestamp) {
-      var element = document.getElementById("chat-scroll");
+      var element = document.getElementById("main_container");
       element.scrollTop = element.scrollHeight;
       this.scrollMessageTimestamp=scrollMessageTimestamp;
     }

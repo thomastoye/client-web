@@ -9,46 +9,42 @@ import { Router, NavigationEnd } from '@angular/router'
   selector: 'app-root',
   template: `
   <div id='main_container'>
-    <div id='middle_column'>
-      <div [hidden]="!loggedIn">
-      <div [hidden]="!emailVerified">
-      <div class='menu' id='menu'>
-        <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
-        <div [hidden]='followingCurrentTeam' style="padding: 1px 10px 1px 10px; color:white;border-style:solid;border-width:thin;float: left; cursor: pointer" (click)="followTeam ();">FOLLOW</div>
-        <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
+    <div [hidden]="!loggedIn">
+    <div [hidden]="!emailVerified">
+    <div class='menu' id='menu'>
+      <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
+      <div [hidden]='followingCurrentTeam' style="padding: 1px 10px 1px 10px; color:white;border-style:solid;border-width:thin;float: left; cursor: pointer" (click)="followTeam ();">FOLLOW</div>
+      <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
+    </div>
+    <div class='menu'>
+      <div style="width:275px;display:block;margin: 0 auto;">
+      <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['users']);selectedIcon=1">
+      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:25px">
+      <div style="font-size: 9px; color: #FFF;">Members</div>
       </div>
-      <div class='menu'>
-        <div style="width:275px;display:block;margin: 0 auto;">
-        <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['users']);selectedIcon=1">
-        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:25px">
-        <div style="font-size: 9px; color: #FFF;">Members</div>
-        </div>
-        <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['projects']);selectedIcon=2">
-        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
-        <div style="font-size: 9px; color: #FFF;">Projects</div>
-        </div>
-        <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['chat']);selectedIcon=3">
-        <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:25px">
-        <div style="font-size: 9px; color: #FFF;">Chat</div>
-        <div class='activity' [hidden]="!currentTeamChatActivity"></div>
-        </div>
-        <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="router.navigate(['wallet']);selectedIcon=4">
-        <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:25px">
-        <div style="font-size: 9px; color: #FFF;">Wallet</div>
-        </div>
-        <div class='iconSmall' [class.selected]="selectedIcon===5" (click)="router.navigate(['teams']);selectedIcon=5">
-        <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:25px; border-radius:3px;">
-        <div style="font-size: 9px; color: #FFF;">Teams</div>
-        <div class='activity' [hidden]="!globalChatActivity"></div>
-        </div>
-        </div>
+      <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['projects']);selectedIcon=2">
+      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
+      <div style="font-size: 9px; color: #FFF;">Projects</div>
       </div>
+      <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['chat']);selectedIcon=3">
+      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:25px">
+      <div style="font-size: 9px; color: #FFF;">Chat</div>
+      <div class='activity' [hidden]="!currentTeamChatActivity"></div>
       </div>
+      <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="router.navigate(['wallet']);selectedIcon=4">
+      <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:25px">
+      <div style="font-size: 9px; color: #FFF;">Wallet</div>
       </div>
-      <div id='app_container'>
-        <router-outlet></router-outlet>
+      <div class='iconSmall' [class.selected]="selectedIcon===5" (click)="router.navigate(['teams']);selectedIcon=5">
+      <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:25px; border-radius:3px;">
+      <div style="font-size: 9px; color: #FFF;">Teams</div>
+      <div class='activity' [hidden]="!globalChatActivity"></div>
+      </div>
       </div>
     </div>
+    </div>
+    </div>
+    <router-outlet></router-outlet>
   </div>
   `,
 })
