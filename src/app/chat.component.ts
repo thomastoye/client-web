@@ -23,7 +23,7 @@ import { DomSanitizer } from '@angular/platform-browser';
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{getFirstName(message.author)}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
-    <img *ngIf="message.image!" [src]="sanitizer.bypassSecurityTrustUrl(message.image)" style="clear:left;width:100%;max-height:300px;object-fit:contain;padding: 0 0 10px 0">
+    <img *ngIf="message.image!" [src]="message.image" style="clear:left;width:100%;max-height:300px;object-fit:contain;padding: 0 0 10px 0">
     {{last?scrollToBottom(message.timestamp):''}}
     </li>
   </ul>
@@ -162,7 +162,7 @@ export class ChatComponent {
   onImageChange(event) {
     let image = event.target.files[0];
     var uploader = <HTMLInputElement>document.getElementById('uploader');
-    var storageRef = firebase.storage().ref('images/'+image.name);
+    var storageRef = firebase.storage().ref('images/'+Date.now()+image.name);
     var task = storageRef.put(image);
     task.on('state_changed',
       function progress(snapshot){
