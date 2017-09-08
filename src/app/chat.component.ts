@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import * as firebase from 'firebase/app';
+import 'firebase/storage';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Ng2ImgMaxService } from 'ng2-img-max';
 
 @Component({
   selector: 'chat',
@@ -30,22 +30,20 @@ import { Ng2ImgMaxService } from 'ng2-img-max';
   </div>
   </div>
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
-  <ul style="list-style: none;">
+  <ul style="list-style:none;float:left;">
     <li *ngFor="let author of draftMessageAuthors | async">
     <div [hidden]="!author.draftMessage||author.$key==currentUserID" *ngIf="isDraftMessageRecent(author.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{getFirstName(author.$key)}}...</div>
     </li>
   </ul>
-  <!--
   <input type="file" name="file" id="file" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-  <label for="file" style="float:right;padding:5px 35px 5px 0px;">Post an image</label>
-  -->
+  <label for="file" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">Post an image</label>
+  <progress value='0' max='100' id='uploader' style="float:right;width:30%;margin:5px 0px 0px 0px;">0%</progress>
   <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
   </div>
     `,
 })
 export class ChatComponent {
   draftMessage: string;
-  uploadedImage: File;
   draftImage: string;
   draftMessageDB: boolean;
   draftMessageAuthors: FirebaseListObservable<any>;
@@ -59,7 +57,7 @@ export class ChatComponent {
   scrollMessageTimestamp: number;
   previousMessageTimestamp: number;
 
-  constructor(private ng2ImgMax: Ng2ImgMaxService, public sanitizer: DomSanitizer, public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
+  constructor(public sanitizer: DomSanitizer, public afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.previousMessageTimestamp=0;
     this.messageNumberDisplay = 25;
     this.draftMessageDB=false;
@@ -84,6 +82,10 @@ export class ChatComponent {
         });
       }
     });
+  }
+
+  ngOnInit() {
+    document.getElementById('uploader').style.visibility = "hidden";
   }
 
   isMessageNewGroup (messageTimestamp) {
@@ -159,25 +161,27 @@ export class ChatComponent {
 
   onImageChange(event) {
     let image = event.target.files[0];
-
-    this.ng2ImgMax.resizeImage(image, 500, 500).subscribe(
-      result => {
-        this.uploadedImage = new File([result], result.name);
-        this.getDraftImage(this.uploadedImage);
+    var uploader = <HTMLInputElement>document.getElementById('uploader');
+    var storageRef = firebase.storage().ref('images/'+image.name);
+    var task = storageRef.put(image);
+    task.on('state_changed',
+      function progress(snapshot){
+        document.getElementById('buttonFile').style.visibility = "hidden";
+        document.getElementById('uploader').style.visibility = "visible";
+        var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
+        uploader.value=percentage.toString();
       },
-      error => {
-        console.log('😢 Oh no!', error);
+      function error(){
+        document.getElementById('uploader').style.visibility = "hidden";
+        document.getElementById('buttonFile').style.visibility = "visible";
+      },
+      ()=>{
+        document.getElementById('uploader').style.visibility = "hidden";
+        document.getElementById('buttonFile').style.visibility = "visible";
+        this.draftImage=task.snapshot.downloadURL;
+        this.addMessage();
       }
     );
-  }
-
-  getDraftImage(file: File) {
-    const reader: FileReader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      this.draftImage = reader.result;
-      this.addMessage();
-    };
   }
 
 }
