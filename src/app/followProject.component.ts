@@ -67,7 +67,7 @@ export class FollowProjectComponent  {
     if (projectID==null || projectID=="") {this.messageFollow = "Please select a project"}
     else {
       this.db.object('teamProjects/'+teamID+'/'+projectID).update({following: true});
-      this.router.navigate(['projects']);
+      this.router.navigate(['users']);
     }
   }
 

@@ -31,7 +31,7 @@ import { Router } from '@angular/router'
     <div class="listSeperator">{{name}} teams:</div>
     <li *ngFor="let team of projectTeams | async"
       [class.selected]="team.$key === selectedTeamID"
-      (click)="selectedTeamID = team.$key;db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
+      (click)="selectedTeamID = team.$key;db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['users'])">
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
       <div style="width:300px;height:25px;float:left;">{{getTeamName(team.$key)}}{{(getTeamLeader(currentProjectID,team.$key)? " **" : "")}}{{getTeamFollowing(team.$key,currentProjectID)?"":" (Not Following)"}}</div>

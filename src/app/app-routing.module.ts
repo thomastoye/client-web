@@ -5,7 +5,6 @@ import { ChatComponent } from './chat.component';
 import { UsersComponent } from './users.component';
 import { UserProfileComponent } from './userProfile.component';
 import { ProjectProfileComponent } from './projectProfile.component';
-import { ProjectsComponent } from './projects.component';
 import { TeamsComponent } from './teams.component';
 import { AddMemberComponent } from './addMember.component';
 import { AddTeamComponent } from './addTeam.component';
@@ -24,7 +23,6 @@ const appRoutes: Routes = [
   { path: 'users', component: UsersComponent },
   { path: 'userProfile', component: UserProfileComponent },
   { path: 'projectProfile', component: ProjectProfileComponent },
-  { path: 'projects', component: ProjectsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'teams', component: TeamsComponent },
   { path: 'addMember', component: AddMemberComponent },

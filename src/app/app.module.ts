@@ -12,7 +12,6 @@ import { ChatComponent }  from './chat.component';
 import { LoginComponent }  from './login.component';
 import { UserProfileComponent }  from './userProfile.component';
 import { ProjectProfileComponent }  from './projectProfile.component';
-import { ProjectsComponent }  from './projects.component';
 import { AddMemberComponent }  from './addMember.component';
 import { AddTeamComponent }  from './addTeam.component';
 import { FollowTeamComponent }  from './followTeam.component';
@@ -50,7 +49,6 @@ export const firebaseConfig = {
     LoginComponent,
     UserProfileComponent,
     ProjectProfileComponent,
-    ProjectsComponent,
     AddMemberComponent,
     AddTeamComponent,
     FollowTeamComponent,

@@ -9,8 +9,9 @@ import { Router, NavigationEnd } from '@angular/router'
   selector: 'users',
   template: `
   <div class='sheet'>
+  <div>
   <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%">
-  <div class="sheet" style="width:290px;display:block;margin: 10px auto;padding:5px">
+  <div class="sheet" style="width:290px;display:block;margin: 10px auto;padding:5px;position:relative;top:-50px;">
   <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
   <ul class='listLight' style="float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
@@ -25,6 +26,15 @@ import { Router, NavigationEnd } from '@angular/router'
     </li>
   </ul>
   </div>
+  </div>
+  <ul>
+    <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="db.object('userInterface/'+currentUserID).update({focusProject: project.$key});router.navigate(['projectProfile'])">
+      <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px">
+      <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}{{(getTeamLeader(project.$key,currentTeamID)? " **" : "")}}</div>
+    </li>
+  </ul>
+  <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
+  <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
   <div style="clear: left; width: 50%;">
   <input maxlength="500" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
@@ -57,6 +67,7 @@ export class UsersComponent  {
   currentTeamID: string;
   teamLeaders: FirebaseListObservable<any>;
   teamMembers: FirebaseListObservable<any>;
+  teamProjects: FirebaseListObservable<any>;
   newMemberID: string;
   memberAdText: string;
   memberAdVisible: boolean;
@@ -65,8 +76,6 @@ export class UsersComponent  {
     this.afAuth.authState.subscribe((auth) => {
       this.memberAdVisible=false;
       if (auth==null){
-        this.teamLeaders = null;
-        this.teamMembers = null;
       }
       else {
         this.editMode = false;
@@ -83,6 +92,12 @@ export class UsersComponent  {
           this.db.object('teamAds/'+this.currentTeamID+'/memberAdVisible').subscribe(memberAdVisible => {
             this.memberAdVisible = memberAdVisible.$value;
           });
+          this.teamProjects = this.db.list('teamProjects/' + currentTeam.$value, {
+            query:{
+              orderByChild:'following',
+              equalTo: true,
+            }
+          });
           this.teamLeaders = this.db.list('teamUsers/' + currentTeam.$value, {
             query:{
               orderByChild:'leader',
@@ -98,6 +113,14 @@ export class UsersComponent  {
         });
       }
     });
+  }
+
+  getProjectName (ID: string) :string {
+    var output;
+    this.db.object('projects/' + ID).subscribe(snapshot => {
+      output = snapshot.name;
+    });
+    return output;
   }
 
   getFirstName (ID: string) :string {
@@ -126,9 +149,25 @@ export class UsersComponent  {
     return output;
   }
 
+  getProjectPhotoURL (ID: string) :string {
+    var output;
+    this.db.object('projects/' + ID).subscribe(snapshot => {
+      output = snapshot.photoURL;
+    });
+    return output;
+  }
+
   getUserLeader (ID: string) :string {
     var output;
     this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
+      output = snapshot.leader;
+    });
+    return output;
+  }
+
+  getTeamLeader (projectID: string, teamID: string) :string {
+    var output;
+    this.db.object('projectTeams/' + projectID + '/' + teamID).subscribe(snapshot => {
       output = snapshot.leader;
     });
     return output;
