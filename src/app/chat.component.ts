@@ -33,9 +33,7 @@ import { Router, NavigationEnd } from '@angular/router'
   <div style="height:125px;width:100%"></div>
   </div>
   </div>
-  </div>
-  <div style="position: fixed;bottom: 0;width:100%;">
-  <div class="sheet" style="box-shadow:none">
+  <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none">
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style:none;float:left;">
     <li *ngFor="let author of draftMessageAuthors | async">
