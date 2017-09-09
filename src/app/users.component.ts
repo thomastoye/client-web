@@ -9,7 +9,7 @@ import { Router, NavigationEnd } from '@angular/router'
   selector: 'users',
   template: `
   <div class='sheet'>
-  <div>
+  <div style="margin-bottom:-50px">
   <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%">
   <div class="sheet" style="width:290px;display:block;margin: 10px auto;padding:5px;position:relative;top:-50px;">
   <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
