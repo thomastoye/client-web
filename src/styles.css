@@ -45,16 +45,6 @@ body {
   background-color: #333;
   color: white;
 }
-.listLight .userIcon {
-  cursor: pointer;
-  text-align: center;
-  float: left;
-  width: 60px;
-  height: 80px;
-  margin: 15px;
-  user-select: none;
-  padding: 0;
-}
 .menu {
   color: #FFF;
   background-image: linear-gradient(145deg, rgb(13, 71, 161), rgb(66, 165, 245));
@@ -131,52 +121,17 @@ body {
   color: #777;
   text-decoration: underline;
 }
-.listDark {
-  background: #222;
-  color: white;
-  padding: 10px;
+.listLight {
+  color: #666;
   list-style-type: none;
 }
-.listDark .listSeperator {
-  padding:7px;
-  color:#AAA;
-}
-.listDark .activity {
-  height: 12px;
-  width: 12px;
-  background-color: red;
-  border-radius: 6px;
-  position: relative;
-  top: 5px;
-  left: 5px;
-  z-index: 1000;
-}
-.listDark .button {
-  cursor: pointer;
-  margin: 2px 5px 2px 5px;
-  width:100px;
-  height:20px;
-  float:left;
-  text-align:center;
-  border-style:solid;
-  border-width:thin;
-  border-radius:10px;
+.listLight .userIcon {
+  text-align: center;
+  float: left;
   user-select: none;
 }
-.listDark li {
+.listLight li {
   cursor: pointer;
-  position: relative;
-  left: 0;
-  padding: 5px;
-}
-.listDark .selected {
-  background-color: #666 !important;
-}
-.listLight {
-  background: white;
-  color: #666;
-  padding: 10px;
-  list-style-type: none;
 }
 .listLight .listSeperator {
   padding:7px;
@@ -208,12 +163,6 @@ body {
   border-width:thin;
   border-radius:10px;
   user-select: none;
-}
-.listLight li {
-  cursor: pointer;
-  position: relative;
-  left: 0;
-  padding: 5px;
 }
 .listLight .selected {
   background-color: #eee !important;

@@ -92,7 +92,7 @@
     "teamUsers": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".indexOn": ["member"],
+        ".indexOn": ["leader","member"],
         "$uid": {
           ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && data.child('leader').val() != true) && auth != null && auth.uid != 'mG5bCx3ugYbI8kinLiJN5rdNDRh1'"
         }

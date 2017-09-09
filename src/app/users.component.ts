@@ -9,21 +9,26 @@ import { Router, NavigationEnd } from '@angular/router'
   selector: 'users',
   template: `
   <div class='sheet'>
-  <div>
   <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%">
-  <div style="float: left; width: 50%;">
+  <div class="sheet" style="width:290px;display:block;margin: 10px auto;padding:5px">
+  <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
+  <ul class='listLight' style="float:left">
+    <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
+      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:6px; object-fit: cover; height:130px; width:130px">
+      <div style="font-size:10px;line-height:normal">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,currentTeamID)?"":" (Not Following)"}}</div>
+    </li>
+  </ul>
+  <ul class='listLight'>
+    <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
+      <img *ngIf="!user.leader" (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:60px; width:60px">
+      <div *ngIf="!user.leader" style="font-size:10px;line-height:normal">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,currentTeamID)?"":" (Not Following)"}}</div>
+    </li>
+  </ul>
+  </div>
+  <div style="clear: left; width: 50%;">
   <input maxlength="500" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
   <button (click)="saveTeamProfile()">Save team profile {{messageSaveTeamProfile}}</button>
-  </div>
-  </div>
-  <div style="float: left;">
-    <ul class='listLight'>
-      <li class='userIcon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-        <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:60px; width:60px">
-        <div>{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,currentTeamID)?"":" (Not Following)"}}</div>
-      </li>
-    </ul>
   </div>
   <div style="float: right;">
     <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
@@ -50,7 +55,8 @@ export class UsersComponent  {
   messageSaveTeamProfile: string;
   currentUserID: string;
   currentTeamID: string;
-  teamUsers: FirebaseListObservable<any>;
+  teamLeaders: FirebaseListObservable<any>;
+  teamMembers: FirebaseListObservable<any>;
   newMemberID: string;
   memberAdText: string;
   memberAdVisible: boolean;
@@ -59,7 +65,8 @@ export class UsersComponent  {
     this.afAuth.authState.subscribe((auth) => {
       this.memberAdVisible=false;
       if (auth==null){
-        this.teamUsers = null;
+        this.teamLeaders = null;
+        this.teamMembers = null;
       }
       else {
         this.editMode = false;
@@ -76,7 +83,13 @@ export class UsersComponent  {
           this.db.object('teamAds/'+this.currentTeamID+'/memberAdVisible').subscribe(memberAdVisible => {
             this.memberAdVisible = memberAdVisible.$value;
           });
-          this.teamUsers = this.db.list('teamUsers/' + currentTeam.$value, {
+          this.teamLeaders = this.db.list('teamUsers/' + currentTeam.$value, {
+            query:{
+              orderByChild:'leader',
+              equalTo: true,
+            }
+          });
+          this.teamMembers = this.db.list('teamUsers/' + currentTeam.$value, {
             query:{
               orderByChild:'member',
               equalTo: true,
