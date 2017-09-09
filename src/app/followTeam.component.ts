@@ -74,7 +74,7 @@ export class FollowTeamComponent  {
   }
 
   errorHandler(event) {
-    event.target.src = "https://cdn.browshot.com/static/images/not-found.png";
+    event.target.src = "https://static1.squarespace.com/static/5391fac1e4b07b6926545c34/t/54b948f4e4b0567044b6c023/1421428991081/";
   }
 
 }
