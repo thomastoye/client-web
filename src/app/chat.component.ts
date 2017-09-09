@@ -41,9 +41,9 @@ import { Router, NavigationEnd } from '@angular/router'
     </li>
   </ul>
   <input type="file" name="file" id="file" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-  <label for="file" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">Post an image</label>
-  <progress value='0' max='100' id='uploader' style="float:right;width:30%;margin:5px 0px 0px 0px;">0%</progress>
-  <textarea class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder={{messageInput}}></textarea>
+  <label [hidden]='!currentUserIsMember' for="file" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">Post an image</label>
+  <progress [hidden]='!currentUserIsMember' value='0' max='100' id='uploader' style="float:right;width:30%;margin:5px 0px 0px 0px;">0%</progress>
+  <textarea [hidden]='!currentUserIsMember' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
     `,
@@ -56,18 +56,18 @@ export class ChatComponent {
   teamMessages: FirebaseListObservable<any>;
   currentUserID: string;
   currentTeamID: string;
-  newMemberID: string;
-  messageInput: string;
   messageNumberDisplay: number;
   lastChatVisitTimestamp: number;
   scrollMessageTimestamp: number;
   previousMessageTimestamp: number;
+  currentUserIsMember: boolean;
 
   constructor(public sanitizer: DomSanitizer, public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.previousMessageTimestamp=0;
     this.draftMessageDB=false;
     this.draftImage="";
     this.draftMessage="";
+    this.currentUserIsMember=false;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
@@ -78,8 +78,7 @@ export class ChatComponent {
           this.teamMessages = this.db.list('teamMessages/' + this.currentTeamID, {query: {limitToLast: this.messageNumberDisplay}});
           this.draftMessageAuthors = this.db.list('teamActivities/'+this.currentTeamID+'/draftMessages/');
           this.db.object('teamUsers/'+this.currentTeamID+'/'+auth.uid).subscribe(teamUser=>{
-            if (teamUser==null) {this.messageInput="You need to be a member to message this team"}
-            else {this.messageInput = teamUser.member?"Message team":"You need to be a member to message this team"}
+            if (teamUser!=null && teamUser.member) {this.currentUserIsMember=true}
           });
           this.db.object('userTeams/'+this.currentUserID+'/'+this.currentTeamID).subscribe(userTeam=>{
             this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
