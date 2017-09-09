@@ -10,7 +10,7 @@ import { Router, NavigationEnd } from '@angular/router'
   template: `
   <div class='sheet'>
   <div>
-  <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain; max-height:350px; width:100%">
+  <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%">
   <div style="float: left; width: 50%;">
   <input maxlength="500" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
