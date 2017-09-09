@@ -12,18 +12,18 @@ import { Router, NavigationEnd } from '@angular/router'
     <div [hidden]="!loggedIn">
     <div [hidden]="!emailVerified">
     <div class='menu' id='menu'>
-      <div style="padding: 5px 10px 5px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
-      <div [hidden]='followingCurrentTeam' style="padding: 1px 10px 1px 10px; color:white;border-style:solid;border-width:thin;float: left; cursor: pointer" (click)="followTeam ();">FOLLOW</div>
-      <div style="padding: 5px 10px 5px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
+      <div style="padding: 0px 10px 0px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
+      <div [hidden]='followingCurrentTeam' style="padding: 0px 10px 0px 10px; color:white;background-color:#1fad2b;float:left;font-size:10px;cursor:pointer" (click)="followTeam ();">FOLLOW</div>
+      <div style="padding: 0px 10px 0px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
     </div>
     <div class='menu'>
       <div style="width:275px;display:block;margin: 0 auto;">
       <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['users']);selectedIcon=1">
-      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_guest.svg" style="width:25px">
-      <div style="font-size: 9px;line-height:9px; color: #FFF;">Members</div>
+      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
+      <div style="font-size: 9px;line-height:9px; color: #FFF;">Home</div>
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['projects']);selectedIcon=2">
-      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
+      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_02.svg" style="width:25px">
       <div style="font-size: 9px;line-height:9px; color: #FFF;">Projects</div>
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['chat']);selectedIcon=3">

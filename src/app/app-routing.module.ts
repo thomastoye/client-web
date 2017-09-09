@@ -15,7 +15,6 @@ import { WalletComponent } from './wallet.component';
 import { CreateTeamComponent } from './createTeam.component';
 import { CreateProjectComponent } from './createProject.component';
 import { CreateTransactionComponent } from './createTransaction.component';
-import { TeamProfileComponent } from './teamProfile.component';
 import { BuyCoins } from './buyCoins.component';
 import { COINinfo } from './COINinfo.component';
 import { TeamAds } from './teamAds.component';
@@ -36,7 +35,6 @@ const appRoutes: Routes = [
   { path: 'createTeam', component: CreateTeamComponent },
   { path: 'createProject', component: CreateProjectComponent },
   { path: 'createTransaction', component: CreateTransactionComponent },
-  { path: 'teamProfile', component: TeamProfileComponent },
   { path: 'buyCoins', component: BuyCoins },
   { path: 'COINinfo', component: COINinfo },
   { path: 'teamAds', component: TeamAds },

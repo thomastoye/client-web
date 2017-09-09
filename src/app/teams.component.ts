@@ -25,7 +25,6 @@ import { Router } from '@angular/router';
       </div>
       <div [hidden]='team.$key!=currentTeamID' style="float:right">
       <div [hidden]='!moreButtons'>
-      <div [hidden]='!getUserLeader(team.$key)' class="button" (click)="this.router.navigate(['teamProfile'])">Edit</div>
       <div [hidden]='getUserLeader(team.$key)' class="button" (click)="leaveTeam(currentTeamID)">Stop following</div>
       </div>
       </div>

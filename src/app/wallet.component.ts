@@ -15,7 +15,7 @@ import { Router } from '@angular/router'
     </div>
     <div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
-    <div style="font-size: 25px; color: black;">{{currentBalance | number:'1.2-2'}}</div>
+    <div style="font-size: 25px;line-height:normal; color: black;">{{currentBalance | number:'1.2-2'}}</div>
     </div>
     <div style="float: right; width: 50%; text-align: left; padding: 5px">
     <button type="button" (click)="router.navigate(['buyCoins'])" style="margin:0;float:right;width:100px;background-color:#43c14b">Buy COINS</button>

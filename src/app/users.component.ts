@@ -9,33 +9,45 @@ import { Router, NavigationEnd } from '@angular/router'
   selector: 'users',
   template: `
   <div class='sheet'>
-    <div style="float: left;">
-      <ul class='listLight'>
-        <li class='userIcon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-          <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:60px; width:60px">
-          <div>{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,currentTeamID)?"":" (Not Following)"}}</div>
-        </li>
-      </ul>
-    </div>
-    <div style="float: right;">
-      <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
-        <li (click)="this.router.navigate(['addMember'])">
-          <div class='cornerButton' style="float:right">+</div>
-        </li>
-        <li (click)="db.object('teamAds/'+currentTeamID).update({memberAdVisible:!memberAdVisible})">
-          <div class='cornerButton' style="float:right">Ad</div>
-        </li>
-      </ul>
-    </div>
-    <div style="clear:left">
-      <textarea [hidden]='!memberAdVisible' class="textAreaAdvert" style="max-width:400px" rows="10" maxlength="500" [(ngModel)]="memberAdText" (keyup)="updateMemberAdDB()" placeholder="Looking for new Members or Leaders for your team? Write an advert here."></textarea>
-      <div style="text-align:left; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['teamAds'])">View all Ads</div>
-    </div>
+  <div>
+  <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain; max-height:350px; width:100%">
+  <div style="float: left; width: 50%;">
+  <input maxlength="500" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
+  <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
+  <button (click)="saveTeamProfile()">Save team profile {{messageSaveTeamProfile}}</button>
+  </div>
+  </div>
+  <div style="float: left;">
+    <ul class='listLight'>
+      <li class='userIcon' *ngFor="let user of teamUsers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
+        <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="border-radius:3px; object-fit: cover; height:60px; width:60px">
+        <div>{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,currentTeamID)?"":" (Not Following)"}}</div>
+      </li>
+    </ul>
+  </div>
+  <div style="float: right;">
+    <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
+      <li (click)="this.router.navigate(['addMember'])">
+        <div class='cornerButton' style="float:right">+</div>
+      </li>
+      <li (click)="db.object('teamAds/'+currentTeamID).update({memberAdVisible:!memberAdVisible})">
+        <div class='cornerButton' style="float:right">Ad</div>
+      </li>
+    </ul>
+  </div>
+  <div style="clear:left">
+    <textarea [hidden]='!memberAdVisible' class="textAreaAdvert" style="max-width:400px" rows="10" maxlength="500" [(ngModel)]="memberAdText" (keyup)="updateMemberAdDB()" placeholder="Looking for new Members or Leaders for your team? Write an advert here."></textarea>
+    <div style="text-align:left; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['teamAds'])">View all Ads</div>
+  </div>
   </div>
 `,
 })
 export class UsersComponent  {
 
+  photoURL: string;
+  teamName: string;
+  editMode: boolean;
+  messageSaveTeamProfile: string;
   currentUserID: string;
   currentTeamID: string;
   teamUsers: FirebaseListObservable<any>;
@@ -50,9 +62,14 @@ export class UsersComponent  {
         this.teamUsers = null;
       }
       else {
+        this.editMode = false;
         this.currentUserID = auth.uid;
         this.db.object('userInterface/'+auth.uid+'/currentTeam').subscribe(currentTeam => {
           this.currentTeamID = currentTeam.$value;
+          this.db.object('teams/' + this.currentTeamID).subscribe (team=>{
+            this.teamName = team.name;
+            this.photoURL = team.photoURL;
+          });
           this.db.object('teamAds/'+this.currentTeamID+'/memberAdText').subscribe(memberAdText => {
             this.memberAdText = memberAdText.$value;
           });
@@ -102,6 +119,16 @@ export class UsersComponent  {
       output = snapshot.leader;
     });
     return output;
+  }
+
+  saveTeamProfile() {
+    this.teamName = this.teamName.toUpperCase();
+    this.db.object('teams/' + this.currentTeamID).update({
+      name: this.teamName, photoURL: this.photoURL,
+    })
+    .then(_ => this.messageSaveTeamProfile="Saved")
+    .catch(err => this.messageSaveTeamProfile="Error: Only leaders can save team profile");
+
   }
 
   updateMemberAdDB () {
