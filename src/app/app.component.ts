@@ -35,6 +35,7 @@ import { Router, NavigationEnd } from '@angular/router'
     </div>
     </div>
     </div>
+    <div style="height:40px;width:100%;z-index:1"></div>
     <router-outlet></router-outlet>
   </div>
   `,
