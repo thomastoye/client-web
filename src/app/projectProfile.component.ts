@@ -103,7 +103,7 @@ export class ProjectProfileComponent {
 
   cancelMember(projectID: string, teamID: string) {
     this.db.object('projectTeams/' + projectID + '/' + teamID).update({member:false})
-    .then(_ => this.router.navigate(['teams']))
+    .then(_ => this.router.navigate(['teamProfile']))
     .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
   }
 

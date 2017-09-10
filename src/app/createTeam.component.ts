@@ -42,7 +42,7 @@ export class CreateTeamComponent {
     this.db.object('teams/'+teamID).update({name: teamName, photoURL: this.photoURL, organisation: "Family and Friends"});
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
     this.db.object('userInterface/' + userID).update({currentTeam: teamID});
-    this.router.navigate(['teams']);
+    this.router.navigate(['teamProfile']);
   }
 
   errorHandler(event) {

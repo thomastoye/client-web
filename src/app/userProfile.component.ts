@@ -39,13 +39,18 @@ import { Router } from '@angular/router'
   <div class="title">{{firstName}} follows:</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
-      [class.selected]="team.$key === selectedTeamID"
-      (click)="selectedTeamID=team.$key;db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
+      [class.selected]="team.$key === currentTeamID"
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
+      <div style="display: inline; float: left; height:25px; width:20px">
+      <div class="activity" [hidden]="!getChatActivity(team.$key)" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])"></div>
+      </div>
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,focusUserID)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
     </li>
   </ul>
+  <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
+  <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
   <div [hidden]="currentUserID!=focusUserID" style="width:125px;margin: 5px auto;color:red;text-align:center;cursor:pointer;border-style:solid;border-width:thin;border-radius:3px" (click)="this.logout();router.navigate(['login']);">logout</div>
   </div>
   `,
@@ -64,7 +69,6 @@ export class UserProfileComponent {
   messageCancelMembership: string;
   ownProfile: boolean;
   userTeams: FirebaseListObservable<any>;
-  selectedTeamID: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -149,6 +153,16 @@ export class UserProfileComponent {
 
   logout() {
     this.afAuth.auth.signOut()
+  }
+
+  getChatActivity (ID: string) :boolean {
+    var output = false;
+    this.db.object('userTeams/' + this.currentUserID + '/' + ID).subscribe(userTeam => {
+      this.db.object('teamActivities/' + ID).subscribe(teamActivities => {
+        output = teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp;
+      });
+    });
+    return output;
   }
 
   errorHandler(event) {

@@ -24,7 +24,7 @@ import { Router, NavigationEnd } from '@angular/router'
       <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['wallet']);selectedIcon=3">
       <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:30px;margin-top:5px;">
       </div>
-      <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="router.navigate(['teams']);selectedIcon=4">
+      <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="db.object('userInterface/'+currentUserID).update({focusUser:currentUserID});router.navigate(['userProfile']);selectedIcon=4">
       <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:30px;margin-top:5px;border-radius:3px;">
       <div class='activity' [hidden]="!globalChatActivity"></div>
       </div>

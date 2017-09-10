@@ -69,7 +69,7 @@ export class FollowTeamComponent  {
     else {
       this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
       this.db.object('userInterface/'+userID).update({currentTeam: teamID});
-      this.router.navigate(['teams']);
+      this.router.navigate(['teamProfile']);
     }
   }
 
