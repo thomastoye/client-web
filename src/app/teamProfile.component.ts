@@ -61,6 +61,8 @@ import { Router, NavigationEnd } from '@angular/router'
       </li>
     </ul>
   </div>
+  </div>
+  <div class='sheet' style="margin-top:10px">
   <div style="clear:left">
     <textarea [hidden]='!memberAdVisible' class="textAreaAdvert" style="max-width:400px" rows="10" maxlength="500" [(ngModel)]="memberAdText" (keyup)="updateMemberAdDB()" placeholder="Looking for new Members or Leaders for your team? Write an advert here."></textarea>
     <div style="text-align:left; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['teamAds'])">View all Ads</div>
