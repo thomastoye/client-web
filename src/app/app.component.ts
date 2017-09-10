@@ -17,7 +17,7 @@ import { Router, NavigationEnd } from '@angular/router'
       <div style="padding: 0px 10px 0px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
     </div>
     <div class='menu'>
-      <div style="width:220px;display:block;margin: 0 auto;">
+      <div style="width:275px;display:block;margin: 0 auto;">
       <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['users']);selectedIcon=1">
       <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
       <div style="font-size: 9px;line-height:9px; color: #FFF;">Home</div>
@@ -34,6 +34,11 @@ import { Router, NavigationEnd } from '@angular/router'
       <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="router.navigate(['teams']);selectedIcon=4">
       <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:25px; border-radius:3px;">
       <div style="font-size: 9px;line-height:9px; color: #FFF;">Teams</div>
+      <div class='activity' [hidden]="!globalChatActivity"></div>
+      </div>
+      <div class='iconSmall' [class.selected]="selectedIcon===5" (click)="router.navigate(['search']);selectedIcon=5">
+      <img (error)="errorHandler($event)" src="./../assets/App icons/search-3-512.png" style="width:25px; border-radius:3px;">
+      <div style="font-size: 9px;line-height:9px; color: #FFF;">Search</div>
       <div class='activity' [hidden]="!globalChatActivity"></div>
       </div>
       </div>

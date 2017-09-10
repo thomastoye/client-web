@@ -6,7 +6,7 @@ import { UsersComponent } from './users.component';
 import { UserProfileComponent } from './userProfile.component';
 import { ProjectProfileComponent } from './projectProfile.component';
 import { TeamsComponent } from './teams.component';
-import { AddMemberComponent } from './addMember.component';
+import { SearchComponent } from './search.component';
 import { AddTeamComponent } from './addTeam.component';
 import { FollowTeamComponent } from './followTeam.component';
 import { FollowProjectComponent } from './followProject.component';
@@ -25,7 +25,7 @@ const appRoutes: Routes = [
   { path: 'projectProfile', component: ProjectProfileComponent },
   { path: 'login', component: LoginComponent },
   { path: 'teams', component: TeamsComponent },
-  { path: 'addMember', component: AddMemberComponent },
+  { path: 'search', component: SearchComponent },
   { path: 'addTeam', component: AddTeamComponent },
   { path: 'followTeam', component: FollowTeamComponent },
   { path: 'followProject', component: FollowProjectComponent },
