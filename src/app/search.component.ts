@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"
       (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-      <img (error)="errorHandler($event)"[src]="user.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
+      <img (error)="errorHandler($event)"[src]="user.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{user.firstName}}
       {{user.lastName}}
     </li>
@@ -29,7 +29,7 @@ import { Router } from '@angular/router';
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile']);">
-      <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
+      <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{team.name}}
     </li>
   </ul>
@@ -40,7 +40,7 @@ import { Router } from '@angular/router';
     <li *ngFor="let project of projects | async"
       [class.selected]="project.$key === selectedProjectID"
       (click)="db.object('userInterface/'+currentUserID).update({focusProject: project.$key});router.navigate(['projectProfile'])">
-      <img (error)="errorHandler($event)"[src]="project.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
+      <img (error)="errorHandler($event)"[src]="project.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{project.name}}
     </li>
   </ul>

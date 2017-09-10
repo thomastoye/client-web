@@ -18,7 +18,7 @@ import { Router } from '@angular/router'
     <li *ngFor="let team of userTeams | async"
     [class.selected]="team.$key === selectedTeamID"
     (click)="selectedTeamID = team.$key;checkTransactionInput()">
-      <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+      <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
     </li>
   </ul>
