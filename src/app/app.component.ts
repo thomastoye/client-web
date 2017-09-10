@@ -18,7 +18,7 @@ import { Router, NavigationEnd } from '@angular/router'
     </div>
     <div class='menu'>
       <div style="width:275px;display:block;margin: 0 auto;">
-      <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['users']);selectedIcon=1">
+      <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['teamProfile']);selectedIcon=1">
       <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
       <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Home</div>
       </div>

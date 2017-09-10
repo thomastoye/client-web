@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
   template: `
   <div class="sheet">
   <input maxlength="500" (keyup)="refreshUserList()" [(ngModel)]="this.filter" placeholder="Search">
+  </div>
+  <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
   <div class="listSeperator">Users</div>
     <li *ngFor="let user of users | async"
@@ -20,17 +22,21 @@ import { Router } from '@angular/router';
       {{user.lastName}}
     </li>
   </ul>
+  </div>
+  <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
-  <div class="listSeperator">TEAMS</div>
+  <div class="listSeperator">Teams</div>
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
-      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['users']);">
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile']);">
       <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
       {{team.name}}
     </li>
   </ul>
+  </div>
+  <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
-  <div class="listSeperator">PROJECTS</div>
+  <div class="listSeperator">Projects</div>
     <li *ngFor="let project of projects | async"
       [class.selected]="project.$key === selectedProjectID"
       (click)="db.object('userInterface/'+currentUserID).update({focusProject: project.$key});router.navigate(['projectProfile'])">
@@ -103,7 +109,7 @@ export class SearchComponent  {
     if (memberID==null || memberID=="") {this.messageAddMember = "Please select a member"}
     else {
       this.db.object('teamUsers/'+teamID+'/'+memberID).update({member: true, leader: false})
-      .then(_ => this.router.navigate(['users']))
+      .then(_ => this.router.navigate(['teamProfile']))
       .catch(err => this.messageAddMember="Error: You need to be leader to add a Member - You cannot add yourself if you are already in the team");
     }
   }

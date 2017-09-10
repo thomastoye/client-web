@@ -2,7 +2,7 @@ import { NgModule }              from '@angular/core';
 import { RouterModule, Routes }  from '@angular/router';
 import { LoginComponent }   from './login.component';
 import { ChatComponent } from './chat.component';
-import { UsersComponent } from './users.component';
+import { TeamProfileComponent } from './teamProfile.component';
 import { UserProfileComponent } from './userProfile.component';
 import { ProjectProfileComponent } from './projectProfile.component';
 import { TeamsComponent } from './teams.component';
@@ -20,7 +20,7 @@ import { TeamAds } from './teamAds.component';
 
 const appRoutes: Routes = [
   { path: 'chat', component: ChatComponent },
-  { path: 'users', component: UsersComponent },
+  { path: 'teamProfile', component: TeamProfileComponent },
   { path: 'userProfile', component: UserProfileComponent },
   { path: 'projectProfile', component: ProjectProfileComponent },
   { path: 'login', component: LoginComponent },

@@ -6,7 +6,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { Router, NavigationEnd } from '@angular/router'
 
 @Component({
-  selector: 'users',
+  selector: 'teamProfile',
   template: `
   <div class='sheet'>
   <div style="margin-bottom:-50px">
@@ -27,7 +27,10 @@ import { Router, NavigationEnd } from '@angular/router'
   </ul>
   </div>
   </div>
-  <ul>
+  </div>
+  <div class='sheet' style="margin-top:10px">
+  <ul class='listLight'>
+  <div class="listSeperator">Projects</div>
     <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="db.object('userInterface/'+currentUserID).update({focusProject: project.$key});router.navigate(['projectProfile'])">
       <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px">
       <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}{{(getTeamLeader(project.$key,currentTeamID)? " **" : "")}}</div>
@@ -35,6 +38,8 @@ import { Router, NavigationEnd } from '@angular/router'
   </ul>
   <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
   <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
+  </div>
+  <div class='sheet' style="margin-top:10px">
   <div style="clear: left; width: 50%;">
   <input maxlength="500" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
@@ -57,7 +62,7 @@ import { Router, NavigationEnd } from '@angular/router'
   </div>
 `,
 })
-export class UsersComponent  {
+export class TeamProfileComponent  {
 
   photoURL: string;
   teamName: string;

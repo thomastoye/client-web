@@ -135,12 +135,12 @@ body {
 }
 .listLight .listSeperator {
   padding:7px;
-  color:#aaa;
-  border-top: 0;
-  border-left: 0;
-  border-right: 0;
-  border-bottom: 1px;
-  border-style: solid;
+  color:#4b4f56;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: sans-serif;
+  line-height: 15px;
+  clear:both;
 }
 .listLight .activity {
   height: 12px;

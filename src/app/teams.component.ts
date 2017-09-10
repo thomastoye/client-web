@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
-      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['users']);">
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile']);">
       <div style="display: inline; float: left; height:25px; width:20px">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
