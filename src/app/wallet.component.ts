@@ -9,7 +9,6 @@ import { Router } from '@angular/router'
   selector: 'wallet',
   template: `
   <div class="sheet">
-  <div class="title">
     <div style="text-align:center">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
@@ -23,7 +22,9 @@ import { Router } from '@angular/router'
     </div>
     <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['COINinfo'])">COIN info</div>
     </div>
+    <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send COINS</button>
   </div>
+  <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
     <div class="listSeperator">RECEIVED</div>
     <li *ngFor="let transaction of PERRINNTransactionsIN | async">
@@ -33,6 +34,10 @@ import { Router } from '@angular/router'
       <div style="width:170px; float:left; text-align:right">From {{getTeamName(transaction.sender)}}</div>
       <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
+    </ul>
+    </div>
+    <div class='sheet' style="margin-top:10px">
+    <ul class="listLight">
     <div class="listSeperator">SENT</div>
     <li *ngFor="let transaction of PERRINNTransactionsOUT | async">
       <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
@@ -41,6 +46,10 @@ import { Router } from '@angular/router'
       <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
       <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
+    </ul>
+    </div>
+    <div class='sheet' style="margin-top:10px">
+    <ul class="listLight">
     <div class="listSeperator">PENDING</div>
     <li *ngFor="let transaction of teamTransactions | async"
     [class.selected]="transaction.$key === selectedTransactionID"
@@ -58,6 +67,10 @@ import { Router } from '@angular/router'
       </div>
       </div>
     </li>
+    </ul>
+    </div>
+    <div class='sheet' style="margin-top:10px">
+    <ul class="listLight">
     <div class="listSeperator">AWAITING LEADER ACTION</div>
     <li *ngFor="let transaction of teamTransactionRequests | async"
     [class.selected]="transaction.$key === selectedTransactionRequestID"
@@ -77,7 +90,6 @@ import { Router } from '@angular/router'
       </div>
     </li>
   </ul>
-  <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send COINS</button>
   </div>
   `,
 })

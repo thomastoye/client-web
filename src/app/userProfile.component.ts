@@ -29,7 +29,8 @@ import { Router } from '@angular/router'
   <div style="float: right; width: 50%;">
   <img (error)="errorHandler($event)" [src]="photoURL" style="object-fit:contain; height:200px; width:100%">
   </div>
-  <div style="height:30px;width:100%"></div>
+  </div>
+  <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
     <div class="listSeperator">{{firstName}} follows:</div>
     <li *ngFor="let team of userTeams | async"
