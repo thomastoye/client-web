@@ -35,8 +35,8 @@ import { Router, NavigationEnd } from '@angular/router'
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
+  <div class="title">Projects</div>
   <ul class='listLight'>
-  <div class="listSeperator">Projects</div>
     <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="db.object('userInterface/'+currentUserID).update({focusProject: project.$key});router.navigate(['projectProfile'])">
       <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px">
       <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}{{(getTeamLeader(project.$key,currentTeamID)? " **" : "")}}</div>
@@ -63,6 +63,7 @@ import { Router, NavigationEnd } from '@angular/router'
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
+  <div class="title">Ad</div>
   <div style="clear:left">
     <textarea [hidden]='!memberAdVisible' class="textAreaAdvert" style="max-width:400px" rows="10" maxlength="500" [(ngModel)]="memberAdText" (keyup)="updateMemberAdDB()" placeholder="Looking for new Members or Leaders for your team? Write an advert here."></textarea>
     <div style="text-align:left; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['teamAds'])">View all Ads</div>

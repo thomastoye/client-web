@@ -25,8 +25,8 @@ import { Router } from '@angular/router'
     <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send COINS</button>
   </div>
   <div class='sheet' style="margin-top:10px">
+  <div class="title">RECEIVED</div>
   <ul class="listLight">
-    <div class="listSeperator">RECEIVED</div>
     <li *ngFor="let transaction of PERRINNTransactionsIN | async">
       <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
       <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
@@ -37,8 +37,8 @@ import { Router } from '@angular/router'
     </ul>
     </div>
     <div class='sheet' style="margin-top:10px">
+    <div class="title">SENT</div>
     <ul class="listLight">
-    <div class="listSeperator">SENT</div>
     <li *ngFor="let transaction of PERRINNTransactionsOUT | async">
       <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
       <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
@@ -49,8 +49,8 @@ import { Router } from '@angular/router'
     </ul>
     </div>
     <div class='sheet' style="margin-top:10px">
+    <div class="title">PENDING</div>
     <ul class="listLight">
-    <div class="listSeperator">PENDING</div>
     <li *ngFor="let transaction of teamTransactions | async"
     [class.selected]="transaction.$key === selectedTransactionID"
     (click)="selectedTransactionID = transaction.$key; clearAllMessages()">
@@ -70,8 +70,8 @@ import { Router } from '@angular/router'
     </ul>
     </div>
     <div class='sheet' style="margin-top:10px">
+    <div class="title">AWAITING LEADER ACTION</div>
     <ul class="listLight">
-    <div class="listSeperator">AWAITING LEADER ACTION</div>
     <li *ngFor="let transaction of teamTransactionRequests | async"
     [class.selected]="transaction.$key === selectedTransactionRequestID"
     (click)="selectedTransactionRequestID = transaction.$key; clearAllMessages()">

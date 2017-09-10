@@ -12,8 +12,8 @@ import { Router } from '@angular/router';
   <input maxlength="500" (keyup)="refreshUserList()" [(ngModel)]="this.filter" placeholder="Search">
   </div>
   <div class='sheet' style="margin-top:10px">
+  <div class="title">Users</div>
   <ul class="listLight">
-  <div class="listSeperator">Users</div>
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"
       (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
@@ -24,8 +24,8 @@ import { Router } from '@angular/router';
   </ul>
   </div>
   <div class='sheet' style="margin-top:10px">
+  <div class="title">Teams</div>
   <ul class="listLight">
-  <div class="listSeperator">Teams</div>
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile']);">
@@ -35,8 +35,8 @@ import { Router } from '@angular/router';
   </ul>
   </div>
   <div class='sheet' style="margin-top:10px">
+  <div class="title">Projects</div>
   <ul class="listLight">
-  <div class="listSeperator">Projects</div>
     <li *ngFor="let project of projects | async"
       [class.selected]="project.$key === selectedProjectID"
       (click)="db.object('userInterface/'+currentUserID).update({focusProject: project.$key});router.navigate(['projectProfile'])">

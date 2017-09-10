@@ -33,8 +33,8 @@ import { Router } from '@angular/router'
   </div>
   </div>
   <div style="height:30px;width:100%"></div>
+  <div class="title">{{name}} teams:</div>
   <ul class="listLight">
-    <div class="listSeperator">{{name}} teams:</div>
     <li *ngFor="let team of projectTeams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key;db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">

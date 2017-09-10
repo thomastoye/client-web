@@ -133,15 +133,6 @@ body {
 .listLight li {
   cursor: pointer;
 }
-.listLight .listSeperator {
-  padding:7px;
-  color:#4b4f56;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: sans-serif;
-  line-height: 15px;
-  clear:both;
-}
 .listLight .activity {
   height: 12px;
   width: 12px;
@@ -287,15 +278,13 @@ hr {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 .sheet .title {
-  font-size: 12px;
-  font-weight:bold ;
-  padding: 15px;
-  border-bottom: 1px;
-  border-top: 0;
-  border-left: 0;
-  border-right: 0;
-  border-style: solid;
-  border-color: #ccc;
+  padding:10px;
+  color:#4b4f56;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: sans-serif;
+  line-height: 15px;
+  clear:both;
 }
 .sheet .content {
   padding: 5px 10px 5px 10px;
