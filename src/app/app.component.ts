@@ -8,10 +8,9 @@ import { Router, NavigationEnd } from '@angular/router'
 @Component({
   selector: 'app-root',
   template: `
-  <progress value='0' max='100' id='uploader'>0%</progress>
-  <div id='main_container'>
     <div [hidden]="!loggedIn">
     <div [hidden]="!emailVerified">
+    <progress value='0' max='100' id='uploader'>0%</progress>
     <div class='menu'>
       <div style="width:275px;display:block;margin: 0 auto;">
       <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['teamProfile']);selectedIcon=1">
@@ -35,6 +34,7 @@ import { Router, NavigationEnd } from '@angular/router'
     </div>
     </div>
     </div>
+    <div id='main_container'>
     <div style="height:40px;width:100%;z-index:1"></div>
     <router-outlet></router-outlet>
   </div>

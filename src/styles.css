@@ -291,7 +291,7 @@ input[type=number]::-webkit-outer-spin-button {
     cursor: pointer;
 }
 progress {
-  z-index: 1000;
+  z-index: 9999999;
   position: fixed;
   top: 0;
   -webkit-appearance:none;
