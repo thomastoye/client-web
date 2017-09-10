@@ -9,9 +9,15 @@ import { Router, NavigationEnd } from '@angular/router'
   selector: 'teamProfile',
   template: `
   <div class='sheet'>
-  <div style="margin-bottom:-50px">
+  <div style="margin-bottom:-50px;position:relative">
   <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%">
-  <div class="sheet" style="width:290px;display:block;margin: 10px auto;padding:5px;position:relative;top:-50px;">
+  <div style="position:absolute;left:10px;top:10px;">
+  <input type="file" name="teamImage" id="teamImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+  <label for="teamImage" id="buttonFile">
+  <img src="./../assets/App icons/camera.png" style="width:25px">
+  </label>
+  </div>
+  <div class="sheet" style="width:290px;margin: 10px auto;padding:5px;position:relative;top:-50px;">
   <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
   <ul class='listLight' style="float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">

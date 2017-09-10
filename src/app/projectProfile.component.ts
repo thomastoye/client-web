@@ -23,8 +23,14 @@ import { Router } from '@angular/router'
   <button [hidden]='!teamAndProjectLeader' *ngIf="editMode" (click)="this.router.navigate(['addTeam'])" style="background-color:#c69b00">Add a team</button>
   </div>
   </div>
-  <div style="float: right; width: 50%;">
-  <img (error)="errorHandler($event)" [src]="photoURL" style="object-fit:contain; height:200px; width:100%">
+  <div style="float: right; width: 50%;position:relative">
+  <img (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:200px; width:100%">
+  <div style="position:absolute;left:10px;top:10px;">
+  <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+  <label for="projectImage" id="buttonFile">
+  <img src="./../assets/App icons/camera.png" style="width:25px">
+  </label>
+  </div>
   </div>
   <div style="height:30px;width:100%"></div>
   <ul class="listLight">

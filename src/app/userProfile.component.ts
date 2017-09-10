@@ -26,8 +26,13 @@ import { Router } from '@angular/router'
   <button (click)="updateUserProfile()">Save profile</button>
   </div>
   </div>
-  <div style="float: right; width: 50%;">
-  <img (error)="errorHandler($event)" [src]="photoURL" style="object-fit:contain; height:200px; width:100%">
+  <div style="float: right; width: 50%;position:relative">
+  <img (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:200px; width:100%">
+  <div style="position:absolute;left:10px;top:10px;">
+  <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+  <label for="projectImage" id="buttonFile">
+  <img src="./../assets/App icons/camera.png" style="width:25px">
+  </label>
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">

@@ -40,8 +40,10 @@ import { Router, NavigationEnd } from '@angular/router'
     <div [hidden]="!author.draftMessage||author.$key==currentUserID" *ngIf="isDraftMessageRecent(author.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{getFirstName(author.$key)}}...</div>
     </li>
   </ul>
-  <input type="file" name="file" id="file" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-  <label [hidden]='!currentUserIsMember' for="file" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">Post an image</label>
+  <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+  <label [hidden]='!currentUserIsMember' for="chatImage" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">
+  <img src="./../assets/App icons/camera.png" style="width:25px">
+  </label>
   <textarea [hidden]='!currentUserIsMember' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
