@@ -62,28 +62,22 @@ export class AppComponent {
         db.object('userInterface/'+auth.uid+'/currentTeam').subscribe(currentTeamID => {
           this.currentTeamID=currentTeamID.$value;
           console.log("loop 2");
-          db.object('teams/' + currentTeamID.$value).subscribe(currentTeamObject=>{
-            console.log("loop 3");
-            this.db.object('appSettings/').subscribe(appSettings=>{
-              console.log("loop 4");
-              db.list('userTeams/'+auth.uid).subscribe(userTeams=>{
-                console.log("loop 5");
-                this.followingCurrentTeam=false;
-                this.globalChatActivity = false;
-                this.currentTeamChatActivity = false;
-                userTeams.forEach(userTeam=>{
-                  if (userTeam.following) {
-                    db.object('teamActivities/'+userTeam.$key+'/lastMessageTimestamp').subscribe(lastMessageTimestamp=>{
-                      console.log("loop 6");
-                      var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
-                      if (userTeam.$key==currentTeamID.$value&&chatActivity) {this.currentTeamChatActivity=true}
-                      if (userTeam.$key==currentTeamID.$value) {this.followingCurrentTeam=userTeam.following}
-                      this.globalChatActivity = chatActivity?true:this.globalChatActivity;
-                      document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
-                    });
-                  }
+          db.list('userTeams/'+auth.uid).subscribe(userTeams=>{
+            console.log("loop 5");
+            this.followingCurrentTeam=false;
+            this.globalChatActivity = false;
+            this.currentTeamChatActivity = false;
+            userTeams.forEach(userTeam=>{
+              if (userTeam.following) {
+                db.object('teamActivities/'+userTeam.$key+'/lastMessageTimestamp').subscribe(lastMessageTimestamp=>{
+                  console.log("loop 6");
+                  var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
+                  if (userTeam.$key==currentTeamID.$value&&chatActivity) {this.currentTeamChatActivity=true}
+                  if (userTeam.$key==currentTeamID.$value) {this.followingCurrentTeam=userTeam.following}
+                  this.globalChatActivity = chatActivity?true:this.globalChatActivity;
+                  document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
                 });
-              });
+              }
             });
           });
         });
