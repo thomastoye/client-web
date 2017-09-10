@@ -34,7 +34,6 @@ import { Router, NavigationEnd } from '@angular/router'
   </div>
   </div>
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none">
-  <progress [hidden]='!currentUserIsMember' value='0' max='100' id='uploader'>0%</progress>
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style:none;float:left;">
     <li *ngFor="let author of draftMessageAuthors | async">
@@ -167,16 +166,19 @@ export class ChatComponent {
     task.on('state_changed',
       function progress(snapshot){
         document.getElementById('buttonFile').style.visibility = "hidden";
+        document.getElementById('uploader').style.visibility = "visible";
         var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
         uploader.value=percentage.toString();
       },
       function error(){
         document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
         uploader.value='0';
       },
       ()=>{
         uploader.value='0';
         document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
         this.draftImage=task.snapshot.downloadURL;
         this.addMessage();
       }

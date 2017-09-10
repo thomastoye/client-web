@@ -8,6 +8,7 @@ import { Router, NavigationEnd } from '@angular/router'
 @Component({
   selector: 'app-root',
   template: `
+  <progress value='0' max='100' id='uploader'>0%</progress>
   <div id='main_container'>
     <div [hidden]="!loggedIn">
     <div [hidden]="!emailVerified">
@@ -101,6 +102,10 @@ export class AppComponent {
         });
       }
     });
+  }
+
+  ngOnInit () {
+    document.getElementById('uploader').style.visibility = "hidden";
   }
 
   logout() {
