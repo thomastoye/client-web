@@ -20,25 +20,25 @@ import { Router, NavigationEnd } from '@angular/router'
       <div style="width:275px;display:block;margin: 0 auto;">
       <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['users']);selectedIcon=1">
       <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
-      <div style="font-size: 9px;line-height:9px; color: #FFF;">Home</div>
+      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Home</div>
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['chat']);selectedIcon=2">
       <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:25px">
-      <div style="font-size: 9px;line-height:9px; color: #FFF;">Chat</div>
+      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Chat</div>
       <div class='activity' [hidden]="!currentTeamChatActivity"></div>
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['wallet']);selectedIcon=3">
       <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:25px">
-      <div style="font-size: 9px;line-height:9px; color: #FFF;">Wallet</div>
+      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Wallet</div>
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="router.navigate(['teams']);selectedIcon=4">
       <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:25px; border-radius:3px;">
-      <div style="font-size: 9px;line-height:9px; color: #FFF;">Teams</div>
+      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Teams</div>
       <div class='activity' [hidden]="!globalChatActivity"></div>
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===5" (click)="router.navigate(['search']);selectedIcon=5">
-      <img (error)="errorHandler($event)" src="./../assets/App icons/search-3-512.png" style="width:25px; border-radius:3px;">
-      <div style="font-size: 9px;line-height:9px; color: #FFF;">Search</div>
+      <img (error)="errorHandler($event)" src="./../assets/App icons/search.png" style="width:25px; border-radius:3px;-webkit-filter: brightness(100); filter: brightness(100);">
+      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Search</div>
       <div class='activity' [hidden]="!globalChatActivity"></div>
       </div>
       </div>

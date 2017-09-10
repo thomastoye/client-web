@@ -20,14 +20,6 @@ import { Router } from '@angular/router';
       <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:35px; width:35px">
       <div style="width:15px;height:15px;float:left;">{{getUserLeader(team.$key)?"*":""}}</div>
       <div style="width:200px;height:15px;float:left;">{{getTeamName(team.$key)}}</div>
-      <div [hidden]='team.$key!=currentTeamID' style="float:right">
-      <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
-      </div>
-      <div [hidden]='team.$key!=currentTeamID' style="float:right">
-      <div [hidden]='!moreButtons'>
-      <div [hidden]='getUserLeader(team.$key)' class="button" (click)="leaveTeam(currentTeamID)">Stop following</div>
-      </div>
-      </div>
     </li>
   </ul>
   <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
@@ -43,10 +35,8 @@ export class TeamsComponent  {
   currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   userTeams: FirebaseListObservable<any>;
-  moreButtons: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
-    this.moreButtons = false;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){
         this.userTeams=null;
