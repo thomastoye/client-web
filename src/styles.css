@@ -320,3 +320,16 @@ input[type=number]::-webkit-outer-spin-button {
     color: blue;
     cursor: pointer;
 }
+progress {
+  -webkit-appearance:none;
+  appearance:none;
+  width:100%;
+  height:3px;
+  background-color: white;
+}
+progress::-webkit-progress-bar {
+  background-color: white; width: 100%;
+}
+progress::-webkit-progress-value {
+  background-color: #3364b2 !important;
+}

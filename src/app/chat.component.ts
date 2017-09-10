@@ -34,6 +34,7 @@ import { Router, NavigationEnd } from '@angular/router'
   </div>
   </div>
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none">
+  <progress [hidden]='!currentUserIsMember' value='0' max='100' id='uploader'>0%</progress>
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style:none;float:left;">
     <li *ngFor="let author of draftMessageAuthors | async">
@@ -42,7 +43,6 @@ import { Router, NavigationEnd } from '@angular/router'
   </ul>
   <input type="file" name="file" id="file" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label [hidden]='!currentUserIsMember' for="file" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">Post an image</label>
-  <progress [hidden]='!currentUserIsMember' value='0' max='100' id='uploader' style="float:right;width:30%;margin:5px 0px 0px 0px;">0%</progress>
   <textarea [hidden]='!currentUserIsMember' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
@@ -86,10 +86,6 @@ export class ChatComponent {
         });
       }
     });
-  }
-
-  ngOnInit() {
-    document.getElementById('uploader').style.visibility = "hidden";
   }
 
   isMessageNewGroup (messageTimestamp) {
@@ -171,16 +167,15 @@ export class ChatComponent {
     task.on('state_changed',
       function progress(snapshot){
         document.getElementById('buttonFile').style.visibility = "hidden";
-        document.getElementById('uploader').style.visibility = "visible";
         var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
         uploader.value=percentage.toString();
       },
       function error(){
-        document.getElementById('uploader').style.visibility = "hidden";
         document.getElementById('buttonFile').style.visibility = "visible";
+        uploader.value='0';
       },
       ()=>{
-        document.getElementById('uploader').style.visibility = "hidden";
+        uploader.value='0';
         document.getElementById('buttonFile').style.visibility = "visible";
         this.draftImage=task.snapshot.downloadURL;
         this.addMessage();

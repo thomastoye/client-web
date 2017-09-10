@@ -39,7 +39,6 @@ import { Router, NavigationEnd } from '@angular/router'
       <div class='iconSmall' [class.selected]="selectedIcon===5" (click)="router.navigate(['search']);selectedIcon=5">
       <img (error)="errorHandler($event)" src="./../assets/App icons/search.png" style="width:25px; border-radius:3px;-webkit-filter: brightness(100); filter: brightness(100);">
       <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Search</div>
-      <div class='activity' [hidden]="!globalChatActivity"></div>
       </div>
       </div>
     </div>
