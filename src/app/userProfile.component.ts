@@ -46,6 +46,7 @@ import { Router } from '@angular/router'
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
     </li>
   </ul>
+  <div [hidden]="currentUserID!=focusUserID" style="width:125px;margin: 5px auto;color:red;text-align:center;cursor:pointer;border-style:solid;border-width:thin;border-radius:3px" (click)="this.logout();router.navigate(['login']);">logout</div>
   </div>
   `,
 })
@@ -144,6 +145,10 @@ export class UserProfileComponent {
   }
 
   onImageChange(event) {
+  }
+
+  logout() {
+    this.afAuth.auth.signOut()
   }
 
   errorHandler(event) {

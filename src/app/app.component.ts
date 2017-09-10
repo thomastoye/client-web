@@ -12,34 +12,24 @@ import { Router, NavigationEnd } from '@angular/router'
   <div id='main_container'>
     <div [hidden]="!loggedIn">
     <div [hidden]="!emailVerified">
-    <div class='menu' id='menu'>
-      <div style="padding: 0px 10px 0px 10px; color:white; float: left; font-size:10px;">{{ currentTeamName }}</div>
-      <div [hidden]='followingCurrentTeam' style="padding: 0px 10px 0px 10px; color:white;background-color:#1fad2b;float:left;font-size:10px;cursor:pointer" (click)="followTeam ();">FOLLOW</div>
-      <div style="padding: 0px 10px 0px 10px; color:white; font-size:10px; float: right; cursor: pointer" (click)="this.logout(); router.navigate(['login']);">logout</div>
-    </div>
     <div class='menu'>
       <div style="width:275px;display:block;margin: 0 auto;">
       <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['teamProfile']);selectedIcon=1">
-      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:25px">
-      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Home</div>
+      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:30px;margin-top:5px;">
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['chat']);selectedIcon=2">
-      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:25px">
-      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Chat</div>
+      <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:30px;margin-top:5px;">
       <div class='activity' [hidden]="!currentTeamChatActivity"></div>
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['wallet']);selectedIcon=3">
-      <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:25px">
-      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Wallet</div>
+      <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:30px;margin-top:5px;">
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="router.navigate(['teams']);selectedIcon=4">
-      <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:25px; border-radius:3px;">
-      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Teams</div>
+      <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:30px;margin-top:5px;border-radius:3px;">
       <div class='activity' [hidden]="!globalChatActivity"></div>
       </div>
       <div class='iconSmall' [class.selected]="selectedIcon===5" (click)="router.navigate(['search']);selectedIcon=5">
-      <img (error)="errorHandler($event)" src="./../assets/App icons/search.png" style="width:25px; border-radius:3px;-webkit-filter: brightness(100); filter: brightness(100);">
-      <div style="font-family:sans-serif;font-size: 9px;line-height:9px; color: #FFF;">Search</div>
+      <img (error)="errorHandler($event)" src="./../assets/App icons/search.png" style="width:30px;margin-top:5px;border-radius:3px;-webkit-filter: brightness(100); filter: brightness(100);">
       </div>
       </div>
     </div>
@@ -54,7 +44,6 @@ export class AppComponent {
   currentTeamChatActivity: boolean;
   loggedIn: boolean;
   emailVerified: boolean;
-  currentTeamName: string;
   followingCurrentTeam: boolean;
   currentUserID: string;
   currentTeamID: string;
@@ -75,10 +64,8 @@ export class AppComponent {
           console.log("loop 2");
           db.object('teams/' + currentTeamID.$value).subscribe(currentTeamObject=>{
             console.log("loop 3");
-            this.currentTeamName = currentTeamObject.name;
             this.db.object('appSettings/').subscribe(appSettings=>{
               console.log("loop 4");
-              document.getElementById('menu').style.backgroundImage = 'url(' + (currentTeamObject.photoURL?currentTeamObject.photoURL:appSettings.teamBackgroundImage) + ')';
               db.list('userTeams/'+auth.uid).subscribe(userTeams=>{
                 console.log("loop 5");
                 this.followingCurrentTeam=false;
@@ -106,10 +93,6 @@ export class AppComponent {
 
   ngOnInit () {
     document.getElementById('uploader').style.visibility = "hidden";
-  }
-
-  logout() {
-    this.afAuth.auth.signOut()
   }
 
   followTeam () {

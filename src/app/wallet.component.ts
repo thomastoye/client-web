@@ -9,6 +9,7 @@ import { Router } from '@angular/router'
   selector: 'wallet',
   template: `
   <div class="sheet">
+    <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
     <div style="text-align:center">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
@@ -107,6 +108,7 @@ currentTeamID: string;
 moreButtons: boolean;
 currentUserID: string;
 isUserLeader: boolean;
+teamName: string;
 
 constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
   this.moreButtons = false;
@@ -123,6 +125,9 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
       this.currentUserID = auth.uid;
       db.object('userInterface/'+auth.uid+'/currentTeam').subscribe( currentTeamID => {
         this.currentTeamID = currentTeamID.$value;
+        this.db.object('teams/' + this.currentTeamID).subscribe (team=>{
+          this.teamName = team.name;
+        });
         this.getTeamWalletBalance(this.currentTeamID).then(balance=>{
           this.currentBalance = Number(balance);
         });
