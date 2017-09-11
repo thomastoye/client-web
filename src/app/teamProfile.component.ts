@@ -15,7 +15,7 @@ import { Router, NavigationEnd } from '@angular/router'
   <input type="file" name="teamImage" id="teamImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="teamImage" id="buttonFile">
   <img src="./../assets/App icons/camera.png" style="width:25px">
-  <span class="tipText">Max size 3.0Mb</span>
+  <span class="tipText">Max 3.0Mb</span>
   </label>
   </div>
   <div class="sheet" style="width:290px;margin: 10px auto;padding:5px;position:relative;top:-50px;">

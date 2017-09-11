@@ -30,7 +30,7 @@ import { Router } from '@angular/router'
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="projectImage" id="buttonFile">
   <img src="./../assets/App icons/camera.png" style="width:25px">
-  <span class="tipText">Max size 3.0Mb</span>
+  <span class="tipText">Max 3.0Mb</span>
   </label>
   </div>
   </div>

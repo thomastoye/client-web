@@ -43,7 +43,7 @@ import { Router, NavigationEnd } from '@angular/router'
   <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" [hidden]='!currentUserIsMember' for="chatImage" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">
   <img src="./../assets/App icons/camera.png" style="width:25px">
-  <span class="tipText">Max size 3.0Mb</span>
+  <span class="tipText">Max 3.0Mb</span>
   </label>
   <textarea [hidden]='!currentUserIsMember' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
