@@ -116,15 +116,30 @@ body {
 .listLight li {
   cursor: pointer;
 }
-.listLight .activity {
-  height: 12px;
-  width: 12px;
-  background-color: red;
-  border-radius: 6px;
+.listLight .chat {
+  color: red;
+  height: 15px;
+  width: 15px;
+  border-radius: 7px;
+  border-style: solid;
+  border-width: thin;
   position: relative;
-  top: 5px;
+  top: 7px;
   left: 5px;
   z-index: 1000;
+}
+.listLight .chatActivity {
+  color: red;
+  height: 15px;
+  width: 15px;
+  border-radius: 7px;
+  border-style: solid;
+  border-width: thin;
+  position: relative;
+  top: 7px;
+  left: 5px;
+  z-index: 1000;
+  background-color: red;
 }
 .listLight .button {
   cursor: pointer;
