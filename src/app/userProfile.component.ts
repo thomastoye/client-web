@@ -39,6 +39,7 @@ import { Router } from '@angular/router'
   <div class='sheet' style="margin-top:10px">
   <div class="title" style="float:left">{{firstName}} follows:</div>
   <div class="buttonDiv" *ngIf="currentUserID==focusUserID" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
+  <div class="buttonDiv" style="color:red" [hidden]='!editMode' (click)="unfollow(currentTeamID)">Unfollow</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
@@ -163,6 +164,10 @@ export class UserProfileComponent {
       });
     });
     return output;
+  }
+
+  unfollow(teamID: string) {
+    this.db.object('userTeams/'+this.currentUserID+'/'+teamID).update({following:false});
   }
 
   errorHandler(event) {
