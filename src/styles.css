@@ -106,6 +106,7 @@ body {
 .listLight {
   color: #666;
   list-style-type: none;
+  clear: both;
 }
 .listLight .userIcon {
   text-align: center;
@@ -139,6 +140,17 @@ body {
 }
 .listLight .selected {
   background-color: #eee !important;
+}
+.buttonDiv {
+  cursor: pointer;
+  color: #3586c4;
+  margin: 0 auto;
+  width:100px;
+  text-align:center;
+  border-style:solid;
+  border-width:thin;
+  border-radius:10px;
+  user-select: none;
 }
 button {
   cursor: pointer;

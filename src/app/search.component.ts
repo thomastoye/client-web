@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'search',
   template: `
   <div class="sheet">
-  <input maxlength="500" (keyup)="refreshUserList()" [(ngModel)]="this.filter" placeholder="Search">
+  <input id="searchInput" maxlength="500" (keyup)="refreshUserList()" [(ngModel)]="this.filter" placeholder="Search">
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="title">Users</div>
@@ -69,6 +69,10 @@ export class SearchComponent  {
         });
       }
     });
+  }
+
+  ngOnInit () {
+    document.getElementById("searchInput").focus();
   }
 
   refreshUserList () {

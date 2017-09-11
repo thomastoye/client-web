@@ -19,16 +19,15 @@ import { Router, NavigationEnd } from '@angular/router'
   </div>
   <div class="sheet" style="width:290px;margin: 10px auto;padding:5px;position:relative;top:-50px;">
   <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
+  <div class="buttonDiv" *ngIf="!getUserFollowing(currentUserID,currentTeamID)" (click)="followTeam(currentTeamID, currentUserID)">Follow</div>
   <ul class='listLight' style="float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:6px; object-fit: cover; height:130px; width:130px">
-      <div style="font-size:10px;line-height:normal">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,currentTeamID)?"":" (Not Following)"}}</div>
+      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:130px; width:130px">
     </li>
   </ul>
-  <ul class='listLight'>
+  <ul class='listLight' style="clear:none">
     <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
       <img *ngIf="!user.leader" (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:60px; width:60px">
-      <div *ngIf="!user.leader" style="font-size:10px;line-height:normal">{{ getFirstName(user.$key) }}{{ (user.leader? " *" : "") }}{{getUserFollowing(user.$key,currentTeamID)?"":" (Not Following)"}}</div>
     </li>
   </ul>
   </div>
@@ -202,6 +201,11 @@ export class TeamProfileComponent  {
       memberAdText:this.memberAdText,
       memberAdTimestamp:firebase.database.ServerValue.TIMESTAMP,
     });
+  }
+
+  followTeam (teamID: string, userID: string) {
+    this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.db.object('userInterface/'+userID).update({currentTeam: teamID});
   }
 
   onImageChange(event) {

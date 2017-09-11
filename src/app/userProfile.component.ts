@@ -15,7 +15,7 @@ import { Router } from '@angular/router'
   <div [hidden]='editMode'>
   <div class='title'>{{firstName}} {{lastName}}</div>
   <div style="padding:10px;" [innerHTML]="resume | linky"></div>
-  <button [hidden]='!ownProfile' (click)="editMode=true">Edit profile</button>
+  <div class="buttonDiv" [hidden]='!ownProfile' (click)="editMode=true">Edit profile</div>
   <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>
   </div>
   <div [hidden]='!editMode'>
@@ -36,7 +36,8 @@ import { Router } from '@angular/router'
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="title">{{firstName}} follows:</div>
+  <div class="title" style="float:left">{{firstName}} follows:</div>
+  <div class="buttonDiv" *ngIf="currentUserID==focusUserID" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
@@ -49,9 +50,7 @@ import { Router } from '@angular/router'
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
     </li>
   </ul>
-  <button (click)="this.router.navigate(['followTeam'])">Follow a team</button>
-  <button (click)="this.router.navigate(['createTeam'])">Create a new team</button>
-  <div [hidden]="currentUserID!=focusUserID" style="width:125px;margin: 5px auto;color:red;text-align:center;cursor:pointer;border-style:solid;border-width:thin;border-radius:3px" (click)="this.logout();router.navigate(['login']);">logout</div>
+  <div class="buttonDiv" *ngIf="currentUserID==focusUserID" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
   </div>
   `,
 })
