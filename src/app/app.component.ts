@@ -12,7 +12,7 @@ import { Router, NavigationEnd } from '@angular/router'
     <div [hidden]="!emailVerified">
     <progress value='0' max='100' id='uploader'>0%</progress>
     <div class='menu'>
-    <div style="width:275px;display:block;margin: 0 auto;">
+    <div style="width:325px;display:block;margin: 0 auto;">
     <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['teamProfile']);selectedIcon=1">
     <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:30px;margin-top:5px;">
     </div>
