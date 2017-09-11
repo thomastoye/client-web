@@ -23,7 +23,7 @@ import { Router, NavigationEnd } from '@angular/router'
   <input maxlength="500" *ngIf="editMode" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <input maxlength="500" *ngIf="editMode" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
   <div class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=true">Edit</div>
-  <div class="buttonDiv" *ngIf='editMode' style="color:red;border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=false;saveTeamProfile()">Save profile</div>
+  <div class="buttonDiv" *ngIf='editMode' style="color:red;border-style:none" (click)="editMode=false;saveTeamProfile()">Save profile</div>
   <ul class='listLight' style="float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
       <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:130px; width:130px">
@@ -34,16 +34,7 @@ import { Router, NavigationEnd } from '@angular/router'
       <img *ngIf="!user.leader" (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:60px; width:60px">
     </li>
   </ul>
-  <div *ngIf="editMode" style="float: right;">
-    <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
-      <li (click)="this.router.navigate(['addMember'])">
-        <div class='cornerButton' style="float:right">+</div>
-      </li>
-      <li (click)="db.object('teamAds/'+currentTeamID).update({memberAdVisible:!memberAdVisible})">
-        <div class='cornerButton' style="float:right">Ad</div>
-      </li>
-    </ul>
-  </div>
+  <div class="buttonDiv" *ngIf='editMode' style="border-style:none" (click)="this.router.navigate(['addMember'])">Add a member</div>
   </div>
   </div>
   </div>
@@ -55,11 +46,18 @@ import { Router, NavigationEnd } from '@angular/router'
       <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}{{(getTeamLeader(project.$key,currentTeamID)? " **" : "")}}</div>
     </li>
   </ul>
-  <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
-  <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
+  <button *ngIf="editMode" (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
+  <button *ngIf="editMode" [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="title">Ad</div>
+  <div *ngIf="editMode" style="float: right;">
+    <ul class='listLight'>
+      <li (click)="db.object('teamAds/'+currentTeamID).update({memberAdVisible:!memberAdVisible})">
+        <div class='cornerButton' style="float:right">Ad</div>
+      </li>
+    </ul>
+  </div>
   <div style="clear:left">
     <textarea [hidden]='!memberAdVisible' class="textAreaAdvert" style="max-width:400px" rows="10" maxlength="500" [(ngModel)]="memberAdText" (keyup)="updateMemberAdDB()" placeholder="Looking for new Members or Leaders for your team? Write an advert here."></textarea>
     <div style="text-align:left; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['teamAds'])">View all Ads</div>
