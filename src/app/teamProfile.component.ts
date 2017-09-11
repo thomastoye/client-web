@@ -11,15 +11,19 @@ import { Router, NavigationEnd } from '@angular/router'
   <div class='sheet'>
   <div style="margin-bottom:-50px;position:relative">
   <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%">
-  <div style="position:absolute;left:10px;top:10px;">
+  <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="teamImage" id="teamImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label for="teamImage" id="buttonFile">
   <img src="./../assets/App icons/camera.png" style="width:25px">
   </label>
   </div>
   <div class="sheet" style="width:290px;margin: 10px auto;padding:5px;position:relative;top:-50px;">
-  <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
+  <div *ngIf="!editMode" style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
   <div class="buttonDiv" *ngIf="!getUserFollowing(currentUserID,currentTeamID)" (click)="followTeam(currentTeamID, currentUserID)">Follow</div>
+  <input maxlength="500" *ngIf="editMode" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
+  <input maxlength="500" *ngIf="editMode" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
+  <div class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=true">Edit</div>
+  <div class="buttonDiv" *ngIf='editMode' style="color:red;border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=false;saveTeamProfile()">Save profile</div>
   <ul class='listLight' style="float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
       <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:130px; width:130px">
@@ -30,6 +34,16 @@ import { Router, NavigationEnd } from '@angular/router'
       <img *ngIf="!user.leader" (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:60px; width:60px">
     </li>
   </ul>
+  <div *ngIf="editMode" style="float: right;">
+    <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
+      <li (click)="this.router.navigate(['addMember'])">
+        <div class='cornerButton' style="float:right">+</div>
+      </li>
+      <li (click)="db.object('teamAds/'+currentTeamID).update({memberAdVisible:!memberAdVisible})">
+        <div class='cornerButton' style="float:right">Ad</div>
+      </li>
+    </ul>
+  </div>
   </div>
   </div>
   </div>
@@ -45,23 +59,6 @@ import { Router, NavigationEnd } from '@angular/router'
   <button [hidden]='!getUserLeader(currentTeamID)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div style="clear: left; width: 50%;">
-  <input maxlength="500" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
-  <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
-  <button (click)="saveTeamProfile()">Save team profile {{messageSaveTeamProfile}}</button>
-  </div>
-  <div style="float: right;">
-    <ul class='listLight' [hidden]='!getUserLeader(currentTeamID)'>
-      <li (click)="this.router.navigate(['addMember'])">
-        <div class='cornerButton' style="float:right">+</div>
-      </li>
-      <li (click)="db.object('teamAds/'+currentTeamID).update({memberAdVisible:!memberAdVisible})">
-        <div class='cornerButton' style="float:right">Ad</div>
-      </li>
-    </ul>
-  </div>
-  </div>
-  <div class='sheet' style="margin-top:10px">
   <div class="title">Ad</div>
   <div style="clear:left">
     <textarea [hidden]='!memberAdVisible' class="textAreaAdvert" style="max-width:400px" rows="10" maxlength="500" [(ngModel)]="memberAdText" (keyup)="updateMemberAdDB()" placeholder="Looking for new Members or Leaders for your team? Write an advert here."></textarea>
@@ -75,7 +72,6 @@ export class TeamProfileComponent  {
   photoURL: string;
   teamName: string;
   editMode: boolean;
-  messageSaveTeamProfile: string;
   currentUserID: string;
   currentTeamID: string;
   teamLeaders: FirebaseListObservable<any>;
@@ -86,12 +82,12 @@ export class TeamProfileComponent  {
   memberAdVisible: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+    this.editMode = false;
     this.afAuth.authState.subscribe((auth) => {
       this.memberAdVisible=false;
       if (auth==null){
       }
       else {
-        this.editMode = false;
         this.currentUserID = auth.uid;
         this.db.object('userInterface/'+auth.uid+'/currentTeam').subscribe(currentTeam => {
           this.currentTeamID = currentTeam.$value;
@@ -191,9 +187,6 @@ export class TeamProfileComponent  {
     this.db.object('teams/' + this.currentTeamID).update({
       name: this.teamName, photoURL: this.photoURL,
     })
-    .then(_ => this.messageSaveTeamProfile="Saved")
-    .catch(err => this.messageSaveTeamProfile="Error: Only leaders can save team profile");
-
   }
 
   updateMemberAdDB () {

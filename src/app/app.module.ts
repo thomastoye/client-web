@@ -13,6 +13,7 @@ import { UserProfileComponent }  from './userProfile.component';
 import { ProjectProfileComponent }  from './projectProfile.component';
 import { SearchComponent }  from './search.component';
 import { AddTeamComponent }  from './addTeam.component';
+import { AddMemberComponent }  from './addMember.component';
 import { FollowProjectComponent }  from './followProject.component';
 import { WalletComponent }  from './wallet.component';
 import { CreateTeamComponent }  from './createTeam.component';
@@ -48,6 +49,7 @@ export const firebaseConfig = {
     ProjectProfileComponent,
     SearchComponent,
     AddTeamComponent,
+    AddMemberComponent,
     FollowProjectComponent,
     WalletComponent,
     CreateTeamComponent,

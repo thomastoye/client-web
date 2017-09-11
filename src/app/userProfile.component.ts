@@ -27,7 +27,7 @@ import { Router } from '@angular/router'
   </div>
   <div style="float: right; width: 40%;position:relative">
   <img (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:175px; width:100%">
-  <div [hidden]='!ownProfile' style="position:absolute;left:10px;top:10px;">
+  <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label for="projectImage" id="buttonFile">
   <img src="./../assets/App icons/camera.png" style="width:25px">
@@ -70,6 +70,7 @@ export class UserProfileComponent {
   userTeams: FirebaseListObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+    this.editMode = false;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
       else {
@@ -83,7 +84,6 @@ export class UserProfileComponent {
             this.lastName = focusUser.lastName;
             this.resume = focusUser.resume;
             this.photoURL = focusUser.photoURL;
-            this.editMode = false;
             db.object('teamUsers/' + this.currentTeamID+"/"+this.focusUserID).subscribe(teamFocusUser => {
               db.object('userTeams/'+this.focusUserID+'/'+this.currentTeamID).subscribe(focusUserTeam=>{
                 this.leaderStatus = teamFocusUser.leader;
