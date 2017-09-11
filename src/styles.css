@@ -145,6 +145,8 @@ body {
   cursor: pointer;
   color: #3586c4;
   margin: 0 auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
   width:100px;
   text-align:center;
   border-style:solid;

@@ -9,13 +9,13 @@ import { Router } from '@angular/router'
   selector: 'userProfile',
   template: `
   <div class="sheet">
-  <div style="float: left; width: 50%;">
+  <div style="float: left; width: 60%;">
+  <div class="buttonDiv" style="border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=true">Edit</div>
   <div [hidden]="!leaderStatus" class="leaderStatus">{{memberStatus}}</div>
   <div [hidden]="leaderStatus" class="memberStatus">{{memberStatus}}</div>
   <div [hidden]='editMode'>
   <div class='title'>{{firstName}} {{lastName}}</div>
   <div style="padding:10px;" [innerHTML]="resume | linky"></div>
-  <div class="buttonDiv" [hidden]='!ownProfile' (click)="editMode=true">Edit profile</div>
   <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>
   </div>
   <div [hidden]='!editMode'>
@@ -26,13 +26,14 @@ import { Router } from '@angular/router'
   <button (click)="updateUserProfile()">Save profile</button>
   </div>
   </div>
-  <div style="float: right; width: 50%;position:relative">
-  <img (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:200px; width:100%">
-  <div style="position:absolute;left:10px;top:10px;">
+  <div style="float: right; width: 40%;position:relative">
+  <img (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:175px; width:100%">
+  <div [hidden]='!ownProfile' style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label for="projectImage" id="buttonFile">
   <img src="./../assets/App icons/camera.png" style="width:25px">
   </label>
+  </div>
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
