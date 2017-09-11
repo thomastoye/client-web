@@ -21,16 +21,16 @@ import { Router } from '@angular/router'
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
   <input maxlength="20" [(ngModel)]="lastName" style="text-transform: lowercase; font-weight:bold;" placeholder="last name *" />
-  <input maxlength="140" [(ngModel)]="resume" placeholder="Your resume (140 characters max) *" />
-  <input maxlength="500" [(ngModel)]="photoURL" placeholder="Image address from the web *" />
+  <textarea class="textAreaInput" maxlength="140" [(ngModel)]="resume" placeholder="Your resume (140 characters max) *"></textarea>
   </div>
   </div>
   <div style="float: right; width: 40%;position:relative">
   <img (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:175px; width:100%">
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-  <label for="projectImage" id="buttonFile">
+  <label class="buttonUploadImage" for="projectImage" id="buttonFile">
   <img src="./../assets/App icons/camera.png" style="width:25px">
+  <span class="tipText">Max size 3.0Mb</span>
   </label>
   </div>
   </div>
@@ -141,6 +141,29 @@ export class UserProfileComponent {
   }
 
   onImageChange(event) {
+    let image = event.target.files[0];
+    var uploader = <HTMLInputElement>document.getElementById('uploader');
+    var storageRef = firebase.storage().ref('images/'+Date.now()+image.name);
+    var task = storageRef.put(image);
+    task.on('state_changed',
+      function progress(snapshot){
+        document.getElementById('buttonFile').style.visibility = "hidden";
+        document.getElementById('uploader').style.visibility = "visible";
+        var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
+        uploader.value=percentage.toString();
+      },
+      function error(){
+        document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
+        uploader.value='0';
+      },
+      ()=>{
+        uploader.value='0';
+        document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
+        this.photoURL=task.snapshot.downloadURL;
+      }
+    );
   }
 
   logout() {

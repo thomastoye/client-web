@@ -10,12 +10,16 @@ import { Router } from '@angular/router'
   template: `
   <div class="sheet">
   <div style="float: left; width: 50%;">
-  <input maxlength="500" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name *" />
-  <input maxlength="500" [(ngModel)]="photoURL" placeholder="Paste image from the web *" />
-  <button (click)="createNewTeam(currentUserID, newTeam)">Create team</button>
+  <input maxlength="25" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name *" />
+  <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+  <label class="buttonUploadImage" for="projectImage" id="buttonFile" style="padding:15px">
+  <img src="./../assets/App icons/camera.png" style="width:25px">
+  <span class="tipText">Max size 3.0Mb</span>
+  </label>
+  <button *ngIf="photoURL!=null" (click)="createNewTeam(currentUserID, newTeam)">Create team</button>
   </div>
   <div style="float: right; width: 50%;">
-  <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
+  <img *ngIf="photoURL!=null" [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
   </div>
   </div>
   `,
@@ -43,6 +47,32 @@ export class CreateTeamComponent {
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
     this.db.object('userInterface/' + userID).update({currentTeam: teamID});
     this.router.navigate(['teamProfile']);
+  }
+
+  onImageChange(event) {
+    let image = event.target.files[0];
+    var uploader = <HTMLInputElement>document.getElementById('uploader');
+    var storageRef = firebase.storage().ref('images/'+Date.now()+image.name);
+    var task = storageRef.put(image);
+    task.on('state_changed',
+      function progress(snapshot){
+        document.getElementById('buttonFile').style.visibility = "hidden";
+        document.getElementById('uploader').style.visibility = "visible";
+        var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
+        uploader.value=percentage.toString();
+      },
+      function error(){
+        document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
+        uploader.value='0';
+      },
+      ()=>{
+        uploader.value='0';
+        document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
+        this.photoURL=task.snapshot.downloadURL;
+      }
+    );
   }
 
   errorHandler(event) {

@@ -199,6 +199,18 @@ input {
   background-color: #d3e8d4;
   border-radius: 0px;
 }
+.textAreaInput {
+  resize: none;
+  overflow-y: scroll;
+  width: 90%;
+  border-width: thin;
+  padding: 10px;
+  margin: 5px 10px 5px 10px;
+  box-sizing: border-box;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+  border-radius: 4px;
+}
 .cornerButton {
   border-style:solid;
   border-width:thin;
@@ -319,4 +331,14 @@ progress::-webkit-progress-bar {
 }
 progress::-webkit-progress-value {
   background-color: #4e86e0 !important;
+}
+.buttonUploadImage:hover .tipText {
+  visibility: visible;
+}
+.tipText {
+  visibility: hidden;
+  text-align: center;
+  color: white;
+  background-color: black;
+  padding: 5px;
 }

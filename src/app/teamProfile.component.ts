@@ -13,15 +13,15 @@ import { Router, NavigationEnd } from '@angular/router'
   <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%">
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="teamImage" id="teamImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-  <label for="teamImage" id="buttonFile">
+  <label class="buttonUploadImage" for="teamImage" id="buttonFile">
   <img src="./../assets/App icons/camera.png" style="width:25px">
+  <span class="tipText">Max size 3.0Mb</span>
   </label>
   </div>
   <div class="sheet" style="width:290px;margin: 10px auto;padding:5px;position:relative;top:-50px;">
   <div *ngIf="!editMode" style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
   <div class="buttonDiv" *ngIf="!getUserFollowing(currentUserID,currentTeamID)" (click)="followTeam(currentTeamID, currentUserID)">Follow</div>
-  <input maxlength="500" *ngIf="editMode" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
-  <input maxlength="500" *ngIf="editMode" [(ngModel)]="photoURL" placeholder="Paste image from the web" />
+  <input maxlength="25" *ngIf="editMode" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <div class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=true">Edit</div>
   <div class="buttonDiv" *ngIf='editMode' style="color:red;border-style:none" (click)="editMode=false;saveTeamProfile()">Save profile</div>
   <ul class='listLight' style="float:left">
@@ -200,6 +200,29 @@ export class TeamProfileComponent  {
   }
 
   onImageChange(event) {
+    let image = event.target.files[0];
+    var uploader = <HTMLInputElement>document.getElementById('uploader');
+    var storageRef = firebase.storage().ref('images/'+Date.now()+image.name);
+    var task = storageRef.put(image);
+    task.on('state_changed',
+      function progress(snapshot){
+        document.getElementById('buttonFile').style.visibility = "hidden";
+        document.getElementById('uploader').style.visibility = "visible";
+        var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
+        uploader.value=percentage.toString();
+      },
+      function error(){
+        document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
+        uploader.value='0';
+      },
+      ()=>{
+        uploader.value='0';
+        document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
+        this.photoURL=task.snapshot.downloadURL;
+      }
+    );
   }
 
   errorHandler(event) {
