@@ -10,20 +10,19 @@ import { Router } from '@angular/router'
   template: `
   <div class="sheet">
   <div style="float: left; width: 60%;">
-  <div class="buttonDiv" style="border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=true">Edit</div>
+  <div class="buttonDiv" *ngIf='!editMode' style="border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=true">Edit</div>
+  <div class="buttonDiv" *ngIf='editMode' style="color:red;border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=false;updateUserProfile()">Save profile</div>
   <div [hidden]="!leaderStatus" class="leaderStatus">{{memberStatus}}</div>
   <div [hidden]="leaderStatus" class="memberStatus">{{memberStatus}}</div>
   <div [hidden]='editMode'>
   <div class='title'>{{firstName}} {{lastName}}</div>
   <div style="padding:10px;" [innerHTML]="resume | linky"></div>
-  <button [hidden]='!getUserLeader(currentTeamID,currentUserID)' (click)="cancelMember(currentTeamID, focusUserID)" style="background:#e04e4e">Cancel team membership {{messageCancelMembership}}</button>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
   <input maxlength="20" [(ngModel)]="lastName" style="text-transform: lowercase; font-weight:bold;" placeholder="last name *" />
   <input maxlength="140" [(ngModel)]="resume" placeholder="Your resume (140 characters max) *" />
   <input maxlength="500" [(ngModel)]="photoURL" placeholder="Image address from the web *" />
-  <button (click)="updateUserProfile()">Save profile</button>
   </div>
   </div>
   <div style="float: right; width: 40%;position:relative">
@@ -43,11 +42,11 @@ import { Router } from '@angular/router'
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
-      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
       <div style="display: inline; float: left; height:25px; width:20px">
       <div class="activity" [hidden]="!getChatActivity(team.$key)" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])"></div>
       </div>
-      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px;object-fit:cover;height:30px;width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,focusUserID)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
     </li>
@@ -67,7 +66,6 @@ export class UserProfileComponent {
   currentTeamID: string;
   memberStatus: string;
   leaderStatus: boolean;
-  messageCancelMembership: string;
   ownProfile: boolean;
   userTeams: FirebaseListObservable<any>;
 
@@ -80,7 +78,6 @@ export class UserProfileComponent {
           this.currentTeamID = userInterface.currentTeam;
           this.focusUserID = userInterface.focusUser;
           this.ownProfile = (this.currentUserID == this.focusUserID);
-          this.messageCancelMembership = ""
           db.object('users/' + this.focusUserID).subscribe(focusUser => {
             this.firstName = focusUser.firstName;
             this.lastName = focusUser.lastName;
@@ -117,12 +114,6 @@ export class UserProfileComponent {
       firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL, resume: this.resume
     });
     this.editMode=false;
-  }
-
-  cancelMember(teamID: string, userID: string) {
-    this.db.object('teamUsers/' + teamID + '/' + userID).update({member:false})
-    .then(_ => this.router.navigate(['teamProfile']))
-    .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
   }
 
   getUserLeader (teamID: string, userID: string) :string {
