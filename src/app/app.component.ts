@@ -12,21 +12,18 @@ import { Router, NavigationEnd } from '@angular/router'
     <div [hidden]="!emailVerified">
     <progress value='0' max='100' id='uploader'>0%</progress>
     <div class='menu'>
-    <div style="width:325px;display:block;margin: 0 auto;">
-    <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['teamProfile']);selectedIcon=1">
-    <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_project_01.svg" style="width:30px;margin-top:5px;">
-    </div>
-    <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['chat']);selectedIcon=2">
+    <div style="width:280px;display:block;margin: 0 auto;">
+    <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['chat']);selectedIcon=1">
     <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/icon_chat_01.svg" style="width:30px;margin-top:5px;">
     <div class='activity' [hidden]="!currentTeamChatActivity"></div>
     </div>
-    <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['wallet']);selectedIcon=3">
+    <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['wallet']);selectedIcon=2">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_01.svg" style="width:30px;margin-top:5px;">
     </div>
-    <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="router.navigate(['search']);selectedIcon=4">
+    <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['search']);selectedIcon=3">
     <img (error)="errorHandler($event)" src="./../assets/App icons/search.png" style="width:30px;margin-top:5px;border-radius:3px;-webkit-filter: brightness(100); filter: brightness(100);">
     </div>
-    <div class='iconSmall' [class.selected]="selectedIcon===5" (click)="db.object('userInterface/'+currentUserID).update({focusUser:currentUserID});router.navigate(['userProfile']);selectedIcon=5">
+    <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="db.object('userInterface/'+currentUserID).update({focusUser:currentUserID});router.navigate(['userProfile']);selectedIcon=4">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:30px;margin-top:5px;border-radius:3px;">
     <div class='activity' [hidden]="!globalChatActivity"></div>
     </div>
