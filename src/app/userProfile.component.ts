@@ -43,8 +43,8 @@ import { Router } from '@angular/router'
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
       (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
-      <div style="display: inline; float: left; height:25px; width:20px">
-      <div class="chat" [class.chatActivity]="getChatActivity(team.$key)" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])"></div>
+      <div style="display: inline; float: left; height:25px; width:25px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])">
+      <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px;object-fit:cover;height:30px;width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,focusUserID)?"*":""}}</div>
