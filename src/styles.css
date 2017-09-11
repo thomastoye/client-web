@@ -122,7 +122,7 @@ body {
   background-color: red;
   border-radius: 7px;
   position: relative;
-  top: 7px;
+  top: 8px;
   left: 7px;
   z-index: 1000;
 }
