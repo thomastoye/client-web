@@ -10,13 +10,15 @@ import { Router } from '@angular/router'
   template: `
   <div class="sheet">
   <div style="float: left; width: 60%;">
-  <div class="buttonDiv" *ngIf='!editMode' style="border-style:none;float:right" [hidden]='!teamAndProjectLeader' (click)="editMode=true">Edit</div>
-  <div class="buttonDiv" *ngIf='editMode' style="color:red;border-style:none;float:right" (click)="editMode=false;updateProjectProfile()">Save profile</div>
   <div [hidden]='editMode'>
-  <div class='title'>{{name}}</div>
+  <div class='title' style="float:left">{{name}}</div>
+  <div class="buttonDiv" style="border-style:none;float:left" [hidden]='!teamAndProjectLeader' (click)="editMode=true">Edit</div>
+  <div style="clear:both"></div>
   <div style="padding:10px;" [innerHTML]="goal | linky"></div>
   </div>
   <div [hidden]='!editMode'>
+  <div class="buttonDiv" style="color:red;border-style:none;float:left" (click)="editMode=false;updateProjectProfile()">Save profile</div>
+  <div style="clear:both"></div>
   <input maxlength="25" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
   <textarea class="textAreaInput" maxlength="140" [(ngModel)]="goal" placeholder="Project goal (500 characters max) *"></textarea>
   <button [hidden]='!teamAndProjectLeader' *ngIf="editMode" (click)="this.router.navigate(['addTeam'])" style="background-color:#c69b00">Add a team</button>
