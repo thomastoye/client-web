@@ -20,6 +20,7 @@ import { Router, NavigationEnd } from '@angular/router'
   </div>
   <div class="sheet" style="width:290px;margin: 10px auto;padding:5px;position:relative;top:-50px;">
   <div *ngIf="!editMode" style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
+  <div style="color:blue;clear:both;cursor:pointer;text-align:center" (click)="router.navigate(['wallet'])">{{currentBalance | number:'1.2-2'}} COINS</div>
   <div class="buttonDiv" *ngIf="!getUserFollowing(currentUserID,currentTeamID)" (click)="followTeam(currentTeamID, currentUserID)">Follow</div>
   <input maxlength="25" *ngIf="editMode" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <div class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=true">Edit</div>
@@ -38,14 +39,6 @@ import { Router, NavigationEnd } from '@angular/router'
     </li>
   </ul>
   <div class="buttonDiv" *ngIf='editMode' style="border-style:none" (click)="this.router.navigate(['addMember'])">Add a member</div>
-  <div style="clear:both;cursor:pointer" (click)="router.navigate(['wallet'])">
-  <div style="float: left; width: 50%; text-align: right; padding: 5px;">
-  <div style="color:blue">{{currentBalance | number:'1.2-2'}}</div>
-  </div>
-  <div style="float: right; width: 50%; text-align: left; padding: 5px">
-  <div style="color:blue">COINS</div>
-  </div>
-  </div>
   </div>
   </div>
   </div>
