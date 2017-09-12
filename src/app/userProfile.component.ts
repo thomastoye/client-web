@@ -11,7 +11,7 @@ import { Router } from '@angular/router'
   <div class="sheet">
   <div style="float: left; width: 60%;">
   <div class="buttonDiv" *ngIf='!editMode' style="border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=true">Edit</div>
-  <div class="buttonDiv" *ngIf='editMode' style="color:red;border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=false;updateUserProfile()">Save profile</div>
+  <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=false;updateUserProfile()">Save profile</div>
   <div [hidden]="!leaderStatus" class="leaderStatus">{{memberStatus}}</div>
   <div [hidden]="leaderStatus" class="memberStatus">{{memberStatus}}</div>
   <div [hidden]='editMode'>
@@ -35,23 +35,65 @@ import { Router } from '@angular/router'
   </div>
   </div>
   </div>
+  <div class="buttonDiv" style="color:red;width:325px" [hidden]='!editMode' (click)="unfollow(currentTeamID)">Stop following {{getTeamName(currentTeamID)}}</div>
   <div class='sheet' style="margin-top:10px">
-  <div class="title" style="float:left">Following</div>
+  <div class="title" style="float:left">Leader</div>
   <div class="buttonDiv" *ngIf="currentUserID==focusUserID" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
-  <div class="buttonDiv" style="color:red;width:200px" [hidden]='!editMode' (click)="unfollow(currentTeamID)">Stop following this team</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
       (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
+      <div *ngIf="getUserLeader(team.$key,focusUserID)">
       <div style="display: inline; float: left; height:30px; width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
-      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,focusUserID)?"*":""}}</div>
+      <div style="width:15px;height:25px;float:left;">*</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
+      </div>
     </li>
   </ul>
-  <div class="buttonDiv" *ngIf="currentUserID==focusUserID" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
+  </div>
+  <div class='sheet' style="margin-top:10px">
+  <div class="title" style="float:left">Member</div>
+  <ul class="listLight">
+    <li *ngFor="let team of userTeams | async"
+      [class.selected]="team.$key === currentTeamID"
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
+      <div *ngIf="!getUserLeader(team.$key,focusUserID)">
+      <div *ngIf="getUserMember(team.$key)">
+      <div style="display: inline; float: left; height:30px; width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])">
+      <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
+      </div>
+      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
+      <div style="width:15px;height:25px;float:left;"></div>
+      <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
+      </div>
+      </div>
+    </li>
+  </ul>
+  </div>
+  <div class='sheet' style="margin-top:10px">
+  <div class="title" style="float:left">Follower</div>
+  <ul class="listLight">
+    <li *ngFor="let team of userTeams | async"
+      [class.selected]="team.$key === currentTeamID"
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key})">
+      <div *ngIf="!getUserLeader(team.$key,focusUserID)">
+      <div *ngIf="!getUserMember(team.$key)">
+      <div style="display: inline; float: left; height:30px; width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])">
+      <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
+      </div>
+      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
+      <div style="width:15px;height:25px;float:left;"></div>
+      <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
+      </div>
+      </div>
+    </li>
+  </ul>
+  </div>
+  <div class='sheet' *ngIf="currentUserID==focusUserID" style="margin-top:10px">
+  <div class="buttonDiv" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
   </div>
   `,
 })
@@ -188,6 +230,14 @@ export class UserProfileComponent {
 
   unfollow(teamID: string) {
     this.db.object('userTeams/'+this.currentUserID+'/'+teamID).update({following:false});
+  }
+
+  getUserMember (ID: string) :boolean {
+    var output;
+    this.db.object('teamUsers/' + ID + '/' + this.focusUserID).subscribe(snapshot => {
+      output = snapshot.member;
+    });
+    return output;
   }
 
   errorHandler(event) {

@@ -299,6 +299,14 @@ hr {
 .sheet .selected {
   text-decoration: underline;
 }
+.sheetBadge {
+  width:290px;
+  margin: 10px auto;
+  padding:5px;
+  border-radius:7px;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .7);
+}
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;

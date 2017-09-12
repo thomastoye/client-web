@@ -17,7 +17,7 @@ import { Router } from '@angular/router'
   <div style="padding:10px;" [innerHTML]="goal | linky"></div>
   </div>
   <div [hidden]='!editMode'>
-  <div class="buttonDiv" style="color:red;border-style:none;float:left" (click)="editMode=false;updateProjectProfile()">Save profile</div>
+  <div class="buttonDiv" style="color:green;border-style:none;float:left" (click)="editMode=false;updateProjectProfile()">Save profile</div>
   <div style="clear:both"></div>
   <input maxlength="25" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
   <textarea class="textAreaInput" maxlength="140" [(ngModel)]="goal" placeholder="Project goal (500 characters max) *"></textarea>

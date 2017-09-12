@@ -18,13 +18,13 @@ import { Router, NavigationEnd } from '@angular/router'
   <span class="tipText">Max 3.0Mb</span>
   </label>
   </div>
-  <div class="sheet" style="width:290px;margin: 10px auto;padding:5px;position:relative;top:-50px;">
+  <div class="sheetBadge" style="position:relative;top:-50px">
   <div *ngIf="!editMode" style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
+  <input maxlength="25" *ngIf="editMode" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <div style="color:blue;clear:both;cursor:pointer;text-align:center" (click)="router.navigate(['wallet'])">{{currentBalance | number:'1.2-2'}} COINS</div>
   <div class="buttonDiv" *ngIf="!getUserFollowing(currentUserID,currentTeamID)" (click)="followTeam(currentTeamID, currentUserID)">Follow</div>
-  <input maxlength="25" *ngIf="editMode" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
   <div class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=true">Edit</div>
-  <div class="buttonDiv" *ngIf='editMode' style="color:red;border-style:none" (click)="editMode=false;saveTeamProfile()">Save profile</div>
+  <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none" (click)="editMode=false;saveTeamProfile()">Save profile</div>
   <ul class='listLight' style="float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
       <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:130px; width:130px">
@@ -106,7 +106,7 @@ export class TeamProfileComponent  {
             this.memberAdVisible = memberAdVisible.$value;
           });
           this.db.object('PERRINNTeamBalance/'+this.currentTeamID).subscribe(teamBalance => {
-            this.currentBalance = Number(teamBalance.balance);
+            if (teamBalance.balance) this.currentBalance = Number(teamBalance.balance)
           });
           this.teamProjects = this.db.list('teamProjects/' + currentTeam.$value, {
             query:{
