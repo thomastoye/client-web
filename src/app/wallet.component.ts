@@ -9,21 +9,25 @@ import { Router } from '@angular/router'
   selector: 'wallet',
   template: `
   <div class="sheet">
-  <div class="title">
+    <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
     <div style="text-align:center">
-    <img src="./../assets/App icons/icon_share_03.svg" style="width:60px">
+    <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
     <div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
-    <div style="font-size: 25px; color: black;">{{currentBalance | number:'1.2-2'}}</div>
+    <div style="font-size: 25px;line-height:normal; color: black;">{{currentBalance | number:'1.2-2'}}</div>
     </div>
     <div style="float: right; width: 50%; text-align: left; padding: 5px">
+    <button type="button" (click)="router.navigate(['buyCoins'])" style="margin:0;float:right;width:100px;background-color:#43c14b">Buy COINS</button>
     <div style="color: black;">COINS</div>
     </div>
+    <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['COINinfo'])">COIN info</div>
     </div>
+    <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send COINS</button>
   </div>
-  <ul class="listDark">
-    <div class="listSeperator">RECEIVED</div>
+  <div class='sheet' style="margin-top:10px">
+  <div class="title">RECEIVED</div>
+  <ul class="listLight">
     <li *ngFor="let transaction of PERRINNTransactionsIN | async">
       <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
       <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
@@ -31,7 +35,11 @@ import { Router } from '@angular/router'
       <div style="width:170px; float:left; text-align:right">From {{getTeamName(transaction.sender)}}</div>
       <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
-    <div class="listSeperator">SENT</div>
+    </ul>
+    </div>
+    <div class='sheet' style="margin-top:10px">
+    <div class="title">SENT</div>
+    <ul class="listLight">
     <li *ngFor="let transaction of PERRINNTransactionsOUT | async">
       <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
       <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
@@ -39,7 +47,11 @@ import { Router } from '@angular/router'
       <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
       <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
-    <div class="listSeperator">PENDING</div>
+    </ul>
+    </div>
+    <div class='sheet' style="margin-top:10px">
+    <div class="title">PENDING</div>
+    <ul class="listLight">
     <li *ngFor="let transaction of teamTransactions | async"
     [class.selected]="transaction.$key === selectedTransactionID"
     (click)="selectedTransactionID = transaction.$key; clearAllMessages()">
@@ -56,7 +68,11 @@ import { Router } from '@angular/router'
       </div>
       </div>
     </li>
-    <div class="listSeperator">AWAITING LEADER ACTION</div>
+    </ul>
+    </div>
+    <div class='sheet' style="margin-top:10px">
+    <div class="title">AWAITING LEADER ACTION</div>
+    <ul class="listLight">
     <li *ngFor="let transaction of teamTransactionRequests | async"
     [class.selected]="transaction.$key === selectedTransactionRequestID"
     (click)="selectedTransactionRequestID = transaction.$key; clearAllMessages()">
@@ -75,7 +91,6 @@ import { Router } from '@angular/router'
       </div>
     </li>
   </ul>
-  <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send coins</button>
   </div>
   `,
 })
@@ -93,6 +108,7 @@ currentTeamID: string;
 moreButtons: boolean;
 currentUserID: string;
 isUserLeader: boolean;
+teamName: string;
 
 constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
   this.moreButtons = false;
@@ -109,6 +125,9 @@ constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, publ
       this.currentUserID = auth.uid;
       db.object('userInterface/'+auth.uid+'/currentTeam').subscribe( currentTeamID => {
         this.currentTeamID = currentTeamID.$value;
+        this.db.object('teams/' + this.currentTeamID).subscribe (team=>{
+          this.teamName = team.name;
+        });
         this.getTeamWalletBalance(this.currentTeamID).then(balance=>{
           this.currentBalance = Number(balance);
         });
@@ -133,12 +152,12 @@ getTeamWalletBalance (teamID:string) {
     var balance=0;
     firebase.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(teamID).once('value').then(PERRINNTransactions=>{
       PERRINNTransactions.forEach(transaction=>{
-        balance=balance-transaction.val().amount;
+        balance-=Number(transaction.val().amount);
       });
     });
     firebase.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(teamID).once('value').then(PERRINNTransactions=>{
       PERRINNTransactions.forEach(transaction=>{
-        balance=balance+transaction.val().amount;
+        balance+=Number(transaction.val().amount);
       });
       resolve (balance);
     });
@@ -203,6 +222,10 @@ getUserMember (ID: string) :boolean {
     output = snapshot.member;
   });
   return output;
+}
+
+errorHandler(event) {
+  event.target.src = "https://static1.squarespace.com/static/5391fac1e4b07b6926545c34/t/54b948f4e4b0567044b6c023/1421428991081/";
 }
 
 }

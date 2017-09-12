@@ -11,14 +11,14 @@ import { Router } from '@angular/router'
   <div class="sheet">
   <div class="title" style="color: black;text-align:left;">Available balance {{currentBalance | number:'1.2-2'}} COINS</div>
   <div class="user">
+  <input maxlength="50" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
   <input maxlength="50" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionReference" placeholder="Reference *" />
-  <input maxlength="500" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
-  <ul class="listDark">
-    <div class="listSeperator">SELECT RECEIVING TEAM</div>
+  <div class="title">Select receiving team</div>
+  <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
     [class.selected]="team.$key === selectedTeamID"
     (click)="selectedTeamID = team.$key;checkTransactionInput()">
-      <img [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+      <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
     </li>
   </ul>
@@ -76,12 +76,12 @@ export class CreateTransactionComponent {
       var balance=0;
       firebase.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(teamID).once('value').then(PERRINNTransactions=>{
         PERRINNTransactions.forEach(transaction=>{
-          balance=balance-transaction.val().amount;
+          balance-=Number(transaction.val().amount);
         });
       });
       firebase.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(teamID).once('value').then(PERRINNTransactions=>{
         PERRINNTransactions.forEach(transaction=>{
-          balance=balance+transaction.val().amount;
+          balance+=Number(transaction.val().amount);
         });
         resolve (balance);
       });
@@ -139,10 +139,14 @@ export class CreateTransactionComponent {
 
   checkTransactionInput():void {
     this.transactionInputValid = (this.transactionReference!=null&&this.transactionReference!=""&&
-                                  this.transactionAmount!=null&&this.transactionAmount!=0&&
+                                  this.transactionAmount!=null&&this.transactionAmount>0&&
                                   this.transactionAmount<=this.currentBalance&&
                                   this.selectedTeamID!=null&&this.selectedTeamID!=""&&
                                   this.selectedTeamID!=this.currentTeamID);
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://static1.squarespace.com/static/5391fac1e4b07b6926545c34/t/54b948f4e4b0567044b6c023/1421428991081/";
   }
 
 }

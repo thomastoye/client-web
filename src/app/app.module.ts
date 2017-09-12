@@ -6,22 +6,29 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { TeamSettingsComponent }  from './teamSettings.component';
-import { MemberComponent }  from './member.component';
+import { TeamProfileComponent }  from './teamProfile.component';
 import { ChatComponent }  from './chat.component';
 import { LoginComponent }  from './login.component';
 import { UserProfileComponent }  from './userProfile.component';
+import { ProjectProfileComponent }  from './projectProfile.component';
+import { SearchComponent }  from './search.component';
+import { AddTeamComponent }  from './addTeam.component';
 import { AddMemberComponent }  from './addMember.component';
-import { FollowTeamComponent }  from './followTeam.component';
+import { FollowProjectComponent }  from './followProject.component';
 import { WalletComponent }  from './wallet.component';
-import { MessageCenterComponent }  from './messageCenter.component';
 import { CreateTeamComponent }  from './createTeam.component';
-import { TeamProfileComponent }  from './teamProfile.component';
+import { CreateProjectComponent }  from './createProject.component';
+import { CreateTransactionComponent }  from './createTransaction.component';
 import { BuyCoins }  from './buyCoins.component';
+import { COINinfo }  from './COINinfo.component';
+import { TeamAds }  from './teamAds.component';
+import { LinkyModule } from 'angular-linky';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
+
+import { Ng2ImgMaxModule } from 'ng2-img-max';
 
 // Must export the config
 export const firebaseConfig = {
@@ -35,18 +42,22 @@ export const firebaseConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    TeamSettingsComponent,
-    MemberComponent,
+    TeamProfileComponent,
     ChatComponent,
     LoginComponent,
     UserProfileComponent,
+    ProjectProfileComponent,
+    SearchComponent,
+    AddTeamComponent,
     AddMemberComponent,
-    FollowTeamComponent,
+    FollowProjectComponent,
     WalletComponent,
-    MessageCenterComponent,
     CreateTeamComponent,
-    TeamProfileComponent,
+    CreateProjectComponent,
+    CreateTransactionComponent,
     BuyCoins,
+    COINinfo,
+    TeamAds,
   ],
   imports: [
     BrowserModule,
@@ -56,6 +67,8 @@ export const firebaseConfig = {
     AngularFireDatabaseModule,
     AngularFireAuthModule,
     AppRoutingModule,
+    LinkyModule,
+    Ng2ImgMaxModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

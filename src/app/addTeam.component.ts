@@ -6,24 +6,24 @@ import * as firebase from 'firebase/app';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'followTeam',
+  selector: 'addTeam',
   template: `
   <div class='sheet'>
-  <ul class="listDark">
-  <input maxlength="500" (keydown.enter)="refreshTeamList()" [(ngModel)]="this.filter" style="text-transform:uppercase" placeholder="Enter exact team name and press enter">
+  <ul class="listLight">
+  <input maxlength="500" (keyup)="refreshTeamList()" [(ngModel)]="this.filter" style="text-transform:uppercase" placeholder="search team name">
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
-      <img [src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
+      <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{team.name}}
     </li>
   </ul>
-  <button (click)="followTeam(selectedTeamID, currentUserID)">Follow this team {{messageFollow}}</button>
+  <button (click)="addTeam(selectedTeamID, focusProjectID)">Add this team {{messageFollow}}</button>
   </div>
   `,
 })
 
-export class FollowTeamComponent  {
+export class AddTeamComponent  {
 
   currentUserID: string;
   firstName: string;
@@ -31,6 +31,7 @@ export class FollowTeamComponent  {
   currentTeam: FirebaseObjectObservable<any>;
   currentTeamID: string;
   selectedTeamID: string;
+  focusProjectID: string;
   teams: FirebaseListObservable<any>;
   filter: string;
   messageFollow: string;
@@ -44,11 +45,7 @@ export class FollowTeamComponent  {
         this.currentUserID = auth.uid;
         this.db.object('userInterface/'+auth.uid).subscribe(userInterface => {
           this.currentTeamID = userInterface.currentTeam;
-        });
-        this.teams = this.db.list('teams/', {
-          query:{
-            limitToFirst: 0,
-          }
+          this.focusProjectID = userInterface.focusProject;
         });
       }
     });
@@ -56,21 +53,29 @@ export class FollowTeamComponent  {
 
   refreshTeamList () {
     this.filter = this.filter.toUpperCase();
+    if (this.filter.length>1) {
     this.teams = this.db.list('teams/', {
       query:{
         orderByChild:'name',
-        equalTo: this.filter,
+        startAt: this.filter,
+        endAt: this.filter+"\uf8ff",
+        limitToFirst: 10
       }
     });
   }
+  else this.teams = null;
+}
 
-  followTeam (teamID: string, userID: string) {
+  addTeam (teamID: string, projectID: string) {
     if (teamID==null || teamID=="") {this.messageFollow = "Please select a team"}
     else {
-      this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-      this.db.object('users/'+userID).update({currentTeam: teamID});
-      this.router.navigate(['teamSettings']);
+      this.db.object('projectTeams/'+projectID+'/'+teamID).update({member: true, leader: false});
+      this.router.navigate(['projectProfile']);
     }
+  }
+
+  errorHandler(event) {
+    event.target.src = "https://static1.squarespace.com/static/5391fac1e4b07b6926545c34/t/54b948f4e4b0567044b6c023/1421428991081/";
   }
 
 }
