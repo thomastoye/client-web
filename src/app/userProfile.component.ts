@@ -74,7 +74,7 @@ import { Router } from '@angular/router'
   </ul>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="title" style="float:left">Follower</div>
+  <div class="title" style="float:left">Following</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === currentTeamID"
