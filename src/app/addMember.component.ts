@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   template: `
  <div class="sheet">
  <ul class="listLight">
-  <input maxlength="500" (keyup)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="search first name">
+  <input id="searchInput" maxlength="500" (keyup)="refreshUserList()" style="text-transform: lowercase;" [(ngModel)]="this.filter" placeholder="search first name">
     <li *ngFor="let user of users | async"
       [class.selected]="user.$key === selectedUserID"
       (click)="selectedUserID = user.$key">
@@ -43,6 +43,10 @@ export class AddMemberComponent  {
         });
       }
     });
+  }
+
+  ngOnInit () {
+    document.getElementById("searchInput").focus();
   }
 
   refreshUserList () {

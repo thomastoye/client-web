@@ -31,7 +31,10 @@ import { Router, NavigationEnd } from '@angular/router'
   </ul>
   <ul class='listLight' style="clear:none">
     <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-      <img *ngIf="!user.leader" (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:60px; width:60px">
+      <div *ngIf="!user.leader">
+      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:60px; width:60px">
+      <div class="buttonDiv" *ngIf='editMode' style="font-size:10px;line-height:10px;border-style:none;color:red" (click)="db.object('teamUsers/'+currentTeamID+'/'+user.$key).update({member:false,leader:false})">Remove</div>
+      </div>
     </li>
   </ul>
   <div class="buttonDiv" *ngIf='editMode' style="border-style:none" (click)="this.router.navigate(['addMember'])">Add a member</div>

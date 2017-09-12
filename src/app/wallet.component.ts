@@ -9,31 +9,31 @@ import { Router } from '@angular/router'
   selector: 'wallet',
   template: `
   <div class="sheet">
-    <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
     <div style="text-align:center">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
     <div>
+    <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
     <div style="font-size: 25px;line-height:normal; color: black;">{{currentBalance | number:'1.2-2'}}</div>
     </div>
     <div style="float: right; width: 50%; text-align: left; padding: 5px">
-    <button type="button" (click)="router.navigate(['buyCoins'])" style="margin:0;float:right;width:100px;background-color:#43c14b">Buy COINS</button>
     <div style="color: black;">COINS</div>
     </div>
-    <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['COINinfo'])">COIN info</div>
     </div>
-    <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])">Send COINS</button>
+    <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])" style="width:100px;float:left">Send COINS</button>
+    <button type="button" (click)="router.navigate(['buyCoins'])" style="float:left;width:100px;background-color:#43c14b">Buy COINS</button>
+    <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['COINinfo'])">COIN info</div>
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="title">RECEIVED</div>
   <ul class="listLight">
     <li *ngFor="let transaction of PERRINNTransactionsIN | async">
-      <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
-      <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
-      <div style="width:170px; float:left; text-align:right">{{transaction.reference}}</div>
-      <div style="width:170px; float:left; text-align:right">From {{getTeamName(transaction.sender)}}</div>
-      <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.verifiedTimestamp | date :'medium'}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">From {{getTeamName(transaction.sender)}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
     </ul>
     </div>
@@ -41,11 +41,11 @@ import { Router } from '@angular/router'
     <div class="title">SENT</div>
     <ul class="listLight">
     <li *ngFor="let transaction of PERRINNTransactionsOUT | async">
-      <div style="width:170px; float:left; text-align:right">{{transaction.verifiedTimestamp | date :'medium'}}</div>
-      <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
-      <div style="width:170px; float:left; text-align:right">{{transaction.reference}}</div>
-      <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
-      <div style="width:170px; float:left; text-align:right">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.verifiedTimestamp | date :'medium'}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{getTeamName(transaction.receiver)}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
     </ul>
     </div>
@@ -55,10 +55,10 @@ import { Router } from '@angular/router'
     <li *ngFor="let transaction of teamTransactions | async"
     [class.selected]="transaction.$key === selectedTransactionID"
     (click)="selectedTransactionID = transaction.$key; clearAllMessages()">
-      <div style="width:170px; float:left; text-align:right">{{transaction.createdTimestamp | date :'medium'}}</div>
-      <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
-      <div style="width:170px; float:left; text-align:right">{{transaction.reference}}</div>
-      <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.createdTimestamp | date :'medium'}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{getTeamName(transaction.receiver)}}</div>
       <div style="float:right">
       <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
       </div>
@@ -76,10 +76,10 @@ import { Router } from '@angular/router'
     <li *ngFor="let transaction of teamTransactionRequests | async"
     [class.selected]="transaction.$key === selectedTransactionRequestID"
     (click)="selectedTransactionRequestID = transaction.$key; clearAllMessages()">
-      <div style="width:170px; float:left; text-align:right">{{transaction.requestedTimestamp | date :'medium'}}</div>
-      <div style="width:170px; float:left; text-align:right">{{transaction.amount | number:'1.2-2'}} COINS</div>
-      <div style="width:170px; float:left; text-align:right">{{transaction.reference}}</div>
-      <div style="width:170px; float:left; text-align:right">To {{getTeamName(transaction.receiver)}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.requestedTimestamp | date :'medium'}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{getTeamName(transaction.receiver)}}</div>
       <div style="float:right">
       <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
       </div>

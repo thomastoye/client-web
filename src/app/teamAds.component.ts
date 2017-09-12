@@ -36,7 +36,6 @@ export class TeamAds {
   currentTeamID: string;
   memberStatus: string;
   leaderStatus: boolean;
-  messageCancelMembership: string;
   ownProfile: boolean;
   teamAds: FirebaseListObservable<any>;
   selectedTeamID: string;

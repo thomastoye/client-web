@@ -10,7 +10,7 @@ import { Router } from '@angular/router'
   template: `
   <div class="sheet">
   <div style="float: left; width: 50%;">
-  <input maxlength="25" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name *" />
+  <input id="nameInput" maxlength="25" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name *" />
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="projectImage" id="buttonFile" style="padding:15px">
   <img src="./../assets/App icons/camera.png" style="width:25px">
@@ -37,6 +37,10 @@ export class CreateTeamComponent {
         this.currentUserID = auth.uid;
       }
     });
+  }
+
+  ngOnInit () {
+    document.getElementById("nameInput").focus();
   }
 
   createNewTeam(userID: string, teamName: string) {

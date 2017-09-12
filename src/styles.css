@@ -339,7 +339,7 @@ progress::-webkit-progress-value {
   visibility: hidden;
   text-align: center;
   color: white;
-  background-color: black;
+  background-color: #666;
   padding: 5px;
 }
 .fullScreenImage {

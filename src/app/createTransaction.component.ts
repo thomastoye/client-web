@@ -11,7 +11,7 @@ import { Router } from '@angular/router'
   <div class="sheet">
   <div class="title" style="color: black;text-align:left;">Available balance {{currentBalance | number:'1.2-2'}} COINS</div>
   <div class="user">
-  <input maxlength="50" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
+  <input maxlength="50" id="amountInput" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
   <input maxlength="50" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionReference" placeholder="Reference *" />
   <div class="title">Select receiving team</div>
   <ul class="listLight">
@@ -69,6 +69,10 @@ export class CreateTransactionComponent {
         });
       }
     });
+  }
+
+  ngOnInit () {
+    document.getElementById("amountInput").focus();
   }
 
   getTeamWalletBalance (teamID:string) {
