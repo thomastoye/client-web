@@ -93,7 +93,9 @@ export class AppComponent {
   }
 
   hideFullScreenImage(){
-    document.getElementById("fullScreenImage").style.visibility='hidden';
+    var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
+    fullScreenImage.style.visibility='hidden';
+    fullScreenImage.src="";
   }
 
   followTeam () {
