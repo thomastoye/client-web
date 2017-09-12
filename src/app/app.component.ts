@@ -8,6 +8,7 @@ import { Router, NavigationEnd } from '@angular/router'
 @Component({
   selector: 'app-root',
   template: `
+    <img class="fullScreenImage" id="fullScreenImage" (click)="hideFullScreenImage()">
     <div [hidden]="!loggedIn">
     <div [hidden]="!emailVerified">
     <progress value='0' max='100' id='uploader'>0%</progress>
@@ -88,6 +89,11 @@ export class AppComponent {
 
   ngOnInit () {
     document.getElementById('uploader').style.visibility = "hidden";
+    document.getElementById("fullScreenImage").style.visibility='hidden';
+  }
+
+  hideFullScreenImage(){
+    document.getElementById("fullScreenImage").style.visibility='hidden';
   }
 
   followTeam () {

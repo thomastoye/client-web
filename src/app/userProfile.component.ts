@@ -25,7 +25,7 @@ import { Router } from '@angular/router'
   </div>
   </div>
   <div style="float: right; width: 40%;position:relative">
-  <img (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:175px; width:100%">
+  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:175px; width:100%" (click)="showFullScreenImage(photoURL)">
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="projectImage" id="buttonFile">
@@ -105,6 +105,12 @@ export class UserProfileComponent {
         });
       }
     });
+  }
+
+  showFullScreenImage(src){
+    var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
+    fullScreenImage.src=src;
+    fullScreenImage.style.visibility='visible';
   }
 
   updateUserProfile() {

@@ -10,7 +10,7 @@ import { Router, NavigationEnd } from '@angular/router'
   template: `
   <div class='sheet'>
   <div style="margin-bottom:-50px;position:relative">
-  <img (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%">
+  <img class="imageWithZoom" (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%" (click)="showFullScreenImage(photoURL)">
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="teamImage" id="teamImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="teamImage" id="buttonFile">
@@ -120,6 +120,12 @@ export class TeamProfileComponent  {
         });
       }
     });
+  }
+
+  showFullScreenImage(src){
+    var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
+    fullScreenImage.src=src;
+    fullScreenImage.style.visibility='visible';
   }
 
   getProjectName (ID: string) :string {
