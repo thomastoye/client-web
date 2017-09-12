@@ -38,11 +38,19 @@ import { Router, NavigationEnd } from '@angular/router'
     </li>
   </ul>
   <div class="buttonDiv" *ngIf='editMode' style="border-style:none" (click)="this.router.navigate(['addMember'])">Add a member</div>
+  <div style="clear:both;cursor:pointer" (click)="router.navigate(['wallet'])">
+  <div style="float: left; width: 50%; text-align: right; padding: 5px;">
+  <div style="color:blue">{{currentBalance | number:'1.2-2'}}</div>
+  </div>
+  <div style="float: right; width: 50%; text-align: left; padding: 5px">
+  <div style="color:blue">COINS</div>
+  </div>
+  </div>
   </div>
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="title">Projects</div>
+  <div class="title" style="float:left">Following</div>
   <ul class='listLight'>
     <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="db.object('userInterface/'+currentUserID).update({focusProject: project.$key});router.navigate(['projectProfile'])">
       <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px">
@@ -81,9 +89,11 @@ export class TeamProfileComponent  {
   newMemberID: string;
   memberAdText: string;
   memberAdVisible: boolean;
+  currentBalance: number;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.editMode = false;
+    this.currentBalance=0;
     this.afAuth.authState.subscribe((auth) => {
       this.memberAdVisible=false;
       if (auth==null){
@@ -101,6 +111,9 @@ export class TeamProfileComponent  {
           });
           this.db.object('teamAds/'+this.currentTeamID+'/memberAdVisible').subscribe(memberAdVisible => {
             this.memberAdVisible = memberAdVisible.$value;
+          });
+          this.db.object('PERRINNTeamBalance/'+this.currentTeamID).subscribe(teamBalance => {
+            this.currentBalance = Number(teamBalance.balance);
           });
           this.teamProjects = this.db.list('teamProjects/' + currentTeam.$value, {
             query:{

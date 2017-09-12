@@ -36,7 +36,7 @@ import { Router } from '@angular/router'
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="title" style="float:left">{{firstName}} follows:</div>
+  <div class="title" style="float:left">Following</div>
   <div class="buttonDiv" *ngIf="currentUserID==focusUserID" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
   <div class="buttonDiv" style="color:red;width:200px" [hidden]='!editMode' (click)="unfollow(currentTeamID)">Stop following this team</div>
   <ul class="listLight">
