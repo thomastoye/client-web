@@ -9,23 +9,22 @@ import { Router } from '@angular/router'
   selector: 'projecProfile',
   template: `
   <div class="sheet">
-  <div style="float: left; width: 50%;">
+  <div style="float: left; width: 60%;">
+  <div class="buttonDiv" *ngIf='!editMode' style="border-style:none;float:right" [hidden]='!teamAndProjectLeader' (click)="editMode=true">Edit</div>
+  <div class="buttonDiv" *ngIf='editMode' style="color:red;border-style:none;float:right" (click)="editMode=false;updateProjectProfile()">Save profile</div>
   <div [hidden]='editMode'>
   <div class='title'>{{name}}</div>
   <div style="padding:10px;" [innerHTML]="goal | linky"></div>
-  <button [hidden]='!teamAndProjectLeader' (click)="editMode=true">Edit project</button>
   </div>
   <div [hidden]='!editMode'>
-  <input maxlength="20" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
-  <input maxlength="500" [(ngModel)]="goal" placeholder="Project goal (500 characters max) *" />
-  <input maxlength="500" [(ngModel)]="photoURL" placeholder="Image address from the web *" />
-  <button (click)="updateProjectProfile()">Save profile</button>
+  <input maxlength="25" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
+  <textarea class="textAreaInput" maxlength="140" [(ngModel)]="goal" placeholder="Project goal (500 characters max) *"></textarea>
   <button [hidden]='!teamAndProjectLeader' *ngIf="editMode" (click)="this.router.navigate(['addTeam'])" style="background-color:#c69b00">Add a team</button>
   </div>
   </div>
-  <div style="float: right; width: 50%;position:relative">
+  <div style="float: right; width: 40%;position:relative">
   <img (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:200px; width:100%">
-  <div style="position:absolute;left:10px;top:10px;">
+  <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="projectImage" id="buttonFile">
   <img src="./../assets/App icons/camera.png" style="width:25px">
@@ -33,7 +32,8 @@ import { Router } from '@angular/router'
   </label>
   </div>
   </div>
-  <div style="height:30px;width:100%"></div>
+  </div>
+  <div class='sheet' style="margin-top:10px">
   <div class="title">{{name}} teams:</div>
   <ul class="listLight">
     <li *ngFor="let team of projectTeams | async"
@@ -149,6 +149,29 @@ export class ProjectProfileComponent {
   }
 
   onImageChange(event) {
+    let image = event.target.files[0];
+    var uploader = <HTMLInputElement>document.getElementById('uploader');
+    var storageRef = firebase.storage().ref('images/'+Date.now()+image.name);
+    var task = storageRef.put(image);
+    task.on('state_changed',
+      function progress(snapshot){
+        document.getElementById('buttonFile').style.visibility = "hidden";
+        document.getElementById('uploader').style.visibility = "visible";
+        var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
+        uploader.value=percentage.toString();
+      },
+      function error(){
+        document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
+        uploader.value='0';
+      },
+      ()=>{
+        uploader.value='0';
+        document.getElementById('buttonFile').style.visibility = "visible";
+        document.getElementById('uploader').style.visibility = "hidden";
+        this.photoURL=task.snapshot.downloadURL;
+      }
+    );
   }
 
   errorHandler(event) {
