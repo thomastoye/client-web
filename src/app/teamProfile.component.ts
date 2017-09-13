@@ -10,7 +10,8 @@ import { Router, NavigationEnd } from '@angular/router'
   template: `
   <div class='sheet'>
   <div style="margin-bottom:-50px;position:relative">
-  <img class="imageWithZoom" (error)="errorHandler($event)"[src]="this.photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%" (click)="showFullScreenImage(photoURL)">
+  <img class="imageWithZoom" (error)="errorHandler($event)"[src]="photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%" (click)="showFullScreenImage(photoURL)">
+  <div *ngIf="!isImageOnFirebase" [hidden]='!getUserLeader(currentTeamID)' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="teamImage" id="teamImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="teamImage" id="buttonFile">
@@ -31,9 +32,10 @@ import { Router, NavigationEnd } from '@angular/router'
     </li>
   </ul>
   <ul class='listLight' style="clear:none">
-    <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
+    <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser:user.$key});router.navigate(['userProfile'])">
       <div *ngIf="!user.leader">
       <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:60px; width:60px">
+      <div *ngIf="!getUserFollowing(user.$key,currentTeamID)" style="font-size:10px;text-align:center">NOT FOLLOWING</div>
       <div class="buttonDiv" *ngIf='editMode' style="font-size:10px;line-height:10px;border-style:none;color:red" (click)="db.object('teamUsers/'+currentTeamID+'/'+user.$key).update({member:false,leader:false})">Remove</div>
       </div>
     </li>
@@ -46,7 +48,7 @@ import { Router, NavigationEnd } from '@angular/router'
   <div class="title" style="float:left">Following</div>
   <ul class='listLight'>
     <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="db.object('userInterface/'+currentUserID).update({focusProject: project.$key});router.navigate(['projectProfile'])">
-      <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px">
+      <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
       <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}{{(getTeamLeader(project.$key,currentTeamID)? " **" : "")}}</div>
     </li>
   </ul>
@@ -83,6 +85,7 @@ export class TeamProfileComponent  {
   memberAdText: string;
   memberAdVisible: boolean;
   currentBalance: number;
+  isImageOnFirebase: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.editMode = false;
@@ -98,6 +101,7 @@ export class TeamProfileComponent  {
           this.db.object('teams/' + this.currentTeamID).subscribe (team=>{
             this.teamName = team.name;
             this.photoURL = team.photoURL;
+            this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
           });
           this.db.object('teamAds/'+this.currentTeamID+'/memberAdText').subscribe(memberAdText => {
             this.memberAdText = memberAdText.$value;

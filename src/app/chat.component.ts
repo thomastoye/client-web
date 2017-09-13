@@ -43,7 +43,7 @@ import { Router, NavigationEnd } from '@angular/router'
   <img src="./../assets/App icons/camera.png" style="width:25px">
   <span class="tipText">Max 3.0Mb</span>
   </label>
-  <textarea id="chatInput" [hidden]='!currentUserIsMember' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
+  <textarea [hidden]='!currentUserIsMember' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
     `,
@@ -86,10 +86,6 @@ export class ChatComponent {
         });
       }
     });
-  }
-
-  ngOnInit () {
-    document.getElementById("chatInput").focus();
   }
 
   showFullScreenImage(src){

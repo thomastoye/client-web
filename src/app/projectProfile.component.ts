@@ -21,11 +21,12 @@ import { Router } from '@angular/router'
   <div style="clear:both"></div>
   <input maxlength="25" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
   <textarea class="textAreaInput" maxlength="140" [(ngModel)]="goal" placeholder="Project goal (500 characters max) *"></textarea>
-  <button [hidden]='!teamAndProjectLeader' *ngIf="editMode" (click)="this.router.navigate(['addTeam'])" style="background-color:#c69b00">Add a team</button>
+  <button *ngIf="editMode" (click)="this.router.navigate(['addTeam'])" style="background-color:#c69b00">Add a team</button>
   </div>
   </div>
   <div style="float: right; width: 40%;position:relative">
   <img class="imageWithZoom" (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:200px; width:100%" (click)="showFullScreenImage(photoURL)">
+  <div *ngIf="!isImageOnFirebase" [hidden]='!teamAndProjectLeader' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="projectImage" id="buttonFile">
@@ -39,8 +40,8 @@ import { Router } from '@angular/router'
   <div class="title">{{name}} teams</div>
   <ul class="listLight">
     <li *ngFor="let team of projectTeams | async"
-      [class.selected]="team.$key === selectedTeamID"
-      (click)="selectedTeamID = team.$key;db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
+      [class.selected]="team.$key === currentTeamID"
+      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
       <div style="width:300px;height:25px;float:left;">{{getTeamName(team.$key)}}{{(getTeamLeader(currentProjectID,team.$key)? " **" : "")}}{{getTeamFollowing(team.$key,currentProjectID)?"":" (Not Following)"}}</div>
@@ -63,7 +64,7 @@ export class ProjectProfileComponent {
   messageCancelMembership: string;
   teamAndProjectLeader: boolean;
   projectTeams: FirebaseListObservable<any>;
-  selectedTeamID: string;
+  isImageOnFirebase: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -78,6 +79,7 @@ export class ProjectProfileComponent {
             this.name = focusProject.name;
             this.goal = focusProject.goal;
             this.photoURL = focusProject.photoURL;
+            this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
             this.editMode = false;
             db.object('projectTeams/'+this.currentProjectID+'/'+this.currentTeamID).subscribe(projectTeam => {
               db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(teamUser => {

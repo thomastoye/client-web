@@ -26,6 +26,7 @@ import { Router } from '@angular/router'
   </div>
   <div style="float: right; width: 40%;position:relative">
   <img class="imageWithZoom" (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:175px; width:100%" (click)="showFullScreenImage(photoURL)">
+  <div *ngIf="!isImageOnFirebase" [hidden]='!ownProfile' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="projectImage" id="buttonFile">
@@ -110,6 +111,7 @@ export class UserProfileComponent {
   leaderStatus: boolean;
   ownProfile: boolean;
   userTeams: FirebaseListObservable<any>;
+  isImageOnFirebase: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
     this.editMode = false;
@@ -126,6 +128,7 @@ export class UserProfileComponent {
             this.lastName = focusUser.lastName;
             this.resume = focusUser.resume;
             this.photoURL = focusUser.photoURL;
+            this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
             db.object('teamUsers/' + this.currentTeamID+"/"+this.focusUserID).subscribe(teamFocusUser => {
               db.object('userTeams/'+this.focusUserID+'/'+this.currentTeamID).subscribe(focusUserTeam=>{
                 this.leaderStatus = teamFocusUser.leader;
