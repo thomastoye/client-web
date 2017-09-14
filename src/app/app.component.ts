@@ -52,6 +52,7 @@ export class AppComponent {
   selectedIcon: number;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+    var notificationSound= new Audio("./../assets/Sounds/micro.mp3");
     this.followingCurrentTeam=true;
     this.afAuth.authState.subscribe((auth) => {
       console.log("loop 1");
@@ -78,6 +79,9 @@ export class AppComponent {
                   if (userTeam.$key==currentTeamID.$value) {this.followingCurrentTeam=userTeam.following}
                   this.globalChatActivity = chatActivity?true:this.globalChatActivity;
                   document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
+                  if (this.globalChatActivity) {
+                    notificationSound.play();
+                  }
                 });
               }
             });
