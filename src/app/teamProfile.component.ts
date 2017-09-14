@@ -10,7 +10,7 @@ import { Router, NavigationEnd } from '@angular/router'
   template: `
   <div class='sheet'>
   <div style="position:relative;margin-bottom:-100px">
-  <img class="imageWithZoom" (error)="errorHandler($event)"[src]="photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:275px; width:100%" (click)="showFullScreenImage(photoURL)">
+  <img class="imageWithZoom" (error)="errorHandler($event)"[src]="photoURL" style="object-fit:cover;background-color:#0e0e0e;max-height:250px; width:100%" (click)="showFullScreenImage(photoURL)">
   <div *ngIf="!isImageOnFirebase" [hidden]='!getUserLeader(currentTeamID)' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="teamImage" id="teamImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
