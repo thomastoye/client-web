@@ -25,18 +25,19 @@ import { Router, NavigationEnd } from '@angular/router'
   <div style="color:blue;clear:both;cursor:pointer;text-align:center" (click)="router.navigate(['wallet'])">{{currentBalance | number:'1.2-2'}} COINS</div>
   <div class="buttonDiv" *ngIf="!getUserFollowing(currentUserID,currentTeamID)" (click)="followTeam(currentTeamID, currentUserID)">Follow</div>
   <div class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=true">Edit</div>
-  <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none" (click)="editMode=false;saveTeamProfile()">Save profile</div>
-  <ul class='listLight' style="float:left">
+  <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none" (click)="editMode=false;saveTeamProfile()">Done</div>
+  <ul class='listLight' style="display:inline-block;float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
       <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:130px; width:130px">
     </li>
   </ul>
-  <ul class='listLight' style="clear:none">
+  <ul class='listLight' style="display:inline-block">
     <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser:user.$key});router.navigate(['userProfile'])">
       <div *ngIf="!user.leader">
       <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:60px; width:60px">
       <div *ngIf="!getUserFollowing(user.$key,currentTeamID)" style="font-size:10px;text-align:center">NOT FOLLOWING</div>
       <div class="buttonDiv" *ngIf='editMode' style="font-size:10px;line-height:10px;border-style:none;color:red" (click)="db.object('teamUsers/'+currentTeamID+'/'+user.$key).update({member:false,leader:false})">Remove</div>
+      <div class="buttonDiv" *ngIf='editMode' style="font-size:10px;line-height:10px;border-style:none;color:green" (click)="db.object('teamUsers/'+currentTeamID+'/'+user.$key).update({member:true,leader:true})">Make co-leader</div>
       </div>
     </li>
   </ul>
