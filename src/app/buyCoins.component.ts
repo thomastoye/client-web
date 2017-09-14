@@ -99,7 +99,7 @@ import { Router } from '@angular/router'
   </div>
   `,
 })
-export class BuyCoins {
+export class BuyCoinsComponent {
   cardNumber: string;
   expiryMonth: string;
   expiryYear: string;

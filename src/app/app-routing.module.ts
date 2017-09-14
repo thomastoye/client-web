@@ -13,9 +13,10 @@ import { WalletComponent } from './wallet.component';
 import { CreateTeamComponent } from './createTeam.component';
 import { CreateProjectComponent } from './createProject.component';
 import { CreateTransactionComponent } from './createTransaction.component';
-import { BuyCoins } from './buyCoins.component';
-import { COINinfo } from './COINinfo.component';
-import { TeamAds } from './teamAds.component';
+import { BuyCoinsComponent } from './buyCoins.component';
+import { COINinfoComponent } from './COINinfo.component';
+import { TeamAdsComponent } from './teamAds.component';
+import { LinksComponent } from './links.component';
 
 const appRoutes: Routes = [
   { path: 'chat', component: ChatComponent },
@@ -31,9 +32,10 @@ const appRoutes: Routes = [
   { path: 'createTeam', component: CreateTeamComponent },
   { path: 'createProject', component: CreateProjectComponent },
   { path: 'createTransaction', component: CreateTransactionComponent },
-  { path: 'buyCoins', component: BuyCoins },
-  { path: 'COINinfo', component: COINinfo },
-  { path: 'teamAds', component: TeamAds },
+  { path: 'buyCoins', component: BuyCoinsComponent },
+  { path: 'COINinfo', component: COINinfoComponent },
+  { path: 'teamAds', component: TeamAdsComponent },
+  { path: 'links', component: LinksComponent },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
   { path: '**', component: LoginComponent }
 ];

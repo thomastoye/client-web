@@ -40,7 +40,7 @@ import { Router } from '@angular/router'
   </div>
   `,
 })
-export class COINinfo {
+export class COINinfoComponent {
   currentUserID: string;
   focusUserID: string;
   firstName: string;

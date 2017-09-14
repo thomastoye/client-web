@@ -19,9 +19,10 @@ import { WalletComponent }  from './wallet.component';
 import { CreateTeamComponent }  from './createTeam.component';
 import { CreateProjectComponent }  from './createProject.component';
 import { CreateTransactionComponent }  from './createTransaction.component';
-import { BuyCoins }  from './buyCoins.component';
-import { COINinfo }  from './COINinfo.component';
-import { TeamAds }  from './teamAds.component';
+import { BuyCoinsComponent }  from './buyCoins.component';
+import { COINinfoComponent }  from './COINinfo.component';
+import { TeamAdsComponent }  from './teamAds.component';
+import { LinksComponent }  from './links.component';
 import { LinkyModule } from 'angular-linky';
 
 import { AngularFireModule } from 'angularfire2';
@@ -55,9 +56,10 @@ export const firebaseConfig = {
     CreateTeamComponent,
     CreateProjectComponent,
     CreateTransactionComponent,
-    BuyCoins,
-    COINinfo,
-    TeamAds,
+    BuyCoinsComponent,
+    COINinfoComponent,
+    TeamAdsComponent,
+    LinksComponent,
   ],
   imports: [
     BrowserModule,

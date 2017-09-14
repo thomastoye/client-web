@@ -362,3 +362,43 @@ progress::-webkit-progress-value {
 .imageWithZoom {
   cursor: zoom-in;
 }
+iframe {
+  border:none;
+}
+.inputTitle {
+  border-radius: none;
+  width: 100%;
+  padding: 5px;
+  margin: 0px;
+  border: none;
+  color:#4b4f56;
+  font-size: 12px;
+  line-height: 12px;
+  font-weight: bold;
+  font-family: sans-serif;
+}
+.inputLink {
+  border-radius: none;
+  width: 100%;
+  padding: 5px;
+  margin: 0px;
+  border: none;
+  color:blue;
+  font-size: 10px;
+  line-height: 12px;
+}
+.linkPreview {
+  width:1000px;
+  height: 300px;
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  -webkit-transform: scale(0.5);
+  -moz-transform: scale(0.5);
+  -ms-transform: scale(0.5);
+  transform: scale(0.5);
+  -webkit-transform-origin: 0 0;
+  -moz-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+}

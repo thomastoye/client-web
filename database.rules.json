@@ -44,20 +44,26 @@
     "teamAds": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null"
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true"
+      }
+    },
+    "teamLinks": {
+      ".read": "auth.token.email_verified === true",
+      "$teamid": {
+        ".write": "root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true"
       }
     },
     "teamMessages": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null"
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true"
       }
     },
     "teamPayments": {
       "$teamid": {
         "$chargeid": {
           ".read": "auth.token.email_verified === true",
-          ".write": "!data.exists() && newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null"
+          ".write": "!data.exists() && newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true"
         }
       }
     },
@@ -66,21 +72,21 @@
       "$teamid": {
       ".indexOn": ["following"],
         "$projectid": {
-          ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null"
+          ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true"
         }
       }
     },
     "teamTransactionRequests": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null",
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true",
         ".indexOn": ["status"]
       }
     },
     "teamTransactions": {
       ".read": "auth.token.email_verified === true",
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true && auth != null",
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true",
         ".indexOn": ["status"],
         "$transactionid": {
           "amount": {

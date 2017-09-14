@@ -25,7 +25,7 @@ import { Router } from '@angular/router'
   </div>
   `,
 })
-export class TeamAds {
+export class TeamAdsComponent {
   currentUserID: string;
   focusUserID: string;
   firstName: string;
