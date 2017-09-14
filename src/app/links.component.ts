@@ -13,6 +13,8 @@ import { Router } from '@angular/router';
   <span class="buttonDiv" *ngIf='currentUserIsMember' style="border-style:none" (click)="editMode=!editMode">{{editMode?"Done":"Edit"}}</span>
   <div class="buttonDiv" *ngIf="currentUserIsMember" style="float:right;margin:10px" (click)="newLink()">New link</div>
   <div style="clear:both;text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
+  </div>
+  <div class="sheet" style="margin-top:5px;background-color: #f9f9f9;box-shadow:none">
   <ul style="clear:both">
     <li style="float:left" *ngFor="let link of teamLinks | async;let i = index">
       <div class="sheet" style="position:relative;margin:10px;width:175px;height:80px">

@@ -9,7 +9,7 @@ import { Router, NavigationEnd } from '@angular/router'
   selector: 'teamProfile',
   template: `
   <div class='sheet'>
-  <div style="margin-bottom:-50px;position:relative">
+  <div style="position:relative;margin-bottom:-100px">
   <img class="imageWithZoom" (error)="errorHandler($event)"[src]="photoURL" style="object-fit:contain;background-color:#0e0e0e;max-height:350px; width:100%" (click)="showFullScreenImage(photoURL)">
   <div *ngIf="!isImageOnFirebase" [hidden]='!getUserLeader(currentTeamID)' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
@@ -19,31 +19,43 @@ import { Router, NavigationEnd } from '@angular/router'
   <span class="tipText">Max 3.0Mb</span>
   </label>
   </div>
-  <div class="sheetBadge" style="position:relative;top:-50px">
-  <div *ngIf="!editMode" style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
+  <div class="sheetBadge" style="position:relative;top:-100px">
+  <div *ngIf="!editMode" style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{teamName}}</div>
   <input maxlength="25" *ngIf="editMode" [(ngModel)]="teamName" style="text-transform: uppercase;" placeholder="Enter team name" />
-  <div style="color:blue;clear:both;cursor:pointer;text-align:center" (click)="router.navigate(['wallet'])">{{currentBalance | number:'1.2-2'}} COINS</div>
   <div class="buttonDiv" *ngIf="!getUserFollowing(currentUserID,currentTeamID)" (click)="followTeam(currentTeamID, currentUserID)">Follow</div>
-  <div class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=true">Edit</div>
-  <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none" (click)="editMode=false;saveTeamProfile()">Done</div>
   <ul class='listLight' style="display:inline-block;float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser: user.$key});router.navigate(['userProfile'])">
-      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:130px; width:130px">
+      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="object-fit: cover; height:140px; width:140px">
     </li>
   </ul>
   <ul class='listLight' style="display:inline-block">
     <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="db.object('userInterface/'+currentUserID).update({focusUser:user.$key});router.navigate(['userProfile'])">
       <div *ngIf="!user.leader">
-      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="margin:5px;border-radius:3px; object-fit: cover; height:60px; width:60px">
-      <div *ngIf="!getUserFollowing(user.$key,currentTeamID)" style="font-size:10px;text-align:center">NOT FOLLOWING</div>
+      <img (error)="errorHandler($event)"[src]="getPhotoURL(user.$key)" style="object-fit: cover; height:70px; width:70px">
       <div class="buttonDiv" *ngIf='editMode' style="font-size:10px;line-height:10px;border-style:none;color:red" (click)="db.object('teamUsers/'+currentTeamID+'/'+user.$key).update({member:false,leader:false})">Remove</div>
       <div class="buttonDiv" *ngIf='editMode' style="font-size:10px;line-height:10px;border-style:none;color:green" (click)="db.object('teamUsers/'+currentTeamID+'/'+user.$key).update({member:true,leader:true})">Make co-leader</div>
+      </div>
+    </li>
+  </ul>
+  <div style="clear:both"></div>
+  <ul style="clear:both;display:inline-block;float:left">
+    <li *ngFor="let user of teamLeaders | async" style="margin-left:10px;display:inline-block;float:left">
+      <div style="font-size:12px;line-height:15px;font-family:sans-serif;">{{getFirstName(user.$key)}}*</div>
+    </li>
+  </ul>
+  <ul style="display:inline-block;float:left">
+    <li *ngFor="let user of teamMembers | async" style="margin-left:10px;display:inline-block;float:left">
+      <div *ngIf="!user.leader">
+        <div style="font-size:12px;line-height:15px;font-family:sans-serif;">{{getFirstName(user.$key)}}{{getUserFollowing(user.$key,currentTeamID)?"":" (NF)"}}</div>
       </div>
     </li>
   </ul>
   <div class="buttonDiv" *ngIf='editMode' style="border-style:none" (click)="this.router.navigate(['addMember'])">Add a member</div>
   </div>
   </div>
+  <span style="color:blue;clear:both;cursor:pointer;text-align:center" (click)="router.navigate(['wallet'])">{{currentBalance | number:'1.2-2'}} COINS</span>
+  <span class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=true">Edit</span>
+  <span class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none" (click)="editMode=false;saveTeamProfile()">Done</span>
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="title" style="float:left">Following</div>
@@ -152,11 +164,9 @@ export class TeamProfileComponent  {
 
   getFirstName (ID: string) :string {
     var output;
-    if (ID == this.currentUserID) { output = "me"} else {
-      this.db.object('users/' + ID).subscribe(snapshot => {
-        output = snapshot.firstName;
-      });
-    }
+    this.db.object('users/' + ID).subscribe(snapshot => {
+      output = snapshot.firstName;
+    });
     return output;
   }
 

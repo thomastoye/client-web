@@ -300,10 +300,9 @@ hr {
   text-decoration: underline;
 }
 .sheetBadge {
-  width:290px;
+  width:280px;
   margin: 10px auto;
-  padding:5px;
-  border-radius:7px;
+  border-radius:10px;
   background-color: white;
   box-shadow: 0 0 5px rgba(0, 0, 0, .7);
 }
@@ -357,10 +356,10 @@ progress::-webkit-progress-value {
   position: fixed;
   background-color:#0e0e0e;
   object-fit:contain;
-  cursor: zoom-out;
+  cursor: pointer;
 }
 .imageWithZoom {
-  cursor: zoom-in;
+  cursor: pointer;
 }
 iframe {
   border:none;
