@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   template: `
   <div class="sheet">
   <span class="title">Links</span>
-  <span class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!currentUserIsMember' (click)="editMode=true">Edit</span>
+  <span class="buttonDiv" *ngIf='currentUserIsMember' style="border-style:none" (click)="editMode=!editMode">{{editMode?"Done":"Edit"}}</span>
   <div class="buttonDiv" *ngIf="currentUserIsMember" style="float:right;margin:10px" (click)="newLink()">New link</div>
   <div style="clear:both;text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
   <ul style="clear:both">
