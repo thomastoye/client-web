@@ -10,15 +10,16 @@ import { Router } from '@angular/router';
   template: `
   <div class="sheet">
   <span class="title">Links</span>
+  <span class="buttonDiv" *ngIf='!editMode' style="border-style:none" [hidden]='!currentUserIsMember' (click)="editMode=true">Edit</span>
   <div class="buttonDiv" *ngIf="currentUserIsMember" style="float:right;margin:10px" (click)="newLink()">New link</div>
   <div style="clear:both;text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
   <ul style="clear:both">
     <li style="float:left" *ngFor="let link of teamLinks | async;let i = index">
-      <div class="sheet" style="position:relative;margin:10px;width:135px;height:80px">
+      <div class="sheet" style="position:relative;margin:10px;width:175px;height:80px">
         <input type="text" class="inputTitle" maxlength="25" (readonly)="currentUserIsMember" #elementTitle (focusout)="db.object('teamLinks/'+currentTeamID+'/'+link.$key).update({title:elementTitle.value})" [value]="link.title">
         <input type="text" class="inputLink" maxlength="500" (readonly)="currentUserIsMember" #elementURL (focusout)="db.object('teamLinks/'+currentTeamID+'/'+link.$key).update({url:elementURL.value})" [value]="link.url">
         <a [attr.href]="link.url" target="_blank"><img src="./../assets/App icons/infinite-outline.png" style="width:100%;height:35px;object-fit:contain"></a>
-        <div style="position:absolute;bottom:0px;left:5px;font-size:10px;color:red;cursor:pointer" *ngIf="currentUserIsMember" (click)="db.object('teamLinks/'+currentTeamID+'/'+link.$key).remove()">X</div>
+        <div style="position:absolute;bottom:0px;left:5px;font-size:10px;color:red;cursor:pointer" *ngIf="editMode" (click)="db.object('teamLinks/'+currentTeamID+'/'+link.$key).remove()">Remove</div>
         <div style="position:absolute;bottom:0px;right:5px;font-size:8px">{{i+1}}</div>
       </div>
     </li>
@@ -34,8 +35,10 @@ export class LinksComponent  {
   teamName: string;
   teamLinks: FirebaseListObservable<any>;
   currentUserIsMember: boolean;
+  editMode: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+    this.editMode = false;
     this.currentUserIsMember=false;
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null){}
