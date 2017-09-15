@@ -13,18 +13,14 @@ import { Router, NavigationEnd } from '@angular/router'
     <div [hidden]="!emailVerified">
     <progress value='0' max='100' id='uploader'>0%</progress>
     <div class='menu'>
-    <div style="width:260px;display:block;margin: 0 auto;">
+    <div style="width:270px;display:block;margin: 0 auto;">
     <div class='iconSmall' [class.selected]="selectedIcon===1" (click)="router.navigate(['teamProfile']);selectedIcon=1" style="height:40px">
     <div style="margin: 0 auto;width:20px;height:20px;border-style:solid;border-width:1px;border-radius:4px;margin-top:10px"></div>
     </div>
-    <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['chat']);selectedIcon=2">
-    <img (error)="errorHandler($event)"id='chatIcon' src="./../assets/App icons/communication-icons-6.png" style="width:30px;margin-top:5px;-webkit-filter:brightness(100);filter:brightness(100);">
-    <div class='activity' [hidden]="!currentTeamChatActivity"></div>
-    </div>
-    <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="router.navigate(['search']);selectedIcon=3">
+    <div class='iconSmall' [class.selected]="selectedIcon===2" (click)="router.navigate(['search']);selectedIcon=2">
     <img (error)="errorHandler($event)" src="./../assets/App icons/search.png" style="width:30px;margin-top:5px;border-radius:3px;-webkit-filter:brightness(100);filter:brightness(100);">
     </div>
-    <div class='iconSmall' [class.selected]="selectedIcon===4" (click)="db.object('userInterface/'+currentUserID).update({focusUser:currentUserID});router.navigate(['userProfile']);selectedIcon=4">
+    <div class='iconSmall' [class.selected]="selectedIcon===3" (click)="db.object('userInterface/'+currentUserID).update({focusUser:currentUserID});router.navigate(['userProfile']);selectedIcon=3">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_winner_gradient.svg" style="width:30px;margin-top:5px;border-radius:3px;">
     <div class='activity' [hidden]="!globalChatActivity"></div>
     </div>
