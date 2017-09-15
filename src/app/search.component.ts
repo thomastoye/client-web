@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'search',
   template: `
   <div class="sheet">
-  <input id="searchInput" maxlength="500" (keyup)="refreshUserList()" [(ngModel)]="this.filter" placeholder="Search">
+  <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="this.searchFilter" (focusout)="db.object('userInterface/'+currentUserID).update({searchFilter:searchFilter})" placeholder="Search">
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="title">Users</div>
@@ -56,7 +56,7 @@ export class SearchComponent  {
   users: FirebaseListObservable<any>;
   teams: FirebaseListObservable<any>;
   projects: FirebaseListObservable<any>;
-  filter: string;
+  searchFilter: string;
   messageAddMember: string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
@@ -66,6 +66,7 @@ export class SearchComponent  {
         this.currentUserID = auth.uid;
         this.db.object('userInterface/'+auth.uid).subscribe(userInterface => {
           this.currentTeamID = userInterface.currentTeam;
+          this.searchFilter = userInterface.searchFilter;
         });
       }
     });
@@ -73,31 +74,32 @@ export class SearchComponent  {
 
   ngOnInit () {
     document.getElementById("searchInput").focus();
+    this.refreshSearchLists();
   }
 
-  refreshUserList () {
-    if (this.filter.length>1) {
+  refreshSearchLists () {
+    if (this.searchFilter.length>1) {
       this.users = this.db.list('users/', {
         query:{
           orderByChild:'firstName',
-          startAt: this.filter.toLowerCase(),
-          endAt: this.filter.toLowerCase()+"\uf8ff",
+          startAt: this.searchFilter.toLowerCase(),
+          endAt: this.searchFilter.toLowerCase()+"\uf8ff",
           limitToFirst: 10
         }
       });
       this.teams = this.db.list('teams/', {
         query:{
           orderByChild:'name',
-          startAt: this.filter.toUpperCase(),
-          endAt: this.filter.toUpperCase()+"\uf8ff",
+          startAt: this.searchFilter.toUpperCase(),
+          endAt: this.searchFilter.toUpperCase()+"\uf8ff",
           limitToFirst: 10
         }
       });
       this.projects = this.db.list('projects/', {
         query:{
           orderByChild:'name',
-          startAt: this.filter.toUpperCase(),
-          endAt: this.filter.toUpperCase()+"\uf8ff",
+          startAt: this.searchFilter.toUpperCase(),
+          endAt: this.searchFilter.toUpperCase()+"\uf8ff",
           limitToFirst: 10
         }
       });
