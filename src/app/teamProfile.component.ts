@@ -39,14 +39,14 @@ import { Router, NavigationEnd } from '@angular/router'
   </ul>
   <div style="clear:both"></div>
   <ul style="clear:both;display:inline-block;float:left">
-    <li *ngFor="let user of teamLeaders | async" style="margin-left:10px;display:inline-block;float:left">
-      <div style="font-size:12px;line-height:15px;font-family:sans-serif;">{{getFirstName(user.$key)}}*</div>
+    <li *ngFor="let user of teamLeaders | async" style="display:inline-block;float:left">
+      <div style="margin:0 0 5px 15px;font-size:12px;line-height:15px;font-family:sans-serif;">{{getFirstName(user.$key)}}*</div>
     </li>
   </ul>
   <ul style="display:inline-block;float:left">
-    <li *ngFor="let user of teamMembers | async" style="margin-left:10px;display:inline-block;float:left">
+    <li *ngFor="let user of teamMembers | async" style="display:inline-block;float:left">
       <div *ngIf="!user.leader">
-        <div style="font-size:12px;line-height:15px;font-family:sans-serif;">{{getFirstName(user.$key)}}{{getUserFollowing(user.$key,currentTeamID)?"":" (NF)"}}</div>
+        <div style="margin:0 0 5px 15px;font-size:12px;line-height:15px;font-family:sans-serif;">{{getFirstName(user.$key)}}{{getUserFollowing(user.$key,currentTeamID)?"":" (NF)"}}</div>
       </div>
     </li>
   </ul>
@@ -55,9 +55,18 @@ import { Router, NavigationEnd } from '@angular/router'
   </div>
   </div>
   <div class='sheet'>
-  <span style="color:blue;clear:both;cursor:pointer;text-align:center;padding:15px" (click)="router.navigate(['wallet'])">Wallet</span>
-  <span style="color:blue;clear:both;cursor:pointer;text-align:center;padding:15px" (click)="router.navigate(['links'])">Links</span>
-  <span style="color:blue;clear:both;cursor:pointer;text-align:center;padding:15px" (click)="router.navigate(['chat'])">Chat</span>
+  <div class='appIcon' (click)="router.navigate(['wallet'])">
+  <img src="./../assets/App icons/icon_share_03.svg" style="width:30px">
+  <div style="font-size:11px">Wallet</div>
+  </div>
+  <div class='appIcon' (click)="router.navigate(['links'])">
+  <img src="./../assets/App icons/infinite-outline.png" style="width:30px">
+  <div style="font-size:11px">Links</div>
+  </div>
+  <div class='appIcon' (click)="router.navigate(['chat'])">
+  <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
+  <div style="font-size:11px">Chat</div>
+  </div>
   <span class="buttonDiv" *ngIf='!editMode' style="border-style:none;float:right" [hidden]='!getUserLeader(currentTeamID)' (click)="editMode=true">Edit</span>
   <span class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" (click)="editMode=false;saveTeamProfile()">Done</span>
   </div>

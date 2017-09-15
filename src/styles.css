@@ -401,3 +401,12 @@ iframe {
   -ms-transform-origin: 0 0;
   transform-origin: 0 0;
 }
+.appIcon {
+  width:80px;
+  text-align:center;
+  float:left;
+  cursor:pointer;
+}
+.appIcon:hover {
+  background-color: #EEE;
+}
