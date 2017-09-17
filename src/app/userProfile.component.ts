@@ -109,7 +109,7 @@ export class UserProfileComponent {
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.afAuth.authState.subscribe((auth) => {
-      if (auth==null) {
+      if (this.UI.focusUser==null) {
         this.router.navigate(['login']);
       }
       else {
