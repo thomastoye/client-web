@@ -115,12 +115,6 @@
         ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true) && auth != null"
       }
     },
-    "userInterface": {
-      ".read": "true",
-      "$uid": {
-        ".write": "newData.exists() && auth.uid === $uid"
-      }
-    },
     "userTeams": {
       ".read": "true",
       "$uid": {

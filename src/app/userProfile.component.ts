@@ -108,20 +108,26 @@ export class UserProfileComponent {
   isImageOnFirebase: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
-    if (!this.UI.focusUser) this.router.navigate(['login']);
-    this.editMode = false;
-    this.ownProfile = (this.UI.currentUser==this.UI.focusUser);
-    db.object('users/'+this.UI.focusUser).subscribe(focusUser => {
-      this.firstName = focusUser.firstName;
-      this.lastName = focusUser.lastName;
-      this.resume = focusUser.resume;
-      this.photoURL = focusUser.photoURL;
-      if(this.photoURL!=null) this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
-    });
-    this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
-      query:{
-        orderByChild:'following',
-        equalTo: true,
+    this.afAuth.authState.subscribe((auth) => {
+      if (auth==null) {
+        this.router.navigate(['login']);
+      }
+      else {
+        this.editMode = false;
+        this.ownProfile = (this.UI.currentUser==this.UI.focusUser);
+        db.object('users/'+this.UI.focusUser).subscribe(focusUser => {
+          this.firstName = focusUser.firstName;
+          this.lastName = focusUser.lastName;
+          this.resume = focusUser.resume;
+          this.photoURL = focusUser.photoURL;
+          if(this.photoURL!=null) this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
+        });
+        this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
+          query:{
+            orderByChild:'following',
+            equalTo: true,
+          }
+        });
       }
     });
   }
@@ -198,7 +204,7 @@ export class UserProfileComponent {
   getChatActivity (ID: string) :boolean {
     var output = false;
     this.db.object('userTeams/' + this.UI.currentUser + '/' + ID).subscribe(userTeam => {
-      this.db.object('teamActivities/' + ID).subscribe(teamActivities => {
+      this.db.object('teamActivities/'+ID).subscribe(teamActivities => {
         output = teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp;
       });
     });

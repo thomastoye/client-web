@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router, NavigationEnd } from '@angular/router'
@@ -30,32 +31,33 @@ import { userInterfaceService } from './userInterface.service';
 export class AppComponent {
   globalChatActivity: boolean;
   currentTeamChatActivity: boolean;
-  followingCurrentTeam: boolean;
 
-  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
-    var notificationSound= new Audio("./../assets/Sounds/micro.mp3");
-    this.followingCurrentTeam=true;
-    db.list('userTeams/'+this.UI.currentUser).subscribe(userTeams=>{
-      console.log("loop 5");
-      this.followingCurrentTeam=false;
-      this.globalChatActivity = false;
-      this.currentTeamChatActivity = false;
-      userTeams.forEach(userTeam=>{
-        if (userTeam.following) {
-          db.object('teamActivities/'+userTeam.$key+'/lastMessageTimestamp').subscribe(lastMessageTimestamp=>{
-            console.log("loop 6");
-            var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
-            if (userTeam.$key==UI.currentTeam&&chatActivity) {this.currentTeamChatActivity=true}
-            if (userTeam.$key==UI.currentTeam) {this.followingCurrentTeam=userTeam.following}
-            this.globalChatActivity = chatActivity?true:this.globalChatActivity;
-            document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
-            //WORK IN PROGRESS PICKS UP TOO MANY FALSE NOTIFICATIONS
-            //if (this.globalChatActivity) {
-            //  notificationSound.play();
-            //}
+  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+    this.afAuth.authState.subscribe((auth) => {
+      if (auth==null) {}
+      else {
+        var notificationSound= new Audio("./../assets/Sounds/micro.mp3");
+        db.list('userTeams/'+this.UI.currentUser).subscribe(userTeams=>{
+          console.log("loop 5");
+          this.globalChatActivity = false;
+          this.currentTeamChatActivity = false;
+          userTeams.forEach(userTeam=>{
+            if (userTeam.following) {
+              db.object('teamActivities/'+userTeam.$key+'/lastMessageTimestamp').subscribe(lastMessageTimestamp=>{
+                console.log("loop 6");
+                var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
+                if (userTeam.$key==UI.currentTeam&&chatActivity) {this.currentTeamChatActivity=true}
+                this.globalChatActivity = chatActivity?true:this.globalChatActivity;
+                document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
+                //WORK IN PROGRESS PICKS UP TOO MANY FALSE NOTIFICATIONS
+                //if (this.globalChatActivity) {
+                //  notificationSound.play();
+                //}
+              });
+            }
           });
-        }
-      });
+        });
+      }
     });
   }
 

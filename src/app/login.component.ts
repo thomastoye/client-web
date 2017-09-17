@@ -108,7 +108,7 @@ export class LoginComponent  {
     this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
     this.db.object('teams/'+teamID).update({name: teamName, organisation: "Family and Friends"});
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    this.db.object('userInterface/' + userID).update({currentTeam: teamID});
+    this.UI.currentTeam=teamID;
   }
 
   clearAllMessages () {
