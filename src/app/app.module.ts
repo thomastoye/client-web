@@ -25,6 +25,8 @@ import { TeamAdsComponent }  from './teamAds.component';
 import { LinksComponent }  from './links.component';
 import { LinkyModule } from 'angular-linky';
 
+import { userInterfaceService } from './userInterface.service';
+
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
@@ -72,7 +74,7 @@ export const firebaseConfig = {
     LinkyModule,
     Ng2ImgMaxModule,
   ],
-  providers: [],
+  providers: [userInterfaceService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

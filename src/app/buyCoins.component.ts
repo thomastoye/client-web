@@ -1,9 +1,9 @@
 import { Component, NgZone } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
+import { userInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'buyCoins',
@@ -69,7 +69,7 @@ import { Router } from '@angular/router'
   <div class="top">
   <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="enteringAmount=true;enteringCardDetails=false">back</div>
   <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:50px">
-  <div style="color:black">{{getTeamName(currentTeamID)}}</div>
+  <div style="color:black">{{getTeamName(UI.currentTeam)}}</div>
   <div style="color:black;padding-bottom:15px">{{amountCOINSPurchased | number:'1.2-2'}} COINS</div>
   </div>
   <div class="form">
@@ -110,8 +110,6 @@ export class BuyCoinsComponent {
   messagePayment: string;
   messagePERRINNTransaction: string;
   currencyList: FirebaseListObservable<any>;
-  currentUserID: string;
-  currentTeamID: string;
   newPaymentID: string;
   thinkingAboutIt: boolean;
   enteringAmount: boolean;
@@ -122,32 +120,23 @@ export class BuyCoinsComponent {
   sheetContent3: FirebaseObjectObservable<any>;
   isUserLeader: boolean;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, private _zone: NgZone) {
+  constructor(public db: AngularFireDatabase, public router: Router, private _zone: NgZone, public UI: userInterfaceService) {
     this.isUserLeader = false;
-    this.afAuth.authState.subscribe((auth) => {
-      if (auth==null){}
-      else {
-        this.currentUserID = auth.uid;
-        this.thinkingAboutIt = true;
-        this.enteringAmount = false;
-        this.enteringCardDetails = false;
-        this.processingPayment = false;
-        this.newPaymentID = "";
-        this.messagePayment = "";
-        this.messagePERRINNTransaction = "";
-        this.amountCOINSPurchased=100;
-        this.currentCurrencyID='gbp';
-        this.sheetContent1 = db.object('appSettings/whatIsCOIN');
-        this.sheetContent2 = db.object('appSettings/howToUseCOIN');
-        this.sheetContent3 = db.object('appSettings/whyBuyCOIN');
-        this.currencyList = db.list('appSettings/currencyList');
-        db.object('userInterface/'+auth.uid).subscribe(userInterface => {
-          this.currentTeamID = userInterface.currentTeam;
-          this.db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(user => {
-            this.isUserLeader = user.leader;
-          });
-        });
-      }
+    this.thinkingAboutIt = true;
+    this.enteringAmount = false;
+    this.enteringCardDetails = false;
+    this.processingPayment = false;
+    this.newPaymentID = "";
+    this.messagePayment = "";
+    this.messagePERRINNTransaction = "";
+    this.amountCOINSPurchased=100;
+    this.currentCurrencyID='gbp';
+    this.sheetContent1 = db.object('appSettings/whatIsCOIN');
+    this.sheetContent2 = db.object('appSettings/howToUseCOIN');
+    this.sheetContent3 = db.object('appSettings/whyBuyCOIN');
+    this.currencyList = db.list('appSettings/currencyList');
+    this.db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(user => {
+      this.isUserLeader = user.leader;
     });
   }
 
@@ -166,24 +155,24 @@ export class BuyCoinsComponent {
           this.enteringCardDetails = false;
           this.processingPayment = true;
           this.messagePayment = `Processing card...`;
-          this.newPaymentID = firebase.database().ref(`/teamPayments/${this.currentUserID}`).push().key;
-          firebase.database().ref(`/teamPayments/${this.currentUserID}/${this.newPaymentID}`)
+          this.newPaymentID = firebase.database().ref(`/teamPayments/${this.UI.currentUser}`).push().key;
+          firebase.database().ref(`/teamPayments/${this.UI.currentUser}/${this.newPaymentID}`)
           .update({
             source: response.id,
             amountCOINSPurchased: this.amountCOINSPurchased,
             amountCharge: this.amountCharge,
             currency: this.currentCurrencyID,
-            team: this.currentTeamID,
+            team: this.UI.currentTeam,
           })
           .then(()=>{
-            this.db.object(`/teamPayments/${this.currentUserID}/${this.newPaymentID}/response/outcome`).subscribe(paymentSnapshot=>{
+            this.db.object(`/teamPayments/${this.UI.currentUser}/${this.newPaymentID}/response/outcome`).subscribe(paymentSnapshot=>{
               if (paymentSnapshot.seller_message!=null) this.messagePayment = paymentSnapshot.seller_message;
               if (this.messagePayment == "Payment complete.") this.messagePERRINNTransaction = "We are now sending COINS to your team...";
             });
-            this.db.object(`/teamPayments/${this.currentUserID}/${this.newPaymentID}/error`).subscribe(paymentSnapshot=>{
+            this.db.object(`/teamPayments/${this.UI.currentUser}/${this.newPaymentID}/error`).subscribe(paymentSnapshot=>{
               if (paymentSnapshot.message!=null) this.messagePayment = paymentSnapshot.message;
             });
-            this.db.object(`/teamPayments/${this.currentUserID}/${this.newPaymentID}/PERRINNTransaction`).subscribe(transactionSnapshot=>{
+            this.db.object(`/teamPayments/${this.UI.currentUser}/${this.newPaymentID}/PERRINNTransaction`).subscribe(transactionSnapshot=>{
               if (transactionSnapshot.message!=null) this.messagePERRINNTransaction = transactionSnapshot.message;
             });
           });

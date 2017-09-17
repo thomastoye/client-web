@@ -58,12 +58,9 @@ body {
   cursor: pointer;
   text-align: center;
   float: left;
-  width: 90px;
+  width: 150px;
   user-select: none;
   position: relative;
-}
-.menu .selected {
-  background-color: #123f87;
 }
 .menu .iconSmall .activity {
   height: 12px;

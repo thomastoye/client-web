@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
+import { userInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'COINinfo',
@@ -22,13 +22,12 @@ import { Router } from '@angular/router'
   </div>
   <div class="sheet" [hidden]="sheetNumber!=3">
   <div class="title" style="color: black;text-align:left;">There are {{totalCOIN | number:'1.2-2'}} COINS in circulation</div>
-  <div [hidden]="loggedIn" style="padding:25px">Please login to access this information</div>
   <ul class="listLight">
     <li *ngFor="let team of PERRINNTeamBalance | async"
-      [class.selected]="team.$key === selectedTeamID"
-      (click)="selectedTeamID = team.$key;db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
+      [class.selected]="team.$key === UI.currentTeam"
+      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
+      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
       <div style="width:80px;height:25px;float:left; text-align:right;">{{team.balance | number:'1.2-2'}}</div>
     </li>
@@ -41,43 +40,31 @@ import { Router } from '@angular/router'
   `,
 })
 export class COINinfoComponent {
-  currentUserID: string;
-  focusUserID: string;
   firstName: string;
   lastName: string;
   resume: string;
   photoURL: string;
   editMode: boolean;
-  currentTeamID: string;
   memberStatus: string;
   leaderStatus: boolean;
   messageCancelMembership: string;
   ownProfile: boolean;
   PERRINNTeamBalance: FirebaseListObservable<any>;
-  selectedTeamID: string;
   totalCOIN: number;
   sheetNumber: number;
   teamNumberDisplay: number;
-  loggedIn: boolean;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.teamNumberDisplay=25;
     this.sheetNumber=1;
-    this.afAuth.authState.subscribe((auth) => {
-      if (auth==null){this.loggedIn=false}
-      else {
-        this.loggedIn=true;
-        this.currentUserID = auth.uid;
-        this.PERRINNTeamBalance = db.list('PERRINNTeamBalance/', {
-          query:{
-            orderByChild:'balanceNegative',
-            limitToFirst: this.teamNumberDisplay,
-          }
-        });
-        this.db.object('PERRINNStatistics/totalCOIN').subscribe(totalCOIN => {
-          this.totalCOIN = totalCOIN.$value;
-        });
+    this.PERRINNTeamBalance = db.list('PERRINNTeamBalance/', {
+      query:{
+        orderByChild:'balanceNegative',
+        limitToFirst: this.teamNumberDisplay,
       }
+    });
+    this.db.object('PERRINNStatistics/totalCOIN').subscribe(totalCOIN => {
+      this.totalCOIN = totalCOIN.$value;
     });
   }
 

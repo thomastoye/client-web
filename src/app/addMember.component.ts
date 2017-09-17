@@ -4,6 +4,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router';
+import { userInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'addMember',
@@ -19,30 +20,19 @@ import { Router } from '@angular/router';
       {{user.lastName}}
     </li>
   </ul>
-  <button (click)="addMember(currentTeamID, selectedUserID)">Add this member {{messageAddMember}}</button>
+  <button (click)="addMember(IU.currentTeam, selectedUserID)">Add this member {{messageAddMember}}</button>
   </div>
   `,
 })
 
 export class AddMemberComponent  {
 
-  currentTeam: FirebaseObjectObservable<any>;
-  currentTeamID: string;
   selectedUserID: string;
   users: FirebaseListObservable<any>;
   filter: string;
   messageAddMember: string;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
-    this.afAuth.authState.subscribe((auth) => {
-      if (auth==null){}
-      else {
-        this.db.object('userInterface/'+auth.uid).subscribe(userInterface => {
-          this.currentTeamID = userInterface.currentTeam;
-          this.currentTeam = db.object('teams/' + this.currentTeamID);
-        });
-      }
-    });
+  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
   }
 
   ngOnInit () {

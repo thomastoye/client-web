@@ -3,9 +3,7 @@ import { Router } from '@angular/router'
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
-
-
-
+import { userInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'login',
@@ -15,7 +13,7 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
       <div class="form">
         <form>
           <img (error)="errorHandler($event)" src="./../assets/App icons/PERRINN logo.png" style="width:100%; padding-bottom:10px">
-          <div [hidden]="loggedIn">
+          <div [hidden]="UI.currentUser!=null">
           <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser">{{newUser?"Already have an account?":"Need a new account?"}}</div>
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *"/>
           <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *"/>
@@ -27,12 +25,8 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
           <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register {{messageRegister}}</button>
           </div>
           </div>
-          <div [hidden]="!loggedIn">
+          <div [hidden]="UI.currentUser==null">
           <button type="button" (click)="logout()">Logout {{messageLogout}}</button>
-          <div [hidden]="emailVerified">
-          <div style="font-size:10px">You need to verify your email address. An email has been sent to you. After clicking the link in the email, you need to logout and login to complete the setup.</div>
-          <button type="button" (click)="sendEmailVerification()">Resend email verification {{messageVerification}}</button>
-          </div>
           </div>
         </form>
       </div>
@@ -44,7 +38,6 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
 
 export class LoginComponent  {
 
-  currentUserID: string;
   email: string;
   password: string;
   passwordConfirm: string;
@@ -56,40 +49,16 @@ export class LoginComponent  {
   messageVerification: string;
   messageLogout: string;
   messageLogin: string;
-  loggedIn: boolean;
-  emailVerified: boolean;
   newUser: boolean;
 
-  constructor(
-    public router: Router,
-    public afAuth: AngularFireAuth,
-    public db: AngularFireDatabase
-  ) {
+  constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase,  public UI: userInterfaceService) {
     this.photoURL="./../assets/App icons/me.png";
     this.newUser = false;
-    this.afAuth.authState.subscribe((auth) => {
-        if (auth == null) {
-          this.currentUserID="";
-          this.loggedIn = false;
-          this.emailVerified = true;
-          this.db.object('appSettings/').subscribe(appSettings=>{
-            document.getElementById('login').style.backgroundImage = 'url(' + appSettings.loginBackgroundImage + ')';
-          });
-        }
-        else {
-          this.currentUserID=auth.uid;
-          this.loggedIn = true;
-          this.db.object('appSettings/').subscribe(appSettings=>{
-            document.getElementById('login').style.backgroundImage = 'url(' + appSettings.loginBackgroundImage + ')';
-          });
-          if (!auth.emailVerified) {
-            this.emailVerified = false;
-          }
-          else {
-            this.emailVerified = true;
-            this.router.navigate(['teamProfile']);
-          }
-        }
+  }
+
+  ngOnInit () {
+    this.db.object('appSettings/').subscribe(appSettings=>{
+      document.getElementById('login').style.backgroundImage = 'url(' + appSettings.loginBackgroundImage + ')';
     });
   }
 
@@ -124,7 +93,6 @@ export class LoginComponent  {
           this.db.object('users/' + auth.uid).update({firstName: firstName, lastName: lastName, photoURL: photoURL, createdTimestamp: firebase.database.ServerValue.TIMESTAMP})
           .catch(err => this.messageRegister="Error: We couldn't save your profile")
           .then(_ => {
-            this.sendEmailVerification();
             this.messageRegister="Successful registered";
             var teamName = "team " + firstName;
             this.createNewTeam(auth.uid, teamName);
@@ -132,13 +100,6 @@ export class LoginComponent  {
         });
       });
     }
-  }
-
-  sendEmailVerification() {
-    this.clearAllMessages ();
-    firebase.auth().currentUser.sendEmailVerification()
-    .then(_ => this.messageVerification="An email has been sent to you")
-    .catch(err => this.messageVerification="Error: You need to login or register first");
   }
 
   createNewTeam(userID: string, teamName: string) {

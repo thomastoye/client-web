@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
+import { userInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'createTeam',
@@ -16,7 +16,7 @@ import { Router } from '@angular/router'
   <img src="./../assets/App icons/camera.png" style="width:25px">
   <span class="tipText">Max 3.0Mb</span>
   </label>
-  <button *ngIf="photoURL!=null" (click)="createNewTeam(currentUserID, newTeam)">Create team</button>
+  <button *ngIf="photoURL!=null" (click)="createNewTeam(UI.currentUser,newTeam)">Create team</button>
   </div>
   <div style="float: right; width: 50%;">
   <img *ngIf="photoURL!=null" [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
@@ -25,18 +25,10 @@ import { Router } from '@angular/router'
   `,
 })
 export class CreateTeamComponent {
-  currentUser: FirebaseObjectObservable<any>;
-  currentUserID: string;
   photoURL: string;
   newTeam: string;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
-    this.afAuth.authState.subscribe((auth) => {
-      if (auth==null){}
-      else {
-        this.currentUserID = auth.uid;
-      }
-    });
+  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService) {
   }
 
   ngOnInit () {
@@ -49,7 +41,7 @@ export class CreateTeamComponent {
     this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
     this.db.object('teams/'+teamID).update({name: teamName, photoURL: this.photoURL, organisation: "Family and Friends"});
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    this.db.object('userInterface/' + userID).update({currentTeam: teamID});
+    this.UI.currentTeam=teamID;
     this.router.navigate(['teamProfile']);
   }
 

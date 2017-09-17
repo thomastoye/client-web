@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
+import { userInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'wallet',
@@ -21,7 +21,7 @@ import { Router } from '@angular/router'
     <div style="color: black;">COINS</div>
     </div>
     </div>
-    <button [hidden]='!getUserMember(currentTeamID)' (click)="this.router.navigate(['createTransaction'])" style="width:100px;float:left">Send COINS</button>
+    <button [hidden]='!getUserMember(UI.currentTeam)' (click)="this.router.navigate(['createTransaction'])" style="width:100px;float:left">Send COINS</button>
     <button type="button" (click)="router.navigate(['buyCoins'])" style="float:left;width:100px;background-color:#43c14b">Buy COINS</button>
     <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['COINinfo'])">COIN info</div>
   </div>
@@ -64,7 +64,7 @@ import { Router } from '@angular/router'
       </div>
       <div style="float:right">
       <div [hidden]='!moreButtons'>
-      <div class="button" (click)="cancelTransaction(currentTeamID, selectedTransactionID)">Cancel</div>
+      <div class="button" (click)="cancelTransaction(UI.currentTeam, selectedTransactionID)">Cancel</div>
       </div>
       </div>
     </li>
@@ -85,8 +85,8 @@ import { Router } from '@angular/router'
       </div>
       <div style="float:right">
       <div [hidden]='!moreButtons'>
-      <div class="button" (click)="cancelTransactionRequest(currentTeamID, selectedTransactionRequestID)">Cancel</div>
-      <div class="button" [hidden]='!isUserLeader' (click)="approveTransactionRequest(currentTeamID, selectedTransactionRequestID)">Approve</div>
+      <div class="button" (click)="cancelTransactionRequest(UI.currentTeam, selectedTransactionRequestID)">Cancel</div>
+      <div class="button" [hidden]='!isUserLeader' (click)="approveTransactionRequest(UI.currentTeam, selectedTransactionRequestID)">Approve</div>
       </div>
       </div>
     </li>
@@ -104,47 +104,30 @@ currentBalance: number;
 message: string;
 selectedTransactionID: string;
 selectedTransactionRequestID: string;
-currentTeamID: string;
 moreButtons: boolean;
-currentUserID: string;
 isUserLeader: boolean;
 teamName: string;
 
-constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
   this.moreButtons = false;
   this.currentBalance = 0;
-  this.afAuth.authState.subscribe((auth) => {
-    if (auth==null){
-      this.teamTransactions=null;
-      this.teamTransactionRequests=null;
-      this.PERRINNTransactionsOUT=null;
-      this.PERRINNTransactionsIN=null;
-      this.isUserLeader = false;
-    }
-    else {
-      this.currentUserID = auth.uid;
-      db.object('userInterface/'+auth.uid+'/currentTeam').subscribe( currentTeamID => {
-        this.currentTeamID = currentTeamID.$value;
-        this.db.object('teams/' + this.currentTeamID).subscribe (team=>{
-          this.teamName = team.name;
-        });
-        this.getTeamWalletBalance(this.currentTeamID).then(balance=>{
-          this.currentBalance = Number(balance);
-        });
-        this.db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(user => {
-          this.isUserLeader = user.leader;
-        });
-        this.teamTransactions = db.list('teamTransactions/'+currentTeamID.$value, {
-          query:{orderByChild:'status',equalTo: "pending"}
-        });
-        this.teamTransactionRequests = db.list('teamTransactionRequests/'+currentTeamID.$value, {
-          query:{orderByChild:'status',equalTo: "pending"}
-        });
-        this.PERRINNTransactionsOUT = db.list('PERRINNTransactions/',{query:{orderByChild:'sender',equalTo:this.currentTeamID}});
-        this.PERRINNTransactionsIN = db.list('PERRINNTransactions/',{query:{orderByChild:'receiver',equalTo:this.currentTeamID}});
-      });
-    }
+  this.db.object('teams/' + this.UI.currentTeam).subscribe (team=>{
+    this.teamName = team.name;
   });
+  this.getTeamWalletBalance(this.UI.currentTeam).then(balance=>{
+    this.currentBalance = Number(balance);
+  });
+  this.db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(user => {
+    this.isUserLeader = user.leader;
+  });
+  this.teamTransactions = db.list('teamTransactions/'+UI.currentTeam, {
+    query:{orderByChild:'status',equalTo: "pending"}
+  });
+  this.teamTransactionRequests = db.list('teamTransactionRequests/'+UI.currentTeam, {
+    query:{orderByChild:'status',equalTo: "pending"}
+  });
+  this.PERRINNTransactionsOUT = db.list('PERRINNTransactions/',{query:{orderByChild:'sender',equalTo:this.UI.currentTeam}});
+  this.PERRINNTransactionsIN = db.list('PERRINNTransactions/',{query:{orderByChild:'receiver',equalTo:this.UI.currentTeam}});
 }
 
 getTeamWalletBalance (teamID:string) {
@@ -218,7 +201,7 @@ clearAllMessages () {
 
 getUserMember (ID: string) :boolean {
   var output;
-  this.db.object('teamUsers/' + ID + '/' + this.currentUserID).subscribe(snapshot => {
+  this.db.object('teamUsers/' + ID + '/' + this.UI.currentUser).subscribe(snapshot => {
     output = snapshot.member;
   });
   return output;

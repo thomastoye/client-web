@@ -4,19 +4,18 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
+import { userInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'userProfile',
   template: `
   <div class="sheet">
-  <div style="float: left; width: 60%;">
+  <div style="float: left; width: 70%;">
   <div class="buttonDiv" *ngIf='!editMode' style="border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=true">Edit</div>
-  <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=false;updateUserProfile()">Save profile</div>
-  <div [hidden]="!leaderStatus" class="leaderStatus">{{memberStatus}}</div>
-  <div [hidden]="leaderStatus" class="memberStatus">{{memberStatus}}</div>
+  <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=false;updateUserProfile()">Done</div>
   <div [hidden]='editMode'>
   <div class='title'>{{firstName}} {{lastName}}</div>
-  <div style="padding:10px;" [innerHTML]="resume | linky"></div>
+  <div style="padding:10px;font-size:12px;line-height:15px" [innerHTML]="resume | linky"></div>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -24,8 +23,8 @@ import { Router } from '@angular/router'
   <textarea class="textAreaInput" maxlength="140" [(ngModel)]="resume" placeholder="Your resume (140 characters max) *"></textarea>
   </div>
   </div>
-  <div style="float: right; width: 40%;position:relative">
-  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:175px; width:100%" (click)="showFullScreenImage(photoURL)">
+  <div style="float: right; width: 30%;position:relative">
+  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;width:100%" (click)="showFullScreenImage(photoURL)">
   <div *ngIf="!isImageOnFirebase" [hidden]='!ownProfile' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
@@ -36,16 +35,16 @@ import { Router } from '@angular/router'
   </div>
   </div>
   </div>
-  <div class="buttonDiv" style="color:red;width:325px" [hidden]='!editMode' (click)="unfollow(currentTeamID)">Stop following {{getTeamName(currentTeamID)}}</div>
+  <div class="buttonDiv" style="color:red;width:325px" [hidden]='!editMode' (click)="unfollow(UI.currentTeam)">Stop following {{getTeamName(UI.currentTeam)}}</div>
   <div class='sheet' style="margin-top:10px">
   <div class="title" style="float:left">Leader</div>
-  <div class="buttonDiv" *ngIf="currentUserID==focusUserID" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
+  <div class="buttonDiv" *ngIf="ownProfile" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
-      [class.selected]="team.$key === currentTeamID"
-      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
-      <div *ngIf="getUserLeader(team.$key,focusUserID)">
-      <div style="display: inline; float: left; height:30px; width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])">
+      [class.selected]="team.$key === UI.currentTeam"
+      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
+      <div *ngIf="getUserLeader(team.$key,UI.focusUser)">
+      <div style="display: inline; float: left; height:30px; width:30px" (click)="UI.currentTeam=team.$key;router.navigate(['chat'])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px">
@@ -59,11 +58,11 @@ import { Router } from '@angular/router'
   <div class="title" style="float:left">Member</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
-      [class.selected]="team.$key === currentTeamID"
-      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
-      <div *ngIf="!getUserLeader(team.$key,focusUserID)">
+      [class.selected]="team.$key === UI.currentTeam"
+      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
+      <div *ngIf="!getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="getUserMember(team.$key)">
-      <div style="display: inline; float: left; height:30px; width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])">
+      <div style="display: inline; float: left; height:30px; width:30px" (click)="UI.currentTeam=team.$key;router.navigate(['chat'])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px">
@@ -78,11 +77,11 @@ import { Router } from '@angular/router'
   <div class="title" style="float:left">Following</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
-      [class.selected]="team.$key === currentTeamID"
-      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
-      <div *ngIf="!getUserLeader(team.$key,focusUserID)">
+      [class.selected]="team.$key === UI.currentTeam"
+      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
+      <div *ngIf="!getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="!getUserMember(team.$key)">
-      <div style="display: inline; float: left; height:30px; width:30px" (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['chat'])">
+      <div style="display: inline; float: left; height:30px; width:30px" (click)="UI.currentTeam=team.$key;router.navigate(['chat'])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px">
@@ -93,61 +92,36 @@ import { Router } from '@angular/router'
     </li>
   </ul>
   </div>
-  <div class='sheet' *ngIf="currentUserID==focusUserID" style="margin-top:10px">
+  <div class='sheet' *ngIf="ownProfile" style="margin-top:10px">
   <div class="buttonDiv" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
   </div>
   `,
 })
 export class UserProfileComponent {
-  currentUserID: string;
-  focusUserID: string;
   firstName: string;
   lastName: string;
   resume: string;
   photoURL: string;
   editMode: boolean;
-  currentTeamID: string;
-  memberStatus: string;
-  leaderStatus: boolean;
   ownProfile: boolean;
   userTeams: FirebaseListObservable<any>;
   isImageOnFirebase: boolean;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+    if (!this.UI.focusUser) this.router.navigate(['login']);
     this.editMode = false;
-    this.afAuth.authState.subscribe((auth) => {
-      if (auth==null){}
-      else {
-        this.currentUserID = auth.uid;
-        db.object('userInterface/'+auth.uid).subscribe(userInterface=>{
-          this.currentTeamID = userInterface.currentTeam;
-          this.focusUserID = userInterface.focusUser;
-          this.ownProfile = (this.currentUserID == this.focusUserID);
-          db.object('users/' + this.focusUserID).subscribe(focusUser => {
-            this.firstName = focusUser.firstName;
-            this.lastName = focusUser.lastName;
-            this.resume = focusUser.resume;
-            this.photoURL = focusUser.photoURL;
-            this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
-            db.object('teamUsers/' + this.currentTeamID+"/"+this.focusUserID).subscribe(teamFocusUser => {
-              db.object('userTeams/'+this.focusUserID+'/'+this.currentTeamID).subscribe(focusUserTeam=>{
-                this.leaderStatus = teamFocusUser.leader;
-                if (focusUserTeam.following) {
-                  this.memberStatus = teamFocusUser.leader ? "Leader" : "Member";
-                }
-                else {
-                  this.memberStatus = teamFocusUser.leader ? "Leader (Not Following)" : "Member (Not Following)";
-                }
-              });
-            });
-          });
-          this.userTeams = db.list('userTeams/' + this.focusUserID, {
-            query:{
-              orderByChild:'following',
-              equalTo: true,
-            }
-          });
-        });
+    this.ownProfile = (this.UI.currentUser==this.UI.focusUser);
+    db.object('users/'+this.UI.focusUser).subscribe(focusUser => {
+      this.firstName = focusUser.firstName;
+      this.lastName = focusUser.lastName;
+      this.resume = focusUser.resume;
+      this.photoURL = focusUser.photoURL;
+      if(this.photoURL!=null) this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
+    });
+    this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
+      query:{
+        orderByChild:'following',
+        equalTo: true,
       }
     });
   }
@@ -161,7 +135,7 @@ export class UserProfileComponent {
   updateUserProfile() {
     this.firstName = this.firstName.toLowerCase();
     this.lastName = this.lastName.toLowerCase();
-    this.db.object('users/'+this.focusUserID).update({
+    this.db.object('users/'+this.UI.focusUser).update({
       firstName: this.firstName, lastName: this.lastName, photoURL: this.photoURL, resume: this.resume
     });
     this.editMode=false;
@@ -223,7 +197,7 @@ export class UserProfileComponent {
 
   getChatActivity (ID: string) :boolean {
     var output = false;
-    this.db.object('userTeams/' + this.currentUserID + '/' + ID).subscribe(userTeam => {
+    this.db.object('userTeams/' + this.UI.currentUser + '/' + ID).subscribe(userTeam => {
       this.db.object('teamActivities/' + ID).subscribe(teamActivities => {
         output = teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp;
       });
@@ -232,12 +206,12 @@ export class UserProfileComponent {
   }
 
   unfollow(teamID: string) {
-    this.db.object('userTeams/'+this.currentUserID+'/'+teamID).update({following:false});
+    this.db.object('userTeams/'+this.UI.currentUser+'/'+teamID).update({following:false});
   }
 
   getUserMember (ID: string) :boolean {
     var output;
-    this.db.object('teamUsers/' + ID + '/' + this.focusUserID).subscribe(snapshot => {
+    this.db.object('teamUsers/' + ID + '/' + this.UI.focusUser).subscribe(snapshot => {
       output = snapshot.member;
     });
     return output;

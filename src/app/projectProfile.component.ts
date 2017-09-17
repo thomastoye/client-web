@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
+import { userInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'projecProfile',
@@ -13,11 +13,12 @@ import { Router } from '@angular/router'
   <div [hidden]='editMode'>
   <div class='title' style="float:left">{{name}}</div>
   <div class="buttonDiv" style="border-style:none;float:left" [hidden]='!teamAndProjectLeader' (click)="editMode=true">Edit</div>
+  <div class="buttonDiv" *ngIf="!getTeamFollowing(UI.currentTeam,UI.focusProject)" (click)="followProject(UI.focusProject, UI.currentTeam)">Follow</div>
   <div style="clear:both"></div>
   <div style="padding:10px;" [innerHTML]="goal | linky"></div>
   </div>
   <div [hidden]='!editMode'>
-  <div class="buttonDiv" style="color:green;border-style:none;float:left" (click)="editMode=false;updateProjectProfile()">Save profile</div>
+  <div class="buttonDiv" style="color:green;border-style:none;float:left" (click)="editMode=false;updateProjectProfile()">Done</div>
   <div style="clear:both"></div>
   <input maxlength="25" [(ngModel)]="name" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
   <textarea class="textAreaInput" maxlength="140" [(ngModel)]="goal" placeholder="Project goal (500 characters max) *"></textarea>
@@ -40,25 +41,22 @@ import { Router } from '@angular/router'
   <div class="title">{{name}} teams</div>
   <ul class="listLight">
     <li *ngFor="let team of projectTeams | async"
-      [class.selected]="team.$key === currentTeamID"
-      (click)="db.object('userInterface/'+currentUserID).update({currentTeam: team.$key});router.navigate(['teamProfile'])">
+      [class.selected]="team.$key === UI.currentTeam"
+      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,currentUserID)?"*":""}}</div>
-      <div style="width:300px;height:25px;float:left;">{{getTeamName(team.$key)}}{{(getTeamLeader(currentProjectID,team.$key)? " **" : "")}}{{getTeamFollowing(team.$key,currentProjectID)?"":" (Not Following)"}}</div>
-      <button [hidden]='!teamAndProjectLeader' *ngIf="editMode" style="float:right" (click)="db.object('projectTeams/'+currentProjectID+'/'+team.$key).update({member:false,leader:false});" style="background-color:red">Remove</button>
+      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
+      <div style="width:300px;height:25px;float:left;">{{getTeamName(team.$key)}}{{(getTeamLeader(UI.focusProject,team.$key)? " **" : "")}}{{getTeamFollowing(team.$key,UI.focusProject)?"":" (Not Following)"}}</div>
+      <button [hidden]='!teamAndProjectLeader' *ngIf="editMode" style="float:right" (click)="db.object('projectTeams/'+UI.focusProject+'/'+team.$key).update({member:false,leader:false});" style="background-color:red">Remove</button>
     </li>
   </ul>
   </div>
   `,
 })
 export class ProjectProfileComponent {
-  currentUserID: string;
-  currentProjectID: string;
   name: string;
   goal: string;
   photoURL: string;
   editMode: boolean;
-  currentTeamID: string;
   memberStatus: string;
   leaderStatus: boolean;
   messageCancelMembership: string;
@@ -66,34 +64,24 @@ export class ProjectProfileComponent {
   projectTeams: FirebaseListObservable<any>;
   isImageOnFirebase: boolean;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
-    this.afAuth.authState.subscribe((auth) => {
-      if (auth==null){}
-      else {
-        this.currentUserID = auth.uid;
-        db.object('userInterface/'+auth.uid).subscribe(userInterface=>{
-          this.currentTeamID = userInterface.currentTeam;
-          this.currentProjectID = userInterface.focusProject;
-          this.messageCancelMembership = ""
-          db.object('projects/' + this.currentProjectID).subscribe(focusProject => {
-            this.name = focusProject.name;
-            this.goal = focusProject.goal;
-            this.photoURL = focusProject.photoURL;
-            this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
-            this.editMode = false;
-            db.object('projectTeams/'+this.currentProjectID+'/'+this.currentTeamID).subscribe(projectTeam => {
-              db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(teamUser => {
-                this.teamAndProjectLeader=(teamUser.leader && projectTeam.leader);
-              });
-            });
-          });
-          this.projectTeams = db.list('projectTeams/' + this.currentProjectID, {
-            query:{
-              orderByChild:'member',
-              equalTo: true,
-            }
-          });
+  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService) {
+    this.messageCancelMembership = ""
+    db.object('projects/' + this.UI.focusProject).subscribe(focusProject => {
+      this.name = focusProject.name;
+      this.goal = focusProject.goal;
+      this.photoURL = focusProject.photoURL;
+      if(this.photoURL!=null) this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
+      this.editMode = false;
+      db.object('projectTeams/'+this.UI.focusProject+'/'+this.UI.currentTeam).subscribe(projectTeam => {
+        db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(teamUser => {
+          this.teamAndProjectLeader=(teamUser.leader && projectTeam.leader);
         });
+      });
+    });
+    this.projectTeams = db.list('projectTeams/' + this.UI.focusProject, {
+      query:{
+        orderByChild:'member',
+        equalTo: true,
       }
     });
   }
@@ -106,7 +94,7 @@ export class ProjectProfileComponent {
 
   updateProjectProfile() {
     this.name = this.name.toUpperCase();
-    this.db.object('projects/'+this.currentProjectID).update({
+    this.db.object('projects/'+this.UI.focusProject).update({
       name: this.name, photoURL: this.photoURL, goal: this.goal
     });
     this.editMode=false;
@@ -156,6 +144,10 @@ export class ProjectProfileComponent {
       output = snapshot.photoURL;
     });
     return output;
+  }
+
+  followProject (projectID: string, teamID: string) {
+    this.db.object('teamProjects/'+teamID+'/'+projectID).update({following: true});
   }
 
   onImageChange(event) {

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
+import { userInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'createTransaction',
@@ -28,11 +28,7 @@ import { Router } from '@angular/router'
   `,
 })
 export class CreateTransactionComponent {
-  currentUser: FirebaseObjectObservable<any>;
-  currentUserID: string;
   photoURL: string;
-  currentTeam: FirebaseObjectObservable<any>;
-  currentTeamID: string;
   userTeams: FirebaseListObservable<any>;
   transactionReference: string;
   transactionAmount: number;
@@ -42,31 +38,20 @@ export class CreateTransactionComponent {
   transactionInputValid: boolean;
   isUserLeader: boolean;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router) {
+  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService) {
     this.transactionInputValid = false;
     this.isUserLeader = false;
     this.currentBalance = 0;
-    this.afAuth.authState.subscribe((auth) => {
-      if (auth==null){
-        this.userTeams=null;
-      }
-      else {
-        db.object('userInterface/'+auth.uid).subscribe( userInterface => {
-          this.currentUserID = auth.uid;
-          this.currentTeamID = userInterface.currentTeam;
-          this.getTeamWalletBalance(this.currentTeamID).then(balance=>{
-            this.currentBalance = Number(balance);
-          });
-          this.db.object('teamUsers/'+this.currentTeamID+'/'+this.currentUserID).subscribe(user => {
-            this.isUserLeader = user.leader;
-          });
-          this.userTeams = db.list('userTeams/'+auth.uid, {
-            query:{
-              orderByChild:'following',
-              equalTo: true,
-            }
-          });
-        });
+    this.getTeamWalletBalance(this.UI.currentTeam).then(balance=>{
+      this.currentBalance = Number(balance);
+    });
+    this.db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(user => {
+      this.isUserLeader = user.leader;
+    });
+    this.userTeams = db.list('userTeams/'+this.UI.currentUser, {
+      query:{
+        orderByChild:'following',
+        equalTo: true,
       }
     });
   }
@@ -110,7 +95,7 @@ export class CreateTransactionComponent {
 
   getUserLeader (ID: string) :boolean {
     var output;
-    this.db.object('teamUsers/'+ID+'/'+this.currentUserID).subscribe(snapshot => {
+    this.db.object('teamUsers/'+ID+'/'+this.UI.currentUser).subscribe(snapshot => {
       output = snapshot.leader;
     });
     return output;
@@ -118,7 +103,7 @@ export class CreateTransactionComponent {
 
   createTransaction() {
     if (this.isUserLeader) {
-      this.db.list('teamTransactions/'+this.currentTeamID).push({
+      this.db.list('teamTransactions/'+this.UI.currentTeam).push({
         reference: this.transactionReference,
         amount: this.transactionAmount,
         receiver: this.selectedTeamID,
@@ -129,7 +114,7 @@ export class CreateTransactionComponent {
       .catch(err => this.messageCreateTransaction="Error");
     }
     else {
-      this.db.list('teamTransactionRequests/'+this.currentTeamID).push({
+      this.db.list('teamTransactionRequests/'+this.UI.currentTeam).push({
         reference: this.transactionReference,
         amount: this.transactionAmount,
         receiver: this.selectedTeamID,
@@ -146,7 +131,7 @@ export class CreateTransactionComponent {
                                   this.transactionAmount!=null&&this.transactionAmount>0&&
                                   this.transactionAmount<=this.currentBalance&&
                                   this.selectedTeamID!=null&&this.selectedTeamID!=""&&
-                                  this.selectedTeamID!=this.currentTeamID);
+                                  this.selectedTeamID!=this.UI.currentTeam);
   }
 
   errorHandler(event) {
