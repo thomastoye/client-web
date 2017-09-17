@@ -20,7 +20,7 @@ import { userInterfaceService } from './userInterface.service';
       {{user.lastName}}
     </li>
   </ul>
-  <button (click)="addMember(IU.currentTeam, selectedUserID)">Add this member {{messageAddMember}}</button>
+  <button (click)="addMember(UI.currentTeam, selectedUserID)">Add this member {{messageAddMember}}</button>
   </div>
   `,
 })
