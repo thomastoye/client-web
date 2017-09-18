@@ -33,7 +33,7 @@ import { userInterfaceService } from './userInterface.service';
       <div class="cta"><a href='mailto:contactperrinn@gmail.com'>Contact PERRINN</a></div>
     </div>
   </div>
-  <ul class='listLight'>
+  <ul class='listLight' style="max-width:620px;display:block;margin:0 auto">
     <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="UI.focusProject=project.$key;router.navigate(['projectProfile'])">
       <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
       <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}</div>
