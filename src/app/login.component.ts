@@ -12,7 +12,7 @@ import { userInterfaceService } from './userInterface.service';
     <div class="module form-module">
       <div class="form">
         <form>
-          <img (error)="errorHandler($event)" src="./../assets/App icons/PERRINN logo.png" style="width:100%; padding-bottom:10px">
+          <img (error)="errorHandler($event)" src="./../assets/App icons/PERRINN logo.png" style="width:70%">
           <div [hidden]="UI.currentUser!=null">
           <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser">{{newUser?"Already have an account?":"Need a new account?"}}</div>
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *"/>
@@ -33,15 +33,12 @@ import { userInterfaceService } from './userInterface.service';
       <div class="cta"><a href='mailto:contactperrinn@gmail.com'>Contact PERRINN</a></div>
     </div>
   </div>
-  <div class='sheet' style="width:100%;max-width:100%">
-  <div class="title" style="float:left">Featured</div>
   <ul class='listLight'>
     <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="UI.focusProject=project.$key;router.navigate(['projectProfile'])">
       <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
       <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}</div>
     </li>
   </ul>
-  </div>
   `,
 })
 
@@ -69,12 +66,6 @@ export class LoginComponent  {
         orderByChild:'following',
         equalTo: true,
       }
-    });
-  }
-
-  ngOnInit () {
-    this.db.object('appSettings/').subscribe(appSettings=>{
-      document.getElementById('login').style.backgroundImage = 'url(' + appSettings.loginBackgroundImage + ')';
     });
   }
 

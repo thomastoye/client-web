@@ -22,11 +22,7 @@ body {
 }
 #login {
   width: 10000px;
-  padding: 25px 0 25px 0;
-  background: #2591c6;
-  background-size:cover;
-  background-position: center;
-  color: #666666;
+  padding: 10px 0 10px 0;
   font-family: 'RobotoDraft', 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -244,7 +240,7 @@ input {
   margin: 0 auto;
 }
 .form-module .form {
-  padding: 40px;
+  padding: 20px;
 }
 .form-module .top {
   background: #f2f2f2;
