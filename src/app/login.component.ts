@@ -33,6 +33,15 @@ import { userInterfaceService } from './userInterface.service';
       <div class="cta"><a href='mailto:contactperrinn@gmail.com'>Contact PERRINN</a></div>
     </div>
   </div>
+  <div class='sheet' style="width:100%;max-width:100%">
+  <div class="title" style="float:left">Featured</div>
+  <ul class='listLight'>
+    <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="UI.focusProject=project.$key;router.navigate(['projectProfile'])">
+      <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
+      <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}</div>
+    </li>
+  </ul>
+  </div>
   `,
 })
 
@@ -50,10 +59,17 @@ export class LoginComponent  {
   messageLogout: string;
   messageLogin: string;
   newUser: boolean;
+  teamProjects: FirebaseListObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase,  public UI: userInterfaceService) {
     this.photoURL="./../assets/App icons/me.png";
     this.newUser = false;
+    this.teamProjects = this.db.list('teamProjects/-Kp0TqKyvqnFCnLryKC1', {
+      query:{
+        orderByChild:'following',
+        equalTo: true,
+      }
+    });
   }
 
   ngOnInit () {
@@ -116,6 +132,22 @@ export class LoginComponent  {
     this.messageLogout = "";
     this.messageRegister = "";
     this.messageVerification = "";
+  }
+
+  getProjectPhotoURL (ID: string) :string {
+    var output;
+    this.db.object('projects/' + ID).subscribe(snapshot => {
+      output = snapshot.photoURL;
+    });
+    return output;
+  }
+
+  getProjectName (ID: string) :string {
+    var output;
+    this.db.object('projects/' + ID).subscribe(snapshot => {
+      output = snapshot.name;
+    });
+    return output;
   }
 
   errorHandler(event) {
