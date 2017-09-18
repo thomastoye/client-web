@@ -12,7 +12,7 @@ import { userInterfaceService } from './userInterface.service';
   <div style="float: left; width: 60%;">
   <div [hidden]='editMode'>
   <div class='title' style="float:left">{{name}}</div>
-  <div class="buttonDiv" style="border-style:none;float:left" [hidden]='!teamAndProjectLeader' (click)="editMode=true">Edit</div>
+  <div class="buttonDiv" style="border-style:none;float:left" [hidden]='!projectLeader' (click)="editMode=true">Edit</div>
   <div class="buttonDiv" *ngIf="!getTeamFollowing(UI.currentTeam,UI.focusProject)" (click)="followProject(UI.focusProject, UI.currentTeam)">Follow</div>
   <div style="clear:both"></div>
   <div style="padding:10px;" [innerHTML]="goal | linky"></div>
@@ -27,7 +27,7 @@ import { userInterfaceService } from './userInterface.service';
   </div>
   <div style="float: right; width: 40%;position:relative">
   <img class="imageWithZoom" (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;object-fit:contain; height:200px; width:100%" (click)="showFullScreenImage(photoURL)">
-  <div *ngIf="!isImageOnFirebase" [hidden]='!teamAndProjectLeader' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
+  <div *ngIf="!isImageOnFirebase" [hidden]='!projectLeader' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="projectImage" id="buttonFile">
@@ -46,7 +46,7 @@ import { userInterfaceService } from './userInterface.service';
       <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
       <div style="width:300px;height:25px;float:left;">{{getTeamName(team.$key)}}{{(getTeamLeader(UI.focusProject,team.$key)? " **" : "")}}{{getTeamFollowing(team.$key,UI.focusProject)?"":" (Not Following)"}}</div>
-      <button [hidden]='!teamAndProjectLeader' *ngIf="editMode" style="float:right" (click)="db.object('projectTeams/'+UI.focusProject+'/'+team.$key).update({member:false,leader:false});" style="background-color:red">Remove</button>
+      <button [hidden]='!projectLeader' *ngIf="editMode" style="float:right" (click)="db.object('projectTeams/'+UI.focusProject+'/'+team.$key).update({member:false,leader:false});" style="background-color:red">Remove</button>
     </li>
   </ul>
   </div>
@@ -60,7 +60,8 @@ export class ProjectProfileComponent {
   memberStatus: string;
   leaderStatus: boolean;
   messageCancelMembership: string;
-  teamAndProjectLeader: boolean;
+  projectLeader: boolean;
+  leaderTeam: string;
   projectTeams: FirebaseListObservable<any>;
   isImageOnFirebase: boolean;
 
@@ -70,12 +71,11 @@ export class ProjectProfileComponent {
       this.name = focusProject.name;
       this.goal = focusProject.goal;
       this.photoURL = focusProject.photoURL;
+      this.leaderTeam = focusProject.leader;
       if(this.photoURL!=null) this.isImageOnFirebase = this.photoURL.substring(0,23)=='https://firebasestorage'
       this.editMode = false;
-      db.object('projectTeams/'+this.UI.focusProject+'/'+this.UI.currentTeam).subscribe(projectTeam => {
-        db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(teamUser => {
-          this.teamAndProjectLeader=(teamUser.leader && projectTeam.leader);
-        });
+      db.object('teamUsers/'+this.leaderTeam+'/'+this.UI.currentUser).subscribe(teamUser => {
+        this.projectLeader=(teamUser.member);
       });
     });
     this.projectTeams = db.list('projectTeams/' + this.UI.focusProject, {

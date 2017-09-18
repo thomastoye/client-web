@@ -98,3 +98,17 @@ exports.updateTeamBalance = functions.database.ref('/PERRINNTransactions/{transa
     });
   });
 });
+
+exports.updateProjectLeader = functions.database.ref('/projectTeams').onWrite(event => {
+  admin.database().ref('projectTeams/').once('value').then(projects=>{
+    projects.forEach(function(project){
+      admin.database().ref('projectTeams/'+project.key).once('value').then(projectTeams=>{
+        projectTeams.forEach(function(projectTeam){
+          if (projectTeam.val().leader) {
+            admin.database().ref('projects/'+project.key).update({leader:projectTeam.key});
+          }
+        });
+      });
+    });
+  });
+});
