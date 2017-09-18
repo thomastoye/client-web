@@ -13,7 +13,6 @@ import { userInterfaceService } from './userInterface.service';
   <div [hidden]='editMode'>
   <div class='title' style="float:left">{{name}}</div>
   <div class="buttonDiv" style="border-style:none;float:left" [hidden]='!projectLeader' (click)="editMode=true">Edit</div>
-  <div class="buttonDiv" *ngIf="!getTeamFollowing(UI.currentTeam,UI.focusProject)" (click)="followProject(UI.focusProject, UI.currentTeam)">Follow</div>
   <div style="clear:both"></div>
   <div style="padding:10px;" [innerHTML]="goal | linky"></div>
   </div>
@@ -144,10 +143,6 @@ export class ProjectProfileComponent {
       output = snapshot.photoURL;
     });
     return output;
-  }
-
-  followProject (projectID: string, teamID: string) {
-    this.db.object('teamProjects/'+teamID+'/'+projectID).update({following: true});
   }
 
   onImageChange(event) {
