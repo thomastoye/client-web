@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'COINinfo',
@@ -26,9 +27,9 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let team of PERRINNTeamBalance | async"
       [class.selected]="team.$key === UI.currentTeam"
       (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
-      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
-      <div style="width:200px;height:25px;float:left;">{{getTeamName(team.$key)}}</div>
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <div style="width:15px;height:25px;float:left;">{{DB.getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
+      <div style="width:200px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}</div>
       <div style="width:80px;height:25px;float:left; text-align:right;">{{team.balance | number:'1.2-2'}}</div>
     </li>
   </ul>
@@ -40,21 +41,12 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class COINinfoComponent {
-  firstName: string;
-  lastName: string;
-  resume: string;
-  photoURL: string;
-  editMode: boolean;
-  memberStatus: string;
-  leaderStatus: boolean;
-  messageCancelMembership: string;
-  ownProfile: boolean;
   PERRINNTeamBalance: FirebaseListObservable<any>;
   totalCOIN: number;
   sheetNumber: number;
   teamNumberDisplay: number;
 
-  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
     this.teamNumberDisplay=25;
     this.sheetNumber=1;
     this.PERRINNTeamBalance = db.list('PERRINNTeamBalance/', {
@@ -66,30 +58,6 @@ export class COINinfoComponent {
     this.db.object('PERRINNStatistics/totalCOIN').subscribe(totalCOIN => {
       this.totalCOIN = totalCOIN.$value;
     });
-  }
-
-  getUserLeader (teamID: string, userID: string) :string {
-    var output;
-    this.db.object('teamUsers/' + teamID + '/' + userID).subscribe(snapshot => {
-      output = snapshot.leader;
-    });
-    return output;
-  }
-
-  getTeamName (ID: string) :string {
-    var output;
-    this.db.object('teams/' + ID).subscribe(snapshot => {
-      output = snapshot.name;
-    });
-    return output;
-  }
-
-  getTeamPhotoURL (ID: string) :string {
-    var output;
-    this.db.object('teams/' + ID).subscribe(snapshot => {
-      output = snapshot.photoURL;
-    });
-    return output;
   }
 
   errorHandler(event) {

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'createTransaction',
@@ -18,17 +19,16 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let team of userTeams | async"
     [class.selected]="team.$key === selectedTeamID"
     (click)="selectedTeamID = team.$key;checkTransactionInput()">
-      <img (error)="errorHandler($event)"[src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      {{getTeamName(team.$key)}}{{ (getUserLeader(team.$key)? " *" : "")}}
+      <img (error)="errorHandler($event)"[src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      {{DB.getTeamName(team.$key)}}{{ (DB.getUserLeader(team.$key,UI.currentUser)? " *" : "")}}
     </li>
   </ul>
-  <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction{{isUserLeader?"":" (Team leader will have to approve) "}}{{messageCreateTransaction}}</button>
+  <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction{{DB.getUserLeader(UI.currentTeam,UI.currentUser)?"":" (Team leader will have to approve) "}}{{messageCreateTransaction}}</button>
   </div>
   </div>
   `,
 })
 export class CreateTransactionComponent {
-  photoURL: string;
   userTeams: FirebaseListObservable<any>;
   transactionReference: string;
   transactionAmount: number;
@@ -36,17 +36,12 @@ export class CreateTransactionComponent {
   messageCreateTransaction: string;
   currentBalance: number;
   transactionInputValid: boolean;
-  isUserLeader: boolean;
 
-  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService) {
+  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService) {
     this.transactionInputValid = false;
-    this.isUserLeader = false;
     this.currentBalance = 0;
     this.getTeamWalletBalance(this.UI.currentTeam).then(balance=>{
       this.currentBalance = Number(balance);
-    });
-    this.db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(user => {
-      this.isUserLeader = user.leader;
     });
     this.userTeams = db.list('userTeams/'+this.UI.currentUser, {
       query:{
@@ -77,32 +72,8 @@ export class CreateTransactionComponent {
     });
   }
 
-  getTeamName (ID: string) :string {
-    var output;
-    this.db.object('teams/' + ID).subscribe(snapshot => {
-      output = snapshot.name;
-    });
-    return output;
-  }
-
-  getTeamPhotoURL (ID: string) :string {
-    var output;
-    this.db.object('teams/' + ID).subscribe(snapshot => {
-      output = snapshot.photoURL;
-    });
-    return output;
-  }
-
-  getUserLeader (ID: string) :boolean {
-    var output;
-    this.db.object('teamUsers/'+ID+'/'+this.UI.currentUser).subscribe(snapshot => {
-      output = snapshot.leader;
-    });
-    return output;
-  }
-
   createTransaction() {
-    if (this.isUserLeader) {
+    if (this.DB.getUserLeader(this.UI.currentTeam,this.UI.currentUser)) {
       this.db.list('teamTransactions/'+this.UI.currentTeam).push({
         reference: this.transactionReference,
         amount: this.transactionAmount,

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'wallet',
@@ -13,7 +14,7 @@ import { userInterfaceService } from './userInterface.service';
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
     <div>
-    <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{teamName}}</div>
+    <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{DB.getTeamName(UI.currentTeam)}}</div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
     <div style="font-size: 25px;line-height:normal; color: black;">{{currentBalance | number:'1.2-2'}}</div>
     </div>
@@ -21,7 +22,7 @@ import { userInterfaceService } from './userInterface.service';
     <div style="color: black;">COINS</div>
     </div>
     </div>
-    <button [hidden]='!getUserMember(UI.currentTeam)' (click)="this.router.navigate(['createTransaction'])" style="width:100px;float:left">Send COINS</button>
+    <button [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' (click)="this.router.navigate(['createTransaction'])" style="width:100px;float:left">Send COINS</button>
     <button type="button" (click)="router.navigate(['buyCoins'])" style="float:left;width:100px;background-color:#43c14b">Buy COINS</button>
     <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['COINinfo'])">COIN info</div>
   </div>
@@ -32,7 +33,7 @@ import { userInterfaceService } from './userInterface.service';
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.verifiedTimestamp | date :'medium'}}</div>
       <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">From {{getTeamName(transaction.sender)}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">From {{DB.getTeamName(transaction.sender)}}</div>
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
     </ul>
@@ -44,7 +45,7 @@ import { userInterfaceService } from './userInterface.service';
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.verifiedTimestamp | date :'medium'}}</div>
       <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{getTeamName(transaction.receiver)}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{DB.getTeamName(transaction.receiver)}}</div>
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
     </li>
     </ul>
@@ -58,7 +59,7 @@ import { userInterfaceService } from './userInterface.service';
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.createdTimestamp | date :'medium'}}</div>
       <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{getTeamName(transaction.receiver)}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{DB.getTeamName(transaction.receiver)}}</div>
       <div style="float:right">
       <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
       </div>
@@ -79,14 +80,14 @@ import { userInterfaceService } from './userInterface.service';
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.requestedTimestamp | date :'medium'}}</div>
       <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{getTeamName(transaction.receiver)}}</div>
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{DB.getTeamName(transaction.receiver)}}</div>
       <div style="float:right">
       <div class="button" style="width:30px;border:none;font-size:15px" (click)="moreButtons=!moreButtons">...</div>
       </div>
       <div style="float:right">
       <div [hidden]='!moreButtons'>
       <div class="button" (click)="cancelTransactionRequest(UI.currentTeam, selectedTransactionRequestID)">Cancel</div>
-      <div class="button" [hidden]='!isUserLeader' (click)="approveTransactionRequest(UI.currentTeam, selectedTransactionRequestID)">Approve</div>
+      <div class="button" [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' (click)="approveTransactionRequest(UI.currentTeam, selectedTransactionRequestID)">Approve</div>
       </div>
       </div>
     </li>
@@ -105,20 +106,12 @@ message: string;
 selectedTransactionID: string;
 selectedTransactionRequestID: string;
 moreButtons: boolean;
-isUserLeader: boolean;
-teamName: string;
 
-constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
   this.moreButtons = false;
   this.currentBalance = 0;
-  this.db.object('teams/' + this.UI.currentTeam).subscribe (team=>{
-    this.teamName = team.name;
-  });
   this.getTeamWalletBalance(this.UI.currentTeam).then(balance=>{
     this.currentBalance = Number(balance);
-  });
-  this.db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(user => {
-    this.isUserLeader = user.leader;
   });
   this.teamTransactions = db.list('teamTransactions/'+UI.currentTeam, {
     query:{orderByChild:'status',equalTo: "pending"}
@@ -145,14 +138,6 @@ getTeamWalletBalance (teamID:string) {
       resolve (balance);
     });
   });
-}
-
-getTeamName (ID: string) :string {
-  var output;
-  this.db.object('teams/' + ID).subscribe(snapshot => {
-    output = snapshot.name;
-  });
-  return output;
 }
 
 cancelTransaction (teamID: string, transactionID: string) {
@@ -197,14 +182,6 @@ approveTransactionRequest (teamID: string, transactionID: string) {
 
 clearAllMessages () {
   this.message = "";
-}
-
-getUserMember (ID: string) :boolean {
-  var output;
-  this.db.object('teamUsers/' + ID + '/' + this.UI.currentUser).subscribe(snapshot => {
-    output = snapshot.member;
-  });
-  return output;
 }
 
 errorHandler(event) {

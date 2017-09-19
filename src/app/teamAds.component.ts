@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'teamAds',
@@ -12,9 +13,9 @@ import { userInterfaceService } from './userInterface.service';
   <ul class="listLight">
     <li [hidden]="!team.memberAdText" style='float:left;margin:10px' *ngFor="let team of teamAds | async"
       (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
-      <img (error)="errorHandler($event)" [src]="getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0; opacity: 1; object-fit: cover; height:100px; width:100px">
-      <div style="width:15px;height:25px;float:left;">{{getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
-      <div style="width:200px;height:25px;">{{getTeamName(team.$key)}}</div>
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0; opacity: 1; object-fit: cover; height:100px; width:100px">
+      <div style="width:15px;height:25px;float:left;">{{DB.getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
+      <div style="width:200px;height:25px;">{{DB.getTeamName(team.$key)}}</div>
       <div style="height:25px;color:#444">{{getTeamBalance(team.$key) | number:'1.2-2'}} COINS</div>
       <div style="height:25px;color:blue">{{team.memberAdTimestamp | date:'yMd'}}</div>
       <textarea class="textAreaAdvert" readonly rows="10" maxlength="500">{{team.memberAdText}}</textarea>
@@ -38,7 +39,7 @@ export class TeamAdsComponent {
   sheetNumber: number;
   teamNumberDisplay: number;
 
-  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService) {
+  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService) {
     this.teamNumberDisplay=25;
     this.sheetNumber=1;
     this.teamAds = db.list('teamAds/', {
@@ -51,30 +52,6 @@ export class TeamAdsComponent {
     this.db.object('PERRINNStatistics/totalCOIN').subscribe(totalCOIN => {
       this.totalCOIN = totalCOIN.$value;
     });
-  }
-
-  getUserLeader (teamID: string, userID: string) :string {
-    var output;
-    this.db.object('teamUsers/' + teamID + '/' + userID).subscribe(snapshot => {
-      output = snapshot.leader;
-    });
-    return output;
-  }
-
-  getTeamName (ID: string) :string {
-    var output;
-    this.db.object('teams/' + ID).subscribe(snapshot => {
-      output = snapshot.name;
-    });
-    return output;
-  }
-
-  getTeamPhotoURL (ID: string) :string {
-    var output;
-    this.db.object('teams/' + ID).subscribe(snapshot => {
-      output = snapshot.photoURL;
-    });
-    return output;
   }
 
   getTeamBalance (ID: string) :string {

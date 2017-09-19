@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'buyCoins',
@@ -59,8 +60,8 @@ import { userInterfaceService } from './userInterface.service';
       </ul>
       <div class="content" style="text-align:center; padding-top:20px">{{amountCharge/100 | number:'1.2-2'}} {{currentCurrencyID | uppercase}} to be paid.</div>
       <div style="text-align:center">
-        <button [hidden]='!isUserLeader' type="button" (click)="enteringAmount=false;enteringCardDetails=true">Proceed to payment</button>
-        <div class='content' [hidden]='isUserLeader' style='font-weight:bold'>You need to be leader to buy COINS for this team.</div>
+        <button [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' type="button" (click)="enteringAmount=false;enteringCardDetails=true">Proceed to payment</button>
+        <div class='content' [hidden]='DB.getUserLeader(UI.currentTeam,UI.currentUser)' style='font-weight:bold'>You need to be leader to buy COINS for this team.</div>
       </div>
     </div>
   </div>
@@ -69,7 +70,7 @@ import { userInterfaceService } from './userInterface.service';
   <div class="top">
   <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="enteringAmount=true;enteringCardDetails=false">back</div>
   <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:50px">
-  <div style="color:black">{{getTeamName(UI.currentTeam)}}</div>
+  <div style="color:black">{{DB.getTeamName(UI.currentTeam)}}</div>
   <div style="color:black;padding-bottom:15px">{{amountCOINSPurchased | number:'1.2-2'}} COINS</div>
   </div>
   <div class="form">
@@ -118,10 +119,8 @@ export class BuyCoinsComponent {
   sheetContent1: FirebaseObjectObservable<any>;
   sheetContent2: FirebaseObjectObservable<any>;
   sheetContent3: FirebaseObjectObservable<any>;
-  isUserLeader: boolean;
 
-  constructor(public db: AngularFireDatabase, public router: Router, private _zone: NgZone, public UI: userInterfaceService) {
-    this.isUserLeader = false;
+  constructor(public db: AngularFireDatabase, public router: Router, private _zone: NgZone, public UI: userInterfaceService, public DB: databaseService) {
     this.thinkingAboutIt = true;
     this.enteringAmount = false;
     this.enteringCardDetails = false;
@@ -135,9 +134,6 @@ export class BuyCoinsComponent {
     this.sheetContent2 = db.object('appSettings/howToUseCOIN');
     this.sheetContent3 = db.object('appSettings/whyBuyCOIN');
     this.currencyList = db.list('appSettings/currencyList');
-    this.db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(user => {
-      this.isUserLeader = user.leader;
-    });
   }
 
   processPayment() {
@@ -179,14 +175,6 @@ export class BuyCoinsComponent {
         }
       });
     });
-  }
-
-  getTeamName (ID: string) :string {
-    var output;
-    this.db.object('teams/' + ID).subscribe(snapshot => {
-      output = snapshot.name;
-    });
-    return output;
   }
 
   refreshAmountCharge () {

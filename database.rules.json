@@ -43,6 +43,7 @@
     },
     "teamAds": {
       ".read": "true",
+      ".indexOn": ["memberAdVisible"],
       "$teamid": {
         ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true"
       }

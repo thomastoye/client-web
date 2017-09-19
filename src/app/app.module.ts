@@ -26,6 +26,7 @@ import { LinksComponent }  from './links.component';
 import { LinkyModule } from 'angular-linky';
 
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -74,7 +75,10 @@ export const firebaseConfig = {
     LinkyModule,
     Ng2ImgMaxModule,
   ],
-  providers: [userInterfaceService],
+  providers: [
+    userInterfaceService,
+    databaseService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

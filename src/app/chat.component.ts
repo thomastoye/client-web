@@ -5,6 +5,7 @@ import 'firebase/storage';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, NavigationEnd } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'chat',
@@ -14,14 +15,14 @@ import { userInterfaceService } from './userInterface.service';
   <div>
   <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
-    <li *ngFor="let message of teamMessages | async ; let last = last ; let i = index">
+    <li *ngFor="let message of teamMessages | async ; let last = last">
     <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
     <div style="display: inline; float: left; height:35px; width:5px"></div>
     <div style="display: inline; float: left; height:35px; width:2px">
     <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red;"></div>
     </div>
-    <img (error)="errorHandler($event)" [src]="getPhotoURL(message.author)" style="cursor:pointer;display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="UI.focusUser=message.author;router.navigate(['userProfile'])">
-    <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{getFirstName(message.author)}}</div>
+    <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.author)" style="cursor:pointer;display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="UI.focusUser=message.author;router.navigate(['userProfile'])">
+    <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{DB.getUserFirstName(message.author)}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
     <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0;" (click)="showFullScreenImage(message.image)">
@@ -35,15 +36,15 @@ import { userInterfaceService } from './userInterface.service';
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style:none;float:left;">
     <li *ngFor="let author of draftMessageAuthors | async">
-    <div [hidden]="!author.draftMessage||author.$key==UI.currentUser" *ngIf="isDraftMessageRecent(author.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{getFirstName(author.$key)}}...</div>
+    <div [hidden]="!author.draftMessage||author.$key==UI.currentUser" *ngIf="isDraftMessageRecent(author.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{DB.getUserFirstName(author.$key)}}...</div>
     </li>
   </ul>
   <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-  <label class="buttonUploadImage" [hidden]='!currentUserIsMember' for="chatImage" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">
+  <label class="buttonUploadImage" [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' for="chatImage" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">
   <img src="./../assets/App icons/camera.png" style="width:25px">
   <span class="tipText">Max 3.0Mb</span>
   </label>
-  <textarea [hidden]='!currentUserIsMember' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
+  <textarea [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
     `,
@@ -58,20 +59,15 @@ export class ChatComponent {
   lastChatVisitTimestamp: number;
   scrollMessageTimestamp: number;
   previousMessageTimestamp: number;
-  currentUserIsMember: boolean;
 
-  constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+  constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
     this.previousMessageTimestamp=0;
     this.draftMessageDB=false;
     this.draftImage="";
     this.draftMessage="";
-    this.currentUserIsMember=false;
     this.messageNumberDisplay = 15;
     this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam, {query: {limitToLast: this.messageNumberDisplay}});
     this.draftMessageAuthors = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/');
-    this.db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(teamUser=>{
-      if (teamUser!=null && teamUser.member) {this.currentUserIsMember=true}
-    });
     this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
       this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
     });
@@ -133,22 +129,6 @@ export class ChatComponent {
       this.db.object('teamActivities/'+this.UI.currentTeam+'/draftMessages/'+this.UI.currentUser).update({draftMessage:this.draftMessage!="",draftMessageTimestamp:firebase.database.ServerValue.TIMESTAMP});
     }
     this.draftMessageDB=(this.draftMessage!="");
-  }
-
-  getFirstName (ID: string) :string {
-    var output;
-    this.db.object('users/'+ID).subscribe(snapshot => {
-      output = snapshot.firstName;
-    });
-    return output;
-  }
-
-  getPhotoURL (ID: string) :string {
-    var output;
-    this.db.object('users/'+ID).subscribe(snapshot => {
-      output = snapshot.photoURL;
-    });
-    return output;
   }
 
   errorHandler(event) {
