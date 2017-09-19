@@ -86,4 +86,19 @@ export class databaseService {
     this.db.object('userTeams/'+userID+'/'+teamID).subscribe(snapshot=>{output=snapshot.following});
     return output;
   }
+  getTeamLeader(projectID,teamID):string{
+    var output;
+    this.db.object('projectTeams/'+projectID+'/'+teamID).subscribe(snapshot=>{output=snapshot.leader});
+    return output;
+  }
+  getTeamMember(projectID,teamID):string{
+    var output;
+    this.db.object('projectTeams/'+projectID+'/'+teamID).subscribe(snapshot=>{output=snapshot.member});
+    return output;
+  }
+  getTeamFollowing(teamID,projectID):string{
+    var output;
+    this.db.object('teamProjects/'+teamID+'/'+projectID).subscribe(snapshot=>{output=snapshot.following});
+    return output;
+  }
 }
