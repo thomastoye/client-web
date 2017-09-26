@@ -350,6 +350,9 @@ progress::-webkit-progress-value {
   object-fit:contain;
   cursor: pointer;
 }
+.fullScreenImage:hover{
+  opacity: 1;
+}
 .imageWithZoom {
   cursor: pointer;
 }
@@ -401,4 +404,7 @@ iframe {
 }
 .appIcon:hover {
   background-color: #EEE;
+}
+img:hover {
+  opacity: 0.9;
 }
