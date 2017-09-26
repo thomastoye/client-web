@@ -45,10 +45,10 @@ import { databaseService } from './database.service';
       [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['team',team.$key])">
       <div *ngIf="DB.getUserLeader(team.$key,UI.focusUser)">
-      <div style="display: inline; float: left; height:30px; width:30px" (click)="router.navigate(['chat',team.$key])">
+      <div style="display: inline; float: left; height:40px; width:30px" (click)="router.navigate(['chat',team.$key])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px">
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:40px;width:60px">
       <div style="width:15px;height:25px;float:left;">*</div>
       <div style="width:200px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}</div>
       </div>
@@ -63,10 +63,10 @@ import { databaseService } from './database.service';
       (click)="router.navigate(['team',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="DB.getUserMember(team.$key,UI.focusUser)">
-      <div style="display: inline; float: left; height:30px; width:30px" (click)="router.navigate(['chat',team.$key])">
+      <div style="display: inline; float: left; height:40px; width:30px" (click)="router.navigate(['chat',team.$key])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px">
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:40px;width:60px">
       <div style="width:15px;height:25px;float:left;"></div>
       <div style="width:200px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}</div>
       </div>
@@ -82,10 +82,10 @@ import { databaseService } from './database.service';
       (click)="router.navigate(['team',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="!DB.getUserMember(team.$key,UI.focusUser)">
-      <div style="display: inline; float: left; height:30px; width:30px" (click)="router.navigate(['chat',team.$key])">
+      <div style="display: inline; float: left; height:40px; width:30px" (click)="router.navigate(['chat',team.$key])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px">
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:40px;width:60px">
       <div style="width:15px;height:25px;float:left;"></div>
       <div style="width:200px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}</div>
       </div>
