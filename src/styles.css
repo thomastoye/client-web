@@ -143,7 +143,7 @@ body {
   text-align:center;
   border-style:solid;
   border-width:thin;
-  border-radius:10px;
+  border-radius:4px;
   user-select: none;
 }
 button {

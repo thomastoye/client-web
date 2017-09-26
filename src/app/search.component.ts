@@ -15,7 +15,7 @@ import { userInterfaceService } from './userInterface.service';
   <div class="title">Users</div>
   <ul class="listLight">
     <li *ngFor="let user of users | async"
-      (click)="UI.focusUser=user.$key;router.navigate(['userProfile'])">
+      (click)="router.navigate(['user',user.$key])">
       <img (error)="errorHandler($event)"[src]="user.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{user.firstName}}
       {{user.lastName}}
@@ -26,7 +26,7 @@ import { userInterfaceService } from './userInterface.service';
   <div class="title">Teams</div>
   <ul class="listLight">
     <li *ngFor="let team of teams | async"
-      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile']);">
+      (click)="router.navigate(['team',team.$key]);">
       <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{team.name}}
     </li>
@@ -36,7 +36,7 @@ import { userInterfaceService } from './userInterface.service';
   <div class="title">Projects</div>
   <ul class="listLight">
     <li *ngFor="let project of projects | async"
-      (click)="UI.focusProject=project.$key;router.navigate(['projectProfile'])">
+      (click)="router.navigate(['project',project.$key])">
       <img (error)="errorHandler($event)"[src]="project.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{project.name}}
     </li>

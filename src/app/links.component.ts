@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 
 @Component({
@@ -37,16 +37,19 @@ export class LinksComponent  {
   currentUserIsMember: boolean;
   editMode: boolean;
 
-  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService) {
-    this.editMode = false;
-    this.currentUserIsMember=false;
-    this.db.object('teams/'+this.UI.currentTeam).subscribe (team=>{
-      this.teamName = team.name;
+  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, private route: ActivatedRoute) {
+    this.route.params.subscribe(params => {
+      this.UI.currentTeam=params['id'];
+      this.editMode = false;
+      this.currentUserIsMember=false;
+      this.db.object('teams/'+this.UI.currentTeam).subscribe (team=>{
+        this.teamName = team.name;
+      });
+      this.db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(teamUser=>{
+        if (teamUser!=null && teamUser.member) {this.currentUserIsMember=true}
+      });
+      this.teamLinks = db.list('teamLinks/'+this.UI.currentTeam);
     });
-    this.db.object('teamUsers/'+this.UI.currentTeam+'/'+this.UI.currentUser).subscribe(teamUser=>{
-      if (teamUser!=null && teamUser.member) {this.currentUserIsMember=true}
-    });
-    this.teamLinks = db.list('teamLinks/'+this.UI.currentTeam);
   }
 
   newLink () {

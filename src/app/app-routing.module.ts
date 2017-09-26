@@ -19,23 +19,23 @@ import { TeamAdsComponent } from './teamAds.component';
 import { LinksComponent } from './links.component';
 
 const appRoutes: Routes = [
-  { path: 'chat', component: ChatComponent },
-  { path: 'teamProfile', component: TeamProfileComponent },
-  { path: 'userProfile', component: UserProfileComponent },
-  { path: 'projectProfile', component: ProjectProfileComponent },
+  { path: 'chat/:id', component: ChatComponent },
+  { path: 'team/:id', component: TeamProfileComponent },
+  { path: 'user/:id', component: UserProfileComponent },
+  { path: 'project/:id', component: ProjectProfileComponent },
   { path: 'login', component: LoginComponent },
   { path: 'search', component: SearchComponent },
   { path: 'addTeam', component: AddTeamComponent },
   { path: 'addMember', component: AddMemberComponent },
   { path: 'followProject', component: FollowProjectComponent },
-  { path: 'wallet', component: WalletComponent },
+  { path: 'wallet/:id', component: WalletComponent },
   { path: 'createTeam', component: CreateTeamComponent },
   { path: 'createProject', component: CreateProjectComponent },
   { path: 'createTransaction', component: CreateTransactionComponent },
   { path: 'buyCoins', component: BuyCoinsComponent },
   { path: 'COINinfo', component: COINinfoComponent },
   { path: 'teamAds', component: TeamAdsComponent },
-  { path: 'links', component: LinksComponent },
+  { path: 'links/:id', component: LinksComponent },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
   { path: '**', component: LoginComponent }
 ];

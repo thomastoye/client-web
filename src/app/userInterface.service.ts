@@ -17,7 +17,7 @@ export class userInterfaceService {
       if (auth!=null) {
         this.currentUser = auth.uid;
         this.focusUser = auth.uid;
-        this.router.navigate(['userProfile']);
+        this.router.navigate(['user',auth.uid]);
       }
       else {
         this.currentUser = null;

@@ -12,7 +12,7 @@ import { databaseService } from './database.service';
   <div class='sheet'>
   <ul class="listLight">
     <li [hidden]="!team.memberAdText" style='float:left;margin:10px' *ngFor="let team of teamAds | async"
-      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
+      (click)="router.navigate(['team',team.$key])">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0; opacity: 1; object-fit: cover; height:100px; width:100px">
       <div style="width:15px;height:25px;float:left;">{{DB.getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
       <div style="width:200px;height:25px;">{{DB.getTeamName(team.$key)}}</div>

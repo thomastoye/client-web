@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
 import * as firebase from 'firebase/app';
 import { Observable } from 'rxjs/Observable';
-import { Router, NavigationEnd } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 import { databaseService } from './database.service';
 
 @Component({
-  selector: 'teamProfile',
+  selector: 'team',
   template: `
   <div class='sheet'>
   <div style="position:relative;margin-bottom:-115px">
@@ -25,12 +25,12 @@ import { databaseService } from './database.service';
   <input maxlength="25" *ngIf="editMode" [(ngModel)]="DB.teamName[this.UI.currentTeam]" style="text-transform: uppercase;" placeholder="Enter team name" />
   <div class="buttonDiv" *ngIf="!DB.getUserFollowing(UI.currentUser,UI.currentTeam)" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
   <ul class='listLight' style="display:inline-block;float:left">
-    <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="UI.focusUser=user.$key;router.navigate(['userProfile'])">
+    <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="router.navigate(['user',user.$key])">
       <img (error)="errorHandler($event)"[src]="DB.getUserPhotoURL(user.$key)" style="object-fit: cover; height:140px; width:140px">
     </li>
   </ul>
   <ul class='listLight' style="display:inline-block">
-    <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="UI.focusUser=user.$key;router.navigate(['userProfile'])">
+    <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="router.navigate(['user',user.$key])">
       <div *ngIf="!user.leader">
       <img (error)="errorHandler($event)"[src]="DB.getUserPhotoURL(user.$key)" style="object-fit: cover; height:70px; width:70px">
       <div class="buttonDiv" *ngIf='editMode' style="font-size:10px;line-height:10px;border-style:none;color:red" (click)="db.object('teamUsers/'+UI.currentTeam+'/'+user.$key).update({member:false,leader:false})">Remove</div>
@@ -56,15 +56,15 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div class='sheet'>
-  <div class='appIcon' (click)="router.navigate(['wallet'])">
+  <div class='appIcon' (click)="router.navigate(['wallet',UI.currentTeam])">
   <img src="./../assets/App icons/icon_share_03.svg" style="width:30px">
   <div style="font-size:11px">Wallet</div>
   </div>
-  <div class='appIcon' (click)="router.navigate(['links'])">
+  <div class='appIcon' (click)="router.navigate(['links',UI.currentTeam])">
   <img src="./../assets/App icons/infinite-outline.png" style="width:30px">
   <div style="font-size:11px">Links</div>
   </div>
-  <div class='appIcon' (click)="router.navigate(['chat'])">
+  <div class='appIcon' (click)="router.navigate(['chat',UI.currentTeam])">
   <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
   <div style="font-size:11px">Chat</div>
   </div>
@@ -74,7 +74,7 @@ import { databaseService } from './database.service';
   <div class='sheet' style="margin-top:10px">
   <div class="title" style="float:left">Following</div>
   <ul class='listLight'>
-    <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="UI.focusProject=project.$key;router.navigate(['projectProfile'])">
+    <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.$key])">
       <img (error)="errorHandler($event)"[src]="DB.getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
       <div style="height:25px;font-size:10px;line-height:10px">{{DB.getProjectName(project.$key)}}{{(getTeamLeader(project.$key,UI.currentTeam)? " **" : "")}}</div>
     </li>
@@ -109,33 +109,36 @@ export class TeamProfileComponent  {
   memberAdVisible: boolean;
   isImageOnFirebase: boolean;
 
-  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService) {
-    this.editMode = false;
-    this.memberAdVisible=false;
-    if(this.DB.getTeamPhotoURL(this.UI.currentTeam)!=null) this.isImageOnFirebase = this.DB.getTeamPhotoURL(this.UI.currentTeam).substring(0,23)=='https://firebasestorage'
-    this.db.object('teamAds/'+this.UI.currentTeam+'/memberAdText').subscribe(memberAdText => {
-      this.memberAdText = memberAdText.$value;
-    });
-    this.db.object('teamAds/'+this.UI.currentTeam+'/memberAdVisible').subscribe(memberAdVisible => {
-      this.memberAdVisible = memberAdVisible.$value;
-    });
-    this.teamProjects = this.db.list('teamProjects/'+this.UI.currentTeam, {
-      query:{
-        orderByChild:'following',
-        equalTo: true,
-      }
-    });
-    this.teamLeaders = this.db.list('teamUsers/'+this.UI.currentTeam, {
-      query:{
-        orderByChild:'leader',
-        equalTo: true,
-      }
-    });
-    this.teamMembers = this.db.list('teamUsers/'+this.UI.currentTeam, {
-      query:{
-        orderByChild:'member',
-        equalTo: true,
-      }
+  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
+    this.route.params.subscribe(params => {
+      this.UI.currentTeam=params['id'];
+      this.editMode = false;
+      this.memberAdVisible=false;
+      if(this.DB.getTeamPhotoURL(this.UI.currentTeam)!=null) this.isImageOnFirebase = this.DB.getTeamPhotoURL(this.UI.currentTeam).substring(0,23)=='https://firebasestorage'
+      this.db.object('teamAds/'+this.UI.currentTeam+'/memberAdText').subscribe(memberAdText => {
+        this.memberAdText = memberAdText.$value;
+      });
+      this.db.object('teamAds/'+this.UI.currentTeam+'/memberAdVisible').subscribe(memberAdVisible => {
+        this.memberAdVisible = memberAdVisible.$value;
+      });
+      this.teamProjects = this.db.list('teamProjects/'+this.UI.currentTeam, {
+        query:{
+          orderByChild:'following',
+          equalTo: true,
+        }
+      });
+      this.teamLeaders = this.db.list('teamUsers/'+this.UI.currentTeam, {
+        query:{
+          orderByChild:'leader',
+          equalTo: true,
+        }
+      });
+      this.teamMembers = this.db.list('teamUsers/'+this.UI.currentTeam, {
+        query:{
+          orderByChild:'member',
+          equalTo: true,
+        }
+      });
     });
   }
 

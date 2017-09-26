@@ -34,7 +34,7 @@ import { userInterfaceService } from './userInterface.service';
     </div>
   </div>
   <ul class='listLight' style="max-width:620px;display:block;margin:0 auto">
-    <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="UI.focusProject=project.$key;router.navigate(['projectProfile'])">
+    <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.$key])">
       <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
       <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}</div>
     </li>
@@ -115,7 +115,6 @@ export class LoginComponent  {
     this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
     this.db.object('teams/'+teamID).update({name: teamName, organisation: "Family and Friends"});
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    this.UI.currentTeam=teamID;
   }
 
   clearAllMessages () {

@@ -53,7 +53,7 @@ export class AddTeamComponent  {
     if (teamID==null || teamID=="") {this.messageFollow = "Please select a team"}
     else {
       this.db.object('projectTeams/'+projectID+'/'+teamID).update({member: true, leader: false});
-      this.router.navigate(['projectProfile']);
+      this.router.navigate(['project',projectID]);
     }
   }
 

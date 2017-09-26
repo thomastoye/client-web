@@ -3,7 +3,7 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import * as firebase from 'firebase/app';
 import 'firebase/storage';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router, NavigationEnd } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 import { databaseService } from './database.service';
 
@@ -21,7 +21,7 @@ import { databaseService } from './database.service';
     <div style="display: inline; float: left; height:35px; width:2px">
     <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red;"></div>
     </div>
-    <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.author)" style="cursor:pointer;display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="UI.focusUser=message.author;router.navigate(['userProfile'])">
+    <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.author)" style="cursor:pointer;display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.author])">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{DB.getUserFirstName(message.author)}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
@@ -60,16 +60,19 @@ export class ChatComponent {
   scrollMessageTimestamp: number;
   previousMessageTimestamp: number;
 
-  constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
-    this.previousMessageTimestamp=0;
-    this.draftMessageDB=false;
-    this.draftImage="";
-    this.draftMessage="";
-    this.messageNumberDisplay = 15;
-    this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam, {query: {limitToLast: this.messageNumberDisplay}});
-    this.draftMessageAuthors = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/');
-    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
-      this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
+  constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
+    this.route.params.subscribe(params => {
+      this.UI.currentTeam=params['id'];
+      this.previousMessageTimestamp=0;
+      this.draftMessageDB=false;
+      this.draftImage="";
+      this.draftMessage="";
+      this.messageNumberDisplay = 15;
+      this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam, {query: {limitToLast: this.messageNumberDisplay}});
+      this.draftMessageAuthors = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/');
+      this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
+        this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
+      });
     });
   }
 

@@ -3,12 +3,12 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
-import { Router } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 import { databaseService } from './database.service';
 
 @Component({
-  selector: 'userProfile',
+  selector: 'user',
   template: `
   <div class="sheet">
   <div style="float: left; width: 70%;">
@@ -43,9 +43,9 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
-      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
+      (click)="router.navigate(['team',team.$key])">
       <div *ngIf="DB.getUserLeader(team.$key,UI.focusUser)">
-      <div style="display: inline; float: left; height:30px; width:30px" (click)="UI.currentTeam=team.$key;router.navigate(['chat'])">
+      <div style="display: inline; float: left; height:30px; width:30px" (click)="router.navigate(['chat',team.$key])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px">
@@ -60,10 +60,10 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
-      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
+      (click)="router.navigate(['team',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="DB.getUserMember(team.$key,UI.focusUser)">
-      <div style="display: inline; float: left; height:30px; width:30px" (click)="UI.currentTeam=team.$key;router.navigate(['chat'])">
+      <div style="display: inline; float: left; height:30px; width:30px" (click)="router.navigate(['chat',team.$key])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px">
@@ -79,10 +79,10 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
-      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
+      (click)="router.navigate(['team',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="!DB.getUserMember(team.$key,UI.focusUser)">
-      <div style="display: inline; float: left; height:30px; width:30px" (click)="UI.currentTeam=team.$key;router.navigate(['chat'])">
+      <div style="display: inline; float: left; height:30px; width:30px" (click)="router.navigate(['chat',team.$key])">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:30px;width:30px">
@@ -104,23 +104,19 @@ export class UserProfileComponent {
   userTeams: FirebaseListObservable<any>;
   isImageOnFirebase: boolean;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
+  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.isImageOnFirebase=true;
-    this.afAuth.authState.subscribe((auth) => {
-      if (this.UI.focusUser==null) {
-        this.router.navigate(['login']);
-      }
-      else {
-        this.editMode = false;
-        this.ownProfile = (this.UI.currentUser==this.UI.focusUser);
-        if(this.DB.getUserPhotoURL(this.UI.focusUser)) this.isImageOnFirebase = this.DB.getUserPhotoURL(this.UI.focusUser).substring(0,23)=='https://firebasestorage'
-        this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
-          query:{
-            orderByChild:'following',
-            equalTo: true,
-          }
-        });
-      }
+    this.route.params.subscribe(params => {
+      this.UI.focusUser = params['id'];
+      this.editMode = false;
+      this.ownProfile = (this.UI.currentUser==this.UI.focusUser);
+      if(this.DB.getUserPhotoURL(this.UI.focusUser)) this.isImageOnFirebase = this.DB.getUserPhotoURL(this.UI.focusUser).substring(0,23)=='https://firebasestorage'
+      this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
+        query:{
+          orderByChild:'following',
+          equalTo: true,
+        }
+      });
     });
   }
 

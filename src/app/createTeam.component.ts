@@ -41,8 +41,7 @@ export class CreateTeamComponent {
     this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
     this.db.object('teams/'+teamID).update({name: teamName, photoURL: this.photoURL, organisation: "Family and Friends"});
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    this.UI.currentTeam=teamID;
-    this.router.navigate(['teamProfile']);
+    this.router.navigate(['team',teamID]);
   }
 
   onImageChange(event) {

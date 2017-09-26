@@ -74,8 +74,7 @@ export class AppComponent {
 
   clickUserIcon () {
     if (this.UI.currentUser) {
-      this.UI.focusUser=this.UI.currentUser;
-      this.router.navigate(['userProfile']);
+      this.router.navigate(['user',this.UI.currentUser]);
     }
     else {
       this.router.navigate(['login']);

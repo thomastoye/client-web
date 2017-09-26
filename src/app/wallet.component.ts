@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
-import { Router } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 import { databaseService } from './database.service';
 
@@ -107,20 +107,23 @@ selectedTransactionID: string;
 selectedTransactionRequestID: string;
 moreButtons: boolean;
 
-constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
-  this.moreButtons = false;
-  this.currentBalance = 0;
-  this.getTeamWalletBalance(this.UI.currentTeam).then(balance=>{
-    this.currentBalance = Number(balance);
+constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
+  this.route.params.subscribe(params => {
+    this.UI.currentTeam=params['id'];
+    this.moreButtons = false;
+    this.currentBalance = 0;
+    this.getTeamWalletBalance(this.UI.currentTeam).then(balance=>{
+      this.currentBalance = Number(balance);
+    });
+    this.teamTransactions = db.list('teamTransactions/'+UI.currentTeam, {
+      query:{orderByChild:'status',equalTo: "pending"}
+    });
+    this.teamTransactionRequests = db.list('teamTransactionRequests/'+UI.currentTeam, {
+      query:{orderByChild:'status',equalTo: "pending"}
+    });
+    this.PERRINNTransactionsOUT = db.list('PERRINNTransactions/',{query:{orderByChild:'sender',equalTo:this.UI.currentTeam}});
+    this.PERRINNTransactionsIN = db.list('PERRINNTransactions/',{query:{orderByChild:'receiver',equalTo:this.UI.currentTeam}});
   });
-  this.teamTransactions = db.list('teamTransactions/'+UI.currentTeam, {
-    query:{orderByChild:'status',equalTo: "pending"}
-  });
-  this.teamTransactionRequests = db.list('teamTransactionRequests/'+UI.currentTeam, {
-    query:{orderByChild:'status',equalTo: "pending"}
-  });
-  this.PERRINNTransactionsOUT = db.list('PERRINNTransactions/',{query:{orderByChild:'sender',equalTo:this.UI.currentTeam}});
-  this.PERRINNTransactionsIN = db.list('PERRINNTransactions/',{query:{orderByChild:'receiver',equalTo:this.UI.currentTeam}});
 }
 
 getTeamWalletBalance (teamID:string) {

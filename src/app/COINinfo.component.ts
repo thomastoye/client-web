@@ -26,7 +26,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of PERRINNTeamBalance | async"
       [class.selected]="team.$key === UI.currentTeam"
-      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
+      (click)="router.navigate(['team',team.$key])">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div style="width:15px;height:25px;float:left;">{{DB.getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
       <div style="width:200px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}</div>

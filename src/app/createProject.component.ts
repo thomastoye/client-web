@@ -35,7 +35,7 @@ export class CreateProjectComponent {
     this.db.object('projectTeams/'+projectID+'/'+teamID).update({member: true, leader: true});
     this.db.object('projects/'+projectID).update({name: projectName, goal: this.projectGoal, photoURL: this.photoURL});
     this.db.object('teamProjects/'+teamID+'/'+projectID).update({following: true});
-    this.router.navigate(['teamProfile']);
+    this.router.navigate(['team',teamID]);
   }
 
   errorHandler(event) {

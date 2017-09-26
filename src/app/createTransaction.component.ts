@@ -81,7 +81,7 @@ export class CreateTransactionComponent {
         createdTimestamp: firebase.database.ServerValue.TIMESTAMP,
         status: "pending"
       })
-      .then(_ => this.router.navigate(['wallet']))
+      .then(_ => this.router.navigate(['wallet',this.UI.currentTeam]))
       .catch(err => this.messageCreateTransaction="Error");
     }
     else {
@@ -92,7 +92,7 @@ export class CreateTransactionComponent {
         requestedTimestamp: firebase.database.ServerValue.TIMESTAMP,
         status: "pending"
       })
-      .then(_ => this.router.navigate(['wallet']))
+      .then(_ => this.router.navigate(['wallet',this.UI.currentTeam]))
       .catch(err => this.messageCreateTransaction="Error");
     }
   }

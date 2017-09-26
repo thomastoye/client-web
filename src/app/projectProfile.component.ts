@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
-import { Router } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 import { databaseService } from './database.service';
 
@@ -42,7 +42,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of projectTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
-      (click)="UI.currentTeam=team.$key;router.navigate(['teamProfile'])">
+      (click)="router.navigate(['team',team.$key])">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div style="width:15px;height:25px;float:left;">{{DB.getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
       <div style="width:300px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}{{(DB.getTeamLeader(UI.focusProject,team.$key)? " **" : "")}}{{DB.getTeamFollowing(team.$key,UI.focusProject)?"":" (Not Following)"}}</div>
@@ -62,21 +62,24 @@ export class ProjectProfileComponent {
   projectTeams: FirebaseListObservable<any>;
   isImageOnFirebase: boolean;
 
-  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService) {
-    this.messageCancelMembership = ""
-    db.object('projects/' + this.UI.focusProject).subscribe(focusProject => {
-      this.leaderTeam = focusProject.leader;
-      if(this.DB.projectPhotoURL[UI.focusProject]!=null) this.isImageOnFirebase = this.DB.projectPhotoURL[UI.focusProject].substring(0,23)=='https://firebasestorage'
-      this.editMode = false;
-      db.object('teamUsers/'+this.leaderTeam+'/'+this.UI.currentUser).subscribe(teamUser => {
-        this.projectLeader=(teamUser.member);
+  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
+    this.route.params.subscribe(params => {
+      this.UI.focusProject=params['id'];
+      this.messageCancelMembership = ""
+      db.object('projects/' + this.UI.focusProject).subscribe(focusProject => {
+        this.leaderTeam = focusProject.leader;
+        if(this.DB.projectPhotoURL[UI.focusProject]!=null) this.isImageOnFirebase = this.DB.projectPhotoURL[UI.focusProject].substring(0,23)=='https://firebasestorage'
+        this.editMode = false;
+        db.object('teamUsers/'+this.leaderTeam+'/'+this.UI.currentUser).subscribe(teamUser => {
+          this.projectLeader=(teamUser.member);
+        });
       });
-    });
-    this.projectTeams = db.list('projectTeams/' + this.UI.focusProject, {
-      query:{
-        orderByChild:'member',
-        equalTo: true,
-      }
+      this.projectTeams = db.list('projectTeams/' + this.UI.focusProject, {
+        query:{
+          orderByChild:'member',
+          equalTo: true,
+        }
+      });
     });
   }
 
@@ -96,7 +99,7 @@ export class ProjectProfileComponent {
 
   cancelMember(projectID: string, teamID: string) {
     this.db.object('projectTeams/' + projectID + '/' + teamID).update({member:false})
-    .then(_ => this.router.navigate(['teamProfile']))
+    .then(_ => this.router.navigate(['team',teamID]))
     .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
   }
 
