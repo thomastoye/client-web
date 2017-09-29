@@ -108,6 +108,15 @@ body {
 .listLight li {
   cursor: pointer;
 }
+.listLight .seperator {
+  padding-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 100px;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+  border-color: #eee;
+  clear: both;
+}
 .listLight .activity {
   height: 14px;
   width: 14px;

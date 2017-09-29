@@ -42,7 +42,6 @@ import { databaseService } from './database.service';
   <div class="buttonDiv" *ngIf="ownProfile" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
-      [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['team',team.$key])">
       <div *ngIf="DB.getUserLeader(team.$key,UI.focusUser)">
       <div style="display: inline; float: left; height:40px; width:30px" (click)="router.navigate(['chat',team.$key])">
@@ -51,6 +50,7 @@ import { databaseService } from './database.service';
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:40px;width:60px">
       <div style="width:15px;height:25px;float:left;">*</div>
       <div style="width:200px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}</div>
+      <div class="seperator"></div>
       </div>
     </li>
   </ul>
@@ -59,7 +59,6 @@ import { databaseService } from './database.service';
   <div class="title" style="float:left">Member</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
-      [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['team',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="DB.getUserMember(team.$key,UI.focusUser)">
@@ -69,16 +68,16 @@ import { databaseService } from './database.service';
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:40px;width:60px">
       <div style="width:15px;height:25px;float:left;"></div>
       <div style="width:200px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}</div>
+      <div class="seperator"></div>
       </div>
       </div>
     </li>
   </ul>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="title" style="float:left">Following</div>
+  <div class="title" style="float:left">Follower</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
-      [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['team',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="!DB.getUserMember(team.$key,UI.focusUser)">
@@ -88,6 +87,7 @@ import { databaseService } from './database.service';
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 0;object-fit:cover;height:40px;width:60px">
       <div style="width:15px;height:25px;float:left;"></div>
       <div style="width:200px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}</div>
+      <div class="seperator"></div>
       </div>
       </div>
     </li>
