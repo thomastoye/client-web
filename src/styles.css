@@ -118,13 +118,13 @@ body {
   clear: both;
 }
 .listLight .activity {
-  height: 14px;
-  width: 14px;
+  height: 12px;
+  width: 12px;
   background-color: red;
-  border-radius: 7px;
-  position: relative;
-  top: 8px;
-  left: 7px;
+  border-radius: 6px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
   z-index: 1000;
 }
 .listLight .button {
