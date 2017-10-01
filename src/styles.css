@@ -109,8 +109,6 @@ body {
   cursor: pointer;
 }
 .listLight .seperator {
-  padding-top: 10px;
-  margin-bottom: 10px;
   margin-left: 100px;
   border-style: solid;
   border-width: 0px 0px 1px 0px;
@@ -415,5 +413,10 @@ iframe {
   background-color: #EEE;
 }
 img:hover {
-  opacity: 0.9;
+  opacity: 0.95;
+}
+.editButton {
+  width:25px;
+  margin:5px 10px 5px 10px;
+  cursor:pointer;
 }

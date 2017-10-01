@@ -12,11 +12,11 @@ import { databaseService } from './database.service';
   template: `
   <div class="sheet">
   <div style="float: left; width: 70%;">
-  <div class="buttonDiv" *ngIf='!editMode' style="border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=true">Edit</div>
   <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=false;updateUserProfile()">Done</div>
   <div [hidden]='editMode'>
-  <div class='title'>{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
-  <div style="padding:10px;font-size:12px;line-height:15px" [innerHTML]="DB.getUserResume(UI.focusUser) | linky"></div>
+  <div class='title' style="float:left">{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
+  <img class='editButton' [hidden]='!ownProfile' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
+  <div style="padding:10px;font-size:12px;line-height:15px;clear:both" [innerHTML]="DB.getUserResume(UI.focusUser) | linky"></div>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="DB.userFirstName[UI.focusUser]" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -36,16 +36,17 @@ import { databaseService } from './database.service';
   </div>
   </div>
   </div>
-  <div class="buttonDiv" style="color:red;width:325px" [hidden]='!editMode' (click)="unfollow(UI.currentTeam)">Stop following {{DB.getTeamName(UI.currentTeam)}}</div>
   <div class='sheet' style="margin-top:10px">
   <div class="title" style="float:left">Leader</div>
   <div class="buttonDiv" *ngIf="ownProfile" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
+      [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['team',team.$key])">
       <div *ngIf="DB.getUserLeader(team.$key,UI.focusUser)">
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px;object-fit:cover;height:40px;width:60px">
-      <div style="width:200px;float:left;">{{DB.getTeamName(team.$key)}}</div>
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
+      <div style="width:200px;float:left;margin-top:10px">{{DB.getTeamName(team.$key)}}</div>
+      <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
       <div style="float:right;position:relative;margin-right:10px" (click)="router.navigate(['chat',team.$key])">
       <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
@@ -59,11 +60,13 @@ import { databaseService } from './database.service';
   <div class="title" style="float:left">Member</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
+      [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['team',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="DB.getUserMember(team.$key,UI.focusUser)">
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px;object-fit:cover;height:40px;width:60px">
-      <div style="width:200px;float:left;">{{DB.getTeamName(team.$key)}}</div>
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
+      <div style="width:200px;float:left;margin-top:10px">{{DB.getTeamName(team.$key)}}</div>
+      <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
       <div style="float:right;position:relative;margin-right:10px" (click)="router.navigate(['chat',team.$key])">
       <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
@@ -78,11 +81,13 @@ import { databaseService } from './database.service';
   <div class="title" style="float:left">Follower</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
+      [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['team',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="!DB.getUserMember(team.$key,UI.focusUser)">
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px;object-fit:cover;height:40px;width:60px">
-      <div style="width:200px;float:left;">{{DB.getTeamName(team.$key)}}</div>
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
+      <div style="width:200px;float:left;margin-top:10px">{{DB.getTeamName(team.$key)}}</div>
+      <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
       <div style="float:right;position:relative;margin-right:10px" (click)="router.navigate(['chat',team.$key])">
       <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>

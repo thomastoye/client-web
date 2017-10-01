@@ -13,7 +13,7 @@ import { databaseService } from './database.service';
   <div style="float: left; width: 60%;">
   <div [hidden]='editMode'>
   <div class='title' style="float:left">{{this.DB.getProjectName(UI.focusProject)}}</div>
-  <div class="buttonDiv" style="border-style:none;float:left" [hidden]='!projectLeader' (click)="editMode=true">Edit</div>
+  <img class='editButton' [hidden]='!projectLeader' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
   <div style="clear:both"></div>
   <div style="padding:10px;" [innerHTML]="DB.getProjectGoal(UI.focusProject) | linky"></div>
   </div>

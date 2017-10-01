@@ -68,7 +68,7 @@ import { databaseService } from './database.service';
   <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
   <div style="font-size:11px">Chat</div>
   </div>
-  <span class="buttonDiv" *ngIf='!editMode' style="border-style:none;float:right" [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' (click)="editMode=true">Edit</span>
+  <img class='editButton' src="./../assets/App icons/pencil-tip.png" style="float:right" *ngIf='!editMode' [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' (click)="editMode=true">
   <span class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" (click)="editMode=false;saveTeamProfile()">Done</span>
   </div>
   <div class='sheet' style="margin-top:10px">
