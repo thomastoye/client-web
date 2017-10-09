@@ -9,6 +9,7 @@ import { userInterfaceService } from './userInterface.service';
   selector: 'createTeam',
   template: `
   <div class="sheet">
+  <div class="title">Enter a name and upload an image to create a team</div>
   <div style="float: left; width: 50%;">
   <input id="nameInput" maxlength="25" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name *" />
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
