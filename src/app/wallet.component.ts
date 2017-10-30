@@ -10,7 +10,8 @@ import { databaseService } from './database.service';
   selector: 'wallet',
   template: `
   <div class="sheet">
-    <div style="text-align:center">
+    <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" (click)="router.navigate(['team',UI.currentTeam])" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px;cursor:pointer">
+    <div style="clear:both;text-align:center">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
     <div>

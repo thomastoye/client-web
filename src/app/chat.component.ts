@@ -33,6 +33,7 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none">
+  <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" (click)="router.navigate(['team',UI.currentTeam])" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px;cursor:pointer">
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style:none;float:left;">
     <li *ngFor="let author of draftMessageAuthors | async">

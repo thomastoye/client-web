@@ -4,11 +4,13 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'notes',
   template: `
   <div class="sheet">
+  <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" (click)="router.navigate(['team',UI.currentTeam])" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px;cursor:pointer">
   <span class="title">Notes</span>
   <span class="buttonDiv" *ngIf='currentUserIsMember' style="border-style:none" (click)="editMode=!editMode">{{editMode?"Done":"Edit"}}</span>
   <div class="buttonDiv" *ngIf="currentUserIsMember" style="float:right;margin:10px" (click)="newNote()">New note</div>
@@ -34,7 +36,7 @@ export class NotesComponent  {
   currentUserIsMember: boolean;
   editMode: boolean;
 
-  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, private route: ActivatedRoute) {
+  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
       this.editMode = false;
