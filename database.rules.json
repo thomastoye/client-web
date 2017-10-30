@@ -48,16 +48,16 @@
         ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true"
       }
     },
-    "teamLinks": {
-      ".read": "true",
-      "$teamid": {
-        ".write": "root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true"
-      }
-    },
     "teamMessages": {
       ".read": "true",
       "$teamid": {
         ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true"
+      }
+    },
+    "teamNotes": {
+      ".read": "true",
+      "$teamid": {
+        ".write": "root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true"
       }
     },
     "teamPayments": {

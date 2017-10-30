@@ -22,7 +22,7 @@ import { CreateTransactionComponent }  from './createTransaction.component';
 import { BuyCoinsComponent }  from './buyCoins.component';
 import { COINinfoComponent }  from './COINinfo.component';
 import { TeamAdsComponent }  from './teamAds.component';
-import { LinksComponent }  from './links.component';
+import { NotesComponent }  from './notes.component';
 import { LinkyModule } from 'angular-linky';
 
 import { userInterfaceService } from './userInterface.service';
@@ -62,7 +62,7 @@ export const firebaseConfig = {
     BuyCoinsComponent,
     COINinfoComponent,
     TeamAdsComponent,
-    LinksComponent,
+    NotesComponent,
   ],
   imports: [
     BrowserModule,
