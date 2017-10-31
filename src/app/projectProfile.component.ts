@@ -88,7 +88,7 @@ export class ProjectProfileComponent {
     });
   }
 
-  ngOnInit () {
+  ngAfterViewChecked () {
     var iframeDocument = <HTMLImageElement>document.getElementById('iframeDocument');
     if (this.DB.getProjectDocument(this.UI.focusProject)!=null && this.DB.getProjectDocument(this.UI.focusProject)!='') iframeDocument.src = this.DB.getProjectDocument(this.UI.focusProject);
   }
