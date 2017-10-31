@@ -19,6 +19,7 @@ export class databaseService {
   projectName: string[];
   projectPhotoURL: string[];
   projectGoal: string[];
+  projectDocument: string[];
 
   constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.userFirstName=[''];
@@ -33,6 +34,7 @@ export class databaseService {
     this.projectName=[''];
     this.projectPhotoURL=[''];
     this.projectGoal=[''];
+    this.projectDocument=[''];
   }
 
   getUserFirstName(ID:string):string{
@@ -70,6 +72,10 @@ export class databaseService {
   getProjectGoal(ID:string):string{
     if(this.projectGoal[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectGoal[ID]=snapshot.goal});
     return this.projectGoal[ID];
+  }
+  getProjectDocument(ID:string):string{
+    if(this.projectDocument[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectDocument[ID]=snapshot.document});
+    return this.projectDocument[ID];
   }
   getUserLeader(teamID,userID):string{
     var output;

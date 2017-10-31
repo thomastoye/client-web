@@ -15,7 +15,7 @@ import { databaseService } from './database.service';
   <div class='title' style="float:left">{{this.DB.getProjectName(UI.focusProject)}}</div>
   <img class='editButton' [hidden]='!projectLeader' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
   <div style="clear:both"></div>
-  <div style="padding:10px;" [innerHTML]="DB.getProjectGoal(UI.focusProject) | linky"></div>
+  <div style="padding:10px;font-size:16px" [innerHTML]="DB.getProjectGoal(UI.focusProject) | linky"></div>
   </div>
   <div [hidden]='!editMode'>
   <div class="buttonDiv" style="color:green;border-style:none;float:left" (click)="editMode=false;updateProjectProfile()">Done</div>
@@ -38,7 +38,7 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="title">{{this.DB.getProjectName(UI.focusProject)}} teams</div>
+  <div class="title">Teams</div>
   <ul class="listLight">
     <li *ngFor="let team of projectTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
@@ -49,6 +49,11 @@ import { databaseService } from './database.service';
       <button [hidden]='!projectLeader' *ngIf="editMode" style="float:right" (click)="db.object('projectTeams/'+UI.focusProject+'/'+team.$key).update({member:false,leader:false});" style="background-color:red">Remove</button>
     </li>
   </ul>
+  </div>
+  <div class='sheet' style="margin-top:10px">
+    <div class="title">Document</div>
+    <input maxlength="250" [hidden]='!editMode' [(ngModel)]="DB.projectDocument[UI.focusProject]" placeholder="embedded document URL" />
+    <iframe id='iframeDocument' width='100%' height='5000'></iframe>
   </div>
   `,
 })
@@ -83,6 +88,11 @@ export class ProjectProfileComponent {
     });
   }
 
+  ngOnInit () {
+    var iframeDocument = <HTMLImageElement>document.getElementById('iframeDocument');
+    if (this.DB.getProjectDocument(this.UI.focusProject)!=null && this.DB.getProjectDocument(this.UI.focusProject)!='') iframeDocument.src = this.DB.getProjectDocument(this.UI.focusProject);
+  }
+
   showFullScreenImage(src){
     var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
     fullScreenImage.src=src;
@@ -92,7 +102,7 @@ export class ProjectProfileComponent {
   updateProjectProfile() {
     this.DB.projectName[this.UI.focusProject] = this.DB.projectName[this.UI.focusProject].toUpperCase();
     this.db.object('projects/'+this.UI.focusProject).update({
-      name: this.DB.projectName[this.UI.focusProject], photoURL: this.DB.projectPhotoURL[this.UI.focusProject], goal: this.DB.projectGoal[this.UI.focusProject]
+      name: this.DB.projectName[this.UI.focusProject], photoURL: this.DB.projectPhotoURL[this.UI.focusProject], goal: this.DB.projectGoal[this.UI.focusProject], document: this.DB.projectDocument[this.UI.focusProject]
     });
     this.editMode=false;
   }
