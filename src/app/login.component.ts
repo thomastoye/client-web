@@ -18,6 +18,7 @@ import { userInterfaceService } from './userInterface.service';
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *"/>
           <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *"/>
           <button [hidden]="newUser" type="button" (click)="login(email,password)">Login {{messageLogin}}</button>
+          <div style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password? {{messageResetPassword}}</div>
           <div [hidden]="!newUser">
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *"/>
           <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *"/>
@@ -60,6 +61,7 @@ export class LoginComponent  {
   messageVerification: string;
   messageLogout: string;
   messageLogin: string;
+  messageResetPassword: string;
   newUser: boolean;
   teamProjects: FirebaseListObservable<any>;
 
@@ -80,6 +82,13 @@ export class LoginComponent  {
     this.afAuth.auth.signInWithEmailAndPassword(email, password)
     .then(_ => this.messageLogin="Successfully logged in")
     .catch(err => this.messageLogin="Error: Verify your email and password or create a new account");
+  }
+
+  resetPassword(email: string) {
+    this.clearAllMessages ();
+    this.afAuth.auth.sendPasswordResetEmail(email)
+    .then(_ => this.messageResetPassword="An email has been sent to you")
+    .catch(err => this.messageResetPassword="Error: Enter a valid email");
   }
 
   logout() {
@@ -124,6 +133,7 @@ export class LoginComponent  {
 
   clearAllMessages () {
     this.messageLogin = "";
+    this.messageResetPassword = "";
     this.messageLogout = "";
     this.messageRegister = "";
     this.messageVerification = "";
