@@ -37,7 +37,7 @@ import { userInterfaceService } from './userInterface.service';
   <div class='sheet' style="margin-top:10px;cursor:pointer" (click)="router.navigate(['project','-Ks_OrDydv6PE4UkeNCf'])">
   <div style="float:right;padding:10px;font-size:10px;color:blue">read more</div>
   <img src="./../assets/App icons/world-map-blue.svg" style="float:left;height:40px;padding:5px">
-  <div style="float:left;padding:10px;font-size:15px;color:#5378b2">"Building the world's greatest team is our goal."</div>
+  <div style="float:left;padding:10px;font-size:15px;color:#5378b2">"Building the world's greatest team."</div>
   </div>
   <ul class='listLight' style="max-width:620px;display:block;margin:0 auto">
     <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.$key])">
