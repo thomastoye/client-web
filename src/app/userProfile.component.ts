@@ -39,7 +39,7 @@ import { databaseService } from './database.service';
   <div class='sheet' style="margin-top:10px;cursor:pointer" (click)="router.navigate(['project','-Ks_OrDydv6PE4UkeNCf'])">
   <div style="float:right;padding:10px;font-size:10px;color:blue">read more</div>
   <img src="./../assets/App icons/world-map-blue.svg" style="float:left;height:40px;padding:5px">
-  <div style="float:left;padding:10px;font-size:15px;color:#5378b2">"Building the world's greatest team."</div>
+  <div style="float:left;padding:10px;font-size:15px;color:#5378b2">"We are a Team."</div>
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="title" style="float:left">Leader</div>
