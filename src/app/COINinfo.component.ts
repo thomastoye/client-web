@@ -10,18 +10,10 @@ import { databaseService } from './database.service';
   selector: 'COINinfo',
   template: `
   <div class="sheet">
-    <div [class.selected]="sheetNumber===1" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=1">ICO</div>
-    <div [class.selected]="sheetNumber===2" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=2">earn COIN</div>
-    <div [class.selected]="sheetNumber===3" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=3">COIN ownership</div>
-    <div [class.selected]="sheetNumber===4" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=4">COIN price</div>
+    <div [class.selected]="sheetNumber===1" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=1">COIN ownership</div>
+    <div [class.selected]="sheetNumber===2" style="float:left; cursor:pointer; color:blue; padding:15px;" (click)="sheetNumber=2">COIN price</div>
   </div>
   <div class="sheet" [hidden]="sheetNumber!=1">
-  <iframe width='100%' height='3000' src="https://goo.gl/zqASv7"></iframe>
-  </div>
-  <div class="sheet" [hidden]="sheetNumber!=2">
-  <iframe width='100%' height='3000' src="https://goo.gl/EH8LC7"></iframe>
-  </div>
-  <div class="sheet" [hidden]="sheetNumber!=3">
   <div class="title" style="color: black;text-align:left;">There are {{totalCOIN | number:'1.2-2'}} COINS in circulation</div>
   <ul class="listLight">
     <li *ngFor="let team of PERRINNTeamBalance | async"
@@ -35,7 +27,7 @@ import { databaseService } from './database.service';
   </ul>
   <div style="color:blue;padding:10px 0 10px 0;cursor:pointer;text-align:center" (click)="teamNumberDisplay=teamNumberDisplay+25;PERRINNTeamBalance=db.list('PERRINNTeamBalance/',{query:{orderByChild:'balanceNegative',limitToFirst:teamNumberDisplay}})">More</div>
   </div>
-  <div class="sheet" [hidden]="sheetNumber!=4">
+  <div class="sheet" [hidden]="sheetNumber!=2">
   <iframe width='100%' height='3000' src="https://goo.gl/urwsGe"></iframe>
   </div>
   `,
