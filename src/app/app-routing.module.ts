@@ -15,7 +15,6 @@ import { CreateProjectComponent } from './createProject.component';
 import { CreateTransactionComponent } from './createTransaction.component';
 import { BuyCoinsComponent } from './buyCoins.component';
 import { COINinfoComponent } from './COINinfo.component';
-import { TeamAdsComponent } from './teamAds.component';
 import { NotesComponent } from './notes.component';
 
 const appRoutes: Routes = [
@@ -34,7 +33,6 @@ const appRoutes: Routes = [
   { path: 'createTransaction', component: CreateTransactionComponent },
   { path: 'buyCoins', component: BuyCoinsComponent },
   { path: 'COINinfo', component: COINinfoComponent },
-  { path: 'teamAds', component: TeamAdsComponent },
   { path: 'notes/:id', component: NotesComponent },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
   { path: '**', component: LoginComponent }

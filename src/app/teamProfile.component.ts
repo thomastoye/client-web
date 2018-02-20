@@ -82,20 +82,6 @@ import { databaseService } from './database.service';
   <button *ngIf="editMode" (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
   <button *ngIf="editMode" [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
   </div>
-  <div class='sheet' style="margin-top:10px">
-  <div class="title">Ad</div>
-  <div *ngIf="editMode" style="float: right;">
-    <ul class='listLight'>
-      <li (click)="db.object('teamAds/'+UI.currentTeam).update({memberAdVisible:!memberAdVisible})">
-        <div class='cornerButton' style="float:right">Ad</div>
-      </li>
-    </ul>
-  </div>
-  <div style="clear:left">
-    <textarea [hidden]='!memberAdVisible' class="textAreaAdvert" style="max-width:400px" rows="10" maxlength="500" [(ngModel)]="memberAdText" (keyup)="updateMemberAdDB()" placeholder="Looking for new Members or Leaders for your team? Write an advert here."></textarea>
-    <div style="text-align:left; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['teamAds'])">View all Ads</div>
-  </div>
-  </div>
 `,
 })
 export class TeamProfileComponent  {
@@ -115,12 +101,6 @@ export class TeamProfileComponent  {
       this.editMode = false;
       this.memberAdVisible=false;
       if(this.DB.getTeamPhotoURL(this.UI.currentTeam)!=null) this.isImageOnFirebase = this.DB.getTeamPhotoURL(this.UI.currentTeam).substring(0,23)=='https://firebasestorage'
-      this.db.object('teamAds/'+this.UI.currentTeam+'/memberAdText').subscribe(memberAdText => {
-        this.memberAdText = memberAdText.$value;
-      });
-      this.db.object('teamAds/'+this.UI.currentTeam+'/memberAdVisible').subscribe(memberAdVisible => {
-        this.memberAdVisible = memberAdVisible.$value;
-      });
       this.teamProjects = this.db.list('teamProjects/'+this.UI.currentTeam, {
         query:{
           orderByChild:'following',
@@ -161,13 +141,6 @@ export class TeamProfileComponent  {
     this.db.object('teams/' + this.UI.currentTeam).update({
       name: this.DB.teamName[this.UI.currentTeam], photoURL: this.DB.teamPhotoURL[this.UI.currentTeam],
     })
-  }
-
-  updateMemberAdDB () {
-    this.db.object('teamAds/'+this.UI.currentTeam).update({
-      memberAdText:this.memberAdText,
-      memberAdTimestamp:firebase.database.ServerValue.TIMESTAMP,
-    });
   }
 
   followTeam (teamID: string, userID: string) {
