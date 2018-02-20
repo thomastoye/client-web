@@ -47,7 +47,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
-      (click)="router.navigate(['team',team.$key])">
+      (click)="router.navigate(['chat',team.$key])">
       <div *ngIf="DB.getUserLeader(team.$key,UI.focusUser)">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
       <div style="width:200px;float:left;margin-top:10px">{{DB.getTeamName(team.$key)}}</div>
@@ -66,7 +66,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
-      (click)="router.navigate(['team',team.$key])">
+      (click)="router.navigate(['chat',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="DB.getUserMember(team.$key,UI.focusUser)">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
@@ -87,7 +87,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
-      (click)="router.navigate(['team',team.$key])">
+      (click)="router.navigate(['chat',team.$key])">
       <div *ngIf="!DB.getUserLeader(team.$key,UI.focusUser)">
       <div *ngIf="!DB.getUserMember(team.$key,UI.focusUser)">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
