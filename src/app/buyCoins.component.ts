@@ -9,42 +9,6 @@ import { databaseService } from './database.service';
 @Component({
   selector: 'buyCoins',
   template: `
-  <div [hidden]='!thinkingAboutIt'>
-    <div class="sheet">
-      <div style="width:33%;max-width:200px;float:left;text-align:center;padding-top:25px">
-      <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:100%;max-width:100px">
-      </div>
-      <div style="width:66%">
-      <div class="title">{{(sheetContent1|async)?.title}}</div>
-      <div class="content">{{(sheetContent1|async)?.content1}}</div>
-      <div class="content">{{(sheetContent1|async)?.content2}}</div>
-      <div class="content">{{(sheetContent1|async)?.content3}}</div>
-      </div>
-      <div style="height:50px"></div>
-      <div style="width:33%;max-width:200px;float:left">
-      <img (error)="errorHandler($event)" src="{{(sheetContent2|async)?.image}}" style="width:100%;">
-      </div>
-      <div style="width:66%">
-      <div class="title">{{(sheetContent2|async)?.title}}</div>
-      <div class="content">{{(sheetContent2|async)?.content1}}</div>
-      <div class="content">{{(sheetContent2|async)?.content2}}</div>
-      <div class="content">{{(sheetContent2|async)?.content3}}</div>
-      </div>
-      <div style="height:50px"></div>
-      <div style="width:33%;max-width:200px;float:left">
-      <img (error)="errorHandler($event)" src="{{(sheetContent3|async)?.image}}" style="width:100%;">
-      </div>
-      <div style="width:66%">
-      <div class="title">{{(sheetContent3|async)?.title}}</div>
-      <div class="content">{{(sheetContent3|async)?.content1}}</div>
-      <div class="content">{{(sheetContent3|async)?.content2}}</div>
-      <div class="content">{{(sheetContent3|async)?.content3}}</div>
-      </div>
-      <div style="height:50px"></div>
-      <div style="text-align:center"><button type="button" (click)="refreshAmountCharge();thinkingAboutIt=false;enteringAmount=true">Buy COINS now</button></div>
-    </div>
-    <div style="height:10px"></div>
-  </div>
   <div [hidden]='!enteringAmount'>
     <div class="sheet">
       <div class='title' style='float:left'>How many COINS would you like to buy?</div>
@@ -112,17 +76,12 @@ export class BuyCoinsComponent {
   messagePERRINNTransaction: string;
   currencyList: FirebaseListObservable<any>;
   newPaymentID: string;
-  thinkingAboutIt: boolean;
   enteringAmount: boolean;
   enteringCardDetails: boolean;
   processingPayment: boolean;
-  sheetContent1: FirebaseObjectObservable<any>;
-  sheetContent2: FirebaseObjectObservable<any>;
-  sheetContent3: FirebaseObjectObservable<any>;
 
   constructor(public db: AngularFireDatabase, public router: Router, private _zone: NgZone, public UI: userInterfaceService, public DB: databaseService) {
-    this.thinkingAboutIt = true;
-    this.enteringAmount = false;
+    this.enteringAmount = true;
     this.enteringCardDetails = false;
     this.processingPayment = false;
     this.newPaymentID = "";
@@ -130,9 +89,6 @@ export class BuyCoinsComponent {
     this.messagePERRINNTransaction = "";
     this.amountCOINSPurchased=100;
     this.currentCurrencyID='gbp';
-    this.sheetContent1 = db.object('appSettings/whatIsCOIN');
-    this.sheetContent2 = db.object('appSettings/howToUseCOIN');
-    this.sheetContent3 = db.object('appSettings/whyBuyCOIN');
     this.currencyList = db.list('appSettings/currencyList');
   }
 
