@@ -47,6 +47,27 @@ import { databaseService } from './database.service';
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['chat',team.$key])">
+      <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
+      <div *ngIf="team.lastChatVisitTimestampNegative">
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
+      <div style="width:200px;float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}</div>
+      <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
+      <div style="float:right;position:relative;margin-right:10px" (click)="router.navigate(['chat',team.$key])">
+      <div style="float:left;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
+      <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
+      <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
+      </div>
+      <div class="seperator"></div>
+      </div>
+      </div>
+    </li>
+  </ul>
+  <ul class="listLight">
+    <li *ngFor="let team of userTeams | async"
+      [class.selected]="team.$key === UI.currentTeam"
+      (click)="router.navigate(['chat',team.$key])">
+      <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
+      <div *ngIf="!team.lastChatVisitTimestampNegative">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
       <div style="width:200px;float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}</div>
       <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
@@ -55,6 +76,8 @@ import { databaseService } from './database.service';
       <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
       </div>
       <div class="seperator"></div>
+      </div>
+      </div>
     </li>
   </ul>
   </div>
@@ -78,8 +101,7 @@ export class UserProfileComponent {
       if(this.DB.getUserPhotoURL(this.UI.focusUser)) this.isImageOnFirebase = this.DB.getUserPhotoURL(this.UI.focusUser).substring(0,23)=='https://firebasestorage'
       this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
         query:{
-          orderByChild:'following',
-          equalTo: true,
+          orderByChild:'lastChatVisitTimestampNegative',
         }
       });
     });

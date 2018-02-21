@@ -104,6 +104,7 @@ export class ChatComponent {
 
   timestampChatVisit(){
     this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.addLastChatVisitTimestampNegative();
   }
 
   addMessage() {
@@ -125,6 +126,16 @@ export class ChatComponent {
       timestamp = message.timestamp;
       timestampNegative = -1 * timestamp;
       this.db.object('teamMessages/'+teamID+'/'+messageID).update({timestampNegative: timestampNegative});
+    });
+  }
+
+  addLastChatVisitTimestampNegative() {
+    var timestamp: number;
+    var timestampNegative: number;
+    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
+      timestamp = userTeam.lastChatVisitTimestamp;
+      timestampNegative = -1 * timestamp;
+      this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({lastChatVisitTimestampNegative: timestampNegative});
     });
   }
 
