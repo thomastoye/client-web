@@ -52,11 +52,8 @@ import { databaseService } from './database.service';
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
       <div style="width:200px;float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}</div>
       <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
-      <div style="float:right;position:relative;margin-right:10px" (click)="router.navigate(['chat',team.$key])">
-      <div style="float:left;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
-      <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
-      <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
-      </div>
+      <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
+      <div style="width:100px;float:left;margin-top:5px;font-size:11px;color:red" [hidden]="!getChatActivity(team.$key)">New message</div>
       <div class="seperator"></div>
       </div>
       </div>
@@ -71,10 +68,9 @@ import { databaseService } from './database.service';
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
       <div style="width:200px;float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}</div>
       <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
-      <div style="float:right;position:relative;margin-right:10px" (click)="router.navigate(['chat',team.$key])">
-      <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
-      <div class="activity" [hidden]="!getChatActivity(team.$key)"></div>
-      </div>
+      <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
+      <div style="width:100px;float:left;font-size:11px;color:red" [hidden]="!getChatActivity(team.$key)">New message</div>
+      <div class="seperator"></div>
       <div class="seperator"></div>
       </div>
       </div>
