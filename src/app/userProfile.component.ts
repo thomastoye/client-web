@@ -11,7 +11,7 @@ import { databaseService } from './database.service';
   selector: 'user',
   template: `
   <div class="sheet">
-  <div style="float: left; width: 70%;">
+  <div style="float: left;width:80%">
   <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=false;updateUserProfile()">Done</div>
   <div [hidden]='editMode'>
   <div class='title' style="float:left">{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
@@ -24,7 +24,7 @@ import { databaseService } from './database.service';
   <textarea class="textAreaInput" maxlength="140" [(ngModel)]="DB.userResume[UI.focusUser]" placeholder="Your resume (140 characters max) *"></textarea>
   </div>
   </div>
-  <div style="float: right; width: 30%;position:relative">
+  <div style="float: right;width:20%;position:relative">
   <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:75px;width:75px" (click)="showFullScreenImage(DB.getUserPhotoURL(UI.focusUser))">
   <div *ngIf="!isImageOnFirebase" [hidden]='!ownProfile' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
