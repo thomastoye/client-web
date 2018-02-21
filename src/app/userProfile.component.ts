@@ -25,7 +25,7 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div style="float: right; width: 30%;position:relative">
-  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(UI.focusUser)" style="background-color:#0e0e0e;width:100%" (click)="showFullScreenImage(DB.getUserPhotoURL(UI.focusUser))">
+  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:75px;width:75px" (click)="showFullScreenImage(DB.getUserPhotoURL(UI.focusUser))">
   <div *ngIf="!isImageOnFirebase" [hidden]='!ownProfile' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
@@ -70,7 +70,6 @@ import { databaseService } from './database.service';
       <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
       <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
       <div style="width:100px;float:left;font-size:11px;color:red" [hidden]="!getChatActivity(team.$key)">New message</div>
-      <div class="seperator"></div>
       <div class="seperator"></div>
       </div>
       </div>
