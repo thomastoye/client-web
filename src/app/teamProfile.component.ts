@@ -60,10 +60,6 @@ import { databaseService } from './database.service';
   <img src="./../assets/App icons/icon_share_03.svg" style="width:30px">
   <div style="font-size:11px">Wallet</div>
   </div>
-  <div class='appIcon' (click)="router.navigate(['notes',UI.currentTeam])">
-  <img src="./../assets/App icons/note.png" style="width:30px">
-  <div style="font-size:11px">Notes</div>
-  </div>
   <div class='appIcon' (click)="router.navigate(['chat',UI.currentTeam])">
   <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
   <div style="font-size:11px">Chat</div>

@@ -47,12 +47,6 @@
         ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true"
       }
     },
-    "teamNotes": {
-      ".read": "true",
-      "$teamid": {
-        ".write": "root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true"
-      }
-    },
     "teamPayments": {
       "$teamid": {
         "$chargeid": {
