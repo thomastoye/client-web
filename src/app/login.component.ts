@@ -23,7 +23,7 @@ import { userInterfaceService } from './userInterface.service';
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *"/>
           <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *"/>
           <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name *"/>
-          <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register {{messageRegister}}</button>
+          <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL,resume)">Register {{messageRegister}}</button>
           </div>
           </div>
           <div [hidden]="UI.currentUser==null">
@@ -56,6 +56,7 @@ export class LoginComponent  {
   firstName: string;
   lastName: string;
   photoURL: string;
+  resume: string;
   message: string;
   messageRegister: string;
   messageVerification: string;
@@ -67,6 +68,7 @@ export class LoginComponent  {
 
   constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase,  public UI: userInterfaceService) {
     this.photoURL="./../assets/App icons/me.png";
+    this.resume="About me";
     this.newUser = false;
     this.teamProjects = this.db.list('teamProjects/-Kp0TqKyvqnFCnLryKC1', {
       query:{
@@ -98,10 +100,10 @@ export class LoginComponent  {
     .catch(err => this.messageLogout="Error: You were not logged in");
   }
 
-  register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string, photoURL: string) {
+  register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string, photoURL: string, resume: string) {
     this.newUser = false;
     this.clearAllMessages ();
-    if (email==null||password==null||passwordConfirm==null||!(password==passwordConfirm)||firstName==null||lastName==null||photoURL==null) {
+    if (email==null||password==null||passwordConfirm==null||!(password==passwordConfirm)||firstName==null||lastName==null||photoURL==null||resume==null) {
         this.messageRegister="Error: You need to fill all the fields";
     }
     else {
@@ -111,7 +113,7 @@ export class LoginComponent  {
       .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information")
       .then(_=> {
         this.afAuth.authState.subscribe((auth) => {
-          this.db.list('users/'+auth.uid+'/edits').push({timestamp: firebase.database.ServerValue.TIMESTAMP, firstName: firstName, lastName: lastName, photoURL: photoURL});
+          this.db.list('users/'+auth.uid+'/edits').push({timestamp: firebase.database.ServerValue.TIMESTAMP, firstName: firstName, lastName: lastName, photoURL: photoURL, resume: resume})
           .catch(err => this.messageRegister="Error: We couldn't save your profile")
           .then(_ => {
             this.messageRegister="Successful registered";

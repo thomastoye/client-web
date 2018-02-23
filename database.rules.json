@@ -114,7 +114,7 @@
       ".read": "true",
       ".indexOn": ["firstName"],
       "$uid": {
-        ".write": "!data.exists() && auth.uid === $uid"
+        ".write": "auth.uid === $uid"
       }
     }
   }
