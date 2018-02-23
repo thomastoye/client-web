@@ -111,8 +111,8 @@ export class UserProfileComponent {
   updateUserProfile() {
     this.DB.userFirstName[this.UI.focusUser] = this.DB.userFirstName[this.UI.focusUser].toLowerCase();
     this.DB.userLastName[this.UI.focusUser] = this.DB.userLastName[this.UI.focusUser].toLowerCase();
-    this.db.object('users/'+this.UI.focusUser).update({
-      firstName: this.DB.userFirstName[this.UI.focusUser], lastName: this.DB.userLastName[this.UI.focusUser], photoURL: this.DB.userPhotoURL[this.UI.focusUser], resume: this.DB.userResume[this.UI.focusUser]
+    this.db.list('users/'+this.UI.focusUser+'/edits').push({
+      timestamp: firebase.database.ServerValue.TIMESTAMP, firstName: this.DB.userFirstName[this.UI.focusUser], lastName: this.DB.userLastName[this.UI.focusUser], photoURL: this.DB.userPhotoURL[this.UI.focusUser], resume: this.DB.userResume[this.UI.focusUser]
     });
     this.editMode=false;
   }

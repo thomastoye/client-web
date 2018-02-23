@@ -114,7 +114,7 @@
       ".read": "true",
       ".indexOn": ["firstName"],
       "$uid": {
-        ".write": "newData.exists() && auth.uid === $uid"
+        ".write": "!data.exists() && auth.uid === $uid"
       }
     }
   }
