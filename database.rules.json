@@ -1,9 +1,6 @@
 {
   "rules": {
     ".read": "true",
-    "appSettings": {
-      ".write": "false"
-    },
     "ids": {
       ".write": "newData.exists() && auth != null"
     },
