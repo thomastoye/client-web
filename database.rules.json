@@ -96,10 +96,8 @@
     "users": {
       ".indexOn": ["firstName"],
       "$uid": {
-        "$edits": {
-          "$entry": {
-              ".write": "!data.exists() && auth.uid === $uid"
-          }
+        "$entry": {
+            ".write": "!data.exists() && auth.uid === $uid"
         }
       }
     }

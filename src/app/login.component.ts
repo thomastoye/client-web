@@ -111,7 +111,7 @@ export class LoginComponent  {
       .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information")
       .then(_=> {
         this.afAuth.authState.subscribe((auth) => {
-          this.db.list('users/'+auth.uid+'/edits').push({timestamp: firebase.database.ServerValue.TIMESTAMP, firstName: firstName, lastName: lastName, photoURL: photoURL})
+          this.db.list('users/'+auth.uid).push({timestamp: firebase.database.ServerValue.TIMESTAMP, firstName: firstName, lastName: lastName, photoURL: photoURL})
           .catch(err => this.messageRegister="Error: We couldn't save your profile")
           .then(_ => {
             this.messageRegister="Successful registered";
