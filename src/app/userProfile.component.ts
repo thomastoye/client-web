@@ -16,6 +16,7 @@ import { databaseService } from './database.service';
   <div [hidden]='editMode'>
   <div class='title' style="float:left">{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
   <img class='editButton' [hidden]='!ownProfile' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
+  <img src="./../assets/App icons/PERRINN-icon-180x180.png" style="float:left;height:20px;margin:5px;cursor:pointer" (click)="router.navigate(['project','-Ks_OrDydv6PE4UkeNCf'])">
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="DB.userFirstName[UI.focusUser]" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -33,11 +34,6 @@ import { databaseService } from './database.service';
   </label>
   </div>
   </div>
-  </div>
-  <div class='sheet' style="margin-top:10px;cursor:pointer" (click)="router.navigate(['project','-Ks_OrDydv6PE4UkeNCf'])">
-  <div style="float:right;padding:10px;font-size:10px;color:blue">read more</div>
-  <img src="./../assets/App icons/world-map-blue.svg" style="float:left;height:40px;padding:5px">
-  <div style="float:left;padding:10px;font-size:15px;color:#5378b2">"We are a Team."</div>
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="buttonDiv" *ngIf="ownProfile" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
