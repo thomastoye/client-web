@@ -1,26 +1,19 @@
 {
   "rules": {
+    ".read": "true",
     "appSettings": {
-      ".read": "true",
       ".write": "false"
     },
     "ids": {
-      ".read": "true",
       ".write": "newData.exists() && auth != null"
     },
-    "PERRINNStatistics": {
-      ".read": "true"
-    },
     "PERRINNTeamBalance": {
-      ".read": "true",
       ".indexOn": ["balanceNegative"]
     },
     "PERRINNTransactions": {
-      ".read": "true",
       ".indexOn": ["sender","receiver"]
     },
     "projectTeams": {
-      ".read": "true",
       "$projectid": {
         ".indexOn": ["member"],
         "$teamid": {
@@ -29,20 +22,17 @@
       }
     },
     "projects": {
-      ".read": "true",
       ".indexOn": ["name"],
       "$projectid": {
         ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child(root.child('projects').child($projectid).child('leader').val()).child(auth.uid).child('member').val() === true) && auth != null"
       }
     },
     "teamActivities": {
-      ".read": "true",
       "$teamid": {
         ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null"
       }
     },
     "teamMessages": {
-      ".read": "true",
       "$teamid": {
         ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true"
       }
@@ -50,13 +40,11 @@
     "teamPayments": {
       "$teamid": {
         "$chargeid": {
-          ".read": "true",
           ".write": "!data.exists() && newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true"
         }
       }
     },
     "teamProjects": {
-      ".read": "true",
       ".indexOn": ["following"],
       "$teamid": {
         ".indexOn": ["following"],
@@ -66,7 +54,6 @@
       }
     },
     "teamTransactionRequests": {
-      ".read": "true",
       ".indexOn": ["status"],
       "$teamid": {
         ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true",
@@ -74,7 +61,6 @@
       }
     },
     "teamTransactions": {
-      ".read": "true",
       ".indexOn": ["status"],
       "$teamid": {
         ".indexOn": ["status"],
@@ -87,7 +73,6 @@
       }
     },
     "teamUsers": {
-      ".read": "true",
       ".indexOn": ["leader","member","following"],
       "$teamid": {
         ".indexOn": ["leader","member","following"],
@@ -97,24 +82,25 @@
       }
     },
     "teams": {
-      ".read": "true",
       ".indexOn": ["name"],
       "$teamid": {
         ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true) && auth != null"
       }
     },
     "userTeams": {
-      ".read": "true",
       "$uid": {
         ".write": "newData.exists() && auth.uid === $uid",
         ".indexOn": ["following"]
       }
     },
     "users": {
-      ".read": "true",
       ".indexOn": ["firstName"],
       "$uid": {
-        ".write": "auth.uid === $uid"
+        "$edits": {
+          "$entry": {
+              ".write": "!data.exists() && auth.uid === $uid"
+          }
+        }
       }
     }
   }
