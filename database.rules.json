@@ -13,6 +13,9 @@
     "PERRINNTransactions": {
       ".indexOn": ["sender","receiver"]
     },
+    "PERRINNUsers": {
+      ".indexOn": ["firstName"]
+    },
     "projectTeams": {
       "$projectid": {
         ".indexOn": ["member"],
@@ -94,7 +97,6 @@
       }
     },
     "users": {
-      ".indexOn": ["firstName"],
       "$uid": {
         "$entry": {
             ".write": "!data.exists() && auth.uid === $uid"

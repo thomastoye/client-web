@@ -42,7 +42,7 @@ export class AddMemberComponent  {
   refreshUserList () {
     this.filter = this.filter.toLowerCase();
     if (this.filter.length>1) {
-      this.users = this.db.list('users/', {
+      this.users = this.db.list('PERRINNUsers/', {
         query:{
           orderByChild:'firstName',
           startAt: this.filter,

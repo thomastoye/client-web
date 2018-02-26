@@ -62,7 +62,7 @@ export class SearchComponent  {
   refreshSearchLists () {
     if (this.UI.searchFilter) {
       if (this.UI.searchFilter.length>1) {
-        this.users = this.db.list('users/', {
+        this.users = this.db.list('PERRINNUsers/', {
           query:{
             orderByChild:'firstName',
             startAt: this.UI.searchFilter.toLowerCase(),

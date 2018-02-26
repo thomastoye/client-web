@@ -36,15 +36,15 @@ export class databaseService {
   }
 
   getUserFirstName(ID:string):string{
-    if(this.userFirstName[ID]==null) this.db.object('users/'+ID).subscribe(snapshot=>{this.userFirstName[ID]=snapshot.firstName});
+    if(this.userFirstName[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userFirstName[ID]=snapshot.firstName});
     return this.userFirstName[ID];
   }
   getUserLastName(ID:string):string{
-    if(this.userLastName[ID]==null) this.db.object('users/'+ID).subscribe(snapshot=>{this.userLastName[ID]=snapshot.lastName});
+    if(this.userLastName[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userLastName[ID]=snapshot.lastName});
     return this.userLastName[ID];
   }
   getUserPhotoURL(ID:string):string{
-    if(this.userPhotoURL[ID]==null) this.db.object('users/'+ID).subscribe(snapshot=>{this.userPhotoURL[ID]=snapshot.photoURL});
+    if(this.userPhotoURL[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userPhotoURL[ID]=snapshot.photoURL});
     return this.userPhotoURL[ID];
   }
   getTeamName(ID:string):string{
