@@ -14,9 +14,9 @@ import { databaseService } from './database.service';
   <div style="float: left;width:80%">
   <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=false;updateUserProfile()">Done</div>
   <div [hidden]='editMode'>
-  <div class='title' style="float:left">{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
+  <div class='title'>{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
+  <img src="./../assets/App icons/PERRINN-icon-180x180.png" style="height:20px;margin:5px;margin-left:15px;cursor:pointer" (click)="router.navigate(['project','-Ks_OrDydv6PE4UkeNCf'])">
   <img class='editButton' [hidden]='!ownProfile' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
-  <img src="./../assets/App icons/PERRINN-icon-180x180.png" style="float:left;height:20px;margin:5px;cursor:pointer" (click)="router.navigate(['project','-Ks_OrDydv6PE4UkeNCf'])">
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="DB.userFirstName[UI.focusUser]" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
