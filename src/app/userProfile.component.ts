@@ -16,12 +16,10 @@ import { databaseService } from './database.service';
   <div [hidden]='editMode'>
   <div class='title' style="float:left">{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
   <img class='editButton' [hidden]='!ownProfile' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
-  <div style="padding:10px;font-size:12px;line-height:15px;clear:both" [innerHTML]="DB.getUserResume(UI.focusUser) | linky"></div>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="DB.userFirstName[UI.focusUser]" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
   <input maxlength="20" [(ngModel)]="DB.userLastName[UI.focusUser]" style="text-transform: lowercase; font-weight:bold;" placeholder="last name *" />
-  <textarea class="textAreaInput" maxlength="140" [(ngModel)]="DB.userResume[UI.focusUser]" placeholder="Your resume (140 characters max) *"></textarea>
   </div>
   </div>
   <div style="float: right;width:20%;position:relative">
@@ -112,7 +110,7 @@ export class UserProfileComponent {
     this.DB.userFirstName[this.UI.focusUser] = this.DB.userFirstName[this.UI.focusUser].toLowerCase();
     this.DB.userLastName[this.UI.focusUser] = this.DB.userLastName[this.UI.focusUser].toLowerCase();
     this.db.list('users/'+this.UI.focusUser+'/edits').push({
-      timestamp: firebase.database.ServerValue.TIMESTAMP, firstName: this.DB.userFirstName[this.UI.focusUser], lastName: this.DB.userLastName[this.UI.focusUser], photoURL: this.DB.userPhotoURL[this.UI.focusUser], resume: this.DB.userResume[this.UI.focusUser]
+      timestamp: firebase.database.ServerValue.TIMESTAMP, firstName: this.DB.userFirstName[this.UI.focusUser], lastName: this.DB.userLastName[this.UI.focusUser], photoURL: this.DB.userPhotoURL[this.UI.focusUser],
     });
     this.editMode=false;
   }

@@ -119,6 +119,5 @@ exports.updateUserProfile = functions.database.ref('/users/{userID}/edits/{editI
     firstName: profile.firstName,
     lastName: profile.lastName,
     photoURL: profile.photoURL,
-    resume: profile.resume
   });
 });

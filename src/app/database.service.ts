@@ -10,7 +10,6 @@ export class databaseService {
   userFirstName: string[];
   userLastName: string[];
   userPhotoURL: string[];
-  userResume: string[];
   userLeader: string[][];
   userMember: string[][];
   userFollowing: string[][];
@@ -25,7 +24,6 @@ export class databaseService {
     this.userFirstName=[''];
     this.userLastName=[''];
     this.userPhotoURL=[''];
-    this.userResume=[''];
     this.userLeader=[[''],['']];
     this.userMember=[[''],['']];
     this.userFollowing=[[''],['']];
@@ -48,10 +46,6 @@ export class databaseService {
   getUserPhotoURL(ID:string):string{
     if(this.userPhotoURL[ID]==null) this.db.object('users/'+ID).subscribe(snapshot=>{this.userPhotoURL[ID]=snapshot.photoURL});
     return this.userPhotoURL[ID];
-  }
-  getUserResume(ID:string):string{
-    if(this.userResume[ID]==null) this.db.object('users/'+ID).subscribe(snapshot=>{this.userResume[ID]=snapshot.resume});
-    return this.userResume[ID];
   }
   getTeamName(ID:string):string{
     if(this.teamName[ID]==null) this.db.object('teams/'+ID).subscribe(snapshot=>{this.teamName[ID]=snapshot.name});
