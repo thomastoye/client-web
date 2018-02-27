@@ -17,7 +17,7 @@ import { databaseService } from './database.service';
     <div>
     <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{DB.getTeamName(UI.currentTeam)}}</div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
-    <div style="font-size: 25px;line-height:normal; color: black;">{{currentBalance | number:'1.2-2'}}</div>
+    <div style="font-size: 25px;line-height:normal; color: black;">{{DB.getTeamBalance(UI.currentTeam) | number:'1.2-2'}}</div>
     </div>
     <div style="float: right; width: 50%; text-align: left; padding: 5px">
     <div style="color: black;">COINS</div>
@@ -102,7 +102,6 @@ teamTransactions: FirebaseListObservable<any>;
 teamTransactionRequests: FirebaseListObservable<any>;
 PERRINNTransactionsOUT: FirebaseListObservable<any>;
 PERRINNTransactionsIN: FirebaseListObservable<any>;
-currentBalance: number;
 message: string;
 selectedTransactionID: string;
 selectedTransactionRequestID: string;
@@ -112,10 +111,6 @@ constructor(public db: AngularFireDatabase, public router: Router, public UI: us
   this.route.params.subscribe(params => {
     this.UI.currentTeam=params['id'];
     this.moreButtons = false;
-    this.currentBalance = 0;
-    this.getTeamWalletBalance(this.UI.currentTeam).then(balance=>{
-      this.currentBalance = Number(balance);
-    });
     this.teamTransactions = db.list('teamTransactions/'+UI.currentTeam, {
       query:{orderByChild:'status',equalTo: "pending"}
     });
@@ -124,23 +119,6 @@ constructor(public db: AngularFireDatabase, public router: Router, public UI: us
     });
     this.PERRINNTransactionsOUT = db.list('PERRINNTransactions/',{query:{orderByChild:'sender',equalTo:this.UI.currentTeam}});
     this.PERRINNTransactionsIN = db.list('PERRINNTransactions/',{query:{orderByChild:'receiver',equalTo:this.UI.currentTeam}});
-  });
-}
-
-getTeamWalletBalance (teamID:string) {
-  return new Promise(function (resolve, reject) {
-    var balance=0;
-    firebase.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(teamID).once('value').then(PERRINNTransactions=>{
-      PERRINNTransactions.forEach(transaction=>{
-        balance-=Number(transaction.val().amount);
-      });
-    });
-    firebase.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(teamID).once('value').then(PERRINNTransactions=>{
-      PERRINNTransactions.forEach(transaction=>{
-        balance+=Number(transaction.val().amount);
-      });
-      resolve (balance);
-    });
   });
 }
 

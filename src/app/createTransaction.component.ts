@@ -10,7 +10,7 @@ import { databaseService } from './database.service';
   selector: 'createTransaction',
   template: `
   <div class="sheet">
-  <div class="title" style="color: black;text-align:left;">Available balance {{currentBalance | number:'1.2-2'}} COINS</div>
+  <div class="title" style="color: black;text-align:left;">Available balance {{DB.getTeamBalance(this.UI.currentTeam) | number:'1.2-2'}} COINS</div>
   <div class="user">
   <input maxlength="50" id="amountInput" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
   <input maxlength="50" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionReference" placeholder="Reference *" />
@@ -34,15 +34,10 @@ export class CreateTransactionComponent {
   transactionAmount: number;
   selectedTeamID: string;
   messageCreateTransaction: string;
-  currentBalance: number;
   transactionInputValid: boolean;
 
   constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService) {
     this.transactionInputValid = false;
-    this.currentBalance = 0;
-    this.getTeamWalletBalance(this.UI.currentTeam).then(balance=>{
-      this.currentBalance = Number(balance);
-    });
     this.userTeams = db.list('userTeams/'+this.UI.currentUser, {
       query:{
         orderByChild:'following',
@@ -53,23 +48,6 @@ export class CreateTransactionComponent {
 
   ngOnInit () {
     document.getElementById("amountInput").focus();
-  }
-
-  getTeamWalletBalance (teamID:string) {
-    return new Promise(function (resolve, reject) {
-      var balance=0;
-      firebase.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(teamID).once('value').then(PERRINNTransactions=>{
-        PERRINNTransactions.forEach(transaction=>{
-          balance-=Number(transaction.val().amount);
-        });
-      });
-      firebase.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(teamID).once('value').then(PERRINNTransactions=>{
-        PERRINNTransactions.forEach(transaction=>{
-          balance+=Number(transaction.val().amount);
-        });
-        resolve (balance);
-      });
-    });
   }
 
   createTransaction() {
@@ -100,7 +78,7 @@ export class CreateTransactionComponent {
   checkTransactionInput():void {
     this.transactionInputValid = (this.transactionReference!=null&&this.transactionReference!=""&&
                                   this.transactionAmount!=null&&this.transactionAmount>0&&
-                                  this.transactionAmount<=this.currentBalance&&
+                                  this.transactionAmount<=Number(this.DB.getTeamBalance(this.UI.currentTeam))&&
                                   this.selectedTeamID!=null&&this.selectedTeamID!=""&&
                                   this.selectedTeamID!=this.UI.currentTeam);
   }
