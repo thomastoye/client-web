@@ -16,6 +16,7 @@ export class databaseService {
   teamName: string[];
   teamPhotoURL: string[];
   teamMessagesCount: string[];
+  teamMessagesCost: string[];
   projectName: string[];
   projectPhotoURL: string[];
   projectGoal: string[];
@@ -31,6 +32,7 @@ export class databaseService {
     this.teamName=[''];
     this.teamPhotoURL=[''];
     this.teamMessagesCount=[''];
+    this.teamMessagesCost=[''];
     this.projectName=[''];
     this.projectPhotoURL=[''];
     this.projectGoal=[''];
@@ -60,6 +62,10 @@ export class databaseService {
   getTeamMessagesCount(ID:string):string{
     if(this.teamMessagesCount[ID]==null) this.db.object('PERRINNTeamUsage/'+ID).subscribe(snapshot=>{this.teamMessagesCount[ID]=snapshot.messagesCount});
     return this.teamMessagesCount[ID];
+  }
+  getTeamMessagesCost(ID:string):string{
+    if(this.teamMessagesCost[ID]==null) this.db.object('PERRINNTeamUsage/'+ID).subscribe(snapshot=>{this.teamMessagesCost[ID]=snapshot.messagesCost});
+    return this.teamMessagesCost[ID];
   }
   getProjectName(ID:string):string{
     if(this.projectName[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectName[ID]=snapshot.name});

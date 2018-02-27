@@ -84,7 +84,7 @@
     "teams": {
       ".indexOn": ["name"],
       "$teamid": {
-        ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true) && auth != null"
+        ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true)"
       }
     },
     "userTeams": {

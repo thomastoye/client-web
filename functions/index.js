@@ -123,9 +123,15 @@ exports.updateUserProfile = functions.database.ref('/users/{userID}/{editID}').o
 });
 
 exports.newMessage = functions.database.ref('/teamMessages/{teamID}/{messageID}').onCreate(event => {
-  return admin.database().ref('PERRINNTeamUsage/'+event.params.teamID).child('messagesCount').transaction((current) => {
-    return (current || 0) + 1;
-  }).then(() => {
-    return console.log('Counter updated.');
+  return admin.database().ref('appSettings/cost/').once('value').then(cost => {
+    return admin.database().ref('PERRINNTeamUsage/'+event.params.teamID).child('messagesCount').transaction((current) => {
+      return (current || 0) + 1;
+    }).then(() => {
+      return admin.database().ref('PERRINNTeamUsage/'+event.params.teamID).child('messagesCost').transaction((current) => {
+        return (current || 0) + cost.val().message;
+      }).then(() => {
+        return console.log('Done.');
+      });
+    });
   });
 });
