@@ -5,35 +5,44 @@ admin.initializeApp(functions.config().firebase);
 
 const stripe = require('stripe')(functions.config().stripe.token);
 
-exports.verifyTransactions = functions.database.ref('/teamTransactions/{teamID}/{transactionID}').onCreate(event => {
-  const transaction = event.data.val();
+function updateTeamBalance (teamID) {
   var balance=0;
-  admin.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(event.params.teamID).once('value').then(PERRINNTransactions=>{
+  return admin.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(teamID).once('value').then(PERRINNTransactions=>{
     PERRINNTransactions.forEach(function(PERRINNTransaction){
       balance-=Number(PERRINNTransaction.val().amount);
     });
   }).then(()=>{
-    admin.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(event.params.teamID).once('value').then(PERRINNTransactions=>{
+    return admin.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(teamID).once('value').then(PERRINNTransactions=>{
       PERRINNTransactions.forEach(function(PERRINNTransaction){
         balance+=Number(PERRINNTransaction.val().amount);
       });
     }).then(()=>{
-      if (balance>=transaction.amount) {
-        admin.database().ref('PERRINNTransactions/'+event.params.transactionID).update({
-          amount: transaction.amount,
-          sender: event.params.teamID,
-          receiver: transaction.receiver,
-          reference: transaction.reference,
-          createdTimestamp: transaction.createdTimestamp,
-          verifiedTimestamp: admin.database.ServerValue.TIMESTAMP,
-        }).then(()=>{
-          return admin.database().ref('teamTransactions/'+event.params.teamID+'/'+event.params.transactionID).update({
-            status: "verified",
-          });
-        });
-      }
-      else {return null}
+      admin.database().ref('PERRINNTeamBalance/'+teamID).update({balance:balance,balanceNegative:-balance});
+      return balance;
+    }).catch(()=>{
+      return 0;
     });
+  });
+}
+
+exports.verifyTransactions = functions.database.ref('/teamTransactions/{teamID}/{transactionID}').onCreate(event => {
+  const transaction = event.data.val();
+  return updateTeamBalance(event.params.teamID).then((balance)=>{
+    if (balance>=transaction.amount) {
+      return admin.database().ref('PERRINNTransactions/'+event.params.transactionID).update({
+        amount: transaction.amount,
+        sender: event.params.teamID,
+        receiver: transaction.receiver,
+        reference: transaction.reference,
+        createdTimestamp: transaction.createdTimestamp,
+        verifiedTimestamp: admin.database.ServerValue.TIMESTAMP,
+      }).then(()=>{
+        admin.database().ref('teamTransactions/'+event.params.teamID+'/'+event.params.transactionID).update({status: "verified"});
+        updateTeamBalance(event.params.teamID);
+        return updateTeamBalance(transaction.receiver);
+      });
+    }
+    else {return null}
   });
 });
 
@@ -73,8 +82,6 @@ exports.createPERRINNTransactionOnPaymentComplete = functions.database.ref('/tea
   }
 });
 
-exports.updateTeamBalance = functions.database.ref('/PERRINNTransactions/{transactionID}').onWrite(event => {
-  var totalCOIN=0;
   admin.database().ref('teams/').once('value').then(teams=>{
     teams.forEach(function(team){
       var balance=0;
@@ -98,7 +105,6 @@ exports.updateTeamBalance = functions.database.ref('/PERRINNTransactions/{transa
     });
   });
 });
-
 exports.updateProjectLeader = functions.database.ref('/projectTeams').onWrite(event => {
   admin.database().ref('projectTeams/').once('value').then(projects=>{
     projects.forEach(function(project){
