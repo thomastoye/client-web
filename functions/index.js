@@ -121,3 +121,11 @@ exports.updateUserProfile = functions.database.ref('/users/{userID}/{editID}').o
     photoURL: profile.photoURL,
   });
 });
+
+exports.newMessage = functions.database.ref('/teamMessages/{teamID}/{messageID}').onCreate(event => {
+  return admin.database().ref('PERRINNTeamUsage/'+event.params.teamID).child('messagesCount').transaction((current) => {
+    return (current || 0) + 1;
+  }).then(() => {
+    return console.log('Counter updated.');
+  });
+});
