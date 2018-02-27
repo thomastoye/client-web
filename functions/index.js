@@ -96,7 +96,7 @@ exports.updateProjectLeader = functions.database.ref('/projectTeams').onWrite(ev
   });
 });
 
-exports.updateUserProfile = functions.database.ref('/users/{userID}/{editID}').onCreate(event => {
+exports.newUserProfile = functions.database.ref('/users/{userID}/{editID}').onCreate(event => {
   const profile = event.data.val();
   admin.database().ref('PERRINNUsers/'+event.params.userID).update({
     firstName: profile.firstName,
