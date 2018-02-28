@@ -31,7 +31,7 @@ import { userInterfaceService } from './userInterface.service';
           </div>
         </form>
       </div>
-      <div class="cta"><a href='mailto:contactperrinn@gmail.com'>Contact PERRINN</a></div>
+      <div class="cta"><a href='mailto:perrinnlimited@gmail.com'>Contact PERRINN</a></div>
     </div>
   </div>
   <ul class='listLight' style="max-width:620px;display:block;margin:0 auto">

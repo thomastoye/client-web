@@ -49,10 +49,6 @@ export class AppComponent {
                 if (userTeam.$key==UI.currentTeam&&chatActivity) {this.currentTeamChatActivity=true}
                 this.globalChatActivity = chatActivity?true:this.globalChatActivity;
                 document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
-                //WORK IN PROGRESS PICKS UP TOO MANY FALSE NOTIFICATIONS
-                //if (this.globalChatActivity) {
-                //  notificationSound.play();
-                //}
               });
             }
           });
