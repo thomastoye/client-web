@@ -25,26 +25,25 @@ function updateTeamBalance (teamID) {
   });
 }
 
-exports.verifyTransactions = functions.database.ref('/teamTransactions/{teamID}/{transactionID}').onCreate(event => {
-  const transaction = event.data.val();
-  return updateTeamBalance(event.params.teamID).then((balance)=>{
-    if (balance>=transaction.amount) {
-      return admin.database().ref('PERRINNTransactions/'+event.params.transactionID).update({
-        amount: transaction.amount,
-        sender: event.params.teamID,
-        receiver: transaction.receiver,
-        reference: transaction.reference,
-        createdTimestamp: transaction.createdTimestamp,
+function createTransaction (amount, sender, receiver, reference, createdTimestamp) {
+  return updateTeamBalance(sender).then((balance)=>{
+    if (balance>=amount) {
+      return admin.database().ref('PERRINNTransactions/').push({
+        amount: amount,
+        sender: sender,
+        receiver: receiver,
+        reference: reference,
+        createdTimestamp: createdTimestamp,
         verifiedTimestamp: admin.database.ServerValue.TIMESTAMP,
       }).then(()=>{
-        admin.database().ref('teamTransactions/'+event.params.teamID+'/'+event.params.transactionID).update({status: "verified"});
-        updateTeamBalance(event.params.teamID);
-        return updateTeamBalance(transaction.receiver);
+        updateTeamBalance(sender);
+        updateTeamBalance(receiver);
+        return 1;
       });
     }
     else {return null}
   });
-});
+}
 
 exports.createStripeCharge = functions.database.ref('/teamPayments/{userID}/{chargeID}').onCreate(event => {
   const val = event.data.val();
@@ -96,6 +95,14 @@ exports.updateProjectLeader = functions.database.ref('/projectTeams').onWrite(ev
   });
 });
 
+exports.newTransaction = functions.database.ref('/teamTransactions/{teamID}/{transactionID}').onCreate(event => {
+  const transaction = event.data.val();
+  return createTransaction (transaction.amount, event.params.teamID, transaction.receiver, transaction.reference, transaction.createdTimestamp).then((result)=>{
+    if (result) admin.database().ref('teamTransactions/'+event.params.teamID+'/'+event.params.transactionID).update({status: "verified"});
+    return 1;
+  });
+});
+
 exports.newUserProfile = functions.database.ref('/users/{userID}/{editID}').onCreate(event => {
   const profile = event.data.val();
   admin.database().ref('PERRINNUsers/'+event.params.userID).update({
@@ -106,7 +113,9 @@ exports.newUserProfile = functions.database.ref('/users/{userID}/{editID}').onCr
 });
 
 exports.newMessage = functions.database.ref('/teamMessages/{teamID}/{messageID}').onCreate(event => {
+  const messageTimestamp = event.data.val().timestamp;
   return admin.database().ref('appSettings/cost/').once('value').then(cost => {
+    createTransaction (cost.val().message, event.params.teamID, "-L6XIigvAphrJr5w2jbf", "messageCost", messageTimestamp);
     return admin.database().ref('PERRINNTeamUsage/'+event.params.teamID).child('messagesCount').transaction((current) => {
       return (current || 0) + 1;
     }).then(() => {

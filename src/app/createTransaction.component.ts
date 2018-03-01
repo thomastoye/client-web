@@ -10,7 +10,7 @@ import { databaseService } from './database.service';
   selector: 'createTransaction',
   template: `
   <div class="sheet">
-  <div class="title" style="color: black;text-align:left;">Available balance {{DB.getTeamBalance(this.UI.currentTeam)?DB.getTeamBalance(this.UI.currentTeam):0 | number:'1.2-2'}} COINS</div>
+  <div class="title" style="color: black;text-align:left;">Available balance {{DB.getTeamBalance(this.UI.currentTeam) | number:'1.2-2'}} COINS</div>
   <div class="user">
   <input maxlength="50" id="amountInput" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
   <input maxlength="50" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionReference" placeholder="Reference *" />

@@ -17,7 +17,7 @@ import { databaseService } from './database.service';
     <div>
     <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{DB.getTeamName(UI.currentTeam)}}</div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
-    <div style="font-size: 25px;line-height:normal; color: black;">{{DB.getTeamBalance(UI.currentTeam)?DB.getTeamBalance(UI.currentTeam):0 | number:'1.2-2'}}</div>
+    <div style="font-size: 25px;line-height:normal; color: black;">{{DB.getTeamBalance(UI.currentTeam) | number:'1.2-2'}}</div>
     </div>
     <div style="float: right; width: 50%; text-align: left; padding: 5px">
     <div style="color: black;">COINS</div>
