@@ -81,7 +81,7 @@ import { databaseService } from './database.service';
   <div class='sheet' style="margin-top:10px">
   <div class="title">Usage</div>
   <div style="margin:10px">Number of messages {{DB.getTeamMessagesCount(UI.currentTeam)?DB.getTeamMessagesCount(UI.currentTeam):0}}</div>
-  <div style="margin:10px">Cost {{DB.getTeamMessagesCost(UI.currentTeam)?DB.getTeamMessagesCost(UI.currentTeam):0}} COINS (won't be charged)</div>
+  <div style="margin:10px">Cost {{DB.getTeamMessagesCost(UI.currentTeam)|number:'1.2-2'}} COINS (won't be charged)</div>
   </div>
 `,
 })
