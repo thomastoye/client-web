@@ -110,7 +110,7 @@ export class LoginComponent  {
           .catch(err => this.messageRegister="Error: We couldn't save your profile")
           .then(_ => {
             this.messageRegister="Successful registered";
-            var teamName = "team " + firstName;
+            var teamName = firstName+lastName;
             this.createNewTeam(auth.uid, teamName);
           });
         });
