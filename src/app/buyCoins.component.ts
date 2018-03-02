@@ -107,8 +107,8 @@ export class BuyCoinsComponent {
           this.enteringCardDetails = false;
           this.processingPayment = true;
           this.messagePayment = `Processing card...`;
-          this.newPaymentID = firebase.database().ref(`/teamPayments/${this.UI.currentUser}`).push().key;
-          firebase.database().ref(`/teamPayments/${this.UI.currentUser}/${this.newPaymentID}`)
+          this.newPaymentID = firebase.database().ref(`/teamPayments/${this.UI.currentTeam}`).push().key;
+          firebase.database().ref(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}`)
           .update({
             source: response.id,
             amountCOINSPurchased: this.amountCOINSPurchased,
@@ -117,14 +117,14 @@ export class BuyCoinsComponent {
             team: this.UI.currentTeam,
           })
           .then(()=>{
-            this.db.object(`/teamPayments/${this.UI.currentUser}/${this.newPaymentID}/response/outcome`).subscribe(paymentSnapshot=>{
+            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/response/outcome`).subscribe(paymentSnapshot=>{
               if (paymentSnapshot.seller_message!=null) this.messagePayment = paymentSnapshot.seller_message;
               if (this.messagePayment == "Payment complete.") this.messagePERRINNTransaction = "We are now sending COINS to your team...";
             });
-            this.db.object(`/teamPayments/${this.UI.currentUser}/${this.newPaymentID}/error`).subscribe(paymentSnapshot=>{
+            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/error`).subscribe(paymentSnapshot=>{
               if (paymentSnapshot.message!=null) this.messagePayment = paymentSnapshot.message;
             });
-            this.db.object(`/teamPayments/${this.UI.currentUser}/${this.newPaymentID}/PERRINNTransaction`).subscribe(transactionSnapshot=>{
+            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/PERRINNTransaction`).subscribe(transactionSnapshot=>{
               if (transactionSnapshot.message!=null) this.messagePERRINNTransaction = transactionSnapshot.message;
             });
           });
