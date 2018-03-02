@@ -40,6 +40,9 @@ import { userInterfaceService } from './userInterface.service';
       <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}</div>
     </li>
   </ul>
+  <div class='sheet' style="margin-top:10px">
+  <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:5px;" (click)="router.navigate(['chat','-KtmuFyG2XEmWm8oNOGT'])">How it works</div>
+  </div>
   `,
 })
 
