@@ -36,7 +36,6 @@ export class AppComponent {
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null) {}
       else {
-        var notificationSound= new Audio("./../assets/Sounds/micro.mp3");
         db.list('userTeams/'+this.UI.currentUser).subscribe(userTeams=>{
           console.log("loop 5");
           this.globalChatActivity = false;
