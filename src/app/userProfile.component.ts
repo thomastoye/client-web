@@ -36,6 +36,9 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
+  <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:5px;" (click)="router.navigate(['chat','-KtmuFyG2XEmWm8oNOGT'])">How it works</div>
+  </div>
+  <div class='sheet' style="margin-top:10px">
   <div class="buttonDiv" *ngIf="ownProfile" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
