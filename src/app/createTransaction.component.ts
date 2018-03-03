@@ -10,6 +10,8 @@ import { databaseService } from './database.service';
   selector: 'createTransaction',
   template: `
   <div class="sheet">
+  <div style="width:100px;font-size:10px;cursor:pointer;color:blue;padding:5px;float:left" (click)="router.navigate(['chat',this.UI.currentTeam])">Back to chat</div>
+  <div style="width:100px;font-size:10px;cursor:pointer;color:blue;padding:5px;float:right" (click)="router.navigate(['wallet',this.UI.currentTeam])">Go to wallet</div>
   <div class="title" style="color: black;text-align:left;">Available balance {{DB.getTeamBalance(this.UI.currentTeam) | number:'1.2-2'}} COINS</div>
   <div class="user">
   <input maxlength="50" id="amountInput" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
@@ -51,28 +53,17 @@ export class CreateTransactionComponent {
   }
 
   createTransaction() {
-    if (this.DB.getUserLeader(this.UI.currentTeam,this.UI.currentUser)) {
-      this.db.list('teamTransactions/'+this.UI.currentTeam).push({
-        reference: this.transactionReference,
-        amount: this.transactionAmount,
-        receiver: this.selectedTeamID,
-        createdTimestamp: firebase.database.ServerValue.TIMESTAMP,
-        status: "pending"
-      })
-      .then(_ => this.router.navigate(['wallet',this.UI.currentTeam]))
-      .catch(err => this.messageCreateTransaction="Error");
-    }
-    else {
-      this.db.list('teamTransactionRequests/'+this.UI.currentTeam).push({
-        reference: this.transactionReference,
-        amount: this.transactionAmount,
-        receiver: this.selectedTeamID,
-        requestedTimestamp: firebase.database.ServerValue.TIMESTAMP,
-        status: "pending"
-      })
-      .then(_ => this.router.navigate(['wallet',this.UI.currentTeam]))
-      .catch(err => this.messageCreateTransaction="Error");
-    }
+    this.db.list('teamMessages/'+this.UI.currentTeam).push({
+      timestamp:firebase.database.ServerValue.TIMESTAMP,
+      text:"New transaction: "+this.transactionAmount+" COINS to "+this.DB.getTeamName(this.selectedTeamID)+", reference: "+this.transactionReference,
+      image:"",
+      user:this.UI.currentUser,
+      reference: this.transactionReference,
+      amount: this.transactionAmount,
+      receiver: this.selectedTeamID,
+    })
+    .then(_ => this.router.navigate(['chat',this.UI.currentTeam]))
+    .catch(err => this.messageCreateTransaction="Error");
   }
 
   checkTransactionInput():void {

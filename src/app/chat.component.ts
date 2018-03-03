@@ -19,10 +19,10 @@ import { databaseService } from './database.service';
     <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
     <div style="display: inline; float: left; height:35px; width:5px"></div>
     <div style="display: inline; float: left; height:35px; width:2px">
-    <div [hidden]="lastChatVisitTimestamp>message.timestamp" style="height:35px;width:2px;background-color:red;"></div>
+    <div [hidden]="lastChatVisitTimestamp>=message.timestamp" style="height:35px;width:2px;background-color:red;"></div>
     </div>
-    <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.author)" style="cursor:pointer;display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.author])">
-    <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{DB.getUserFirstName(message.author)}}</div>
+    <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
+    <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{DB.getUserFirstName(message.user)}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
     <div style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
     <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0;" (click)="showFullScreenImage(message.image)">
@@ -36,8 +36,8 @@ import { databaseService } from './database.service';
   <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" (click)="router.navigate(['team',UI.currentTeam])" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px;cursor:pointer">
   <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style:none;float:left;">
-    <li *ngFor="let author of draftMessageAuthors | async">
-    <div [hidden]="!author.draftMessage||author.$key==UI.currentUser" *ngIf="isDraftMessageRecent(author.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{DB.getUserFirstName(author.$key)}}...</div>
+    <li *ngFor="let user of draftMessageUsers | async">
+    <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{DB.getUserFirstName(user.$key)}}...</div>
     </li>
   </ul>
   <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
@@ -45,6 +45,7 @@ import { databaseService } from './database.service';
   <img src="./../assets/App icons/camera.png" style="width:25px">
   <span class="tipText">Max 3.0Mb</span>
   </label>
+  <img src="./../assets/App icons/icon_share_03.svg" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['createTransaction'])">
   <textarea [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
@@ -54,7 +55,7 @@ export class ChatComponent {
   draftMessage: string;
   draftImage: string;
   draftMessageDB: boolean;
-  draftMessageAuthors: FirebaseListObservable<any>;
+  draftMessageUsers: FirebaseListObservable<any>;
   teamMessages: FirebaseListObservable<any>;
   messageNumberDisplay: number;
   lastChatVisitTimestamp: number;
@@ -70,7 +71,7 @@ export class ChatComponent {
       this.draftMessage="";
       this.messageNumberDisplay = 15;
       this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam, {query: {limitToLast: this.messageNumberDisplay}});
-      this.draftMessageAuthors = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/');
+      this.draftMessageUsers = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/');
       this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
         this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
       });
@@ -110,23 +111,15 @@ export class ChatComponent {
   addMessage() {
     this.draftMessage = this.draftMessage.replace(/(\r\n|\n|\r)/gm,"");
     if (this.draftMessage!=""||this.draftImage!="") {
-      this.db.object('teamActivities/'+this.UI.currentTeam).update({lastMessageTimestamp: firebase.database.ServerValue.TIMESTAMP});
-      var messageKey = this.db.list('teamMessages/' + this.UI.currentTeam).push({ timestamp: firebase.database.ServerValue.TIMESTAMP, text: this.draftMessage, image:this.draftImage, author: this.UI.currentUser}).key;
-      this.addMessageTimestampNegative (this.UI.currentTeam, messageKey);
+      this.db.list('teamMessages/'+this.UI.currentTeam).push({
+        timestamp:firebase.database.ServerValue.TIMESTAMP,
+        text:this.draftMessage,
+        image:this.draftImage,
+        user:this.UI.currentUser
+      });
       this.draftMessage = "";
       this.draftImage = "";
-      this.timestampChatVisit();
     }
-  }
-
-  addMessageTimestampNegative(teamID: string, messageID: string) {
-    var timestamp: number;
-    var timestampNegative: number;
-    this.db.object('teamMessages/'+teamID+'/'+messageID).subscribe(message=>{
-      timestamp = message.timestamp;
-      timestampNegative = -1 * timestamp;
-      this.db.object('teamMessages/'+teamID+'/'+messageID).update({timestampNegative: timestampNegative});
-    });
   }
 
   addLastChatVisitTimestampNegative() {
