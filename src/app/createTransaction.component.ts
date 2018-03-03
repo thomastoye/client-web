@@ -25,7 +25,7 @@ import { databaseService } from './database.service';
       {{DB.getTeamName(team.$key)}}{{ (DB.getUserLeader(team.$key,UI.currentUser)? " *" : "")}}
     </li>
   </ul>
-  <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction{{DB.getUserLeader(UI.currentTeam,UI.currentUser)?"":" (Team leader will have to approve) "}}{{messageCreateTransaction}}</button>
+  <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction{{messageCreateTransaction}}</button>
   </div>
   </div>
   `,
