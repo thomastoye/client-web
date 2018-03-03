@@ -10,8 +10,8 @@ import { databaseService } from './database.service';
   selector: 'createTransaction',
   template: `
   <div class="sheet">
-  <div style="width:100px;font-size:10px;cursor:pointer;color:blue;padding:5px;float:left" (click)="router.navigate(['chat',this.UI.currentTeam])">Back to chat</div>
-  <div style="width:100px;font-size:10px;cursor:pointer;color:blue;padding:5px;float:right" (click)="router.navigate(['wallet',this.UI.currentTeam])">Go to wallet</div>
+  <div style="width:100px;font-size:12px;cursor:pointer;color:blue;padding:10px;float:left" (click)="router.navigate(['chat',this.UI.currentTeam])">Back</div>
+  <div style="width:100px;font-size:12px;cursor:pointer;color:blue;padding:10px;float:right" (click)="router.navigate(['wallet',this.UI.currentTeam])">Wallet</div>
   <div class="title" style="color: black;text-align:left;">Available balance {{DB.getTeamBalance(this.UI.currentTeam) | number:'1.2-2'}} COINS</div>
   <div class="user">
   <input maxlength="50" id="amountInput" type="number" onkeypress="return event.charCode>=48" (keyup)="checkTransactionInput()" [(ngModel)]="this.transactionAmount" placeholder="Amount *" />
