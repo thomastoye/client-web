@@ -13,7 +13,7 @@ import { databaseService } from './database.service';
   <div class="sheet">
   <div class="chat" id="chat-scroll">
   <div>
-  <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
+  <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('PERRINNTeamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async ; let last = last">
     <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
@@ -70,7 +70,7 @@ export class ChatComponent {
       this.draftImage="";
       this.draftMessage="";
       this.messageNumberDisplay = 15;
-      this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam, {query: {limitToLast: this.messageNumberDisplay}});
+      this.teamMessages = this.db.list('PERRINNTeamMessages/'+this.UI.currentTeam, {query: {limitToLast: this.messageNumberDisplay}});
       this.draftMessageUsers = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/');
       this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
         this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
