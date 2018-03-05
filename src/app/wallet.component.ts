@@ -10,7 +10,8 @@ import { databaseService } from './database.service';
   selector: 'wallet',
   template: `
   <div class="sheet">
-    <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" (click)="router.navigate(['team',UI.currentTeam])" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px;cursor:pointer">
+    <div style="width:100px;font-size:12px;cursor:pointer;color:blue;padding:10px;float:left" (click)="router.navigate(['createTransaction'])">Back</div>
+    <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" (click)="router.navigate(['team',UI.currentTeam])" style="display: inline; float: right; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px;cursor:pointer">
     <div style="clear:both;text-align:center">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
@@ -27,26 +28,14 @@ import { databaseService } from './database.service';
     <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['COINinfo'])">COIN info</div>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="title">RECEIVED</div>
   <ul class="listLight">
-    <li *ngFor="let transaction of PERRINNTransactionsIN | async">
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.verifiedTimestamp | date :'medium'}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
+    <li *ngFor="let transaction of PERRINNTeamTransactions | async">
+      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.timestamp | date :'medium'}}</div>
+      <div style="width:100px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}}</div>
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">From {{DB.getTeamName(transaction.sender)}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
-    </li>
-    </ul>
-    </div>
-    <div class='sheet' style="margin-top:10px">
-    <div class="title">SENT</div>
-    <ul class="listLight">
-    <li *ngFor="let transaction of PERRINNTransactionsOUT | async">
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.verifiedTimestamp | date :'medium'}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}} COINS</div>
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">To {{DB.getTeamName(transaction.receiver)}}</div>
-      <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">Verified in {{(transaction.verifiedTimestamp-transaction.createdTimestamp)/1000}} s</div>
+      <div style="width:125px;float:left;text-align:right;font-size:10px;line-height:12px">{{DB.getTeamName(transaction.otherTeam)}}</div>
+      <div style="width:75px;float:left;text-align:right;font-size:9px;line-height:12px">{{(transaction.timestamp-transaction.requestTimestamp)/1000}} s</div>
+      <div style="width:100px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.balancePost | number:'1.2-2'}}</div>
     </li>
     </ul>
     </div>
@@ -54,14 +43,12 @@ import { databaseService } from './database.service';
 })
 export class WalletComponent {
 
-PERRINNTransactionsOUT: FirebaseListObservable<any>;
-PERRINNTransactionsIN: FirebaseListObservable<any>;
+PERRINNTeamTransactions: FirebaseListObservable<any>;
 
 constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
   this.route.params.subscribe(params => {
     this.UI.currentTeam=params['id'];
-    this.PERRINNTransactionsOUT = db.list('PERRINNTransactions/',{query:{orderByChild:'sender',equalTo:this.UI.currentTeam}});
-    this.PERRINNTransactionsIN = db.list('PERRINNTransactions/',{query:{orderByChild:'receiver',equalTo:this.UI.currentTeam}});
+    this.PERRINNTeamTransactions = db.list('PERRINNTeamTransactions/'+this.UI.currentTeam);
   });
 }
 

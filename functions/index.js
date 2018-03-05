@@ -26,23 +26,39 @@ function updateTeamBalance (team) {
 }
 
 function createTransaction (amount, sender, receiver, user, reference, timestamp) {
-  return updateTeamBalance(sender).then((balance)=>{
-    if (balance>=amount) {
-      return admin.database().ref('PERRINNTransactions/').push({
-        amount: amount,
-        sender: sender,
-        receiver: receiver,
-        user: user,
-        reference: reference,
-        createdTimestamp: timestamp,
-        verifiedTimestamp: admin.database.ServerValue.TIMESTAMP,
-      }).then(()=>{
-        updateTeamBalance(sender);
-        updateTeamBalance(receiver);
-        return 1;
-      });
-    }
-    else {return null}
+  return admin.database().ref('PERRINNTeamBalance/'+sender).once('value').then((senderBalance)=>{
+    return admin.database().ref('PERRINNTeamBalance/'+receiver).once('value').then((receiverBalance)=>{
+      var balanceSenderPre=senderBalance.val().balance;
+      var balanceSenderPost=balanceSenderPre-amount;
+      var balanceReceiverPre=receiverBalance.val().balance;
+      var balanceReceiverPost=balanceReceiverPre+amount;
+      if (balanceSenderPre>=amount) {
+        return admin.database().ref('PERRINNTransactions/').push({
+          amount: amount,
+          sender: sender,
+          receiver: receiver,
+          user: user,
+          reference: reference,
+          createdTimestamp: timestamp,
+          verifiedTimestamp: admin.database.ServerValue.TIMESTAMP,
+          balanceSenderPost: balanceSenderPost,
+          balanceReceiverPost: balanceReceiverPost,
+        }).then(()=>{
+          admin.database().ref('PERRINNTeamBalance/'+sender).update({balance:balanceSenderPost,balanceNegative:-balanceSenderPost});
+          admin.database().ref('PERRINNTeamBalance/'+receiver).update({balance:balanceReceiverPost,balanceNegative:-balanceReceiverPost});
+          return 1;
+        });
+      }
+      else {
+        admin.database().ref('PERRINNTeamMessages/'+sender).push({
+          timestamp: admin.database.ServerValue.TIMESTAMP,
+          text: "Your COIN balance is too low.",
+          user: "PERRINN",
+          action: "warning"
+        });
+        return null
+      }
+    });
   });
 }
 
@@ -148,7 +164,7 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
       } else {
         admin.database().ref('PERRINNTeamMessages/'+event.params.team).push({
           timestamp: admin.database.ServerValue.TIMESTAMP,
-          text: "You need to be leader to send COINS from this team.",
+          text: "You need to be leader to send COINS.",
           user: "PERRINN",
           action: "warning"
         });
@@ -170,23 +186,24 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
 });
 
 exports.useForWhatEver = functions.database.ref('toto').onCreate(event => {
-  var counter=0;
-  admin.database().ref('PERRINNTeamMessages/').once('value').then(teams=>{
-    teams.forEach(function(team){
-      admin.database().ref('PERRINNTeamMessages/'+team.key).once('value').then(messages=>{
-        messages.forEach(function(message){
-          counter+=1;
-    //          const image = message.val().image?message.val().image:"";
-    //          const user = message.val().user?message.val().user:message.val().author;
-    //          admin.database().ref('PERRINNTeamMessages/'+team.key+'/'+message.key).update({
-    //            timestamp:message.val().timestamp,
-    //            timestampNegative:-1*message.val().timestamp,
-    //            text:message.val().text,
-    //            user:message.val().user,
-    //            image:image
-    //          });
-        });
-        console.log(counter);
+  admin.database().ref('PERRINNTransactions/').once('value').then(transactions=>{
+    transactions.forEach(function(transaction){
+      var user=transaction.val().user?transaction.val().user:"";
+      admin.database().ref('PERRINNTeamTransactions/'+transaction.val().sender+'/'+transaction.key).update({
+        amount: -transaction.val().amount,
+        otherTeam: transaction.val().receiver,
+        user: user,
+        reference: transaction.val().reference,
+        requestTimestamp: transaction.val().createdTimestamp,
+        timestamp: transaction.val().verifiedTimestamp,
+      });
+      admin.database().ref('PERRINNTeamTransactions/'+transaction.val().receiver+'/'+transaction.key).update({
+        amount: transaction.val().amount,
+        otherTeam: transaction.val().sender,
+        user: user,
+        reference: transaction.val().reference,
+        requestTimestamp: transaction.val().createdTimestamp,
+        timestamp: transaction.val().verifiedTimestamp,
       });
     });
   });

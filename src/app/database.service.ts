@@ -63,15 +63,15 @@ export class databaseService {
   }
   getTeamMessagesCount(ID:string):string{
     if(this.teamMessagesCount[ID]==null) this.db.object('PERRINNTeamUsage/'+ID).subscribe(snapshot=>{this.teamMessagesCount[ID]=snapshot.messagesCount});
-    return this.teamMessagesCount[ID]?this.teamMessagesCount[ID]:0;
+    return this.teamMessagesCount[ID];
   }
   getTeamMessagesCost(ID:string):string{
     if(this.teamMessagesCost[ID]==null) this.db.object('PERRINNTeamUsage/'+ID).subscribe(snapshot=>{this.teamMessagesCost[ID]=snapshot.messagesCost});
-    return this.teamMessagesCost[ID]?this.teamMessagesCost[ID]:0;
+    return this.teamMessagesCost[ID];
   }
   getTeamBalance(ID:string):string{
     if(this.teamBalance[ID]==null) this.db.object('PERRINNTeamBalance/'+ID).subscribe(snapshot=>{this.teamBalance[ID]=snapshot.balance});
-    return this.teamBalance[ID]?this.teamBalance[ID]:0;
+    return this.teamBalance[ID];
   }
   getProjectName(ID:string):string{
     if(this.projectName[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectName[ID]=snapshot.name});
