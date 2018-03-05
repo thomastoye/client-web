@@ -35,7 +35,7 @@ import { databaseService } from './database.service';
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
       <div style="width:125px;float:left;text-align:right;font-size:10px;line-height:12px">{{DB.getTeamName(transaction.otherTeam)}}</div>
       <div style="width:75px;float:left;text-align:right;font-size:9px;line-height:12px">{{(transaction.timestamp-transaction.requestTimestamp)/1000}} s</div>
-      <div style="width:100px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.balancePost | number:'1.2-2'}}</div>
+      <div style="width:100px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.balance | number:'1.2-2'}}</div>
     </li>
     </ul>
     </div>
@@ -48,7 +48,7 @@ PERRINNTeamTransactions: FirebaseListObservable<any>;
 constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
   this.route.params.subscribe(params => {
     this.UI.currentTeam=params['id'];
-    this.PERRINNTeamTransactions = db.list('PERRINNTeamTransactions/'+this.UI.currentTeam);
+    this.PERRINNTeamTransactions = db.list('PERRINNTeamTransactions/'+this.UI.currentTeam,{query:{orderByChild:'timestampNegative'}});
   });
 }
 

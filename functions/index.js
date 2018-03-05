@@ -186,24 +186,17 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
 });
 
 exports.useForWhatEver = functions.database.ref('toto').onCreate(event => {
-  admin.database().ref('PERRINNTransactions/').once('value').then(transactions=>{
-    transactions.forEach(function(transaction){
-      var user=transaction.val().user?transaction.val().user:"";
-      admin.database().ref('PERRINNTeamTransactions/'+transaction.val().sender+'/'+transaction.key).update({
-        amount: -transaction.val().amount,
-        otherTeam: transaction.val().receiver,
-        user: user,
-        reference: transaction.val().reference,
-        requestTimestamp: transaction.val().createdTimestamp,
-        timestamp: transaction.val().verifiedTimestamp,
-      });
-      admin.database().ref('PERRINNTeamTransactions/'+transaction.val().receiver+'/'+transaction.key).update({
-        amount: transaction.val().amount,
-        otherTeam: transaction.val().sender,
-        user: user,
-        reference: transaction.val().reference,
-        requestTimestamp: transaction.val().createdTimestamp,
-        timestamp: transaction.val().verifiedTimestamp,
+  admin.database().ref('PERRINNTeamTransactions/').once('value').then(teams=>{
+    teams.forEach(function(team){
+      var balance=0;
+      admin.database().ref('PERRINNTeamTransactions/'+team.key).once('value').then(transactions=>{
+        transactions.forEach(function(transaction){
+          balance=balance+transaction.val().amount;
+          admin.database().ref('PERRINNTeamBalance/'+team.key).update({
+            balance: balance,
+            balanceNegative: -balance,
+          });
+        });
       });
     });
   });
