@@ -25,7 +25,7 @@ import { databaseService } from './database.service';
       {{DB.getTeamName(team.$key)}}{{ (DB.getUserLeader(team.$key,UI.currentUser)? " *" : "")}}
     </li>
   </ul>
-  <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction{{messageCreateTransaction}}</button>
+  <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction</button>
   </div>
   </div>
   `,
@@ -35,7 +35,6 @@ export class CreateTransactionComponent {
   transactionReference: string;
   transactionAmount: number;
   selectedTeamID: string;
-  messageCreateTransaction: string;
   transactionInputValid: boolean;
 
   constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService) {
@@ -61,9 +60,9 @@ export class CreateTransactionComponent {
       reference: this.transactionReference,
       amount: this.transactionAmount,
       receiver: this.selectedTeamID,
+      action: "transaction"
     })
-    .then(_ => this.router.navigate(['chat',this.UI.currentTeam]))
-    .catch(err => this.messageCreateTransaction="Error");
+    .then(_ => this.router.navigate(['chat',this.UI.currentTeam]));
   }
 
   checkTransactionInput():void {

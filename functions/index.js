@@ -119,9 +119,10 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
     timestampNegative:-1*message.timestamp,
     text:message.text,
     user:message.user,
-    image:message.image
+    image:message.image,
+    action:message.action
   });
-  if (message.amount&&event.params.team&&message.receiver&&message.user&&message.reference&&message.timestamp) {
+  if (message.action=="transaction") {
     admin.database().ref('teamUsers/'+event.params.team+'/'+message.user).once('value').then((teamUser)=>{
       if (teamUser.val().leader) {
         createTransaction (message.amount, event.params.team, message.receiver, message.user, message.reference, message.timestamp).then((result)=>{
@@ -131,12 +132,14 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
                 admin.database().ref('PERRINNTeamMessages/'+event.params.team).push({
                   timestamp: admin.database.ServerValue.TIMESTAMP,
                   text: "You have sent "+message.amount+" COINS.",
-                  user: "PERRINN"
+                  user: "PERRINN",
+                  action: "confirmation"
                 });
                 admin.database().ref('PERRINNTeamMessages/'+message.receiver).push({
                   timestamp: admin.database.ServerValue.TIMESTAMP,
                   text: "You have received "+message.amount+" COINS.",
-                  user: "PERRINN"
+                  user: "PERRINN",
+                  action: "confirmation"
                 });
               });
             });
@@ -146,7 +149,8 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
         admin.database().ref('PERRINNTeamMessages/'+event.params.team).push({
           timestamp: admin.database.ServerValue.TIMESTAMP,
           text: "You need to be leader to send COINS from this team.",
-          user: "PERRINN"
+          user: "PERRINN",
+          action: "warning"
         });
       }
     });

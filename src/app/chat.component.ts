@@ -24,6 +24,9 @@ import { databaseService } from './database.service';
     <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display: inline; float: left; margin: 0 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
     <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{DB.getUserFirstName(message.user)}}</div>
     <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
+    <img *ngIf="message.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+    <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+    <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
     <div style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
     <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0;" (click)="showFullScreenImage(message.image)">
     {{last?scrollToBottom(message.timestamp):''}}
@@ -115,7 +118,8 @@ export class ChatComponent {
         timestamp:firebase.database.ServerValue.TIMESTAMP,
         text:this.draftMessage,
         image:this.draftImage,
-        user:this.UI.currentUser
+        user:this.UI.currentUser,
+        action:"chat"
       });
       this.draftMessage = "";
       this.draftImage = "";
