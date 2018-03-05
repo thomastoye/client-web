@@ -30,7 +30,6 @@ import { userInterfaceService } from './userInterface.service';
 })
 export class AppComponent {
   globalChatActivity: boolean;
-  currentTeamChatActivity: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.afAuth.authState.subscribe((auth) => {
@@ -39,13 +38,11 @@ export class AppComponent {
         db.list('userTeams/'+this.UI.currentUser).subscribe(userTeams=>{
           console.log("loop 5");
           this.globalChatActivity = false;
-          this.currentTeamChatActivity = false;
           userTeams.forEach(userTeam=>{
             if (userTeam.following) {
               db.object('teamActivities/'+userTeam.$key+'/lastMessageTimestamp').subscribe(lastMessageTimestamp=>{
                 console.log("loop 6");
                 var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
-                if (userTeam.$key==UI.currentTeam&&chatActivity) {this.currentTeamChatActivity=true}
                 this.globalChatActivity = chatActivity?true:this.globalChatActivity;
                 document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
               });

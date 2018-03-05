@@ -55,7 +55,7 @@ export class CreateTransactionComponent {
   createTransaction() {
     this.db.list('teamMessages/'+this.UI.currentTeam).push({
       timestamp:firebase.database.ServerValue.TIMESTAMP,
-      text:"New transaction: "+this.transactionAmount+" COINS to "+this.DB.getTeamName(this.selectedTeamID)+", reference: "+this.transactionReference,
+      text:"I am sending "+this.transactionAmount+" COINS to "+this.DB.getTeamName(this.selectedTeamID)+", reference: "+this.transactionReference,
       image:"",
       user:this.UI.currentUser,
       reference: this.transactionReference,
