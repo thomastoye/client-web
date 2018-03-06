@@ -5,26 +5,6 @@ admin.initializeApp(functions.config().firebase);
 
 const stripe = require('stripe')(functions.config().stripe.token);
 
-function updateTeamBalance (team) {
-  var balance=0;
-  return admin.database().ref('PERRINNTransactions/').orderByChild('sender').equalTo(team).once('value').then(PERRINNTransactions=>{
-    PERRINNTransactions.forEach(function(PERRINNTransaction){
-      balance-=Number(PERRINNTransaction.val().amount);
-    });
-  }).then(()=>{
-    return admin.database().ref('PERRINNTransactions/').orderByChild('receiver').equalTo(team).once('value').then(PERRINNTransactions=>{
-      PERRINNTransactions.forEach(function(PERRINNTransaction){
-        balance+=Number(PERRINNTransaction.val().amount);
-      });
-    }).then(()=>{
-      admin.database().ref('PERRINNTeamBalance/'+team).update({balance:balance,balanceNegative:-balance});
-      return balance;
-    }).catch(()=>{
-      return 0;
-    });
-  });
-}
-
 function createTransaction (amount, sender, receiver, user, reference, timestamp) {
   return admin.database().ref('PERRINNTeamBalance/'+sender).once('value').then((senderBalance)=>{
     return admin.database().ref('PERRINNTeamBalance/'+receiver).once('value').then((receiverBalance)=>{
@@ -33,21 +13,29 @@ function createTransaction (amount, sender, receiver, user, reference, timestamp
       var balanceReceiverPre=receiverBalance.val().balance;
       var balanceReceiverPost=balanceReceiverPre+amount;
       if (balanceSenderPre>=amount) {
-        return admin.database().ref('PERRINNTransactions/').push({
-          amount: amount,
-          sender: sender,
-          receiver: receiver,
-          user: user,
+        admin.database().ref('PERRINNTeamTransactions/'+sender).push({
+          amount: -amount,
+          balance: balanceSenderPost,
+          otherTeam: receiver,
           reference: reference,
-          createdTimestamp: timestamp,
-          verifiedTimestamp: admin.database.ServerValue.TIMESTAMP,
-          balanceSenderPost: balanceSenderPost,
-          balanceReceiverPost: balanceReceiverPost,
-        }).then(()=>{
-          admin.database().ref('PERRINNTeamBalance/'+sender).update({balance:balanceSenderPost,balanceNegative:-balanceSenderPost});
-          admin.database().ref('PERRINNTeamBalance/'+receiver).update({balance:balanceReceiverPost,balanceNegative:-balanceReceiverPost});
-          return 1;
+          requestTimestamp: timestamp,
+          timestamp: admin.database.ServerValue.TIMESTAMP,
+          timestampNegative: -timestamp,
+          user: user,
         });
+        admin.database().ref('PERRINNTeamTransactions/'+receiver).push({
+          amount: amount,
+          balance: balanceReceiverPost,
+          otherTeam: sender,
+          reference: reference,
+          requestTimestamp: timestamp,
+          timestamp: admin.database.ServerValue.TIMESTAMP,
+          timestampNegative: -timestamp,
+          user: user,
+        });
+        admin.database().ref('PERRINNTeamBalance/'+sender).update({balance:balanceSenderPost,balanceNegative:-balanceSenderPost});
+        admin.database().ref('PERRINNTeamBalance/'+receiver).update({balance:balanceReceiverPost,balanceNegative:-balanceReceiverPost});
+        return 1;
       }
       else {
         admin.database().ref('PERRINNTeamMessages/'+sender).push({
@@ -186,18 +174,4 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
 });
 
 exports.useForWhatEver = functions.database.ref('toto').onCreate(event => {
-  admin.database().ref('PERRINNTeamTransactions/').once('value').then(teams=>{
-    teams.forEach(function(team){
-      var balance=0;
-      admin.database().ref('PERRINNTeamTransactions/'+team.key).once('value').then(transactions=>{
-        transactions.forEach(function(transaction){
-          balance=balance+transaction.val().amount;
-          admin.database().ref('PERRINNTeamBalance/'+team.key).update({
-            balance: balance,
-            balanceNegative: -balance,
-          });
-        });
-      });
-    });
-  });
 });

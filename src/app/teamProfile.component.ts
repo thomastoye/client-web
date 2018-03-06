@@ -78,11 +78,6 @@ import { databaseService } from './database.service';
   <button *ngIf="editMode" (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
   <button *ngIf="editMode" [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
   </div>
-  <div class='sheet' style="margin-top:10px">
-  <div class="title">Usage</div>
-  <div style="margin:10px">Number of messages {{DB.getTeamMessagesCount(UI.currentTeam)}}</div>
-  <div style="margin:10px">Cost {{DB.getTeamMessagesCost(UI.currentTeam)|number:'1.2-2'}} COINS</div>
-  </div>
 `,
 })
 export class TeamProfileComponent  {
