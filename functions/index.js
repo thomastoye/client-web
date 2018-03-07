@@ -5,6 +5,23 @@ admin.initializeApp(functions.config().firebase);
 
 const stripe = require('stripe')(functions.config().stripe.token);
 
+function createMessage (team, user, text, image, action, timestamp) {
+  admin.database().ref('PERRINNTeamMessages/'+team).push({
+    timestamp:timestamp,
+    text:text,
+    user:user,
+    image:image,
+    action:action,
+  });
+  admin.database().ref('teamActivities/'+team).update({
+    lastMessageTimestamp:timestamp,
+  });
+  admin.database().ref('userTeams/'+user+'/'+team).update({
+    lastChatVisitTimestamp:timestamp,
+    lastChatVisitTimestampNegative:-1*timestamp,
+  });
+}
+
 function createTransaction (amount, sender, receiver, user, reference, timestamp) {
   return admin.database().ref('PERRINNTeamBalance/'+sender).once('value').then((senderBalance)=>{
     return admin.database().ref('PERRINNTeamBalance/'+receiver).once('value').then((receiverBalance)=>{
@@ -38,12 +55,7 @@ function createTransaction (amount, sender, receiver, user, reference, timestamp
         return 1;
       }
       else {
-        admin.database().ref('PERRINNTeamMessages/'+sender).push({
-          timestamp: admin.database.ServerValue.TIMESTAMP,
-          text: "Your COIN balance is too low.",
-          user: "PERRINN",
-          action: "warning"
-        });
+        createMessage (sender,"PERRINN","Your COIN balance is too low.","","warning",timestamp+1);
         return null
       }
     });
@@ -105,27 +117,9 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
   });
 });
 
-exports.newPERRINNMessage = functions.database.ref('/PERRINNTeamMessages/{team}/{message}').onCreate(event => {
-  const message = event.data.val();
-  admin.database().ref('teamActivities/'+event.params.team).update({
-    lastMessageTimestamp:message.timestamp
-  });
-  admin.database().ref('userTeams/'+message.user+'/'+event.params.team).update({
-    lastChatVisitTimestamp:message.timestamp,
-    lastChatVisitTimestampNegative:-1*message.timestamp
-  });
-});
-
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate(event => {
   const message = event.data.val();
-  admin.database().ref('PERRINNTeamMessages/'+event.params.team+'/'+event.params.message).update({
-    timestamp:message.timestamp,
-    timestampNegative:-1*message.timestamp,
-    text:message.text,
-    user:message.user,
-    image:message.image,
-    action:message.action
-  });
+  createMessage (event.params.team,message.user,message.text,message.image,message.action,message.timestamp);
   if (message.action=="transaction") {
     admin.database().ref('teamUsers/'+event.params.team+'/'+message.user).once('value').then((teamUser)=>{
       if (teamUser.val().leader) {
@@ -133,44 +127,17 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
           if (result) {
             admin.database().ref('appSettings/cost/').once('value').then(cost => {
               createTransaction (cost.val().transaction, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "transaction cost", message.timestamp).then(()=>{
-                admin.database().ref('PERRINNTeamMessages/'+event.params.team).push({
-                  timestamp: admin.database.ServerValue.TIMESTAMP,
-                  text: "You have sent "+message.amount+" COINS.",
-                  user: "PERRINN",
-                  action: "confirmation"
-                });
-                admin.database().ref('PERRINNTeamMessages/'+message.receiver).push({
-                  timestamp: admin.database.ServerValue.TIMESTAMP,
-                  text: "You have received "+message.amount+" COINS.",
-                  user: "PERRINN",
-                  action: "confirmation"
-                });
+                createMessage (event.params.team,"PERRINN","You have sent "+message.amount+" COINS.","","confirmation",message.timestamp+1);
+                createMessage (message.receiver,"PERRINN","You have received "+message.amount+" COINS.","","confirmation",message.timestamp+1);
               });
             });
           }
         });
       } else {
-        admin.database().ref('PERRINNTeamMessages/'+event.params.team).push({
-          timestamp: admin.database.ServerValue.TIMESTAMP,
-          text: "You need to be leader to send COINS.",
-          user: "PERRINN",
-          action: "warning"
-        });
+        createMessage (event.params.team,"PERRINN","You need to be leader to send COINS.","","warning",message.timestamp+1);
       }
     });
   }
-  return admin.database().ref('appSettings/cost/').once('value').then(cost => {
-    createTransaction (cost.val().message, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "message cost", message.timestamp);
-    return admin.database().ref('PERRINNTeamUsage/'+event.params.team).child('messagesCount').transaction((current) => {
-      return (current || 0) + 1;
-    }).then(() => {
-      return admin.database().ref('PERRINNTeamUsage/'+event.params.team).child('messagesCost').transaction((current) => {
-        return (current || 0) + cost.val().message;
-      }).then(() => {
-        return console.log('Done.');
-      });
-    });
-  });
 });
 
 exports.useForWhatEver = functions.database.ref('toto').onCreate(event => {
