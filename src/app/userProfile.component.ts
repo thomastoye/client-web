@@ -51,7 +51,7 @@ import { databaseService } from './database.service';
       <img [hidden]="!(DB.getTeamBalance(team.$key)>0)" src="./../assets/App icons/PERRINN-icon-180x180.png" style="height:12px;margin:5px;margin-top:14px;cursor:pointer">
       <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
       <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
-      <div style="float:left;margin-top:5px;font-size:11px;color:red" [hidden]="!getChatActivity(team.$key)">New message</div>
+      <div style="float:left;margin-top:5px;font-size:11px;color:red" *ngIf="DB.getTeamLastMessageTimestamp(team.$key)>team.lastChatVisitTimestamp">New message</div>
       <div class="seperator"></div>
       </div>
       </div>
@@ -68,7 +68,7 @@ import { databaseService } from './database.service';
       <img [hidden]="!(DB.getTeamBalance(team.$key)>0)" src="./../assets/App icons/PERRINN-icon-180x180.png" style="float:left;height:12px;margin:5px;margin-top:14px;cursor:pointer">
       <div class="buttonDiv" style="color:red;border:none" [hidden]='!editMode' (click)="unfollow(team.$key)">Stop following</div>
       <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
-      <div style="float:left;font-size:11px;color:red" [hidden]="!getChatActivity(team.$key)">New message</div>
+      <div style="float:left;margin-top:5px;font-size:11px;color:red" *ngIf="DB.getTeamLastMessageTimestamp(team.$key)>team.lastChatVisitTimestamp">New message</div>
       <div class="seperator"></div>
       </div>
       </div>
@@ -144,16 +144,6 @@ export class UserProfileComponent {
 
   logout() {
     this.afAuth.auth.signOut()
-  }
-
-  getChatActivity (ID: string) :boolean {
-    var output = false;
-    this.db.object('userTeams/' + this.UI.currentUser + '/' + ID).subscribe(userTeam => {
-      this.db.object('teamActivities/'+ID).subscribe(teamActivities => {
-        output = teamActivities.lastMessageTimestamp > userTeam.lastChatVisitTimestamp;
-      });
-    });
-    return output;
   }
 
   unfollow(teamID: string) {
