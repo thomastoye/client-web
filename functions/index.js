@@ -23,42 +23,43 @@ function createMessage (team, user, text, image, action, timestamp) {
 }
 
 function createTransaction (amount, sender, receiver, user, reference, timestamp) {
-  return admin.database().ref('PERRINNTeamBalance/'+sender).once('value').then((senderBalance)=>{
-    return admin.database().ref('PERRINNTeamBalance/'+receiver).once('value').then((receiverBalance)=>{
-      var balanceSenderPre=senderBalance.val().balance;
-      var balanceSenderPost=balanceSenderPre-amount;
-      var balanceReceiverPre=receiverBalance.val().balance;
-      var balanceReceiverPost=balanceReceiverPre+amount;
-      if (balanceSenderPre>=amount) {
-        admin.database().ref('PERRINNTeamTransactions/'+sender).push({
-          amount: -amount,
-          balance: balanceSenderPost,
-          otherTeam: receiver,
-          reference: reference,
-          requestTimestamp: timestamp,
-          timestamp: admin.database.ServerValue.TIMESTAMP,
-          timestampNegative: -timestamp,
-          user: user,
-        });
-        admin.database().ref('PERRINNTeamTransactions/'+receiver).push({
-          amount: amount,
-          balance: balanceReceiverPost,
-          otherTeam: sender,
-          reference: reference,
-          requestTimestamp: timestamp,
-          timestamp: admin.database.ServerValue.TIMESTAMP,
-          timestampNegative: -timestamp,
-          user: user,
-        });
-        admin.database().ref('PERRINNTeamBalance/'+sender).update({balance:balanceSenderPost,balanceNegative:-balanceSenderPost});
-        admin.database().ref('PERRINNTeamBalance/'+receiver).update({balance:balanceReceiverPost,balanceNegative:-balanceReceiverPost});
-        return 1;
+  return createTransactionHalf (-amount,sender,receiver,user,reference,timestamp).then((result)=>{
+    if (result.committed) {
+      createTransactionHalf (amount,receiver,sender,user,reference,timestamp);
+      return 1;
+    } else {
+      return;
+    }
+  });
+}
+
+function createTransactionHalf (amount, team, otherTeam, user, reference, timestamp) {
+  return admin.database().ref('PERRINNTeamBalance/'+team).child('balance').transaction(function(balance) {
+    if (balance===null) {
+      return 0;
+    } else {
+      if (balance+amount<0) {return} else {
+        return balance+amount;
       }
-      else {
-        createMessage (sender,"PERRINN","Your COIN balance is too low.","","warning",timestamp+1);
-        return null
-      }
-    });
+    }
+  }, function(error, committed, balance) {
+    if (error) {
+      createMessage (team,"PERRINN","Error with your transaction, please contact PERRINN Limited","","warning",timestamp+1);
+    } else if (!committed) {
+      createMessage (team,"PERRINN","Your COIN balance is too low.","","warning",timestamp+1);
+    } else {
+      admin.database().ref('PERRINNTeamBalance/'+team).update({balanceNegative:-balance.val()});
+      admin.database().ref('PERRINNTeamTransactions/'+team).push({
+        amount: amount,
+        balance: balance.val(),
+        otherTeam: otherTeam,
+        reference: reference,
+        requestTimestamp: timestamp,
+        timestamp: admin.database.ServerValue.TIMESTAMP,
+        timestampNegative: -timestamp,
+        user: user,
+      });
+    }
   });
 }
 
@@ -120,13 +121,16 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate(event => {
   const message = event.data.val();
   createMessage (event.params.team,message.user,message.text,message.image,message.action,message.timestamp);
+  admin.database().ref('appSettings/cost/').once('value').then(cost => {
+    createTransaction (cost.val().message, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "message cost", message.timestamp);
+  });
   if (message.action=="transaction") {
     admin.database().ref('teamUsers/'+event.params.team+'/'+message.user).once('value').then((teamUser)=>{
       if (teamUser.val().leader) {
-        createTransaction (message.amount, event.params.team, message.receiver, message.user, message.reference, message.timestamp).then((result)=>{
+        createTransaction (message.amount, event.params.team, message.receiver, message.user, message.reference, message.timestamp+1).then((result)=>{
           if (result) {
             admin.database().ref('appSettings/cost/').once('value').then(cost => {
-              createTransaction (cost.val().transaction, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "transaction cost", message.timestamp).then(()=>{
+              createTransaction (cost.val().transaction, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "transaction cost", message.timestamp+2).then(()=>{
                 createMessage (event.params.team,"PERRINN","You have sent "+message.amount+" COINS.","","confirmation",message.timestamp+1);
                 createMessage (message.receiver,"PERRINN","You have received "+message.amount+" COINS.","","confirmation",message.timestamp+1);
               });

@@ -28,13 +28,19 @@ import { databaseService } from './database.service';
     <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['COINinfo'])">COIN info</div>
   </div>
   <div class='sheet' style="margin-top:10px">
+  <div style="width:170px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">Date</div>
+  <div style="width:100px;float:left;text-align:right;font-size:11px;line-height:13px;font-weight:bold">Amount</div>
+  <div style="width:170px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">Reference</div>
+  <div style="width:125px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">To/From</div>
+  <div style="width:75px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">Process time</div>
+  <div style="width:100px;float:left;text-align:right;font-size:11px;line-height:13px;font-weight:bold">Balance</div>
   <ul class="listLight">
     <li *ngFor="let transaction of PERRINNTeamTransactions | async" style="padding:5px 0 5px 0">
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.amount>0?"-> ":""}}{{transaction.timestamp | date :'medium'}}</div>
       <div style="width:100px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.amount | number:'1.2-2'}}</div>
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.reference}}</div>
       <div style="width:125px;float:left;text-align:right;font-size:10px;line-height:12px">{{DB.getTeamName(transaction.otherTeam)}}</div>
-      <div style="width:50px;float:left;text-align:right;font-size:9px;line-height:12px">{{(transaction.timestamp-transaction.requestTimestamp)/1000 | number:'1.1-1'}} s</div>
+      <div style="width:75px;float:left;text-align:right;font-size:9px;line-height:12px">{{(transaction.timestamp-transaction.requestTimestamp)/1000 | number:'1.1-1'}} s</div>
       <div style="width:100px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.balance | number:'1.2-2'}}</div>
     </li>
     </ul>
