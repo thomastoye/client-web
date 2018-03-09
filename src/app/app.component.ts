@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router, NavigationEnd } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'app-root',
@@ -12,10 +13,16 @@ import { userInterfaceService } from './userInterface.service';
     <img class="fullScreenImage" id="fullScreenImage" (click)="hideFullScreenImage()">
     <progress value='0' max='100' id='uploader'>0%</progress>
     <div class='menu'>
-    <div style="width:300px;display:block;margin: 0 auto;">
+    <div style="width:400px;display:block;margin: 0 auto;">
     <div class='iconSmall' (click)="clickUserIcon()">
     <img src="./../assets/App icons/Perrinn_02.png" style="width:30px;margin-top:5px;border-radius:3px;">
     <div class='activity' [hidden]="!globalChatActivity"></div>
+    </div>
+    <div style="width:200px;height:30px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
+        <div *ngIf="UI.currentTeam">
+        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" style="display: inline; float: left; margin: 10px 0 0 0;object-fit:cover;height:20px;width:40px">
+        <div style="float:left;margin:10px 0 0 10px;color:#fff;font-size:10px">{{DB.getTeamName(UI.currentTeam)}}{{(DB.getUserLeader(UI.currentTeam,UI.currentUser)?" *":"")}}</div>
+        </div>
     </div>
     <div class='iconSmall' (click)="router.navigate(['search'])">
     <img src="./../assets/App icons/search.png" style="width:30px;margin-top:5px;border-radius:3px;-webkit-filter:brightness(100);filter:brightness(100);">
@@ -31,7 +38,7 @@ import { userInterfaceService } from './userInterface.service';
 export class AppComponent {
   globalChatActivity: boolean;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
     this.afAuth.authState.subscribe((auth) => {
       if (auth==null) {}
       else {

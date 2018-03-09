@@ -7,6 +7,11 @@
     "PERRINNTeamBalance": {
       ".indexOn": ["balanceNegative"]
     },
+    "PERRINNTeamTransactions": {
+      "$teamid": {
+        ".indexOn": ["timestampNegative"]
+      }
+    },
     "PERRINNTransactions": {
       ".indexOn": ["sender","receiver"]
     },

@@ -11,12 +11,10 @@ import { databaseService } from './database.service';
   template: `
   <div class="sheet">
     <div style="width:100px;font-size:12px;cursor:pointer;color:blue;padding:10px;float:left" (click)="router.navigate(['createTransaction'])">Back</div>
-    <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" (click)="router.navigate(['team',UI.currentTeam])" style="display: inline; float: right; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px;cursor:pointer">
     <div style="clear:both;text-align:center">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
     <div>
-    <div style="text-align:center;font-size:18px;font-family:sans-serif;">{{DB.getTeamName(UI.currentTeam)}}</div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
     <div style="font-size: 25px;line-height:normal; color: black;">{{DB.getTeamBalance(UI.currentTeam) | number:'1.2-2'}}</div>
     </div>
@@ -44,17 +42,20 @@ import { databaseService } from './database.service';
       <div style="width:100px;float:left;text-align:right;font-size:13px;line-height:13px">{{transaction.balance | number:'1.2-2'}}</div>
     </li>
     </ul>
+    <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="transactionNumberDisplay=transactionNumberDisplay+30;this.PERRINNTeamTransactions = db.list('PERRINNTeamTransactions/'+this.UI.currentTeam,{query:{orderByChild:'timestampNegative',limitToFirst:this.transactionNumberDisplay}});">More transactions</div>
     </div>
   `,
 })
 export class WalletComponent {
 
 PERRINNTeamTransactions: FirebaseListObservable<any>;
+transactionNumberDisplay: number;
 
 constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
+  this.transactionNumberDisplay = 30;
   this.route.params.subscribe(params => {
     this.UI.currentTeam=params['id'];
-    this.PERRINNTeamTransactions = db.list('PERRINNTeamTransactions/'+this.UI.currentTeam,{query:{orderByChild:'timestampNegative'}});
+    this.PERRINNTeamTransactions = db.list('PERRINNTeamTransactions/'+this.UI.currentTeam,{query:{orderByChild:'timestampNegative',limitToFirst:this.transactionNumberDisplay}});
   });
 }
 
