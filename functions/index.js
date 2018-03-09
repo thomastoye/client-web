@@ -22,19 +22,6 @@ function createMessage (team, user, text, image, action, timestamp) {
   });
 }
 
-function returnCOINS (amount) {
-  admin.database().ref('PERRINNTeamBalance/').once('value').then(teams=>{
-    teams.forEach(function(team){
-      admin.database().ref('PERRINNTeamBalanceReturn/'+team.key).child('balance').transaction(function(balance){
-        if (balance===null) {
-          return amount/1000000*team.val().balance;
-        }
-        return (balance||0)+amount/1000000*team.val().balance;
-      });
-    });
-  });
-}
-
 function createTransaction (amount, sender, receiver, user, reference, timestamp) {
   return createTransactionHalf (-amount,sender,receiver,user,reference,timestamp).then((result)=>{
     if (result.committed) {
@@ -154,6 +141,24 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
   }
   admin.database().ref('appSettings/cost/').once('value').then(cost => {
     createTransaction (cost.val().message, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "message cost", message.timestamp);
+  });
+});
+
+exports.returnCOINS = functions.database.ref('tot').onCreate(event => {
+  const now = Date.now();
+  admin.database().ref('PERRINNTeamBalance/').once('value').then(teams=>{
+    var totalAmount = teams.child('-L6XIigvAphrJr5w2jbf').val().balance;
+    console.log("total amount to return: "+totalAmount);
+    teams.forEach(function(team){
+      var amount = totalAmount/1000000*team.val().balance;
+      if (amount>0) {
+        console.log("returning: "+amount);
+        if (team.key!="-KptHjRmuHZGsubRJTWJ") {
+          console.log("to team: "+team.key);
+          createTransaction (amount,"-L6XIigvAphrJr5w2jbf",team.key,"PERRINN","COIN return",now);
+        }
+      }
+    });
   });
 });
 
