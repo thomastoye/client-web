@@ -52,8 +52,9 @@ export class CreateTransactionComponent {
   }
 
   createTransaction() {
+    const now = Date.now();
     this.db.list('teamMessages/'+this.UI.currentTeam).push({
-      timestamp:firebase.database.ServerValue.TIMESTAMP,
+      timestamp:now,
       text:"I am sending "+this.transactionAmount+" COINS to "+this.DB.getTeamName(this.selectedTeamID)+", reference: "+this.transactionReference,
       image:"",
       user:this.UI.currentUser,
@@ -62,7 +63,16 @@ export class CreateTransactionComponent {
       receiver: this.selectedTeamID,
       action: "transaction"
     })
-    .then(_ => this.router.navigate(['chat',this.UI.currentTeam]));
+    .then(() => {
+      this.db.object('teamActivities/'+this.UI.currentTeam).update({
+        lastMessageTimestamp:now,
+      });
+      this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
+        lastChatVisitTimestamp:now,
+        lastChatVisitTimestampNegative:-1*now,
+      });
+      this.router.navigate(['chat',this.UI.currentTeam]);
+    });
   }
 
   checkTransactionInput():void {

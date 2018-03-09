@@ -13,7 +13,7 @@ import { databaseService } from './database.service';
   <div class="sheet">
   <div class="chat" id="chat-scroll">
   <div>
-  <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('PERRINNTeamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
+  <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async ; let last = last">
     <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
@@ -36,7 +36,7 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none">
-  <div style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
+  <div *ngIf="DB.getUserFollowing(UI.currentUser,UI.currentTeam)" style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
   <ul style="list-style:none;float:left;">
     <li *ngFor="let user of draftMessageUsers | async">
     <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{DB.getUserFirstName(user.$key)}}...</div>
@@ -47,7 +47,7 @@ import { databaseService } from './database.service';
   <img src="./../assets/App icons/camera.png" style="width:25px">
   <span class="tipText">Max 3.0Mb</span>
   </label>
-  <img src="./../assets/App icons/icon_share_03.svg" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['createTransaction'])">
+  <img [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' src="./../assets/App icons/icon_share_03.svg" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['createTransaction'])">
   <textarea [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
@@ -72,7 +72,7 @@ export class ChatComponent {
       this.draftImage="";
       this.draftMessage="";
       this.messageNumberDisplay = 15;
-      this.teamMessages = this.db.list('PERRINNTeamMessages/'+this.UI.currentTeam, {query: {limitToLast: this.messageNumberDisplay}});
+      this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam, {query: {limitToLast: this.messageNumberDisplay}});
       this.draftMessageUsers = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/');
       this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
         this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
@@ -106,15 +106,19 @@ export class ChatComponent {
   }
 
   timestampChatVisit(){
-    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
-    this.addLastChatVisitTimestampNegative();
+    const now = Date.now();
+    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
+      lastChatVisitTimestamp:now,
+      lastChatVisitTimestampNegative:-1*now,
+    });
   }
 
   addMessage() {
     this.draftMessage = this.draftMessage.replace(/(\r\n|\n|\r)/gm,"");
     if (this.draftMessage!=""||this.draftImage!="") {
+      const now = Date.now();
       this.db.list('teamMessages/'+this.UI.currentTeam).push({
-        timestamp:firebase.database.ServerValue.TIMESTAMP,
+        timestamp:now,
         text:this.draftMessage,
         image:this.draftImage,
         user:this.UI.currentUser,
@@ -122,17 +126,14 @@ export class ChatComponent {
       });
       this.draftMessage = "";
       this.draftImage = "";
+      this.db.object('teamActivities/'+this.UI.currentTeam).update({
+        lastMessageTimestamp:now,
+      });
+      this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
+        lastChatVisitTimestamp:now,
+        lastChatVisitTimestampNegative:-1*now,
+      });
     }
-  }
-
-  addLastChatVisitTimestampNegative() {
-    var timestamp: number;
-    var timestampNegative: number;
-    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
-      timestamp = userTeam.lastChatVisitTimestamp;
-      timestampNegative = -1 * timestamp;
-      this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({lastChatVisitTimestampNegative: timestampNegative});
-    });
   }
 
   updateDraftMessageDB () {
