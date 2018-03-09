@@ -26,12 +26,15 @@ import { databaseService } from './database.service';
     <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['COINinfo'])">COIN info</div>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div style="width:170px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">Date</div>
-  <div style="width:100px;float:left;text-align:right;font-size:11px;line-height:13px;font-weight:bold">Amount</div>
-  <div style="width:170px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">Reference</div>
-  <div style="width:125px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">To/From</div>
-  <div style="width:75px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">Process time</div>
-  <div style="width:100px;float:left;text-align:right;font-size:11px;line-height:13px;font-weight:bold">Balance</div>
+  <div style="font-size: 11px;line-height:normal;color:black;padding:5px">Return balance: {{DB.getTeamBalanceReturn(UI.currentTeam) | number:'1.6-6'}} COINS will be credited soon.</div>
+  <div style="padding:5px 0 5px 0">
+    <div style="width:170px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">Date</div>
+    <div style="width:100px;float:left;text-align:right;font-size:11px;line-height:13px;font-weight:bold">Amount</div>
+    <div style="width:170px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">Reference</div>
+    <div style="width:125px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">To/From</div>
+    <div style="width:75px;float:left;text-align:right;font-size:11px;line-height:12px;font-weight:bold">Process time</div>
+    <div style="width:100px;float:left;text-align:right;font-size:11px;line-height:13px;font-weight:bold">Balance</div>
+  </div>
   <ul class="listLight">
     <li *ngFor="let transaction of PERRINNTeamTransactions | async" style="padding:5px 0 5px 0">
       <div style="width:170px;float:left;text-align:right;font-size:10px;line-height:12px">{{transaction.amount>0?"-> ":""}}{{transaction.timestamp | date :'medium'}}</div>

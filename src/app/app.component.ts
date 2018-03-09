@@ -12,6 +12,7 @@ import { databaseService } from './database.service';
   template: `
     <img class="fullScreenImage" id="fullScreenImage" (click)="hideFullScreenImage()">
     <progress value='0' max='100' id='uploader'>0%</progress>
+    <div *ngIf="DB.getPERRINNGlobalMessage()" style="text-align:center;margin:5px;color:red;font-size:10px">{{DB.getPERRINNGlobalMessage()}}</div>
     <div class='menu'>
     <div style="width:400px;display:block;margin: 0 auto;">
     <div class='iconSmall' (click)="clickUserIcon()">

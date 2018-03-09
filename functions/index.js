@@ -22,6 +22,19 @@ function createMessage (team, user, text, image, action, timestamp) {
   });
 }
 
+function returnCOINS (amount) {
+  admin.database().ref('PERRINNTeamBalance/').once('value').then(teams=>{
+    teams.forEach(function(team){
+      admin.database().ref('PERRINNTeamBalanceReturn/'+team.key).child('balance').transaction(function(balance){
+        if (balance===null) {
+          return amount/1000000*team.val().balance;
+        }
+        return (balance||0)+amount/1000000*team.val().balance;
+      });
+    });
+  });
+}
+
 function createTransaction (amount, sender, receiver, user, reference, timestamp) {
   return createTransactionHalf (-amount,sender,receiver,user,reference,timestamp).then((result)=>{
     if (result.committed) {
@@ -121,18 +134,15 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate(event => {
   const message = event.data.val();
   createMessage (event.params.team,message.user,message.text,message.image,message.action,message.timestamp);
-  admin.database().ref('appSettings/cost/').once('value').then(cost => {
-    createTransaction (cost.val().message, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "message cost", message.timestamp);
-  });
   if (message.action=="transaction") {
     admin.database().ref('teamUsers/'+event.params.team+'/'+message.user).once('value').then((teamUser)=>{
       if (teamUser.val().leader) {
         createTransaction (message.amount, event.params.team, message.receiver, message.user, message.reference, message.timestamp+1).then((result)=>{
           if (result) {
+            createMessage (event.params.team,"PERRINN","You have sent "+message.amount+" COINS.","","confirmation",message.timestamp+1);
+            createMessage (message.receiver,"PERRINN","You have received "+message.amount+" COINS.","","confirmation",message.timestamp+1);
             admin.database().ref('appSettings/cost/').once('value').then(cost => {
               createTransaction (cost.val().transaction, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "transaction cost", message.timestamp+2).then(()=>{
-                createMessage (event.params.team,"PERRINN","You have sent "+message.amount+" COINS.","","confirmation",message.timestamp+1);
-                createMessage (message.receiver,"PERRINN","You have received "+message.amount+" COINS.","","confirmation",message.timestamp+1);
               });
             });
           }
@@ -142,6 +152,9 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
       }
     });
   }
+  admin.database().ref('appSettings/cost/').once('value').then(cost => {
+    createTransaction (cost.val().message, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "message cost", message.timestamp);
+  });
 });
 
 exports.useForWhatEver = functions.database.ref('toto').onCreate(event => {

@@ -91,6 +91,7 @@ export class BuyCoinsComponent {
     this.amountCOINSPurchased=100;
     this.currentCurrencyID='gbp';
     this.currencyList = db.list('appSettings/currencyList');
+    this.refreshAmountCharge();
   }
 
   processPayment() {
