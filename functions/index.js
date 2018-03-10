@@ -34,19 +34,15 @@ function createTransaction (amount, sender, receiver, user, reference) {
 function createTransactionHalf (amount, team, otherTeam, user, reference, timestamp) {
   return admin.database().ref('PERRINNTeamBalance/'+team).child('balance').transaction(function(balance) {
     if (balance===null) {
-      return 999999999;
+      return amount;
     } else {
-      if (balance+amount<0) {
-        return;
-      } else {
-        return balance+amount;
-      }
+      return balance+amount;
     }
   }, function(error, committed, balance) {
     if (error) {
-      createMessage (team,"PERRINN","Error with your transaction, please contact PERRINN Limited","","warning");
+      createMessage (team,"PERRINN","Transaction error, please contact PERRINN","","warning");
     } else if (!committed) {
-      createMessage (team,"PERRINN","Your COIN balance is too low.","","warning");
+      createMessage (team,"PERRINN","Transaction not commited, please contact PERRINN","","warning");
     } else {
       admin.database().ref('PERRINNTeamBalance/'+team).update({balanceNegative:-balance.val()});
       admin.database().ref('PERRINNTeamTransactions/'+team).push({
