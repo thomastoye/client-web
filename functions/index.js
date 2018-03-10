@@ -20,6 +20,7 @@ function createMessage (team, user, text, image, action) {
 }
 
 function createTransaction (amount, sender, receiver, user, reference) {
+  if (amount<=0||sender==receiver) return;
   const now = Date.now();
   return createTransactionHalf (-amount,sender,receiver,user,reference,now).then((result)=>{
     if (result.committed) {
@@ -32,30 +33,39 @@ function createTransaction (amount, sender, receiver, user, reference) {
 }
 
 function createTransactionHalf (amount, team, otherTeam, user, reference, timestamp) {
-  return admin.database().ref('PERRINNTeamBalance/'+team).child('balance').transaction(function(balance) {
-    if (balance===null) {
-      return amount;
-    } else {
-      return balance+amount;
+  return admin.database().ref('PERRINNTeamBalance/'+team).child('balance').once('value').then((balanceNullCheck)=> {
+    if (balanceNullCheck.val()===null) {
+      admin.database().ref('PERRINNTeamBalance/'+team).update({balance:0});
     }
-  }, function(error, committed, balance) {
-    if (error) {
-      createMessage (team,"PERRINN","Transaction error, please contact PERRINN","","warning");
-    } else if (!committed) {
-      createMessage (team,"PERRINN","Transaction not commited, please contact PERRINN","","warning");
-    } else {
-      admin.database().ref('PERRINNTeamBalance/'+team).update({balanceNegative:-balance.val()});
-      admin.database().ref('PERRINNTeamTransactions/'+team).push({
-        amount: amount,
-        balance: balance.val(),
-        otherTeam: otherTeam,
-        reference: reference,
-        requestTimestamp: timestamp,
-        timestamp: admin.database.ServerValue.TIMESTAMP,
-        timestampNegative: -timestamp,
-        user: user,
-      });
-    }
+    return admin.database().ref('PERRINNTeamBalance/'+team).child('balance').transaction(function(balance) {
+      if (balance===null) {
+        return amount;
+      } else {
+        if ((balance+amount)<0) {
+          return;
+        } else {
+          return balance+amount;
+        }
+      }
+    }, function(error, committed, balance) {
+      if (error) {
+        createMessage (team,"PERRINN","Transaction error, please contact PERRINN","","warning");
+      } else if (!committed) {
+        createMessage (team,"PERRINN","COIN balance too low","","warning");
+      } else {
+        admin.database().ref('PERRINNTeamBalance/'+team).update({balanceNegative:-balance.val()});
+        admin.database().ref('PERRINNTeamTransactions/'+team).push({
+          amount: amount,
+          balance: balance.val(),
+          otherTeam: otherTeam,
+          reference: reference,
+          requestTimestamp: timestamp,
+          timestamp: admin.database.ServerValue.TIMESTAMP,
+          timestampNegative: -timestamp,
+          user: user,
+        });
+      }
+    });
   });
 }
 
@@ -145,10 +155,8 @@ exports.returnCOINS = functions.database.ref('tot').onCreate(event => {
     var totalAmount = teams.child('-L6XIigvAphrJr5w2jbf').val().balance;
     teams.forEach(function(team){
       var amount = totalAmount/1000000*team.val().balance;
-      if (amount>0) {
-        if (team.key!="-KptHjRmuHZGsubRJTWJ") {
-          createTransaction (amount,"-L6XIigvAphrJr5w2jbf",team.key,"PERRINN","COIN return");
-        }
+      if (team.key!="-KptHjRmuHZGsubRJTWJ") {
+        createTransaction (amount,"-L6XIigvAphrJr5w2jbf",team.key,"PERRINN","return");
       }
     });
   });
