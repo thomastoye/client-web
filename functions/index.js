@@ -122,6 +122,15 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
     lastName: profile.lastName,
     photoURL: profile.photoURL,
   });
+  admin.database().ref('userTeams/'+event.params.user).once('value').then(teams=>{
+    teams.forEach(function(team){
+      admin.database().ref('teamUsers/'+team.key+'/'+event.params.user).child('member').once('value').then(member=>{
+        if (member.val()==true) {
+          createMessage (team.key,"PERRINN",profile.firstName+"' profile has been updated","","confirmation");
+        }
+      });
+    });
+  });
 });
 
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate(event => {
