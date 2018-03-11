@@ -111,7 +111,10 @@ export class UserProfileComponent {
     this.DB.userFirstName[this.UI.focusUser] = this.DB.userFirstName[this.UI.focusUser].toLowerCase();
     this.DB.userLastName[this.UI.focusUser] = this.DB.userLastName[this.UI.focusUser].toLowerCase();
     this.db.list('users/'+this.UI.focusUser).push({
-      timestamp: firebase.database.ServerValue.TIMESTAMP, firstName: this.DB.userFirstName[this.UI.focusUser], lastName: this.DB.userLastName[this.UI.focusUser], photoURL: this.DB.userPhotoURL[this.UI.focusUser],
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
+      firstName: this.DB.userFirstName[this.UI.focusUser],
+      lastName: this.DB.userLastName[this.UI.focusUser],
+      photoURL: this.DB.userPhotoURL[this.UI.focusUser],
     });
     this.editMode=false;
   }
