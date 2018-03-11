@@ -14,7 +14,7 @@ import { databaseService } from './database.service';
     <progress value='0' max='100' id='uploader'>0%</progress>
     <div *ngIf="DB.getPERRINNGlobalMessage()" style="text-align:center;margin:5px;color:red;font-size:10px">{{DB.getPERRINNGlobalMessage()}}</div>
     <div class='menu'>
-    <div style="width:400px;display:block;margin: 0 auto;">
+    <div style="width:350px;display:block;margin: 0 auto;">
     <div class='iconSmall' (click)="clickUserIcon()">
     <img src="./../assets/App icons/Perrinn_02.png" style="width:30px;margin-top:5px;border-radius:3px;">
     <div class='activity' [hidden]="!globalChatActivity"></div>
