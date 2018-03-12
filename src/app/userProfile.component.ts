@@ -14,8 +14,11 @@ import { databaseService } from './database.service';
   <div style="float: left;width:80%">
   <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="editMode=false;updateUserProfile()">Done</div>
   <div [hidden]='editMode'>
-  <div class='title'>{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
-  <img class='editButton' [hidden]='!(UI.currentUser==UI.focusUser)' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
+  <div class='title' style="float:left;font-size:16px">{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
+  <img class='editButton' style="width:20px" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
+  <div style="color:#888;font-size:10px;padding:5px 5px 5px 10px;clear:both">
+    <div>Joined {{DB.getUserCreatedTimestamp(UI.focusUser)|date:'MMMM yyyy'}}, {{DB.getUserMessageCount(UI.focusUser)==null?0:DB.getUserMessageCount(UI.focusUser)}} Messages</div>
+  </div>
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="DB.userFirstName[UI.focusUser]" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />

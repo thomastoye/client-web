@@ -9,6 +9,8 @@ export class databaseService {
   userFirstName: string[];
   userLastName: string[];
   userPhotoURL: string[];
+  userCreatedTimestamp: string[];
+  userMessageCount: string[];
   userLeader: string[][];
   userMember: string[][];
   userFollowing: string[][];
@@ -25,6 +27,8 @@ export class databaseService {
     this.userFirstName=[''];
     this.userLastName=[''];
     this.userPhotoURL=[''];
+    this.userCreatedTimestamp=[''];
+    this.userMessageCount=[''];
     this.userLeader=[[''],['']];
     this.userMember=[[''],['']];
     this.userFollowing=[[''],['']];
@@ -49,6 +53,14 @@ export class databaseService {
   getUserPhotoURL(ID:string):string{
     if(this.userPhotoURL[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userPhotoURL[ID]=snapshot.photoURL});
     return this.userPhotoURL[ID];
+  }
+  getUserCreatedTimestamp(ID:string):string{
+    if(this.userCreatedTimestamp[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userCreatedTimestamp[ID]=snapshot.createdTimestamp});
+    return this.userCreatedTimestamp[ID];
+  }
+  getUserMessageCount(ID:string):string{
+    if(this.userMessageCount[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userMessageCount[ID]=snapshot.messageCount});
+    return this.userMessageCount[ID];
   }
   getUserLeader(teamID,userID):string{
     var output;

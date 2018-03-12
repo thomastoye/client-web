@@ -120,11 +120,17 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
   var currentFirstName="";
   var currentLastName="";
   var currentPhotoURL="";
+  var createdTimestamp="";
   admin.database().ref('PERRINNUsers/'+event.params.user).once('value').then((user)=>{
     if (user.val()!=null) {
       currentFirstName=user.val().firstName;
       currentLastName=user.val().lastName;
       currentPhotoURL=user.val().photoURL;
+    }
+    if (user.val().createdTimestamp!=null) {
+      createdTimestamp=user.val().createdTimestamp;
+    } else {
+      createdTimestamp=Date.now();
     }
   }).then(()=>{
     if (currentFirstName!=profile.firstName||currentLastName!=profile.lastName||currentPhotoURL!=profile.photoURL) {
@@ -132,6 +138,7 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
         firstName: profile.firstName,
         lastName: profile.lastName,
         photoURL: profile.photoURL,
+        createdTimestamp: createdTimestamp,
       });
       admin.database().ref('userTeams/'+event.params.user).once('value').then(teams=>{
         teams.forEach(function(team){
@@ -148,6 +155,13 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
 
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate(event => {
   const message = event.data.val();
+  admin.database().ref('PERRINNUsers/'+message.user).child('messageCount').transaction((messageCount)=>{
+    if (messageCount==null) {
+      return 1;
+    } else {
+      return messageCount+1;
+    }
+  });
   if (message.user=="PERRINN") {return}
   admin.database().ref('appSettings/cost/').once('value').then(cost => {
     createTransaction (cost.val().message, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "message cost");
@@ -185,4 +199,17 @@ exports.returnCOINS = functions.database.ref('tot').onCreate(event => {
 });
 
 exports.useForWhatEver = functions.database.ref('toto').onCreate(event => {
+  admin.database().ref('users').once('value').then((users)=>{
+    users.forEach((user)=>{
+      var createdTimestamp="";
+      if (user.val().createdTimestamp!=null) {
+        createdTimestamp=user.val().createdTimestamp;
+      } else {
+        createdTimestamp=Date.now();
+      }
+      admin.database().ref('PERRINNUsers/'+user.key).update({
+        createdTimestamp:createdTimestamp,
+      });
+    });
+  });
 });

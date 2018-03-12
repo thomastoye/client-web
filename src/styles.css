@@ -243,7 +243,7 @@ input {
 .form-module {
   background: #ffffff;
   max-width: 320px;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
 }
 .form-module .form {
@@ -281,7 +281,7 @@ hr {
   width: 100%;
   max-width: 800px;
   background-color: white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
 }
 .sheet .title {
   padding:10px;
