@@ -42,7 +42,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of projectTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
-      (click)="router.navigate(['chat',team.$key])">
+      (click)="router.navigate(['team',team.$key])">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div style="width:15px;height:25px;float:left;">{{DB.getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
       <div style="width:300px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}{{(DB.getTeamLeader(UI.focusProject,team.$key)? " **" : "")}}{{DB.getTeamFollowing(team.$key,UI.focusProject)?"":" (Not Following)"}}</div>
@@ -53,7 +53,7 @@ import { databaseService } from './database.service';
   <div class='sheet' style="margin-top:10px">
     <div class="title">Document</div>
     <input maxlength="250" [hidden]='!editMode' [(ngModel)]="DB.projectDocument[UI.focusProject]" placeholder="embedded document URL" />
-    <iframe id='iframeDocument' width='100%' height='5000'></iframe>
+    <iframe id='iframeDocument' width='100%' height='10000'></iframe>
   </div>
   `,
 })
@@ -68,6 +68,7 @@ export class ProjectProfileComponent {
   isImageOnFirebase: boolean;
 
   constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
+    document.getElementById("main_container").scrollTop = 0;
     this.route.params.subscribe(params => {
       this.UI.focusProject=params['id'];
       this.messageCancelMembership = ""

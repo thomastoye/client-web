@@ -4,6 +4,7 @@ import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'login',
@@ -34,14 +35,17 @@ import { userInterfaceService } from './userInterface.service';
       <div class="cta"><a href='mailto:perrinnlimited@gmail.com'>Contact PERRINN</a></div>
     </div>
   </div>
-  <ul class='listLight' style="max-width:620px;display:block;margin:0 auto">
-    <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.$key])">
-      <img (error)="errorHandler($event)"[src]="getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
-      <div style="height:25px;font-size:10px;line-height:10px">{{getProjectName(project.$key)}}</div>
-    </li>
-  </ul>
   <div class='sheet' style="margin-top:10px">
   <div style="width:100px;font-size:10px;cursor:pointer;color:blue;padding:5px;" (click)="router.navigate(['chat','-KtmuFyG2XEmWm8oNOGT'])">How it works</div>
+  </div>
+  <div class='sheet' style="margin-top:10px">
+    <div class="title">Selected projects</div>
+    <ul class='listLight' style="max-width:620px;display:block;margin:0 auto">
+      <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.$key])">
+        <img (error)="errorHandler($event)"[src]="DB.getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
+        <div style="height:25px;font-size:10px;line-height:10px">{{DB.getProjectName(project.$key)}}</div>
+      </li>
+    </ul>
   </div>
   `,
 })
@@ -63,7 +67,7 @@ export class LoginComponent  {
   newUser: boolean;
   teamProjects: FirebaseListObservable<any>;
 
-  constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase,  public UI: userInterfaceService) {
+  constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase,  public UI: userInterfaceService, public DB: databaseService) {
     this.photoURL="./../assets/App icons/me.png";
     this.newUser = false;
     this.teamProjects = this.db.list('teamProjects/-Kp0TqKyvqnFCnLryKC1', {
@@ -135,22 +139,6 @@ export class LoginComponent  {
     this.messageLogout = "";
     this.messageRegister = "";
     this.messageVerification = "";
-  }
-
-  getProjectPhotoURL (ID: string) :string {
-    var output;
-    this.db.object('projects/' + ID).subscribe(snapshot => {
-      output = snapshot.photoURL;
-    });
-    return output;
-  }
-
-  getProjectName (ID: string) :string {
-    var output;
-    this.db.object('projects/' + ID).subscribe(snapshot => {
-      output = snapshot.name;
-    });
-    return output;
   }
 
   errorHandler(event) {

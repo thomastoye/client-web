@@ -51,7 +51,7 @@ import { databaseService } from './database.service';
       <img [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' src="./../assets/App icons/icon_share_03.svg" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['createTransaction'])">
     </div>
     <textarea *ngIf="DB.getTeamBalance(UI.currentTeam)>'0'" [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
-    <div *ngIf="!(DB.getTeamBalance(UI.currentTeam)>'0')||DB.getTeamBalance(UI.currentTeam)==null" style="font-size:10px;color:red;clear:both;padding:5px 0 5px 15px;cursor:pointer" [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' (click)="router.navigate(['wallet',UI.currentTeam])">COIN balance too low, please add COINS in your wallet to use this chat</div>
+    <div *ngIf="!(DB.getTeamBalance(UI.currentTeam)>'0')||DB.getTeamBalance(UI.currentTeam)==null" style="font-size:10px;color:red;clear:both;padding:5px 0 5px 15px;cursor:pointer" [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' (click)="router.navigate(['wallet',UI.currentTeam])">COIN balance too low, please send COINS to this team or buy new COINS to use this chat</div>
   </div>
   </div>
     `,

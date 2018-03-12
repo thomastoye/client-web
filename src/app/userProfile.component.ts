@@ -77,12 +77,22 @@ import { databaseService } from './database.service';
   <div class='sheet' *ngIf="(UI.currentUser==UI.focusUser)" style="margin-top:10px">
   <div class="buttonDiv" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
   </div>
+  <div class='sheet' style="margin-top:10px">
+    <div class="title">Selected projects</div>
+    <ul class='listLight' style="max-width:620px;display:block;margin:0 auto">
+      <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.$key])">
+        <img (error)="errorHandler($event)"[src]="DB.getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
+        <div style="height:25px;font-size:10px;line-height:10px">{{DB.getProjectName(project.$key)}}</div>
+      </li>
+    </ul>
+  </div>
   `,
 })
 export class UserProfileComponent {
   editMode: boolean;
   userTeams: FirebaseListObservable<any>;
   isImageOnFirebase: boolean;
+  teamProjects: FirebaseListObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.isImageOnFirebase=true;
@@ -95,6 +105,12 @@ export class UserProfileComponent {
           orderByChild:'lastChatVisitTimestampNegative',
         }
       });
+    });
+    this.teamProjects = this.db.list('teamProjects/-Kp0TqKyvqnFCnLryKC1', {
+      query:{
+        orderByChild:'following',
+        equalTo: true,
+      }
     });
   }
 
