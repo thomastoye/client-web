@@ -42,7 +42,7 @@ import { databaseService } from './database.service';
       <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{DB.getUserFirstName(user.$key)}}...</div>
       </li>
     </ul>
-    <div *ngIf="DB.getTeamBalance(UI.currentTeam)>0">
+    <div *ngIf="DB.getTeamBalance(UI.currentTeam)>'0'">
       <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
       <label class="buttonUploadImage" [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' for="chatImage" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">
       <img src="./../assets/App icons/camera.png" style="width:25px">
@@ -50,8 +50,8 @@ import { databaseService } from './database.service';
       </label>
       <img [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' src="./../assets/App icons/icon_share_03.svg" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['createTransaction'])">
     </div>
-    <textarea *ngIf="DB.getTeamBalance(UI.currentTeam)>0" [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
-    <div *ngIf="DB.getTeamBalance(UI.currentTeam)<=0||DB.getTeamBalance(UI.currentTeam)==null" style="font-size:10px;color:red;clear:both;padding:5px 0 5px 15px;cursor:pointer" [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' (click)="router.navigate(['wallet',UI.currentTeam])">COIN balance too low, please add COINS in your wallet to use this chat</div>
+    <textarea *ngIf="DB.getTeamBalance(UI.currentTeam)>'0'" [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
+    <div *ngIf="!(DB.getTeamBalance(UI.currentTeam)>'0')||DB.getTeamBalance(UI.currentTeam)==null" style="font-size:10px;color:red;clear:both;padding:5px 0 5px 15px;cursor:pointer" [hidden]='!DB.getUserMember(UI.currentTeam,UI.currentUser)' (click)="router.navigate(['wallet',UI.currentTeam])">COIN balance too low, please add COINS in your wallet to use this chat</div>
   </div>
   </div>
     `,
