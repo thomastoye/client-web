@@ -76,14 +76,21 @@ export class LoginComponent  {
         equalTo: true,
       }
     });
+    this.afAuth.authState.subscribe((auth) => {
+      if (auth!=null) {
+        this.router.navigate(['user',auth.uid]);
+      }
+    });
   }
 
   login(email: string, password: string) {
     this.newUser = false;
     this.clearAllMessages ();
-    this.afAuth.auth.signInWithEmailAndPassword(email, password)
-    .then(_ => this.messageLogin="Successfully logged in")
-    .catch(err => this.messageLogin="Error: Verify your email and password or create a new account");
+    this.afAuth.auth.signInWithEmailAndPassword(email, password).then(_ => {
+      this.messageLogin="Successfully logged in"
+    }).catch(err => {
+      this.messageLogin="Error: Verify your email and password or create a new account"
+    });
   }
 
   resetPassword(email: string) {

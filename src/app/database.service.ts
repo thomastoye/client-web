@@ -2,7 +2,6 @@ import { Injectable }    from '@angular/core';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
-import { Router } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 
 @Injectable()
@@ -22,7 +21,7 @@ export class databaseService {
   projectGoal: string[];
   projectDocument: string[];
 
-  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+  constructor(public db: AngularFireDatabase, public UI: userInterfaceService) {
     this.userFirstName=[''];
     this.userLastName=[''];
     this.userPhotoURL=[''];
