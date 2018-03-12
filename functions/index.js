@@ -49,7 +49,7 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
       }
     }, function(error, committed, balance) {
       if (error) {
-        createMessage (team,"PERRINN","Transaction error, please contact PERRINN","","warning");
+        createMessage (team,"PERRINN","Transaction error, please contact PERRINN (perrinnlimited@gmail.com)","","warning");
       } else if (!committed) {
         createMessage (team,"PERRINN","COIN balance too low","","warning");
       } else {
@@ -117,13 +117,15 @@ exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID
 
 exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCreate(event => {
   const profile = event.data.val();
-  var currentFirstName;
-  var currentLastName;
-  var currentPhotoURL;
+  var currentFirstName="";
+  var currentLastName="";
+  var currentPhotoURL="";
   admin.database().ref('PERRINNUsers/'+event.params.user).once('value').then((user)=>{
-    currentFirstName=user.val().firstName;
-    currentLastName=user.val().lastName;
-    currentPhotoURL=user.val().photoURL;
+    if (user.val()!=null) {
+      currentFirstName=user.val().firstName;
+      currentLastName=user.val().lastName;
+      currentPhotoURL=user.val().photoURL;
+    }
   }).then(()=>{
     if (currentFirstName!=profile.firstName||currentLastName!=profile.lastName||currentPhotoURL!=profile.photoURL) {
       admin.database().ref('PERRINNUsers/'+event.params.user).update({

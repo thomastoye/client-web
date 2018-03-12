@@ -19,9 +19,9 @@ import { databaseService } from './database.service';
     <img src="./../assets/App icons/Perrinn_02.png" style="width:30px;margin-top:5px;border-radius:3px;">
     <div class='activity' [hidden]="!globalChatActivity"></div>
     </div>
-    <div style="width:150px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
+    <div style="text-align:center;width:150px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
         <div *ngIf="UI.currentTeam" style="height:40px">
-        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" style="object-fit:cover;height:15px;width:150px;border-radius:0 0 15px 15px">
+        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" style="object-fit:cover;height:15px;width:100px;border-radius:0 0 15px 15px">
         <div style="position:absolute;width:150px;top:17px;text-align:center;color:#fff;border-radius:5px 5px 0 0;font-size:10px;line-height:20px">{{DB.getTeamName(UI.currentTeam)}}{{(DB.getUserLeader(UI.currentTeam,UI.currentUser)?" *":"")}}</div>
         </div>
     </div>

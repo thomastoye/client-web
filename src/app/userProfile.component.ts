@@ -12,11 +12,10 @@ import { databaseService } from './database.service';
   template: `
   <div class="sheet">
   <div style="float: left;width:80%">
-  <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" [hidden]='!ownProfile' (click)="editMode=false;updateUserProfile()">Done</div>
+  <div class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="editMode=false;updateUserProfile()">Done</div>
   <div [hidden]='editMode'>
   <div class='title'>{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
-  <img src="./../assets/App icons/PERRINN-icon-180x180.png" style="height:20px;margin:5px;margin-left:15px;cursor:pointer" (click)="router.navigate(['project','-Ks_OrDydv6PE4UkeNCf'])">
-  <img class='editButton' [hidden]='!ownProfile' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
+  <img class='editButton' [hidden]='!(UI.currentUser==UI.focusUser)' (click)="editMode=true" src="./../assets/App icons/pencil-tip.png">
   </div>
   <div [hidden]='!editMode'>
   <input maxlength="20" [(ngModel)]="DB.userFirstName[UI.focusUser]" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -25,7 +24,7 @@ import { databaseService } from './database.service';
   </div>
   <div style="float: right;width:20%;position:relative">
   <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:75px;width:75px" (click)="showFullScreenImage(DB.getUserPhotoURL(UI.focusUser))">
-  <div *ngIf="!isImageOnFirebase" [hidden]='!ownProfile' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
+  <div *ngIf="!isImageOnFirebase" [hidden]='!(UI.currentUser==UI.focusUser)' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="projectImage" id="buttonFile">
@@ -39,7 +38,7 @@ import { databaseService } from './database.service';
   <div style="width:100px;font-size:10px;cursor:pointer;color:blue;padding:5px;" (click)="router.navigate(['chat','-KtmuFyG2XEmWm8oNOGT'])">How it works</div>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="buttonDiv" *ngIf="ownProfile" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
+  <div class="buttonDiv" *ngIf="(UI.currentUser==UI.focusUser)" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
@@ -75,14 +74,13 @@ import { databaseService } from './database.service';
     </li>
   </ul>
   </div>
-  <div class='sheet' *ngIf="ownProfile" style="margin-top:10px">
+  <div class='sheet' *ngIf="(UI.currentUser==UI.focusUser)" style="margin-top:10px">
   <div class="buttonDiv" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
   </div>
   `,
 })
 export class UserProfileComponent {
   editMode: boolean;
-  ownProfile: boolean;
   userTeams: FirebaseListObservable<any>;
   isImageOnFirebase: boolean;
 
@@ -91,7 +89,6 @@ export class UserProfileComponent {
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       this.editMode = false;
-      this.ownProfile = (this.UI.currentUser==this.UI.focusUser);
       if(this.DB.getUserPhotoURL(this.UI.focusUser)) this.isImageOnFirebase = this.DB.getUserPhotoURL(this.UI.focusUser).substring(0,23)=='https://firebasestorage'
       this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
         query:{

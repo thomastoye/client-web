@@ -39,7 +39,7 @@
     },
     "teamMessages": {
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true"
+        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && root.child('PERRINNTeamBalance').child($teamid).child('balance').val() > 0"
       }
     },
     "teamPayments": {
