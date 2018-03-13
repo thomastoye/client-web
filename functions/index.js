@@ -126,11 +126,9 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
       currentFirstName=user.val().firstName;
       currentLastName=user.val().lastName;
       currentPhotoURL=user.val().photoURL;
-    }
-    if (user.val().createdTimestamp!=null) {
       createdTimestamp=user.val().createdTimestamp;
     } else {
-      createdTimestamp=Date.now();
+      createdTimestamp=profile.timestamp;
     }
   }).then(()=>{
     if (currentFirstName!=profile.firstName||currentLastName!=profile.lastName||currentPhotoURL!=profile.photoURL) {
