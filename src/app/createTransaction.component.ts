@@ -61,7 +61,8 @@ export class CreateTransactionComponent {
       reference: this.transactionReference,
       amount: this.transactionAmount,
       receiver: this.selectedTeamID,
-      action: "transaction"
+      action: "transaction",
+      linkTeam:this.selectedTeamID,
     })
     .then(() => {
       this.db.object('teamActivities/'+this.UI.currentTeam).update({
