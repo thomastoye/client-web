@@ -19,7 +19,7 @@ import { databaseService } from './database.service';
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *"/>
           <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *"/>
           <button [hidden]="newUser" type="button" (click)="login(email,password)">Login {{messageLogin}}</button>
-          <div style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password? {{messageResetPassword}}</div>
+          <div [hidden]="newUser" style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password? {{messageResetPassword}}</div>
           <div [hidden]="!newUser">
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *"/>
           <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *"/>
@@ -120,7 +120,7 @@ export class LoginComponent  {
       .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information")
       .then(_=> {
         this.afAuth.authState.subscribe((auth) => {
-          this.db.list('users/'+auth.uid).push({timestamp: firebase.database.ServerValue.TIMESTAMP, firstName: firstName, lastName: lastName, photoURL: photoURL})
+          this.db.list('users/'+auth.uid).push({timestamp: firebase.database.ServerValue.TIMESTAMP,firstName:firstName,lastName:lastName,photoURL: photoURL})
           .catch(err => this.messageRegister="Error: We couldn't save your profile")
           .then(_ => {
             this.messageRegister="Successful registered";
@@ -138,6 +138,7 @@ export class LoginComponent  {
     this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
     this.db.object('teams/'+teamID).update({name: teamName, organisation: "Family and Friends"});
     this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.db.list('users/'+userID).push({personalTeam:teamID});
   }
 
   clearAllMessages () {

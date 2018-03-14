@@ -61,8 +61,8 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
           otherTeam: otherTeam,
           reference: reference,
           requestTimestamp: timestamp,
-          timestamp: admin.database.ServerValue.TIMESTAMP,
-          timestampNegative: -timestamp,
+          timestamp:admin.database.ServerValue.TIMESTAMP,
+          timestampNegative:-timestamp,
           user: user,
         });
       }
@@ -116,38 +116,49 @@ exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID
   });
 });
 
+function updateUserKeyValue (user,key,value) {
+  return admin.database().ref('PERRINNUsers/'+user).once('value').then((currentProfile)=>{
+    if (!value) {
+      return;
+    }
+    if (currentProfile.child(key).val()==value) {
+      return;
+    } else {
+      return admin.database().ref('PERRINNUsers/'+user).update({
+        [key]:value,
+      }).then(()=>{
+        return value;
+      });
+    }
+  });
+}
+
 exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCreate(event => {
   const profile = event.data.val();
-  var currentFirstName="";
-  var currentLastName="";
-  var currentPhotoURL="";
-  var createdTimestamp="";
-  return admin.database().ref('PERRINNUsers/'+event.params.user).once('value').then((user)=>{
-    if (user.val()!=null) {
-      currentFirstName=user.val().firstName;
-      currentLastName=user.val().lastName;
-      currentPhotoURL=user.val().photoURL;
-      createdTimestamp=user.val().createdTimestamp;
-    } else {
-      createdTimestamp=profile.timestamp;
-    }
-    if (currentFirstName!=profile.firstName||currentLastName!=profile.lastName||currentPhotoURL!=profile.photoURL) {
+  return admin.database().ref('PERRINNUsers/'+event.params.user).once('value').then((currentProfile)=>{
+    if (currentProfile.val()==null) {
       admin.database().ref('PERRINNUsers/'+event.params.user).update({
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        photoURL: profile.photoURL,
-        createdTimestamp: createdTimestamp,
+        createdTimestamp:admin.database.ServerValue.TIMESTAMP,
       });
-      return admin.database().ref('userTeams/'+event.params.user).once('value').then(teams=>{
-        teams.forEach(function(team){
-          admin.database().ref('teamUsers/'+team.key+'/'+event.params.user).child('member').once('value').then(member=>{
-            if (member.val()==true) {
-              createMessage (team.key,"PERRINN",profile.firstName+"' profile has been updated","","confirmation");
-            }
+    }
+    return updateUserKeyValue(event.params.user,"firstName",profile.firstName).then((newFirstName)=>{
+      return updateUserKeyValue(event.params.user,"lastName",profile.lastName).then((newLastName)=>{
+        return updateUserKeyValue(event.params.user,"photoURL",profile.photoURL).then((newPhotoURL)=>{
+          return updateUserKeyValue(event.params.user,"personalTeam",profile.personalTeam).then((newPersonalTeam)=>{
+            return;
+  //          return admin.database().ref('userTeams/'+event.params.user).once('value').then(teams=>{
+  //            teams.forEach(function(team){
+  //              admin.database().ref('teamUsers/'+team.key+'/'+event.params.user).child('member').once('value').then(member=>{
+  //                if (member.val()==true) {
+  //                  createMessage (team.key,"PERRINN",profile.firstName+"' profile has been updated","","confirmation");
+  //                }
+  //              });
+  //            });
+  //          });
           });
         });
       });
-    }
+    });
   });
 });
 

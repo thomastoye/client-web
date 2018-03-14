@@ -4,6 +4,7 @@ import { LoginComponent }   from './login.component';
 import { ChatComponent } from './chat.component';
 import { TeamProfileComponent } from './teamProfile.component';
 import { UserProfileComponent } from './userProfile.component';
+import { UserSettingsComponent } from './userSettings.component';
 import { ProjectProfileComponent } from './projectProfile.component';
 import { SearchComponent } from './search.component';
 import { AddTeamComponent } from './addTeam.component';
@@ -19,6 +20,7 @@ const appRoutes: Routes = [
   { path: 'chat/:id', component: ChatComponent },
   { path: 'team/:id', component: TeamProfileComponent },
   { path: 'user/:id', component: UserProfileComponent },
+  { path: 'userSettings/:id', component: UserSettingsComponent },
   { path: 'project/:id', component: ProjectProfileComponent },
   { path: 'login', component: LoginComponent },
   { path: 'search', component: SearchComponent },
