@@ -31,9 +31,9 @@ import { databaseService } from './database.service';
       (click)="router.navigate(['chat',team.$key])">
       <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
       <div style="float:left">
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px;border-radius:3px">
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:50px;width:80px;border-radius:3px">
       </div>
-      <div style="margin-left:80px">
+      <div>
       <div style="float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}{{(DB.getUserLeader(team.$key,UI.focusUser)?" *":"")}}</div>
       <img [hidden]="!(DB.getTeamBalance(team.$key)>0)" src="./../assets/App icons/PERRINN-icon-180x180.png" style="float:left;height:12px;margin:5px;margin-top:14px">
       <div *ngIf="DB.getUserPersonalTeam(UI.focusUser)==team.$key" style="float:left;margin-top:10px;color:green;font-size:11px;background-color:#eee;width:90px;text-align:center">Personal team</div>
