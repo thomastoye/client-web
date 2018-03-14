@@ -53,9 +53,10 @@ export class CreateTransactionComponent {
 
   createTransaction() {
     const now = Date.now();
+    var text="I am sending "+this.transactionAmount+" COINS to "+this.DB.getTeamName(this.selectedTeamID)+", reference: "+this.transactionReference;
     this.db.list('teamMessages/'+this.UI.currentTeam).push({
       timestamp:now,
-      text:"I am sending "+this.transactionAmount+" COINS to "+this.DB.getTeamName(this.selectedTeamID)+", reference: "+this.transactionReference,
+      text:text,
       image:"",
       user:this.UI.currentUser,
       reference: this.transactionReference,
@@ -67,6 +68,8 @@ export class CreateTransactionComponent {
     .then(() => {
       this.db.object('teamActivities/'+this.UI.currentTeam).update({
         lastMessageTimestamp:now,
+        lastMessageText:text,
+        lastMessageUser:this.UI.currentUser,
       });
       this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
         lastChatVisitTimestamp:now,

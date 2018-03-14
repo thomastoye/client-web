@@ -134,10 +134,21 @@ export class LoginComponent  {
 
   createNewTeam(userID: string, teamName: string) {
     teamName = teamName.toUpperCase();
+    const now = Date.now();
     var teamID = this.db.list('ids/').push(true).key;
-    this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
-    this.db.object('teams/'+teamID).update({name: teamName, organisation: "Family and Friends"});
-    this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.db.object('teamUsers/'+teamID+'/'+userID).update({
+      member:true,
+      leader:true,
+    });
+    this.db.object('teams/'+teamID).update({
+      name:teamName,
+      organisation:"Family and Friends"
+    });
+    this.db.object('userTeams/'+userID+'/'+teamID).update({
+      following:true,
+      lastChatVisitTimestamp:now,
+      lastChatVisitTimestampNegative:-1*now,
+    });
     this.db.list('users/'+userID).push({personalTeam:teamID});
   }
 

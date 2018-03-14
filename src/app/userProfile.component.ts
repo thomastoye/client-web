@@ -11,12 +11,12 @@ import { databaseService } from './database.service';
   selector: 'user',
   template: `
   <div class="sheet">
-  <div style="float: left;width:80%">
+  <div style="float:left;width:80%">
   <div class='title' style="float:left;font-size:16px">{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
   <img class='editButton' style="width:20px" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="this.router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
   <div style="color:#888;font-size:11px;padding:5px 5px 5px 10px;clear:both">Joined {{DB.getUserCreatedTimestamp(UI.focusUser)|date:'MMMM yyyy'}}, {{DB.getUserMessageCount(UI.focusUser)==null?0:DB.getUserMessageCount(UI.focusUser)}} Messages</div>
   </div>
-  <div style="float: right;width:20%;position:relative">
+  <div style="float:right;width:20%;position:relative">
   <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:75px;width:75px" (click)="showFullScreenImage(DB.getUserPhotoURL(UI.focusUser))">
   <div *ngIf="!isImageOnFirebase" [hidden]='!(UI.currentUser==UI.focusUser)' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   </div>
@@ -28,35 +28,20 @@ import { databaseService } from './database.service';
   <div class="buttonDiv" *ngIf="(UI.currentUser==UI.focusUser)" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
-      [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['chat',team.$key])">
       <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
-      <div *ngIf="team.lastChatVisitTimestampNegative">
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
+      <div style="float:left">
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px;border-radius:3px">
+      </div>
+      <div style="margin-left:80px">
       <div style="float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}{{(DB.getUserLeader(team.$key,UI.focusUser)?" *":"")}}</div>
       <img [hidden]="!(DB.getTeamBalance(team.$key)>0)" src="./../assets/App icons/PERRINN-icon-180x180.png" style="float:left;height:12px;margin:5px;margin-top:14px">
-      <div style="float:left;margin-top:10px;color:green;font-size:11px">{{DB.getUserPersonalTeam(UI.focusUser)==team.$key?"Personal team":""}}</div>
+      <div *ngIf="DB.getUserPersonalTeam(UI.focusUser)==team.$key" style="float:left;margin-top:10px;color:green;font-size:11px;background-color:#eee;width:90px;text-align:center">Personal team</div>
       <div style="float:left;margin:5px;margin-top:14px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="DB.getTeamLastMessageTimestamp(team.$key)>team.lastChatVisitTimestamp"></div>
       <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
+      <div *ngIf="DB.getTeamLastMessageText(team.$key)" style="clear:both;white-space:nowrap;overflow:hidden;width:60%;text-overflow:ellipsis;color:#888">{{DB.getUserFirstName(DB.getTeamLastMessageUser(team.$key))}}: {{DB.getTeamLastMessageText(team.$key)}}</div>
+      </div>
       <div class="seperator"></div>
-      </div>
-      </div>
-    </li>
-  </ul>
-  <ul class="listLight">
-    <li *ngFor="let team of userTeams | async"
-      [class.selected]="team.$key === UI.currentTeam"
-      (click)="router.navigate(['chat',team.$key])">
-      <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
-      <div *ngIf="!team.lastChatVisitTimestampNegative">
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
-      <div style="float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}{{(DB.getUserLeader(team.$key,UI.focusUser)?" *":"")}}</div>
-      <img [hidden]="!(DB.getTeamBalance(team.$key)>0)" src="./../assets/App icons/PERRINN-icon-180x180.png" style="float:left;height:12px;margin:5px;margin-top:14px">
-      <div style="float:left;margin-top:10px;color:#666;font-size:11px">{{DB.getUserPersonalTeam(UI.focusUser)==team.$key?"Personal team":""}}</div>
-      <div style="float:left;margin:5px;margin-top:14px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="DB.getTeamLastMessageTimestamp(team.$key)>team.lastChatVisitTimestamp"></div>
-      <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
-      <div class="seperator"></div>
-      </div>
       </div>
     </li>
   </ul>

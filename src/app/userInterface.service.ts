@@ -14,15 +14,16 @@ export class userInterfaceService {
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.afAuth.authState.subscribe((auth) => {
       if (auth!=null) {
-        this.currentUser = auth.uid;
-        if (this.focusUser==null) this.focusUser = auth.uid;
+        this.currentUser=auth.uid;
+        if (this.focusUser==null) this.focusUser=auth.uid;
         this.db.object('PERRINNUsers/'+this.focusUser).subscribe(snapshot=>{
           if (this.currentTeam==null) this.currentTeam=snapshot.personalTeam;
         });
       }
       else {
-        this.currentUser = null;
-        this.focusUser = null;
+        this.currentUser=null;
+        this.focusUser=null;
+        this.currentTeam=null;
       }
     });
   }

@@ -33,6 +33,8 @@ function createMessage (team, user, text, image, action) {
   }).then(()=>{
     return admin.database().ref('teamActivities/'+team).update({
       lastMessageTimestamp:now,
+      lastMessageText:text,
+      lastMessageUser:user,
     });
   });
 }

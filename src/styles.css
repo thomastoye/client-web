@@ -295,9 +295,6 @@ hr {
 .sheet .content {
   padding: 5px 10px 5px 10px;
 }
-.sheet .selected {
-  text-decoration: underline;
-}
 .sheetBadge {
   width:280px;
   margin: 10px auto;

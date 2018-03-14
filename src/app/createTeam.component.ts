@@ -39,9 +39,21 @@ export class CreateTeamComponent {
   createNewTeam(userID: string, teamName: string) {
     teamName = teamName.toUpperCase();
     var teamID = this.db.list('ids/').push(true).key;
-    this.db.object('teamUsers/'+teamID+'/'+userID).update({member: true, leader: true});
-    this.db.object('teams/'+teamID).update({name: teamName, photoURL: this.photoURL, organisation: "Family and Friends"});
-    this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    const now = Date.now();
+    this.db.object('teamUsers/'+teamID+'/'+userID).update({
+      member:true,
+      leader:true,
+    });
+    this.db.object('teams/'+teamID).update({
+      name:teamName,
+      photoURL:this.photoURL,
+      organisation:"Family and Friends",
+    });
+    this.db.object('userTeams/'+userID+'/'+teamID).update({
+      following:true,
+      lastChatVisitTimestamp:now,
+      lastChatVisitTimestampNegative:-1*now,
+    });
     this.router.navigate(['team',teamID]);
   }
 

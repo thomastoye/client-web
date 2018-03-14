@@ -19,6 +19,8 @@ export class databaseService {
   teamPhotoURL: string[];
   teamBalance: string[];
   teamLastMessageTimestamp: string[];
+  teamLastMessageText: string[];
+  teamLastMessageUser: string[];
   projectName: string[];
   projectPhotoURL: string[];
   projectGoal: string[];
@@ -38,6 +40,8 @@ export class databaseService {
     this.teamPhotoURL=[''];
     this.teamBalance=[''];
     this.teamLastMessageTimestamp=[''];
+    this.teamLastMessageText=[''];
+    this.teamLastMessageUser=[''];
     this.projectName=[''];
     this.projectPhotoURL=[''];
     this.projectGoal=[''];
@@ -95,22 +99,6 @@ export class databaseService {
     if(this.teamBalance[ID]==null) this.db.object('PERRINNTeamBalance/'+ID).subscribe(snapshot=>{this.teamBalance[ID]=snapshot.balance});
     return this.teamBalance[ID];
   }
-  getProjectName(ID:string):string{
-    if(this.projectName[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectName[ID]=snapshot.name});
-    return this.projectName[ID];
-  }
-  getProjectPhotoURL(ID:string):string{
-    if(this.projectPhotoURL[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectPhotoURL[ID]=snapshot.photoURL});
-    return this.projectPhotoURL[ID];
-  }
-  getProjectGoal(ID:string):string{
-    if(this.projectGoal[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectGoal[ID]=snapshot.goal});
-    return this.projectGoal[ID];
-  }
-  getProjectDocument(ID:string):string{
-    if(this.projectDocument[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectDocument[ID]=snapshot.document});
-    return this.projectDocument[ID];
-  }
   getTeamLeader(projectID,teamID):string{
     var output;
     this.db.object('projectTeams/'+projectID+'/'+teamID).subscribe(snapshot=>{output=snapshot.leader});
@@ -129,6 +117,30 @@ export class databaseService {
   getTeamLastMessageTimestamp(ID:string):string{
     if(this.teamLastMessageTimestamp[ID]==null) this.db.object('teamActivities/'+ID).subscribe(snapshot=>{this.teamLastMessageTimestamp[ID]=snapshot.lastMessageTimestamp});
     return this.teamLastMessageTimestamp[ID];
+  }
+  getTeamLastMessageText(ID:string):string{
+    if(this.teamLastMessageText[ID]==null) this.db.object('teamActivities/'+ID).subscribe(snapshot=>{this.teamLastMessageText[ID]=snapshot.lastMessageText});
+    return this.teamLastMessageText[ID];
+  }
+  getTeamLastMessageUser(ID:string):string{
+    if(this.teamLastMessageUser[ID]==null) this.db.object('teamActivities/'+ID).subscribe(snapshot=>{this.teamLastMessageUser[ID]=snapshot.lastMessageUser});
+    return this.teamLastMessageUser[ID];
+  }
+  getProjectName(ID:string):string{
+    if(this.projectName[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectName[ID]=snapshot.name});
+    return this.projectName[ID];
+  }
+  getProjectPhotoURL(ID:string):string{
+    if(this.projectPhotoURL[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectPhotoURL[ID]=snapshot.photoURL});
+    return this.projectPhotoURL[ID];
+  }
+  getProjectGoal(ID:string):string{
+    if(this.projectGoal[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectGoal[ID]=snapshot.goal});
+    return this.projectGoal[ID];
+  }
+  getProjectDocument(ID:string):string{
+    if(this.projectDocument[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectDocument[ID]=snapshot.document});
+    return this.projectDocument[ID];
   }
   getPERRINNGlobalMessage():string{
     var output;
