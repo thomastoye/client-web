@@ -5,6 +5,23 @@ admin.initializeApp(functions.config().firebase);
 
 const stripe = require('stripe')(functions.config().stripe.token);
 
+function updateUserKeyValue (user,key,value) {
+  return admin.database().ref('PERRINNUsers/'+user).once('value').then((currentProfile)=>{
+    if (!value) {
+      return;
+    }
+    if (currentProfile.child(key).val()==value) {
+      return;
+    } else {
+      return admin.database().ref('PERRINNUsers/'+user).update({
+        [key]:value,
+      }).then(()=>{
+        return value;
+      });
+    }
+  });
+}
+
 function createMessage (team, user, text, image, action) {
   const now = Date.now();
   return admin.database().ref('teamMessages/'+team).push({
@@ -116,23 +133,6 @@ exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID
   });
 });
 
-function updateUserKeyValue (user,key,value) {
-  return admin.database().ref('PERRINNUsers/'+user).once('value').then((currentProfile)=>{
-    if (!value) {
-      return;
-    }
-    if (currentProfile.child(key).val()==value) {
-      return;
-    } else {
-      return admin.database().ref('PERRINNUsers/'+user).update({
-        [key]:value,
-      }).then(()=>{
-        return value;
-      });
-    }
-  });
-}
-
 exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCreate(event => {
   const profile = event.data.val();
   return admin.database().ref('PERRINNUsers/'+event.params.user).once('value').then((currentProfile)=>{
@@ -145,16 +145,20 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
       return updateUserKeyValue(event.params.user,"lastName",profile.lastName).then((newLastName)=>{
         return updateUserKeyValue(event.params.user,"photoURL",profile.photoURL).then((newPhotoURL)=>{
           return updateUserKeyValue(event.params.user,"personalTeam",profile.personalTeam).then((newPersonalTeam)=>{
-            return;
-  //          return admin.database().ref('userTeams/'+event.params.user).once('value').then(teams=>{
-  //            teams.forEach(function(team){
-  //              admin.database().ref('teamUsers/'+team.key+'/'+event.params.user).child('member').once('value').then(member=>{
-  //                if (member.val()==true) {
-  //                  createMessage (team.key,"PERRINN",profile.firstName+"' profile has been updated","","confirmation");
-  //                }
-  //              });
-  //            });
-  //          });
+            return admin.database().ref('PERRINNUsers/'+event.params.user).once('value').then(newProfile=>{
+              if (newFirstName) {
+                createMessage (newProfile.val().personalTeam,"PERRINN",newProfile.val().firstName+": Your first name has been updated to "+newFirstName,"","confirmation");
+              }
+              if (newLastName) {
+                createMessage (newProfile.val().personalTeam,"PERRINN",newProfile.val().firstName+": Your last name has been updated to "+newLastName,"","confirmation");
+              }
+              if (newPhotoURL) {
+                createMessage (newProfile.val().personalTeam,"PERRINN",newProfile.val().firstName+": Your photo has been updated","","confirmation");
+              }
+              if (newPersonalTeam) {
+                createMessage (newProfile.val().personalTeam,"PERRINN",newProfile.val().firstName+": This is your new personal team","","confirmation");
+              }
+            });
           });
         });
       });

@@ -43,7 +43,7 @@ import { databaseService } from './database.service';
       <div style="width:150px;height:30px:float:left">
       <div *ngIf="personalTeam==DB.getUserPersonalTeam(UI.focusUser)">
       <div *ngIf="DB.getUserLeader(team.$key,UI.focusUser)&&(personalTeam!=team.$key)" class="buttonDiv" style="font-size:11px;color:blue;border:none" (click)="personalTeam=team.$key;db.list('users/'+UI.focusUser).push({personalTeam:team.$key})">Set as personal team</div>
-      <div *ngIf="personalTeam==team.$key" class="buttonDiv" style="cursor:default;font-size:11px;color:green;border:none">(Current personal team)</div>
+      <div *ngIf="personalTeam==team.$key" class="buttonDiv" style="cursor:default;font-size:11px;color:green;border:none">(Personal team)</div>
       </div>
       </div>
       <div class="seperator"></div>

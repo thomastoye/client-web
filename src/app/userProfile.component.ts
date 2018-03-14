@@ -34,7 +34,7 @@ import { databaseService } from './database.service';
       <div *ngIf="team.lastChatVisitTimestampNegative">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:60px">
       <div style="float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}{{(DB.getUserLeader(team.$key,UI.focusUser)?" *":"")}}</div>
-      <div style="float:left;margin-top:10px;color:#666;font-size:11px">{{DB.getUserPersonalTeam(UI.focusUser)==team.$key?"(Personal team)":""}}</div>
+      <div style="float:left;margin-top:10px;color:green;font-size:11px">{{DB.getUserPersonalTeam(UI.focusUser)==team.$key?"(Personal team)":""}}</div>
       <img [hidden]="!(DB.getTeamBalance(team.$key)>0)" src="./../assets/App icons/PERRINN-icon-180x180.png" style="float:left;height:12px;margin:5px;margin-top:14px">
       <div style="float:left;margin:5px;margin-top:14px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="DB.getTeamLastMessageTimestamp(team.$key)>team.lastChatVisitTimestamp"></div>
       <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
