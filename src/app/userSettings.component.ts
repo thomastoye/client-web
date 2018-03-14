@@ -26,7 +26,7 @@ import { databaseService } from './database.service';
   </label>
   </div>
   </div>
-  <div *ngIf="(firstName!=DB.getUserFirstName(UI.focusUser)||lastName!=DB.getUserLastName(UI.focusUser)||photoURL!=DB.getUserPhotoURL(UI.focusUser))&&firstName!=null&&lastName!=null&&photoURL!=null" class="buttonDiv" (click)="saveUserProfile()" style="clear:both">Save profile</div>
+  <div *ngIf="(firstName!=DB.getUserFirstName(UI.focusUser)||lastName!=DB.getUserLastName(UI.focusUser)||photoURL!=DB.getUserPhotoURL(UI.focusUser))&&firstName!=null&&lastName!=null&&photoURL!=null" class="buttonDiv" (click)="saveUserProfile();router.navigate(['user',UI.currentUser])" style="clear:both">Save profile</div>
   <div class="title">Teams</div>
   <div style="font-size:10px;padding:10px;color:#888">(Your personal team is where specific messages are sent to you and were you should keep your personal COINS.)</div>
   <ul class="listLight">
