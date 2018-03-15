@@ -70,7 +70,7 @@ export class SearchComponent  {
             limitToFirst: 10
           }
         });
-        this.teams = this.db.list('teams/', {
+        this.teams = this.db.list('PERRINNTeams/', {
           query:{
             orderByChild:'name',
             startAt: this.UI.searchFilter.toUpperCase(),

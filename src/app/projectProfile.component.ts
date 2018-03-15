@@ -45,7 +45,7 @@ import { databaseService } from './database.service';
       (click)="router.navigate(['team',team.$key])">
       <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div style="width:15px;height:25px;float:left;">{{DB.getUserLeader(team.$key,UI.currentUser)?"*":""}}</div>
-      <div style="width:300px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}{{(DB.getTeamLeader(UI.focusProject,team.$key)? " **" : "")}}{{DB.getTeamFollowing(team.$key,UI.focusProject)?"":" (Not Following)"}}</div>
+      <div style="width:300px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}{{(DB.getProjectTeamLeader(UI.focusProject,team.$key)? " **" : "")}}{{DB.getProjectTeamFollowing(team.$key,UI.focusProject)?"":" (Not Following)"}}</div>
       <button [hidden]='!projectLeader' *ngIf="editMode" style="float:right" (click)="db.object('projectTeams/'+UI.focusProject+'/'+team.$key).update({member:false,leader:false});" style="background-color:red">Remove</button>
     </li>
   </ul>

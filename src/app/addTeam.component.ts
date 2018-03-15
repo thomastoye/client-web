@@ -37,7 +37,7 @@ export class AddTeamComponent  {
   refreshTeamList () {
     this.filter = this.filter.toUpperCase();
     if (this.filter.length>1) {
-    this.teams = this.db.list('teams/', {
+    this.teams = this.db.list('PERRINNTeams/', {
       query:{
         orderByChild:'name',
         startAt: this.filter,

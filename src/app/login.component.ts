@@ -140,9 +140,10 @@ export class LoginComponent  {
       member:true,
       leader:true,
     });
-    this.db.object('teams/'+teamID).update({
+    this.db.list('teams/'+teamID).push({
       name:teamName,
-      organisation:"Family and Friends"
+      leader:userID,
+      timestamp:firebase.database.ServerValue.TIMESTAMP,
     });
     this.db.object('userTeams/'+userID+'/'+teamID).update({
       following:true,

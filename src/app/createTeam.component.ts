@@ -44,10 +44,11 @@ export class CreateTeamComponent {
       member:true,
       leader:true,
     });
-    this.db.object('teams/'+teamID).update({
+    this.db.list('teams/'+teamID).push({
       name:teamName,
       photoURL:this.photoURL,
-      organisation:"Family and Friends",
+      leader:this.UI.currentUser,
+      timestamp:firebase.database.ServerValue.TIMESTAMP,
     });
     this.db.object('userTeams/'+userID+'/'+teamID).update({
       following:true,

@@ -72,7 +72,7 @@ import { databaseService } from './database.service';
   <ul class='listLight'>
     <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.$key])">
       <img (error)="errorHandler($event)"[src]="DB.getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
-      <div style="height:25px;font-size:10px;line-height:10px">{{DB.getProjectName(project.$key)}}{{(getTeamLeader(project.$key,UI.currentTeam)? " **" : "")}}</div>
+      <div style="height:25px;font-size:10px;line-height:10px">{{DB.getProjectName(project.$key)}}{{(DB.getProjectTeamLeader(project.$key,UI.currentTeam)? " **" : "")}}</div>
     </li>
   </ul>
   <button *ngIf="editMode" (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
@@ -124,18 +124,12 @@ export class TeamProfileComponent  {
     fullScreenImage.style.visibility='visible';
   }
 
-  getTeamLeader (projectID: string, teamID: string) :string {
-    var output;
-    this.db.object('projectTeams/' + projectID + '/' + teamID).subscribe(snapshot => {
-      output = snapshot.leader;
-    });
-    return output;
-  }
-
   saveTeamProfile() {
     this.DB.teamName[this.UI.currentTeam] = this.DB.teamName[this.UI.currentTeam].toUpperCase();
-    this.db.object('teams/' + this.UI.currentTeam).update({
-      name: this.DB.teamName[this.UI.currentTeam], photoURL: this.DB.teamPhotoURL[this.UI.currentTeam],
+    this.db.list('teams/' + this.UI.currentTeam).push({
+      name:this.DB.teamName[this.UI.currentTeam],
+      photoURL: this.DB.teamPhotoURL[this.UI.currentTeam],
+      timestamp:firebase.database.ServerValue.TIMESTAMP,
     })
   }
 
