@@ -57,7 +57,10 @@ export class AddMemberComponent  {
   addMember (teamID: string, memberID: string) {
     if (memberID==null || memberID=="") {this.messageAddMember = "Please select a member"}
     else {
-      this.db.object('teamUsers/'+teamID+'/'+memberID).update({member: true, leader: false})
+      this.db.list('teams/'+teamID).push({
+        member:memberID,
+        timestamp:firebase.database.ServerValue.TIMESTAMP,
+      })
       .then(_ => this.router.navigate(['team',teamID]))
       .catch(err => this.messageAddMember="Error: You need to be leader to add a Member - You cannot add yourself if you are already in the team");
     }

@@ -37,18 +37,20 @@
     },
     "teamActivities": {
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && auth != null"
+        ".write": "newData.exists() && (root.child('PERRINNTeams').child($teamid).child('leader').val() === auth.uid || root.child('PERRINNTeams').child($teamid).child('members').child(auth.uid).val() === true)"
       }
     },
     "teamMessages": {
       "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true && root.child('PERRINNTeamBalance').child($teamid).child('balance').val() > 0"
+        "$messageid": {
+          ".write": "!data.exists() && (root.child('PERRINNTeams').child($teamid).child('leader').val() === auth.uid || root.child('PERRINNTeams').child($teamid).child('members').child(auth.uid).val() === true) && root.child('PERRINNTeamBalance').child($teamid).child('balance').val() > 0"
+        }
       }
     },
     "teamPayments": {
       "$teamid": {
         "$chargeid": {
-          ".write": "!data.exists() && newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true"
+          ".write": "!data.exists() && newData.exists() && root.child('PERRINNTeams').child($teamid).child('leader').val() === auth.uid"
         }
       }
     },
@@ -57,7 +59,7 @@
       "$teamid": {
         ".indexOn": ["following"],
         "$projectid": {
-          ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true"
+          ".write": "newData.exists() && root.child('PERRINNTeams').child($teamid).child('leader').val() === auth.uid"
         }
       }
     },
@@ -73,7 +75,7 @@
     "teams": {
       "$teamid": {
         "$entry": {
-          ".write": "!data.exists() && root.child('PERRINNTeams').child($teamid).child('leader').val() === auth.uid || !root.child('PERRINNTeams').child($teamid).exists()"
+          ".write": "!data.exists() && root.child('PERRINNTeams').child($teamid).child('leader').val() === auth.uid || !root.child('PERRINNTeams').child($teamid).exists() && auth != null"
         }
       }
     },

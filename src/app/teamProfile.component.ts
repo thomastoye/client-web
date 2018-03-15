@@ -51,6 +51,7 @@ import { databaseService } from './database.service';
       </div>
     </li>
   </ul>
+  <div style="clear:both;padding:5px">Members count: {{DB.getTeamMembersCount(UI.currentTeam)}}</div>
   <div class="buttonDiv" *ngIf='editMode' style="border-style:none" (click)="this.router.navigate(['addMember'])">Add a member</div>
   </div>
   </div>
@@ -109,12 +110,7 @@ export class TeamProfileComponent  {
           equalTo: true,
         }
       });
-      this.teamMembers = this.db.list('teamUsers/'+this.UI.currentTeam, {
-        query:{
-          orderByChild:'member',
-          equalTo: true,
-        }
-      });
+      this.teamMembers = this.db.list('PERRINNTeams/'+this.UI.currentTeam+'/members');
     });
   }
 
@@ -127,6 +123,7 @@ export class TeamProfileComponent  {
   saveTeamProfile() {
     this.DB.teamName[this.UI.currentTeam] = this.DB.teamName[this.UI.currentTeam].toUpperCase();
     this.db.list('teams/' + this.UI.currentTeam).push({
+      user:this.UI.currentUser,
       name:this.DB.teamName[this.UI.currentTeam],
       photoURL: this.DB.teamPhotoURL[this.UI.currentTeam],
       timestamp:firebase.database.ServerValue.TIMESTAMP,

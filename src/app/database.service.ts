@@ -17,6 +17,7 @@ export class databaseService {
   teamName: string[];
   teamPhotoURL: string[];
   teamLeader: string[];
+  teamMembersCount: string[];
   teamBalance: string[];
   teamLastMessageTimestamp: string[];
   teamLastMessageText: string[];
@@ -38,6 +39,7 @@ export class databaseService {
     this.teamName=[''];
     this.teamPhotoURL=[''];
     this.teamLeader=[''];
+    this.teamMembersCount=[''];
     this.teamBalance=[''];
     this.teamLastMessageTimestamp=[''];
     this.teamLastMessageText=[''];
@@ -93,6 +95,10 @@ export class databaseService {
   getTeamLeader(ID:string):string{
     if(this.teamLeader[ID]==null) this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{this.teamLeader[ID]=snapshot.leader});
     return this.teamLeader[ID];
+  }
+  getTeamMembersCount(ID:string):string{
+    if(this.teamMembersCount[ID]==null) this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{this.teamMembersCount[ID]=snapshot.membersCount});
+    return this.teamMembersCount[ID];
   }
   getTeamBalance(ID:string):string{
     if(this.teamBalance[ID]==null) this.db.object('PERRINNTeamBalance/'+ID).subscribe(snapshot=>{this.teamBalance[ID]=snapshot.balance});

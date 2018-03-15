@@ -45,6 +45,7 @@ export class CreateTeamComponent {
       leader:true,
     });
     this.db.list('teams/'+teamID).push({
+      user:this.UI.currentUser,
       name:teamName,
       photoURL:this.photoURL,
       leader:this.UI.currentUser,

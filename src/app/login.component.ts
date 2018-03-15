@@ -120,7 +120,12 @@ export class LoginComponent  {
       .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information")
       .then(_=> {
         this.afAuth.authState.subscribe((auth) => {
-          this.db.list('users/'+auth.uid).push({timestamp: firebase.database.ServerValue.TIMESTAMP,firstName:firstName,lastName:lastName,photoURL: photoURL})
+          this.db.list('users/'+auth.uid).push({
+            timestamp:firebase.database.ServerValue.TIMESTAMP,
+            firstName:firstName,
+            lastName:lastName,
+            photoURL:photoURL,
+          })
           .catch(err => this.messageRegister="Error: We couldn't save your profile")
           .then(_ => {
             this.messageRegister="Successful registered";
@@ -141,6 +146,7 @@ export class LoginComponent  {
       leader:true,
     });
     this.db.list('teams/'+teamID).push({
+      user:this.UI.currentUser,
       name:teamName,
       leader:userID,
       timestamp:firebase.database.ServerValue.TIMESTAMP,
@@ -150,7 +156,10 @@ export class LoginComponent  {
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
     });
-    this.db.list('users/'+userID).push({personalTeam:teamID});
+    this.db.list('users/'+userID).push({
+      timestamp:firebase.database.ServerValue.TIMESTAMP,
+      personalTeam:teamID,
+    });
   }
 
   clearAllMessages () {
