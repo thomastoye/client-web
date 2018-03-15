@@ -7,6 +7,9 @@
     "PERRINNTeamBalance": {
       ".indexOn": ["balanceNegative"]
     },
+    "PERRINNTeams": {
+      ".indexOn": ["name"]
+    },
     "PERRINNTeamTransactions": {
       "$teamid": {
         ".indexOn": ["timestampNegative"]
@@ -58,25 +61,6 @@
         }
       }
     },
-    "teamTransactionRequests": {
-      ".indexOn": ["status"],
-      "$teamid": {
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('member').val() === true",
-        ".indexOn": ["status"]
-      }
-    },
-    "teamTransactions": {
-      ".indexOn": ["status"],
-      "$teamid": {
-        ".indexOn": ["status"],
-        ".write": "newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true",
-        "$transactionid": {
-          "amount": {
-            ".validate": "newData.isNumber() && newData.val() > 0"
-          }
-        }
-      }
-    },
     "teamUsers": {
       ".indexOn": ["leader","member","following"],
       "$teamid": {
@@ -87,9 +71,10 @@
       }
     },
     "teams": {
-      ".indexOn": ["name"],
       "$teamid": {
-        ".write": "(!data.exists() || newData.exists() && root.child('teamUsers').child($teamid).child(auth.uid).child('leader').val() === true)"
+        "$entry": {
+          ".write": "!data.exists() && root.child('PERRINNTeams').child($teamid).child('leader').val() === auth.uid || !root.child('PERRINNTeams').child($teamid).exists()"
+        }
       }
     },
     "userTeams": {
