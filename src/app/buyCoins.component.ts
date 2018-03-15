@@ -25,8 +25,8 @@ import { databaseService } from './database.service';
       </ul>
       <div class="content" style="text-align:center; padding-top:20px">{{amountCharge/100 | number:'1.2-2'}} {{currentCurrencyID | uppercase}} to be paid.</div>
       <div style="text-align:center">
-        <button [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' type="button" (click)="enteringAmount=false;enteringCardDetails=true">Proceed to payment</button>
-        <div class='content' [hidden]='DB.getUserLeader(UI.currentTeam,UI.currentUser)' style='font-weight:bold'>You need to be leader to buy COINS for this team.</div>
+        <button [hidden]='DB.getTeamLeader(UI.currentTeam)!=UI.currentUser' type="button" (click)="enteringAmount=false;enteringCardDetails=true">Proceed to payment</button>
+        <div class='content' [hidden]='DB.getTeamLeader(UI.currentTeam)==UI.currentUser' style='font-weight:bold'>You need to be leader to buy COINS for this team.</div>
       </div>
     </div>
   </div>

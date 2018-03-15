@@ -12,7 +12,7 @@ import { databaseService } from './database.service';
   <div class='sheet'>
   <div style="position:relative;margin-bottom:-115px">
   <img class="imageWithZoom" (error)="errorHandler($event)"[src]="DB.getTeamPhotoURL(this.UI.currentTeam)" style="object-fit:cover;background-color:#0e0e0e;max-height:250px; width:100%" (click)="showFullScreenImage(DB.getTeamPhotoURL(this.UI.currentTeam))">
-  <div *ngIf="!isImageOnFirebase" [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
+  <div *ngIf="!isImageOnFirebase" [hidden]='DB.getTeamLeader(UI.currentTeam)!=UI.currentUser' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
   <input type="file" name="teamImage" id="teamImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
   <label class="buttonUploadImage" for="teamImage" id="buttonFile">
@@ -64,7 +64,7 @@ import { databaseService } from './database.service';
   <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
   <div style="font-size:11px">Chat</div>
   </div>
-  <img class='editButton' src="./../assets/App icons/pencil-tip.png" style="float:right" *ngIf='!editMode' [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' (click)="editMode=true">
+  <img class='editButton' src="./../assets/App icons/pencil-tip.png" style="float:right" *ngIf='!editMode' [hidden]='DB.getTeamLeader(UI.currentTeam)!=UI.currentUser' (click)="editMode=true">
   <span class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" (click)="editMode=false;saveTeamProfile()">Done</span>
   </div>
   <div class='sheet' style="margin-top:10px">
@@ -76,7 +76,7 @@ import { databaseService } from './database.service';
     </li>
   </ul>
   <button *ngIf="editMode" (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
-  <button *ngIf="editMode" [hidden]='!DB.getUserLeader(UI.currentTeam,UI.currentUser)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
+  <button *ngIf="editMode" [hidden]='DB.getTeamLeader(UI.currentTeam)!=UI.currentUser' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
   </div>
 `,
 })

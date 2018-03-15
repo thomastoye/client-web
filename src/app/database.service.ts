@@ -12,7 +12,6 @@ export class databaseService {
   userCreatedTimestamp: string[];
   userMessageCount: string[];
   userPersonalTeam: string[];
-  userLeader: string[][];
   userMember: string[][];
   userFollowing: string[][];
   teamName: string[];
@@ -34,7 +33,6 @@ export class databaseService {
     this.userCreatedTimestamp=[''];
     this.userMessageCount=[''];
     this.userPersonalTeam=[''];
-    this.userLeader=[[''],['']];
     this.userMember=[[''],['']];
     this.userFollowing=[[''],['']];
     this.teamName=[''];
@@ -73,11 +71,6 @@ export class databaseService {
   getUserPersonalTeam(ID:string):string{
     if(this.userPersonalTeam[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userPersonalTeam[ID]=snapshot.personalTeam});
     return this.userPersonalTeam[ID];
-  }
-  getUserLeader(teamID,userID):string{
-    var output;
-    this.db.object('teamUsers/'+teamID+'/'+userID).subscribe(snapshot=>{output=snapshot.leader});
-    return output;
   }
   getUserMember(teamID,userID):string{
     var output;

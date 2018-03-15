@@ -22,7 +22,7 @@ import { databaseService } from './database.service';
     [class.selected]="team.$key === selectedTeamID"
     (click)="selectedTeamID = team.$key;checkTransactionInput()">
       <img (error)="errorHandler($event)"[src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      {{DB.getTeamName(team.$key)}}{{ (DB.getUserLeader(team.$key,UI.currentUser)? " *" : "")}}
+      {{DB.getTeamName(team.$key)}}{{ (DB.getTeamLeader(team.$key)==UI.currentUser? " *" : "")}}
     </li>
   </ul>
   <button [hidden]='!transactionInputValid' (click)="createTransaction()">Confirm transaction</button>
