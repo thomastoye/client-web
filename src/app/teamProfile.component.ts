@@ -27,30 +27,17 @@ import { databaseService } from './database.service';
   <ul class='listLight' style="display:inline-block;float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="router.navigate(['user',user.$key])">
       <img (error)="errorHandler($event)"[src]="DB.getUserPhotoURL(user.$key)" style="object-fit: cover; height:140px; width:140px">
+      <div style="margin:0 0 5px 15px;font-size:12px;line-height:15px;font-family:sans-serif;">{{DB.getUserFirstName(user.$key)}}*</div>
     </li>
   </ul>
   <ul class='listLight' style="display:inline-block">
     <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="router.navigate(['user',user.$key])">
-      <div *ngIf="!user.leader">
       <img (error)="errorHandler($event)"[src]="DB.getUserPhotoURL(user.$key)" style="object-fit: cover; height:70px; width:70px">
-      </div>
+      <div style="margin:0 0 5px 15px;font-size:12px;line-height:15px;font-family:sans-serif;">{{DB.getUserFirstName(user.$key)}}{{DB.getUserFollowing(user.$key,UI.currentTeam)?"":" (NF)"}}</div>
     </li>
   </ul>
   <div style="clear:both"></div>
-  <ul style="clear:both;display:inline-block;float:left">
-    <li *ngFor="let user of teamLeaders | async" style="display:inline-block;float:left">
-      <div style="margin:0 0 5px 15px;font-size:12px;line-height:15px;font-family:sans-serif;">{{DB.getUserFirstName(user.$key)}}*</div>
-    </li>
-  </ul>
-  <ul style="display:inline-block;float:left">
-    <li *ngFor="let user of teamMembers | async" style="display:inline-block;float:left">
-      <div *ngIf="!user.leader">
-        <div style="margin:0 0 5px 15px;font-size:12px;line-height:15px;font-family:sans-serif;">{{DB.getUserFirstName(user.$key)}}{{DB.getUserFollowing(user.$key,UI.currentTeam)?"":" (NF)"}}</div>
-      </div>
-    </li>
-  </ul>
-  <div style="clear:both;padding:5px">Members count: {{DB.getTeamMembersCount(UI.currentTeam)}}</div>
-  <div class="buttonDiv" *ngIf='editMode' style="border-style:none" (click)="this.router.navigate(['addMember'])">Add a member</div>
+  <div class="buttonDiv" *ngIf='DB.getTeamLeader(UI.currentTeam,UI.currentUser)' style="font-size:11px" (click)="this.router.navigate(['addMember'])">Add a member</div>
   </div>
   </div>
   </div>
