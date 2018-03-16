@@ -13,16 +13,8 @@ import { databaseService } from './database.service';
   <div style="position:relative;margin-bottom:-115px">
   <img class="imageWithZoom" (error)="errorHandler($event)"[src]="DB.getTeamPhotoURL(this.UI.currentTeam)" style="object-fit:cover;background-color:#0e0e0e;max-height:250px; width:100%" (click)="showFullScreenImage(DB.getTeamPhotoURL(this.UI.currentTeam))">
   <div *ngIf="!isImageOnFirebase" [hidden]='!DB.getTeamLeader(UI.currentTeam,UI.currentUser)' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
-  <div *ngIf="editMode" style="position:absolute;left:10px;top:10px;">
-  <input type="file" name="teamImage" id="teamImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-  <label class="buttonUploadImage" for="teamImage" id="buttonFile">
-  <img src="./../assets/App icons/camera.png" style="width:25px">
-  <span class="tipText">Max 3.0Mb</span>
-  </label>
-  </div>
   <div class="sheetBadge" style="position:relative;top:-115px">
-  <div *ngIf="!editMode" style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{DB.getTeamName(this.UI.currentTeam)}}</div>
-  <input maxlength="25" *ngIf="editMode" [(ngModel)]="DB.teamName[this.UI.currentTeam]" style="text-transform: uppercase;" placeholder="Enter team name" />
+  <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{DB.getTeamName(this.UI.currentTeam)}}</div>
   <div class="buttonDiv" *ngIf="!DB.getUserFollowing(UI.currentUser,UI.currentTeam)" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
   <ul class='listLight' style="display:inline-block;float:left">
     <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="router.navigate(['user',user.$key])">
@@ -42,16 +34,18 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div class='sheet'>
-  <div class='appIcon' (click)="router.navigate(['wallet',UI.currentTeam])">
-  <img src="./../assets/App icons/icon_share_03.svg" style="width:30px">
-  <div style="font-size:11px">Wallet</div>
-  </div>
   <div class='appIcon' (click)="router.navigate(['chat',UI.currentTeam])">
   <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
   <div style="font-size:11px">Chat</div>
   </div>
-  <img class='editButton' src="./../assets/App icons/pencil-tip.png" style="float:right" *ngIf='!editMode' [hidden]='!DB.getTeamLeader(UI.currentTeam,UI.currentUser)' (click)="editMode=true">
-  <span class="buttonDiv" *ngIf='editMode' style="color:green;border-style:none;float:right" (click)="editMode=false;saveTeamProfile()">Done</span>
+  <div class='appIcon' (click)="router.navigate(['wallet',UI.currentTeam])">
+  <img src="./../assets/App icons/icon_share_03.svg" style="width:30px">
+  <div style="font-size:11px">Wallet</div>
+  </div>
+  <div class='appIcon' *ngIf="DB.getTeamLeader(UI.currentTeam,UI.currentUser)" (click)="router.navigate(['teamSettings',UI.currentTeam])">
+  <img src="./../assets/App icons/settings.png" style="width:30px">
+  <div style="font-size:11px">Settings</div>
+  </div>
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="title" style="float:left">Following</div>
@@ -61,27 +55,20 @@ import { databaseService } from './database.service';
       <div style="height:25px;font-size:10px;line-height:10px">{{DB.getProjectName(project.$key)}}{{(DB.getProjectTeamLeader(project.$key,UI.currentTeam)? " **" : "")}}</div>
     </li>
   </ul>
-  <button *ngIf="editMode" (click)="this.router.navigate(['followProject'])" style="background-color:#c69b00">Follow a project</button>
-  <button *ngIf="editMode" [hidden]='!DB.getTeamLeader(UI.currentTeam,UI.currentUser)' (click)="this.router.navigate(['createProject'])" style="background-color:#c69b00">Create a project</button>
   </div>
 `,
 })
 export class TeamProfileComponent  {
 
-  editMode: boolean;
   teamLeaders: FirebaseListObservable<any>;
   teamMembers: FirebaseListObservable<any>;
   teamProjects: FirebaseListObservable<any>;
   newMemberID: string;
-  memberAdText: string;
-  memberAdVisible: boolean;
   isImageOnFirebase: boolean;
 
   constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
-      this.editMode = false;
-      this.memberAdVisible=false;
       if(this.DB.getTeamPhotoURL(this.UI.currentTeam)!=null) this.isImageOnFirebase = this.DB.getTeamPhotoURL(this.UI.currentTeam).substring(0,23)=='https://firebasestorage'
       this.teamProjects = this.db.list('teamProjects/'+this.UI.currentTeam, {
         query:{

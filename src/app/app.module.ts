@@ -7,6 +7,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { TeamProfileComponent }  from './teamProfile.component';
+import { TeamSettingsComponent }  from './teamSettings.component';
 import { ChatComponent }  from './chat.component';
 import { LoginComponent }  from './login.component';
 import { UserProfileComponent }  from './userProfile.component';
@@ -45,6 +46,7 @@ export const firebaseConfig = {
   declarations: [
     AppComponent,
     TeamProfileComponent,
+    TeamSettingsComponent,
     ChatComponent,
     LoginComponent,
     UserProfileComponent,

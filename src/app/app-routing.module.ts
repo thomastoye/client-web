@@ -3,6 +3,7 @@ import { RouterModule, Routes }  from '@angular/router';
 import { LoginComponent }   from './login.component';
 import { ChatComponent } from './chat.component';
 import { TeamProfileComponent } from './teamProfile.component';
+import { TeamSettingsComponent } from './teamSettings.component';
 import { UserProfileComponent } from './userProfile.component';
 import { UserSettingsComponent } from './userSettings.component';
 import { ProjectProfileComponent } from './projectProfile.component';
@@ -22,6 +23,7 @@ const appRoutes: Routes = [
   { path: 'user/:id', component: UserProfileComponent },
   { path: 'userSettings/:id', component: UserSettingsComponent },
   { path: 'project/:id', component: ProjectProfileComponent },
+  { path: 'teamSettings/:id', component: TeamSettingsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'search', component: SearchComponent },
   { path: 'addTeam', component: AddTeamComponent },

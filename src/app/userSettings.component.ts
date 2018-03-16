@@ -38,11 +38,11 @@ import { databaseService } from './database.service';
       <div style="float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>
       </div>
       <div style="width:100px;height:30px;float:left">
-      <div *ngIf="!DB.getTeamLeader(team.$key,UI.focusUser)" class="buttonDiv" style="font-size:11px;color:red;border:none" (click)="db.object('userTeams/'+UI.currentUser+'/'+team.$key).update({following:false})">Stop following</div>
+      <div *ngIf="!DB.getTeamLeader(team.$key,UI.focusUser)" class="buttonDiv" style="font-size:11px;color:red" (click)="db.object('userTeams/'+UI.currentUser+'/'+team.$key).update({following:false})">Stop following</div>
       </div>
       <div style="width:150px;height:30px:float:left">
       <div *ngIf="personalTeam==DB.getUserPersonalTeam(UI.focusUser)">
-        <div *ngIf="DB.getTeamLeader(team.$key,UI.focusUser)&&personalTeam!=team.$key" class="buttonDiv" style="font-size:11px;color:blue;border:none" (click)="personalTeam=team.$key;db.list('users/'+UI.focusUser).push({personalTeam:team.$key})">Set as personal team</div>
+        <div *ngIf="DB.getTeamLeader(team.$key,UI.focusUser)&&personalTeam!=team.$key" class="buttonDiv" style="font-size:11px;color:blue" (click)="personalTeam=team.$key;db.list('users/'+UI.focusUser).push({personalTeam:team.$key})">Set as personal team</div>
       <div *ngIf="personalTeam==team.$key" class="buttonDiv" style="cursor:default;font-size:11px;color:green;border:none">Personal team</div>
       </div>
       </div>
@@ -60,7 +60,6 @@ export class UserSettingsComponent {
   personalTeam:string;
   userTeams: FirebaseListObservable<any>;
   isImageOnFirebase: boolean;
-  teamProjects: FirebaseListObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.isImageOnFirebase=true;
@@ -77,12 +76,6 @@ export class UserSettingsComponent {
           orderByChild:'lastChatVisitTimestampNegative',
         }
       });
-    });
-    this.teamProjects = this.db.list('teamProjects/-Kp0TqKyvqnFCnLryKC1', {
-      query:{
-        orderByChild:'following',
-        equalTo: true,
-      }
     });
   }
 
