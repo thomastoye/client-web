@@ -28,10 +28,14 @@ import { databaseService } from './database.service';
       <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
       <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
       <div style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
-      <img *ngIf="message.linkTeam" (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;cursor:pointer;margin: 0 5px 10px 100px;object-fit:cover;height:35px;width:50px;border-radius:3px" (click)="router.navigate(['team',message.linkTeam])">
-      <div *ngIf="message.linkTeam" style="font-size:11px;padding:10px;">{{DB.getTeamName(message.linkTeam)}}</div>
-      <img *ngIf="message.linkUser" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;cursor:pointer;margin: 0 5px 10px 100px;object-fit:cover;height:35px;width:35px;border-radius:3px" (click)="router.navigate(['user',message.linkUser])">
-      <div *ngIf="message.linkUser" style="font-size:11px;padding:10px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
+      <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin: 0 5px 10px 100px">
+        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:35px;width:50px;border-radius:3px" (click)="router.navigate(['team',message.linkTeam])">
+        <div style="font-size:11px;padding:10px;">{{DB.getTeamName(message.linkTeam)}}</div>
+      </div>
+      <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin: 0 5px 10px 100px">
+        <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:35px;width:35px;border-radius:3px" (click)="router.navigate(['user',message.linkUser])">
+        <div style="font-size:11px;padding:10px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
+      </div>
       <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0;" (click)="showFullScreenImage(message.image)">
       {{last?scrollToBottom(message.timestamp):''}}
     </li>

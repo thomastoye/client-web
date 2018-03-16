@@ -116,7 +116,8 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
       }
     }, function(error, committed, balance) {
       if (error) {
-        createMessage (team,"PERRINN","Transaction error, please contact PERRINN (perrinnlimited@gmail.com)","","warning","","");
+        createMessage (team,"PERRINN","Transaction error, we will be in touch shortly","","warning","","");
+        createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Transaction error reference:","","warning",team,user);
       } else if (!committed) {
         createMessage (team,"PERRINN","COIN balance low","","warning","","");
       } else {
