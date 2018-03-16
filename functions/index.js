@@ -282,8 +282,8 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
     createTransaction (cost.val().message, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "message cost");
   });
   if (message.action=="transaction") {
-    return admin.database().ref('teamUsers/'+event.params.team+'/'+message.user).once('value').then((teamUser)=>{
-      if (teamUser.val().leader) {
+    return admin.database().ref('PERRINNTeams/'+event.params.team+'/leaders/'+message.user).once('value').then((leader)=>{
+      if (leader.val()) {
         createTransaction (message.amount, event.params.team, message.receiver, message.user, message.reference).then((result)=>{
           if (result) {
             createMessage (event.params.team,"PERRINN","You have sent "+message.amount+" COINS to:","","confirmation",message.receiver,"");
