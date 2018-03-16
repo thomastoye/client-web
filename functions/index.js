@@ -24,35 +24,24 @@ function updateKeyValue (ref,key,value) {
 
 function addKeyValue (ref,key,value,maxCount) {
   const counter=key+"Count";
-  return admin.database().ref(ref).child(key).once('value').then((currentValue)=>{
+  return admin.database().ref(ref).child(key).once('value').then((currentList)=>{
     if (!ref||!key||!value||!maxCount) {
       return;
     }
-    if (currentValue.child(value).val()) {
+    if (currentList.child(value).val()) {
       return;
     }
-    return admin.database().ref(ref).child(counter).transaction((currentCounterValue)=>{
-      if (currentCounterValue===null) {
-        return 1;
-      } else {
-        if ((currentCounterValue+1)>maxCount) {
-          return;
-        } else {
-          return currentCounterValue+1;
-        }
-      }
-    }, function(error, committed, balance) {
-      if (error) {
-        return;
-      } else if (!committed) {
-        return;
-      } else {
-        return admin.database().ref(ref).child(key).update({
-          [value]:true,
-        }).then(()=>{
-          return value;
-        });
-      }
+    if (currentList.numChildren()>=maxCount) {
+      return;
+    }
+    return admin.database().ref(ref).child(key).update({
+      [value]:true,
+    }).then(()=>{
+      return admin.database().ref(ref).update({
+        [counter]:currentList.numChildren()+1,
+      }).then(()=>{
+        return value;
+      });
     });
   });
 }
@@ -216,34 +205,36 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
       });
     }
     return updateKeyValue('PERRINNTeams/'+event.params.team,"name",profile.name).then((newName)=>{
-      return updateKeyValue('PERRINNTeams/'+event.params.team,"leader",profile.leader).then((newLeader)=>{
-        return updateKeyValue('PERRINNTeams/'+event.params.team,"coleader",profile.coleader).then((newColeader)=>{
-          return updateKeyValue('PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL).then((newPhotoURL)=>{
-            return addKeyValue('PERRINNTeams/'+event.params.team,"members",profile.member,6).then((newMember)=>{
-              return admin.database().ref('PERRINNTeams/'+event.params.team).once('value').then(newProfile=>{
-                if (newName) {
-                  createMessage (event.params.team,"PERRINN","New team name: "+newName,"","confirmation","","");
-                }
-                if (newLeader) {
+      return updateKeyValue('PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL).then((newPhotoURL)=>{
+        return addKeyValue('PERRINNTeams/'+event.params.team,"leaders",profile.leader,2).then((newLeader)=>{
+          return addKeyValue('PERRINNTeams/'+event.params.team,"members",profile.member,6).then((newMember)=>{
+            return admin.database().ref('PERRINNTeams/'+event.params.team).once('value').then(newProfile=>{
+              if (newName) {
+                createMessage (event.params.team,"PERRINN","New team name: "+newName,"","confirmation","","");
+              }
+              if (newPhotoURL) {
+                createMessage (event.params.team,"PERRINN","Team photo has been updated:","","confirmation",event.params.team,"");
+              }
+              if (profile.leader) {
+                if (newLeader.committed) {
                   createMessage (event.params.team,"PERRINN","New team leader:","","confirmation","",profile.leader);
+                  admin.database().ref('PERRINNUsers/'+profile.leader).child('personalTeam').once('value').then((personalTeam)=>{
+                    createMessage (personalTeam.val(),"PERRINN","You have been added as a leader of:","","confirmation",event.params.team,"");
+                  });
+                } else {
+                  createMessage (event.params.team,"PERRINN","You already have the maximum number of leaders in your team.","","warning","","");
                 }
-                if (newColeader) {
-                  createMessage (event.params.team,"PERRINN","New team co-leader:","","confirmation","",profile.Coleader);
+              }
+              if (profile.member) {
+                if (newMember.committed) {
+                  createMessage (event.params.team,"PERRINN","New team member:","","confirmation","",profile.member);
+                  admin.database().ref('PERRINNUsers/'+profile.member).child('personalTeam').once('value').then((personalTeam)=>{
+                    createMessage (personalTeam.val(),"PERRINN","You have been added as a member of:","","confirmation",event.params.team,"");
+                  });
+                } else {
+                  createMessage (event.params.team,"PERRINN","You already have the maximum number of members in your team.","","warning","","");
                 }
-                if (newPhotoURL) {
-                  createMessage (event.params.team,"PERRINN","Team photo has been updated:","","confirmation",event.params.team,"");
-                }
-                if (profile.member) {
-                  if (newMember.committed) {
-                    createMessage (event.params.team,"PERRINN","New team member:","","confirmation","",profile.member);
-                    admin.database().ref('PERRINNUsers/'+profile.member).child('personalTeam').once('value').then((personalTeam)=>{
-                      createMessage (personalTeam.val(),"PERRINN","You have been added as a member of:","","confirmation",event.params.team,"");
-                    });
-                  } else {
-                    createMessage (event.params.team,"PERRINN","Your team is already full","","warning","","");
-                  }
-                }
-              });
+              }
             });
           });
         });
@@ -297,20 +288,12 @@ exports.returnCOINS = functions.database.ref('tot').onCreate(event => {
   });
 });
 
-function loopTeamUsers (team) {
-  admin.database().ref('teamUsers/'+team).once('value').then((users)=>{
-    users.forEach(function(user){
-      if (user.val().member&&!user.val().leader) {
-        addKeyValue('PERRINNTeams/'+team,"members",user.key,6);
-      }
-    });
-  });
-}
-
-exports.teamInformationLoop = functions.database.ref('toto').onCreate(event => {
+exports.loopTeams = functions.database.ref('toto').onCreate(event => {
   return admin.database().ref('PERRINNTeams').once('value').then((teams)=>{
     teams.forEach(function(team){
-      loopTeamUsers (team.key);
+      admin.database().ref('PERRINNTeams/'+team.key).child('leader').remove().then(()=>{
+        addKeyValue('PERRINNTeams/'+team.key,"leaders",team.val().leader,2);
+      });
     });
   });
 });

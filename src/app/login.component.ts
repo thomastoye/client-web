@@ -141,10 +141,6 @@ export class LoginComponent  {
     teamName = teamName.toUpperCase();
     const now = Date.now();
     var teamID = this.db.list('ids/').push(true).key;
-    this.db.object('teamUsers/'+teamID+'/'+userID).update({
-      member:true,
-      leader:true,
-    });
     this.db.list('teams/'+teamID).push({
       user:this.UI.currentUser,
       name:teamName,

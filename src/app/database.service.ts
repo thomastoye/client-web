@@ -12,11 +12,8 @@ export class databaseService {
   userCreatedTimestamp: string[];
   userMessageCount: string[];
   userPersonalTeam: string[];
-  userMember: string[][];
-  userFollowing: string[][];
   teamName: string[];
   teamPhotoURL: string[];
-  teamLeader: string[];
   teamMembersCount: string[];
   teamBalance: string[];
   teamLastMessageTimestamp: string[];
@@ -34,11 +31,8 @@ export class databaseService {
     this.userCreatedTimestamp=[''];
     this.userMessageCount=[''];
     this.userPersonalTeam=[''];
-    this.userMember=[[''],['']];
-    this.userFollowing=[[''],['']];
     this.teamName=[''];
     this.teamPhotoURL=[''];
-    this.teamLeader=[''];
     this.teamMembersCount=[''];
     this.teamBalance=[''];
     this.teamLastMessageTimestamp=[''];
@@ -74,11 +68,6 @@ export class databaseService {
     if(this.userPersonalTeam[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userPersonalTeam[ID]=snapshot.personalTeam});
     return this.userPersonalTeam[ID];
   }
-  getUserMember(teamID,userID):string{
-    var output;
-    this.db.object('teamUsers/'+teamID+'/'+userID).subscribe(snapshot=>{output=snapshot.member});
-    return output;
-  }
   getUserFollowing(userID,teamID):string{
     var output;
     this.db.object('userTeams/'+userID+'/'+teamID).subscribe(snapshot=>{output=snapshot.following});
@@ -92,9 +81,15 @@ export class databaseService {
     if(this.teamPhotoURL[ID]==null) this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{this.teamPhotoURL[ID]=snapshot.photoURL});
     return this.teamPhotoURL[ID];
   }
-  getTeamLeader(ID:string):string{
-    if(this.teamLeader[ID]==null) this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{this.teamLeader[ID]=snapshot.leader});
-    return this.teamLeader[ID];
+  getTeamLeader(teamID:string,userID:string):boolean{
+    var output;
+    this.db.object('PERRINNTeams/'+teamID+'/leaders/'+userID).subscribe(snapshot=>{output=snapshot.$value});
+    return output;
+  }
+  getTeamMember(teamID:string,userID:string):boolean{
+    var output;
+    this.db.object('PERRINNTeams/'+teamID+'/members/'+userID).subscribe(snapshot=>{output=snapshot.$value});
+    return output;
   }
   getTeamMembersCount(ID:string):string{
     if(this.teamMembersCount[ID]==null) this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{this.teamMembersCount[ID]=snapshot.membersCount});

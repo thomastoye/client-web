@@ -40,10 +40,6 @@ export class CreateTeamComponent {
     teamName = teamName.toUpperCase();
     var teamID = this.db.list('ids/').push(true).key;
     const now = Date.now();
-    this.db.object('teamUsers/'+teamID+'/'+userID).update({
-      member:true,
-      leader:true,
-    });
     this.db.list('teams/'+teamID).push({
       user:this.UI.currentUser,
       name:teamName,
