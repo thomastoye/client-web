@@ -58,7 +58,8 @@ export class AddMemberComponent  {
     if (memberID==null || memberID=="") {this.messageAddMember = "Please select a member"}
     else {
       this.db.list('teams/'+teamID).push({
-        member:memberID,
+        user:this.UI.currentUser,
+        addMember:memberID,
         timestamp:firebase.database.ServerValue.TIMESTAMP,
       })
       .then(_ => this.router.navigate(['team',teamID]))

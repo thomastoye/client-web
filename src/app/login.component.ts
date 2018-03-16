@@ -144,7 +144,7 @@ export class LoginComponent  {
     this.db.list('teams/'+teamID).push({
       user:this.UI.currentUser,
       name:teamName,
-      leader:userID,
+      addLeader:userID,
       timestamp:firebase.database.ServerValue.TIMESTAMP,
     });
     this.db.object('userTeams/'+userID+'/'+teamID).update({

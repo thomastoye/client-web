@@ -206,8 +206,8 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
     }
     return updateKeyValue('PERRINNTeams/'+event.params.team,"name",profile.name).then((newName)=>{
       return updateKeyValue('PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL).then((newPhotoURL)=>{
-        return addKeyValue('PERRINNTeams/'+event.params.team,"leaders",profile.leader,2).then((newLeader)=>{
-          return addKeyValue('PERRINNTeams/'+event.params.team,"members",profile.member,6).then((newMember)=>{
+        return addKeyValue('PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,2).then((newLeader)=>{
+          return addKeyValue('PERRINNTeams/'+event.params.team,"members",profile.addMember,6).then((newMember)=>{
             return admin.database().ref('PERRINNTeams/'+event.params.team).once('value').then(newProfile=>{
               if (newName) {
                 createMessage (event.params.team,"PERRINN","New team name: "+newName,"","confirmation","","");
@@ -215,18 +215,18 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
               if (newPhotoURL) {
                 createMessage (event.params.team,"PERRINN","Team photo has been updated:","","confirmation",event.params.team,"");
               }
-              if (profile.leader&&newLeader==profile.leader) {
-                createMessage (event.params.team,"PERRINN","New team leader:","","confirmation","",profile.leader);
-                admin.database().ref('PERRINNUsers/'+profile.leader).child('personalTeam').once('value').then((personalTeam)=>{
+              if (profile.addLeader&&newLeader==profile.addLeader) {
+                createMessage (event.params.team,"PERRINN","New team leader:","","confirmation","",profile.addLeader);
+                admin.database().ref('PERRINNUsers/'+profile.addLeader).child('personalTeam').once('value').then((personalTeam)=>{
                   createMessage (personalTeam.val(),"PERRINN","You have been added as a leader of:","","confirmation",event.params.team,"");
                 });
               }
               if (newLeader=="maxCount") {
                 createMessage (event.params.team,"PERRINN","You already have the maximum number of leaders in your team.","","warning","","");
               }
-              if (profile.member&&newMember==profile.member) {
-                createMessage (event.params.team,"PERRINN","New team member:","","confirmation","",profile.member);
-                admin.database().ref('PERRINNUsers/'+profile.member).child('personalTeam').once('value').then((personalTeam)=>{
+              if (profile.addMember&&newMember==profile.addMember) {
+                createMessage (event.params.team,"PERRINN","New team member:","","confirmation","",profile.addMember);
+                admin.database().ref('PERRINNUsers/'+profile.addMember).child('personalTeam').once('value').then((personalTeam)=>{
                   createMessage (personalTeam.val(),"PERRINN","You have been added as a member of:","","confirmation",event.params.team,"");
                 });
               }

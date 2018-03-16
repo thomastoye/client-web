@@ -44,7 +44,7 @@ export class CreateTeamComponent {
       user:this.UI.currentUser,
       name:teamName,
       photoURL:this.photoURL,
-      leader:this.UI.currentUser,
+      addLeader:this.UI.currentUser,
       timestamp:firebase.database.ServerValue.TIMESTAMP,
     });
     this.db.object('userTeams/'+userID+'/'+teamID).update({
