@@ -98,7 +98,11 @@ export class TeamProfileComponent  {
   }
 
   followTeam (teamID: string, userID: string) {
-    this.db.object('userTeams/'+userID+'/'+teamID).update({following: true, lastChatVisitTimestamp: firebase.database.ServerValue.TIMESTAMP});
+    this.db.object('userTeams/'+userID+'/'+teamID).update({
+      following:true,
+      lastChatVisitTimestamp:firebase.database.ServerValue.TIMESTAMP
+    });
+    this.router.navigate(['user',this.UI.currentUser]);
   }
 
   onImageChange(event) {

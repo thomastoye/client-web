@@ -15,37 +15,26 @@ import { databaseService } from './database.service';
         <form>
           <img (error)="errorHandler($event)" src="./../assets/App icons/PERRINN logo.png" style="width:70%">
           <div [hidden]="UI.currentUser!=null">
-          <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser">{{newUser?"Already have an account?":"Need a new account?"}}</div>
-          <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *"/>
-          <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *"/>
-          <button [hidden]="newUser" type="button" (click)="login(email,password)">Login {{messageLogin}}</button>
-          <div [hidden]="newUser" style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password? {{messageResetPassword}}</div>
+          <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser;messageUser=''">{{newUser?"Already have an account?":"Need a new account?"}}</div>
+          <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *" (keyup)="messageUser=''" required/>
+          <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *" (keyup)="messageUser=''" required/>
+          <button [hidden]="newUser" type="button" (click)="login(email,password)">Login</button>
+          <div [hidden]="newUser" style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password?</div>
           <div [hidden]="!newUser">
-          <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *"/>
-          <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *"/>
-          <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name *"/>
-          <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register {{messageRegister}}</button>
+          <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *" (keyup)="messageUser=''"/>
+          <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *" (keyup)="messageUser=''"/>
+          <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name *" (keyup)="messageUser=''"/>
+          <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register</button>
           </div>
           </div>
           <div [hidden]="UI.currentUser==null">
-          <button type="button" (click)="logout()">Logout {{messageLogout}}</button>
+          <button type="button" (click)="logout()">Logout</button>
           </div>
+          <div *ngIf="messageUser" style="text-align:center;padding:10px;color:red">{{messageUser}}</div>
         </form>
       </div>
       <div class="cta"><a href='mailto:perrinnlimited@gmail.com'>Contact PERRINN</a></div>
     </div>
-  </div>
-  <div class='sheet' style="margin-top:10px">
-  <div style="width:100px;font-size:10px;cursor:pointer;color:blue;padding:5px;" (click)="router.navigate(['chat','-KtmuFyG2XEmWm8oNOGT'])">How it works</div>
-  </div>
-  <div class='sheet' style="margin-top:10px">
-    <div class="title">Selected projects</div>
-    <ul class='listLight' style="max-width:620px;display:block;margin:0 auto">
-      <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.$key])">
-        <img (error)="errorHandler($event)"[src]="DB.getProjectPhotoURL(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
-        <div style="height:25px;font-size:10px;line-height:10px">{{DB.getProjectName(project.$key)}}</div>
-      </li>
-    </ul>
   </div>
   `,
 })
@@ -59,23 +48,13 @@ export class LoginComponent  {
   lastName: string;
   photoURL: string;
   message: string;
-  messageRegister: string;
-  messageVerification: string;
-  messageLogout: string;
-  messageLogin: string;
-  messageResetPassword: string;
+  messageUser: string;
   newUser: boolean;
-  teamProjects: FirebaseListObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase,  public UI: userInterfaceService, public DB: databaseService) {
     this.photoURL="./../assets/App icons/me.png";
-    this.newUser = false;
-    this.teamProjects = this.db.list('teamProjects/-Kp0TqKyvqnFCnLryKC1', {
-      query:{
-        orderByChild:'following',
-        equalTo: true,
-      }
-    });
+    this.newUser=false;
+    this.UI.currentTeam="";
     this.afAuth.authState.subscribe((auth) => {
       if (auth!=null) {
         this.router.navigate(['user',auth.uid]);
@@ -84,56 +63,65 @@ export class LoginComponent  {
   }
 
   login(email: string, password: string) {
-    this.newUser = false;
-    this.clearAllMessages ();
-    this.afAuth.auth.signInWithEmailAndPassword(email, password).then(_ => {
-      this.messageLogin="Successfully logged in"
-    }).catch(err => {
-      this.messageLogin="Error: Verify your email and password or create a new account"
+    this.afAuth.auth.signInWithEmailAndPassword(email, password).catch((error:firebase.FirebaseError)=>{
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      if (errorCode === 'auth/wrong-password') {
+        this.messageUser='Wrong password.';
+      } else {
+        this.messageUser=errorMessage;
+      }
     });
   }
 
   resetPassword(email: string) {
-    this.clearAllMessages ();
     this.afAuth.auth.sendPasswordResetEmail(email)
-    .then(_ => this.messageResetPassword="An email has been sent to you")
-    .catch(err => this.messageResetPassword="Error: Enter a valid email");
+    .then(_ => this.messageUser="An email has been sent to you")
+    .catch((error:firebase.FirebaseError)=>{
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      this.messageUser=errorMessage;
+    });
   }
 
   logout() {
-    this.clearAllMessages ();
     this.afAuth.auth.signOut()
-    .then(_ => this.messageLogout="Successfully logged out")
-    .catch(err => this.messageLogout="Error: You were not logged in");
+    .then(_ => this.messageUser="Successfully logged out")
+    .catch(err => this.messageUser="You were not logged in");
   }
 
   register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string, photoURL: string) {
-    this.newUser = false;
-    this.clearAllMessages ();
-    if (email==null||password==null||passwordConfirm==null||!(password==passwordConfirm)||firstName==null||lastName==null||photoURL==null) {
-        this.messageRegister="Error: You need to fill all the fields";
+    if (email==null||password==null||passwordConfirm==null||firstName==null||lastName==null||photoURL==null) {
+        this.messageUser="You need to fill all the fields";
     }
     else {
-      firstName = firstName.toLowerCase();
-      lastName = lastName.toLowerCase();
-      this.afAuth.auth.createUserWithEmailAndPassword(email, password)
-      .catch(err => this.messageRegister="Error: This email is already used or you haven't provided valid information")
-      .then(_=> {
-        this.afAuth.authState.subscribe((auth) => {
-          this.db.list('users/'+auth.uid).push({
-            timestamp:firebase.database.ServerValue.TIMESTAMP,
-            firstName:firstName,
-            lastName:lastName,
-            photoURL:photoURL,
-          })
-          .catch(err => this.messageRegister="Error: We couldn't save your profile")
-          .then(_ => {
-            this.messageRegister="Successful registered";
-            var teamName = firstName+" "+lastName;
-            this.createNewTeam(auth.uid, teamName);
+      if (password!=passwordConfirm) {
+        this.messageUser="Verification password doesn't match";
+      } else {
+        firstName = firstName.toLowerCase();
+        lastName = lastName.toLowerCase();
+        this.afAuth.auth.createUserWithEmailAndPassword(email, password).catch((error:firebase.FirebaseError)=>{
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          if (errorCode == 'auth/weak-password') {
+            this.messageUser='The password is too weak.';
+          } else {
+            this.messageUser=errorMessage;
+          }
+        }).then(_=> {
+          this.afAuth.authState.subscribe((auth) => {
+            this.db.list('users/'+auth.uid).push({
+              timestamp:firebase.database.ServerValue.TIMESTAMP,
+              firstName:firstName,
+              lastName:lastName,
+              photoURL:photoURL,
+            }).then(_ => {
+              var teamName = firstName+" "+lastName;
+              this.createNewTeam(auth.uid, teamName);
+            });
           });
         });
-      });
+      }
     }
   }
 
@@ -156,14 +144,6 @@ export class LoginComponent  {
       timestamp:firebase.database.ServerValue.TIMESTAMP,
       personalTeam:teamID,
     });
-  }
-
-  clearAllMessages () {
-    this.messageLogin = "";
-    this.messageResetPassword = "";
-    this.messageLogout = "";
-    this.messageRegister = "";
-    this.messageVerification = "";
   }
 
   errorHandler(event) {
