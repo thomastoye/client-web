@@ -22,44 +22,44 @@ function updateKeyValue (ref,key,value) {
   });
 }
 
-function addKeyValue (ref,key,value,maxCount) {
-  const counter=key+"Count";
-  return admin.database().ref(ref).child(key).once('value').then((currentList)=>{
-    if (!ref||!key||!value||!maxCount) {
+function addKeyValue (ref,list,key,maxCount) {
+  const counter=list+"Count";
+  return admin.database().ref(ref).child(list).once('value').then((currentList)=>{
+    if (!ref||!list||!key||!maxCount) {
       return;
     }
-    if (currentList.child(value).val()) {
+    if (currentList.child(key).val()) {
       return;
     }
     if (currentList.numChildren()>=maxCount) {
       return "maxCount";
     }
-    return admin.database().ref(ref).child(key).update({
-      [value]:true,
+    return admin.database().ref(ref).child(list).update({
+      [key]:true,
     }).then(()=>{
       return admin.database().ref(ref).update({
         [counter]:currentList.numChildren()+1,
       }).then(()=>{
-        return value;
+        return key;
       });
     });
   });
 }
 
-function removeKeyValue (ref,key,value) {
-  const counter=key+"Count";
-  return admin.database().ref(ref).child(key).once('value').then((currentList)=>{
-    if (!ref||!key||!value) {
+function removeKeyValue (ref,list,key) {
+  const counter=list+"Count";
+  return admin.database().ref(ref).child(list).once('value').then((currentList)=>{
+    if (!ref||!list||!key) {
       return;
     }
-    if (!currentList.child(value).val()) {
+    if (!currentList.child(key).val()) {
       return;
     }
-    return admin.database().ref(ref).child(key).child(value).remove().then(()=>{
+    return admin.database().ref(ref).child(list).child(key).remove().then(()=>{
       return admin.database().ref(ref).update({
         [counter]:currentList.numChildren()-1,
       }).then(()=>{
-        return value;
+        return key;
       });
     });
   });
