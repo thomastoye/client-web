@@ -293,6 +293,13 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
               createTransaction (cost.val().transaction, event.params.team, "-L6XIigvAphrJr5w2jbf", message.user, "transaction cost").then(()=>{
               });
             });
+            admin.database().ref('PERRINNUsers/'+message.user).child('transactionCount').transaction((transactionCount)=>{
+              if (transactionCount==null) {
+                return 1;
+              } else {
+                return transactionCount+1;
+              }
+            });
           }
         });
       } else {
