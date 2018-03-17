@@ -22,7 +22,7 @@ function updateKeyValue (ref,key,value) {
   });
 }
 
-function addKeyValue (ref,list,key,maxCount) {
+function addListKey (ref,list,key,maxCount) {
   const counter=list+"Count";
   return admin.database().ref(ref).child(list).once('value').then((currentList)=>{
     if (!ref||!list||!key||!maxCount) {
@@ -46,7 +46,7 @@ function addKeyValue (ref,list,key,maxCount) {
   });
 }
 
-function removeKeyValue (ref,list,key) {
+function removeListKey (ref,list,key) {
   const counter=list+"Count";
   return admin.database().ref(ref).child(list).once('value').then((currentList)=>{
     if (!ref||!list||!key) {
@@ -226,9 +226,9 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
     }
     return updateKeyValue('PERRINNTeams/'+event.params.team,"name",profile.name).then((newName)=>{
       return updateKeyValue('PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL).then((newPhotoURL)=>{
-        return addKeyValue('PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,2).then((newLeader)=>{
-          return addKeyValue('PERRINNTeams/'+event.params.team,"members",profile.addMember,6).then((newMember)=>{
-            return removeKeyValue('PERRINNTeams/'+event.params.team,"members",profile.removeMember).then((oldMember)=>{
+        return addListKey('PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,2).then((newLeader)=>{
+          return addListKey('PERRINNTeams/'+event.params.team,"members",profile.addMember,6).then((newMember)=>{
+            return removeListKey('PERRINNTeams/'+event.params.team,"members",profile.removeMember).then((oldMember)=>{
               return admin.database().ref('PERRINNTeams/'+event.params.team).once('value').then(newProfile=>{
                 if (newName) {
                   createMessage (event.params.team,"PERRINN","New team name: "+newName,"","confirmation","","");
@@ -321,12 +321,11 @@ exports.returnCOINS = functions.database.ref('tot').onCreate(event => {
   });
 });
 
-exports.loopTeams = functions.database.ref('toto').onCreate(event => {
-  return admin.database().ref('PERRINNTeams').once('value').then((teams)=>{
-    teams.forEach(function(team){
-      admin.database().ref('PERRINNTeams/'+team.key).child('leader').remove().then(()=>{
-        addKeyValue('PERRINNTeams/'+team.key,"leaders",team.val().leader,2);
-      });
+exports.loopUsers = functions.database.ref('toto').onCreate(event => {
+  return admin.database().ref('PERRINNUsers').once('value').then((users)=>{
+    users.forEach((user)=>{
+      admin.database().ref('PERRINNUsers/'+user.key).child('teams').remove();
+      admin.database().ref('PERRINNUsers/'+user.key).child('teamsCount').remove();
     });
   });
 });
