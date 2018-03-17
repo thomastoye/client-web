@@ -18,7 +18,6 @@ import { databaseService } from './database.service';
   </div>
   <div style="float:right;width:20%;position:relative">
   <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:75px;width:75px" (click)="showFullScreenImage(DB.getUserPhotoURL(UI.focusUser))">
-  <div *ngIf="!isImageOnFirebase" [hidden]='!(UI.currentUser==UI.focusUser)' style="font-size:15px;color:white;position:absolute;width:100%;text-align:center;top:75px">Please upload a new image</div>
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
