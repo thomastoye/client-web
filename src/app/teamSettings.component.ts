@@ -53,6 +53,7 @@ import { databaseService } from './database.service';
       <div class="seperator"></div>
     </li>
   </ul>
+  <div *ngIf="UI.currentUser=='QYm5NATKa6MGD87UpNZCTl6IolX2'" class="buttonDiv" style="color:green" (click)="this.createTemplate()">create template</div>
   </div>
   `,
 })
@@ -112,6 +113,14 @@ export class TeamSettingsComponent {
         this.photoURL=task.snapshot.downloadURL;
       }
     );
+  }
+
+  createTemplate(){
+    this.name = this.name.toUpperCase();
+    this.db.list('appSettings/teamTemplates').push({
+      name:this.name,
+      photoURL:this.photoURL,
+    })
   }
 
   errorHandler(event) {

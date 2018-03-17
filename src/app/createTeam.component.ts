@@ -9,80 +9,53 @@ import { userInterfaceService } from './userInterface.service';
   selector: 'createTeam',
   template: `
   <div class="sheet">
-  <div class="title">Enter a name and upload an image to create a team</div>
-  <div style="float: left; width: 50%;">
-  <input id="nameInput" maxlength="25" [(ngModel)]="newTeam" style="text-transform: uppercase;" placeholder="Enter team name *" />
-  <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-  <label class="buttonUploadImage" for="projectImage" id="buttonFile" style="padding:15px">
-  <img src="./../assets/App icons/camera.png" style="width:25px">
-  <span class="tipText">Max 3.0Mb</span>
-  </label>
-  <button *ngIf="photoURL!=null" (click)="createNewTeam(UI.currentUser,newTeam)">Create team</button>
-  </div>
-  <div style="float: right; width: 50%;">
-  <img *ngIf="photoURL!=null" [src]="this.photoURL" style="object-fit:contain; height:200px; width:100%" routerLink="/user" routerLinkActive="active">
-  </div>
+  <div class="title">New team</div>
+  <div style="font-size:10px;padding:10px;color:#888">Select a template for your new team (name and image can be changed later)</div>
+  <ul class="listLight">
+    <li *ngFor="let team of teamTemplates | async"
+    [class.selected]="team.$key === selectedTeamID"
+    (click)="selectedTeamID=team.$key;name=team.name;photoURL=team.photoURL"
+    style="text-align:center;padding:10px;float:left">
+      <img [src]="team.photoURL" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
+      <div style="line-height:normal">{{team.name}}</div>
+      <div style="height:30px">
+      <div class="buttonDiv" *ngIf="name!=null&&photoURL!=null&&team.$key===selectedTeamID" (click)="createNewTeam()">Create team</div>
+      </div>
+    </li>
+  </ul>
   </div>
   `,
 })
 export class CreateTeamComponent {
   photoURL: string;
-  newTeam: string;
+  name: string;
+  teamTemplates: FirebaseListObservable<any>;
 
   constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService) {
+    this.teamTemplates=db.list('appSettings/teamTemplates', {
+      query:{
+        orderByChild:'name',
+      }
+    });
   }
 
-  ngOnInit () {
-    document.getElementById("nameInput").focus();
-  }
-
-  createNewTeam(userID: string, teamName: string) {
-    teamName = teamName.toUpperCase();
+  createNewTeam() {
+    this.name = this.name.toUpperCase();
     var teamID = this.db.list('ids/').push(true).key;
     const now = Date.now();
     this.db.list('teams/'+teamID).push({
       user:this.UI.currentUser,
-      name:teamName,
+      name:this.name,
       photoURL:this.photoURL,
       addLeader:this.UI.currentUser,
       timestamp:firebase.database.ServerValue.TIMESTAMP,
     });
-    this.db.object('userTeams/'+userID+'/'+teamID).update({
+    this.db.object('userTeams/'+this.UI.currentUser+'/'+teamID).update({
       following:true,
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
     });
     this.router.navigate(['team',teamID]);
-  }
-
-  onImageChange(event) {
-    let image = event.target.files[0];
-    var uploader = <HTMLInputElement>document.getElementById('uploader');
-    var storageRef = firebase.storage().ref('images/'+Date.now()+image.name);
-    var task = storageRef.put(image);
-    task.on('state_changed',
-      function progress(snapshot){
-        document.getElementById('buttonFile').style.visibility = "hidden";
-        document.getElementById('uploader').style.visibility = "visible";
-        var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
-        uploader.value=percentage.toString();
-      },
-      function error(){
-        document.getElementById('buttonFile').style.visibility = "visible";
-        document.getElementById('uploader').style.visibility = "hidden";
-        uploader.value='0';
-      },
-      ()=>{
-        uploader.value='0';
-        document.getElementById('buttonFile').style.visibility = "visible";
-        document.getElementById('uploader').style.visibility = "hidden";
-        this.photoURL=task.snapshot.downloadURL;
-      }
-    );
-  }
-
-  errorHandler(event) {
-    event.target.src = "https://static1.squarespace.com/static/5391fac1e4b07b6926545c34/t/54b948f4e4b0567044b6c023/1421428991081/";
   }
 
 }

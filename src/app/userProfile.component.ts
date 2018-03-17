@@ -53,14 +53,11 @@ import { databaseService } from './database.service';
 })
 export class UserProfileComponent {
   userTeams: FirebaseListObservable<any>;
-  isImageOnFirebase: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
-    this.isImageOnFirebase=true;
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       this.UI.currentTeam=this.DB.getUserPersonalTeam(this.UI.focusUser);
-      if(this.DB.getUserPhotoURL(this.UI.focusUser)) this.isImageOnFirebase = this.DB.getUserPhotoURL(this.UI.focusUser).substring(0,23)=='https://firebasestorage'
       this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
         query:{
           orderByChild:'lastChatVisitTimestampNegative',

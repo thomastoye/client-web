@@ -1,6 +1,9 @@
 {
   "rules": {
     ".read": "true",
+    "appSettings": {
+      ".write": "auth.uid === 'QYm5NATKa6MGD87UpNZCTl6IolX2'"
+    },
     "ids": {
       ".write": "newData.exists() && auth != null"
     },
