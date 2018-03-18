@@ -30,13 +30,13 @@ import { databaseService } from './database.service';
       (click)="router.navigate(['chat',team.$key])">
       <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
       <div style="float:left">
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:50px;width:80px;border-radius:3px">
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:70px;width:100px;border-radius:3px">
       </div>
       <div>
-      <img [hidden]="!(DB.getTeamBalance(team.$key)>0)" src="./../assets/App icons/icon_share_03.svg" style="float:left;height:17px;margin:5px;margin-top:12px">
-      <div style="float:left;margin-top:10px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{DB.getTeamName(team.$key)}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>
-      <div *ngIf="DB.getUserPersonalTeam(UI.focusUser)==team.$key" style="float:left;margin-top:10px;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>
-      <div style="float:left;margin:5px;margin-top:14px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="DB.getTeamLastMessageTimestamp(team.$key)>team.lastChatVisitTimestamp"></div>
+      <div *ngIf="DB.getUserPersonalTeam(UI.focusUser)==team.$key" style="float:left;margin-top:15px;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>
+      <img [hidden]="!(DB.getTeamBalance(team.$key)>0)" src="./../assets/App icons/icon_share_03.svg" style="float:left;height:17px;margin:5px;margin-top:17px">
+      <div style="float:left;margin-top:15px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{DB.getTeamName(team.$key)}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>
+      <div style="float:left;margin:5px;margin-top:19px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="DB.getTeamLastMessageTimestamp(team.$key)>team.lastChatVisitTimestamp"></div>
       <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
       <div *ngIf="DB.getTeamLastMessageText(team.$key)" style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{DB.getUserFirstName(DB.getTeamLastMessageUser(team.$key))}}: {{DB.getTeamLastMessageText(team.$key)}}</div>
       </div>
@@ -44,9 +44,6 @@ import { databaseService } from './database.service';
       </div>
     </li>
   </ul>
-  </div>
-  <div class='sheet' *ngIf="(UI.currentUser==UI.focusUser)" style="margin-top:10px">
-  <div class="buttonDiv" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
   </div>
   `,
 })
@@ -69,10 +66,6 @@ export class UserProfileComponent {
     var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
     fullScreenImage.src=src;
     fullScreenImage.style.visibility='visible';
-  }
-
-  logout() {
-    this.afAuth.auth.signOut()
   }
 
   errorHandler(event) {

@@ -190,6 +190,7 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
       admin.database().ref('PERRINNUsers/'+event.params.user).update({
         createdTimestamp:admin.database.ServerValue.TIMESTAMP,
       });
+      createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",event.params.user);
     }
     return updateKeyValue('PERRINNUsers/'+event.params.user,"firstName",profile.firstName).then((newFirstName)=>{
       return updateKeyValue('PERRINNUsers/'+event.params.user,"lastName",profile.lastName).then((newLastName)=>{
@@ -223,6 +224,7 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
       admin.database().ref('PERRINNTeams/'+event.params.team).update({
         createdTimestamp:admin.database.ServerValue.TIMESTAMP,
       });
+      createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","","event.params.team","");
     }
     return updateKeyValue('PERRINNTeams/'+event.params.team,"name",profile.name).then((newName)=>{
       return updateKeyValue('PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL).then((newPhotoURL)=>{

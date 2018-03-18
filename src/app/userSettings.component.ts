@@ -11,6 +11,7 @@ import { databaseService } from './database.service';
   selector: 'userSettings',
   template: `
   <div class="sheet" style="background-color:#f5f5f5">
+  <div class="buttonDiv" style="color:red;float:right" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div class="title">Profile</div>
   <div style="float: left;width:80%">
   <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
@@ -120,6 +121,10 @@ export class UserSettingsComponent {
         this.photoURL=task.snapshot.downloadURL;
       }
     );
+  }
+
+  logout() {
+    this.afAuth.auth.signOut()
   }
 
   errorHandler(event) {
