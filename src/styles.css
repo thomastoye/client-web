@@ -113,6 +113,8 @@ body {
   border-width: 0px 0px 1px 0px;
   border-color: #ccc;
   clear: both;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 .listLight .activity {
   height: 12px;

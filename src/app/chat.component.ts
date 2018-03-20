@@ -83,7 +83,9 @@ export class ChatComponent {
       this.draftImage="";
       this.draftMessage="";
       this.messageNumberDisplay = 15;
-      this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam, {query: {limitToLast: this.messageNumberDisplay}});
+      this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam, {query: {
+        limitToLast:this.messageNumberDisplay,
+      }});
       this.draftMessageUsers = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/');
       this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
         this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);

@@ -45,6 +45,7 @@
     },
     "teamMessages": {
       "$teamid": {
+        ".indexOn": ["timestamp"],
         "$messageid": {
           ".write": "!data.exists() && (root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).val() === true || root.child('PERRINNTeams').child($teamid).child('members').child(auth.uid).val() === true) && root.child('PERRINNTeamBalance').child($teamid).child('balance').val() > 0"
         }
