@@ -86,53 +86,44 @@ function createMessage (team, user, text, image, action, linkTeam, linkUser) {
 
 function createTransaction (amount, sender, receiver, user, reference) {
   return admin.database().ref('PERRINNTeams/'+sender+'/leaders/'+user).once('value').then((leader)=>{
-    return admin.database().ref('userTeams/'+user+'/'+receiver).once('value').then((userTeam)=>{
-      if (!leader.val()&&user!="PERRINN") {
-        createMessage (sender,"PERRINN","Transaction cancelled: You need to be leader to send COINS","","warning","","");
-        return;
-      }
-      if (!userTeam.val().following&&user!="PERRINN") {
-        createMessage (sender,"PERRINN","Transaction cancelled: You need to follow the team you are sending COINS to","","warning",receiver,"");
-        return;
-      }
-      if (amount<=0||amount>10) {
-        createMessage (sender,"PERRINN","Transaction cancelled: Amount has to be between 0 and 10","","warning","","");
-        return;
-      }
-      if (sender==receiver) {
-        createMessage (sender,"Transaction cancelled: You cannot send COINS to this team","","warning","","");
-        return;
-      }
-      const now = Date.now();
-      return createTransactionHalf (-amount,sender,receiver,user,reference,now).then((result)=>{
-        if (result.committed&&result.snapshot.val()>=0){
-          createTransactionHalf (amount,receiver,sender,user,reference,now);
-          if (user!="PERRINN") {
-            createMessage (sender,"PERRINN","You have sent "+amount+" COINS to:","","confirmation",receiver,"");
-            createMessage (receiver,"PERRINN","You have received "+amount+" COINS from:","","confirmation",sender,"");
-            admin.database().ref('PERRINNUsers/'+user).child('transactionCount').transaction((transactionCount)=>{
-              if (transactionCount==null) {
-                return 1;
-              } else {
-                return transactionCount+1;
-              }
-            });
-          }
-          return 1;
-        } else {
-          if (result.committed&&result.snapshot.val()<0){
-            createTransactionHalf (amount,sender,receiver,user,reference+" (rejected)",now).then(()=>{
-              return;
-            });
-            createMessage (sender,"PERRINN","Transaction cancelled: Not enough COINS, transaction rejected","","warning","","");
-          } else {
-            return;
-          }
-        }
-      });
-    }).catch(()=>{
-      createMessage (sender,"PERRINN","Transaction cancelled: One of these details was not valid: amount, receiver or reference","","warning","","");
+    if (!leader.val()&&user!="PERRINN") {
+      createMessage (sender,"PERRINN","Transaction cancelled: You need to be leader to send COINS","","warning","","");
       return;
+    }
+    if (amount<=0||amount>10) {
+      createMessage (sender,"PERRINN","Transaction cancelled: Amount has to be between 0 and 10","","warning","","");
+      return;
+    }
+    if (sender==receiver) {
+      createMessage (sender,"Transaction cancelled: You cannot send COINS to this team","","warning","","");
+      return;
+    }
+    const now = Date.now();
+    return createTransactionHalf (-amount,sender,receiver,user,reference,now).then((result)=>{
+      if (result.committed&&result.snapshot.val()>=0){
+        createTransactionHalf (amount,receiver,sender,user,reference,now);
+        if (user!="PERRINN") {
+          createMessage (sender,"PERRINN","You have sent "+amount+" COINS to:","","confirmation",receiver,"");
+          createMessage (receiver,"PERRINN","You have received "+amount+" COINS from:","","confirmation",sender,"");
+          admin.database().ref('PERRINNUsers/'+user).child('transactionCount').transaction((transactionCount)=>{
+            if (transactionCount==null) {
+              return 1;
+            } else {
+              return transactionCount+1;
+            }
+          });
+        }
+        return 1;
+      } else {
+        if (result.committed&&result.snapshot.val()<0){
+          createTransactionHalf (amount,sender,receiver,user,reference+" (rejected)",now).then(()=>{
+            return;
+          });
+          createMessage (sender,"PERRINN","Transaction cancelled: Not enough COINS, transaction rejected","","warning","","");
+        } else {
+          return;
+        }
+      }
     });
   }).catch(()=>{
     createMessage (sender,"PERRINN","Transaction cancelled: One of these details was not valid: amount, receiver or reference","","warning","","");
@@ -205,7 +196,7 @@ function scanService (service,message,team) {
       }
     } else {
       admin.database().ref('/PERRINNTeamServices/'+team+'/currentProcess').once('value').then(currentProcess => {
-        if (service.key==currentProcess.val().service) {
+        if (service.key==currentProcess.val().service&&message.user==currentProcess.val().user) {
           if (service.child('process').child(currentProcess.val().step).val().input) {
             var key=service.child('process').child(currentProcess.val().step).child('input').val().variable;
             var value=message.text.match(service.child('process').child(currentProcess.val().step).child('input').val().regex)[0];
@@ -218,7 +209,7 @@ function scanService (service,message,team) {
               });
             } else {
               clearCurrentProcess(team);
-              createMessage (team,"PERRINN","Process stopped","","process","","");
+              createMessage (team,"PERRINN","Stopped","","process","","");
             }
           }
         }
@@ -370,7 +361,7 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
   });
 });
 
-exports.updatedcurrentProcess = functions.database.ref('/PERRINNTeamServices/{team}/currentProcess').onWrite(event => {
+exports.newProcessStep = functions.database.ref('/PERRINNTeamServices/{team}/currentProcess').onWrite(event => {
   const currentProcess = event.data.val();
   admin.database().ref('appSettings/PERRINNServices/'+currentProcess.service+'/process/'+currentProcess.step).once('value').then(processStep => {
     if (processStep.val().message) {

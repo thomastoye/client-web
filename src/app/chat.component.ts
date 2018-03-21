@@ -57,6 +57,7 @@ import { databaseService } from './database.service';
       <img src="./../assets/App icons/camera.png" style="width:25px">
       <span class="tipText">Max 3.0Mb</span>
       </label>
+      <img src="./../assets/App icons/help.svg" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
     </div>
     <textarea *ngIf="DB.getTeamBalance(UI.currentTeam)>'0'" [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
     <div *ngIf="!(DB.getTeamBalance(UI.currentTeam)>'0')||DB.getTeamBalance(UI.currentTeam)==null" style="font-size:10px;color:red;clear:both;padding:5px 0 5px 15px;cursor:pointer" [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' (click)="router.navigate(['wallet',UI.currentTeam])">COIN balance low, please send COINS to this team or buy new COINS to use this chat</div>
