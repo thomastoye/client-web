@@ -64,7 +64,7 @@ export class TeamProfileComponent  {
   teamProjects: FirebaseListObservable<any>;
   newMemberID: string;
 
-  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
+  constructor(public db: AngularFireDatabase,public router: Router,public UI: userInterfaceService,public DB: databaseService,private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
       this.teamProjects = this.db.list('teamProjects/'+this.UI.currentTeam, {

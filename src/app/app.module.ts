@@ -20,7 +20,6 @@ import { FollowProjectComponent }  from './followProject.component';
 import { WalletComponent }  from './wallet.component';
 import { CreateTeamComponent }  from './createTeam.component';
 import { CreateProjectComponent }  from './createProject.component';
-import { CreateTransactionComponent }  from './createTransaction.component';
 import { BuyCoinsComponent }  from './buyCoins.component';
 import { LinkyModule } from 'angular-linky';
 
@@ -59,7 +58,6 @@ export const firebaseConfig = {
     WalletComponent,
     CreateTeamComponent,
     CreateProjectComponent,
-    CreateTransactionComponent,
     BuyCoinsComponent,
   ],
   imports: [

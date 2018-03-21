@@ -17,8 +17,8 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let user of users | async"
       (click)="router.navigate(['user',user.$key])">
       <img (error)="errorHandler($event)"[src]="user.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      {{user.firstName}}
-      {{user.lastName}}
+      <div>{{user.firstName}} {{user.lastName}}</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(user.$key,'',user.$key)">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -28,7 +28,8 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let team of teams | async"
       (click)="router.navigate(['team',team.$key]);">
       <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      {{team.name}}
+      <div>{{team.name}}</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,team.$key,'')">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -93,6 +94,27 @@ export class SearchComponent  {
       this.teams = null;
       this.projects = null;
     }
+  }
+
+  addMessage(text,linkTeam,linkUser) {
+    const now = Date.now();
+    this.db.list('teamMessages/'+this.UI.currentTeam).push({
+      timestamp:now,
+      text:text,
+      user:this.UI.currentUser,
+      linkTeam:linkTeam,
+      linkUser:linkUser,
+    });
+    this.db.object('teamActivities/'+this.UI.currentTeam).update({
+      lastMessageTimestamp:now,
+      lastMessageText:text,
+      lastMessageUser:this.UI.currentUser,
+    });
+    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
+      lastChatVisitTimestamp:now,
+      lastChatVisitTimestampNegative:-1*now,
+    });
+    this.router.navigate(['chat',this.UI.currentTeam])
   }
 
   errorHandler(event) {

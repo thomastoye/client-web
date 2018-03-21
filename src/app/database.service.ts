@@ -11,7 +11,6 @@ export class databaseService {
   userPhotoURL: string[];
   userCreatedTimestamp: string[];
   userMessageCount: string[];
-  userTransactionCount: string[];
   userPersonalTeam: string[];
   teamName: string[];
   teamPhotoURL: string[];
@@ -31,7 +30,6 @@ export class databaseService {
     this.userPhotoURL=[''];
     this.userCreatedTimestamp=[''];
     this.userMessageCount=[''];
-    this.userTransactionCount=[''];
     this.userPersonalTeam=[''];
     this.teamName=[''];
     this.teamPhotoURL=[''];
@@ -65,10 +63,6 @@ export class databaseService {
   getUserMessageCount(ID:string):string{
     if(this.userMessageCount[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userMessageCount[ID]=snapshot.messageCount});
     return this.userMessageCount[ID];
-  }
-  getUserTransactionCount(ID:string):string{
-    if(this.userTransactionCount[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userTransactionCount[ID]=snapshot.transactionCount});
-    return this.userTransactionCount[ID];
   }
   getUserPersonalTeam(ID:string):string{
     if(this.userPersonalTeam[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userPersonalTeam[ID]=snapshot.personalTeam});
