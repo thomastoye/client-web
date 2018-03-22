@@ -17,28 +17,30 @@ import { databaseService } from './database.service';
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async ; let last = last">
       <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
-      <div style="display: inline; float: left; height:35px; width:5px"></div>
-      <div style="display: inline; float: left; height:35px; width:3px">
+      <div [style.background-color]="message.action=='confirmation'?'#e6efe6':message.action=='warning'?'#efeac6':''">
+      <div style="display:inline;float:left;height:35px;width:5px;margin-top:5px"></div>
+      <div style="display:inline;float:left;height:35px;width:3px;margin-top:5px">
       <div [hidden]="lastChatVisitTimestamp>=message.timestamp" style="height:35px;width:3px;background-color:red"></div>
       </div>
-      <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display: inline; float: left; margin: 0 10px 10px 5px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
+      <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display: inline; float: left; margin: 5px 10px 10px 5px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
       <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{DB.getUserFirstName(message.user)}}</div>
       <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
       <img *ngIf="message.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
       <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
       <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
       <img *ngIf="message.action=='process'" src="./../assets/App icons/process.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-      <div style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
+      <div *ngIf="!message.image" style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
       <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin: 0 5px 10px 100px">
         <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px" (click)="router.navigate(['team',message.linkTeam])">
         <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
       </div>
       <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin: 0 5px 10px 100px">
-        <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px" (click)="router.navigate(['user',message.linkUser])">
+        <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px" (click)="router.navigate(['user',message.linkUser])">
         <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
       </div>
-      <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0;" (click)="showFullScreenImage(message.image)">
+      <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0;border-radius:3px" (click)="showFullScreenImage(message.image)">
       {{last?scrollToBottom(message.timestamp):''}}
+      </div>
     </li>
   </ul>
   <div style="height:125px;width:100%"></div>
@@ -184,6 +186,7 @@ export class ChatComponent {
         uploader.value='0';
         document.getElementById('buttonFile').style.visibility = "visible";
         document.getElementById('uploader').style.visibility = "hidden";
+        this.draftMessage=task.snapshot.downloadURL;
         this.draftImage=task.snapshot.downloadURL;
         this.addMessage();
       }

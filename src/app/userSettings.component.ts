@@ -12,22 +12,6 @@ import { databaseService } from './database.service';
   template: `
   <div class="sheet" style="background-color:#f5f5f5">
   <div class="buttonDiv" style="color:red;float:right" (click)="this.logout();router.navigate(['login']);">logout</div>
-  <div class="title">Profile</div>
-  <div style="float: left;width:80%">
-  <input maxlength="20" [(ngModel)]="firstName" style="text-transform: lowercase; font-weight:bold;" placeholder="first name *" />
-  <input maxlength="20" [(ngModel)]="lastName" style="text-transform: lowercase; font-weight:bold;" placeholder="last name *" />
-  </div>
-  <div style="float: right;width:20%;position:relative">
-  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="photoURL" style="background-color:#0e0e0e;float:right;object-fit:cover;height:75px;width:75px" (click)="showFullScreenImage(photoURL)">
-  <div style="position:absolute;left:10px;top:10px;">
-  <input type="file" name="projectImage" id="projectImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-  <label class="buttonUploadImage" for="projectImage" id="buttonFile">
-  <img src="./../assets/App icons/camera.png" style="width:25px">
-  <span class="tipText">Max 3.0Mb</span>
-  </label>
-  </div>
-  </div>
-  <div *ngIf="(firstName!=DB.getUserFirstName(UI.focusUser)||lastName!=DB.getUserLastName(UI.focusUser)||photoURL!=DB.getUserPhotoURL(UI.focusUser))&&firstName!=null&&lastName!=null&&photoURL!=null" class="buttonDiv" (click)="saveUserProfile();router.navigate(['user',UI.currentUser])" style="clear:both">Save profile</div>
   <div class="title">Teams</div>
   <div style="font-size:10px;padding:10px;color:#888">(Your personal team is where specific messages are sent to you and were you should keep your personal COINS.)</div>
   <ul class="listLight">
@@ -55,72 +39,20 @@ import { databaseService } from './database.service';
   `,
 })
 export class UserSettingsComponent {
-  firstName:string;
-  lastName:string;
-  photoURL:string;
   personalTeam:string;
   userTeams: FirebaseListObservable<any>;
-  isImageOnFirebase: boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
-    this.isImageOnFirebase=true;
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       this.UI.currentTeam="";
-      this.firstName=this.DB.getUserFirstName(this.UI.focusUser);
-      this.lastName=this.DB.getUserLastName(this.UI.focusUser);
-      this.photoURL=this.DB.getUserPhotoURL(this.UI.focusUser);
       this.personalTeam=this.DB.getUserPersonalTeam(this.UI.focusUser);
-      if(this.DB.getUserPhotoURL(this.UI.focusUser)) this.isImageOnFirebase = this.DB.getUserPhotoURL(this.UI.focusUser).substring(0,23)=='https://firebasestorage'
       this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
         query:{
           orderByChild:'lastChatVisitTimestampNegative',
         }
       });
     });
-  }
-
-  showFullScreenImage(src){
-    var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
-    fullScreenImage.src=src;
-    fullScreenImage.style.visibility='visible';
-  }
-
-  saveUserProfile() {
-    this.firstName = this.firstName.toLowerCase();
-    this.lastName = this.lastName.toLowerCase();
-    this.db.list('users/'+this.UI.focusUser).push({
-      timestamp: firebase.database.ServerValue.TIMESTAMP,
-      firstName: this.firstName,
-      lastName: this.lastName,
-      photoURL: this.photoURL,
-    });
-  }
-
-  onImageChange(event) {
-    let image = event.target.files[0];
-    var uploader = <HTMLInputElement>document.getElementById('uploader');
-    var storageRef = firebase.storage().ref('images/'+Date.now()+image.name);
-    var task = storageRef.put(image);
-    task.on('state_changed',
-      function progress(snapshot){
-        document.getElementById('buttonFile').style.visibility = "hidden";
-        document.getElementById('uploader').style.visibility = "visible";
-        var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
-        uploader.value=percentage.toString();
-      },
-      function error(){
-        document.getElementById('buttonFile').style.visibility = "visible";
-        document.getElementById('uploader').style.visibility = "hidden";
-        uploader.value='0';
-      },
-      ()=>{
-        uploader.value='0';
-        document.getElementById('buttonFile').style.visibility = "visible";
-        document.getElementById('uploader').style.visibility = "hidden";
-        this.photoURL=task.snapshot.downloadURL;
-      }
-    );
   }
 
   logout() {

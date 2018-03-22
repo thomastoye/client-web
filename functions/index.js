@@ -5,17 +5,26 @@ admin.initializeApp(functions.config().firebase);
 
 const stripe = require('stripe')(functions.config().stripe.token);
 
-function updateKeyValue (ref,key,value) {
+function updateKeyValue (user,team,ref,key,value) {
+  if (ref=="PERRINNUsers/"){
+    ref=ref+user;
+  }
+  if (ref=="PERRINNTeams/"){
+    ref=ref+team;
+  }
   return admin.database().ref(ref).child(key).once('value').then((currentValue)=>{
     if (!ref||!key||!value) {
+      createMessage (team,"PERRINN",key+" update didn't work.","","warning","","");
       return;
     }
     if (currentValue.val()==value) {
+      createMessage (team,"PERRINN",key+" unchanged.","","confirmation","","");
       return;
     } else {
       return admin.database().ref(ref).update({
         [key]:value,
       }).then(()=>{
+        createMessage (team,"PERRINN",key+" updated.","","confirmation","","");
         return value;
       });
     }
@@ -208,21 +217,22 @@ function scanService (service,message,team) {
         if (service.key==currentProcess.val().service&&message.user==currentProcess.val().user) {
           if (service.child('process').child(currentProcess.val().step).val().input) {
             var key=service.child('process').child(currentProcess.val().step).child('input').val().variable;
-            var value=message.text.match(service.child('process').child(currentProcess.val().step).child('input').val().regex)[0];
+            var value=message.text.match(service.child('process').child(currentProcess.val().step).child('input').val().regex);
             if (value) {
               admin.database().ref('PERRINNTeamServices/'+team+'/inputs').update({
-                [key]:value,
+                [key]:value[0],
               });
               admin.database().ref('PERRINNTeamServices/'+team+'/currentProcess').child('step').transaction((step)=>{
                 return step+1;
               });
             } else {
               clearCurrentProcess(team);
-              createMessage (team,"PERRINN","Stopped","","process","","");
+              createMessage (team,"PERRINN","Stop.","","process","","");
             }
           }
         }
-      }).catch(()=>{});
+      }).catch(()=>{
+        console.log("error 123")});
     }
   }
 }
@@ -291,10 +301,10 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
       });
       createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",event.params.user);
     }
-    return updateKeyValue('PERRINNUsers/'+event.params.user,"firstName",profile.firstName).then((newFirstName)=>{
-      return updateKeyValue('PERRINNUsers/'+event.params.user,"lastName",profile.lastName).then((newLastName)=>{
-        return updateKeyValue('PERRINNUsers/'+event.params.user,"photoURL",profile.photoURL).then((newPhotoURL)=>{
-          return updateKeyValue('PERRINNUsers/'+event.params.user,"personalTeam",profile.personalTeam).then((newPersonalTeam)=>{
+    return updateKeyValue(event.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+event.params.user,"firstName",profile.firstName).then((newFirstName)=>{
+      return updateKeyValue(event.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+event.params.user,"lastName",profile.lastName).then((newLastName)=>{
+        return updateKeyValue(event.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+event.params.user,"photoURL",profile.photoURL).then((newPhotoURL)=>{
+          return updateKeyValue(event.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+event.params.user,"personalTeam",profile.personalTeam).then((newPersonalTeam)=>{
             return admin.database().ref('PERRINNUsers/'+event.params.user).once('value').then(newProfile=>{
               if (newFirstName) {
                 createMessage (newProfile.val().personalTeam,"PERRINN",newProfile.val().firstName+": Your first name has been updated to "+newFirstName,"","confirmation","","");
@@ -325,8 +335,8 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
       });
       createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",event.params.team,"");
     }
-    return updateKeyValue('PERRINNTeams/'+event.params.team,"name",profile.name).then((newName)=>{
-      return updateKeyValue('PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL).then((newPhotoURL)=>{
+    return updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"name",profile.name).then((newName)=>{
+      return updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL).then((newPhotoURL)=>{
         return addListKeyValue('PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,"true",2).then((newLeader)=>{
           return addListKeyValue('PERRINNTeams/'+event.params.team,"members",profile.addMember,"true",6).then((newMember)=>{
             return removeListKey('PERRINNTeams/'+event.params.team,"members",profile.removeMember).then((oldMember)=>{
@@ -396,6 +406,18 @@ exports.newProcessStep = functions.database.ref('/PERRINNTeamServices/{team}/cur
         clearCurrentProcess(event.params.team);
       });
     }
+    if (processStep.val().updateKeyValue) {
+      admin.database().ref('PERRINNTeamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
+        updateKeyValue (
+          currentProcess.user,
+          event.params.team,
+          processStep.child('updateKeyValue').val().ref,
+          processStep.child('updateKeyValue').val().key,
+          inputs.child(processStep.child('updateKeyValue').val().value).val()
+        );
+        clearCurrentProcess(event.params.team);
+      });
+    }
   }).catch(()=>{});
 });
 
@@ -423,15 +445,6 @@ exports.returnCOINS = functions.database.ref('tot').onCreate(event => {
       if (team.key!="-KptHjRmuHZGsubRJTWJ") {
         createTransaction (amount,"-L6XIigvAphrJr5w2jbf",team.key,"PERRINN","return");
       }
-    });
-  });
-});
-
-exports.loopUsers = functions.database.ref('toto').onCreate(event => {
-  return admin.database().ref('PERRINNUsers').once('value').then((users)=>{
-    users.forEach((user)=>{
-      admin.database().ref('PERRINNUsers/'+user.key).child('teams').remove();
-      admin.database().ref('PERRINNUsers/'+user.key).child('teamsCount').remove();
     });
   });
 });
