@@ -18,7 +18,7 @@ import { userInterfaceService } from './userInterface.service';
       (click)="router.navigate(['user',user.$key])">
       <img (error)="errorHandler($event)"[src]="user.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{user.firstName}} {{user.lastName}}</div>
-      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(user.$key,'',user.$key)">Send to chat</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(user.$key,'','',user.$key)">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -29,7 +29,7 @@ import { userInterfaceService } from './userInterface.service';
       (click)="router.navigate(['team',team.$key]);">
       <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{team.name}}</div>
-      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,team.$key,'')">Send to chat</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,'',team.$key,'')">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -43,6 +43,21 @@ import { userInterfaceService } from './userInterface.service';
     </li>
   </ul>
   </div>
+  <div class='sheet' style="margin-top:10px">
+  <div class="title">Image library</div>
+  <ul class="listLight">
+    <li *ngFor="let image of images | async"
+    [class.selected]="image.$key === selectedImageID"
+    (click)="selectedImageID=image.$key"
+    style="text-align:center;padding:10px;float:left">
+      <img [src]="image.photoURL" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
+      <div style="line-height:normal">{{image.name}}</div>
+      <div style="height:30px">
+      <div class="buttonDiv" *ngIf="image.$key===selectedImageID" (click)="addMessage(image.photoURL,image.photoURL,'','')">Send to chat</div>
+      </div>
+    </li>
+  </ul>
+  </div>
   `,
 })
 
@@ -51,8 +66,14 @@ export class SearchComponent  {
   users: FirebaseListObservable<any>;
   teams: FirebaseListObservable<any>;
   projects: FirebaseListObservable<any>;
+  images: FirebaseListObservable<any>;
 
   constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+    this.images = this.db.list('appSettings/photoLibrary', {
+      query:{
+        orderByChild:'name',
+      }
+    });
   }
 
   ngOnInit () {
@@ -96,11 +117,12 @@ export class SearchComponent  {
     }
   }
 
-  addMessage(text,linkTeam,linkUser) {
+  addMessage(text,image,linkTeam,linkUser) {
     const now = Date.now();
     this.db.list('teamMessages/'+this.UI.currentTeam).push({
       timestamp:now,
       text:text,
+      image:image,
       user:this.UI.currentUser,
       linkTeam:linkTeam,
       linkUser:linkUser,
