@@ -6,28 +6,34 @@ admin.initializeApp(functions.config().firebase);
 const stripe = require('stripe')(functions.config().stripe.token);
 
 function updateKeyValue (user,team,ref,key,value) {
-  if (ref=="PERRINNUsers/"){
-    ref=ref+user;
-  }
-  if (ref=="PERRINNTeams/"){
-    ref=ref+team;
-  }
-  return admin.database().ref(ref).child(key).once('value').then((currentValue)=>{
-    if (!ref||!key||!value) {
-      createMessage (team,"PERRINN",key+" update didn't work.","","warning","","");
-      return;
+  return admin.database().ref('PERRINNTeams/'+team).once('value').then((PERRINNTeam)=>{
+    if (ref=="PERRINNUsers/"){
+      ref=ref+user;
     }
-    if (currentValue.val()==value) {
-      createMessage (team,"PERRINN",key+" unchanged.","","confirmation","","");
-      return;
-    } else {
-      return admin.database().ref(ref).update({
-        [key]:value,
-      }).then(()=>{
-        createMessage (team,"PERRINN",key+" updated.","","confirmation","","");
-        return value;
-      });
+    if (ref=="PERRINNTeams/"){
+      if (PERRINNTeam.val().leadersCount>0&&!PERRINNTeam.child('leaders').child(user).val()) {
+        createMessage (team,"PERRINN","You need to be team leader to do that.","","warning","","");
+        return;
+      }
+      ref=ref+team;
     }
+    return admin.database().ref(ref).child(key).once('value').then((currentValue)=>{
+      if (!ref||!key||!value) {
+        createMessage (team,"PERRINN",key+" update didn't work because an input was missing.","","warning","","");
+        return;
+      }
+      if (currentValue.val()==value) {
+        createMessage (team,"PERRINN",key+" unchanged.","","confirmation","","");
+        return;
+      } else {
+        return admin.database().ref(ref).update({
+          [key]:value,
+        }).then(()=>{
+          createMessage (team,"PERRINN",key+" updated.","","confirmation","","");
+          return value;
+        });
+      }
+    });
   });
 }
 
@@ -223,8 +229,15 @@ function scanService (service,message,team) {
               });
               var variable=service.child('process').child(currentProcess.val().step).child('input').val().variable;
               if (variable) {
+                var valueString=value[0];
+                if (service.child('process').child(currentProcess.val().step).child('input').val().tolowercase) {
+                  valueString=valueString.toLowerCase();
+                }
+                if (service.child('process').child(currentProcess.val().step).child('input').val().touppercase) {
+                  valueString=valueString.toUpperCase();
+                }
                 admin.database().ref('PERRINNTeamServices/'+team+'/inputs').update({
-                  [variable]:value[0],
+                  [variable]:valueString,
                 });
               }
             } else {
@@ -459,6 +472,41 @@ exports.returnCOINS = functions.database.ref('tot').onCreate(event => {
       if (team.key!="-KptHjRmuHZGsubRJTWJ") {
         createTransaction (amount,"-L6XIigvAphrJr5w2jbf",team.key,"PERRINN","return");
       }
+    });
+  });
+});
+
+exports.checkUsersWithNoPersonalTeam = functions.database.ref('tot').onCreate(event => {
+  return admin.database().ref('PERRINNUsers/').once('value').then(users=>{
+    users.forEach(function(user){
+      if (user.val().personalTeam==null) {
+        console.log(user.key);
+      }
+    });
+  });
+});
+
+exports.createUserPersonalTeam = functions.database.ref('tot').onCreate(event => {
+  var userID='91MTOGx4KXRCTpwCbWleDhWO3Ew2';
+  return admin.database().ref('PERRINNUsers/'+userID).once('value').then(user=>{
+    var teamName=user.val().firstName+' '+user.val().lastName;
+    teamName = teamName.toUpperCase();
+    const now = Date.now();
+    var teamID = admin.database().ref('ids/').push(true).key;
+    admin.database().ref('teams/'+teamID).push({
+      user:userID,
+      name:teamName,
+      addLeader:userID,
+      timestamp:now,
+    });
+    admin.database().ref('userTeams/'+userID+'/'+teamID).update({
+      following:true,
+      lastChatVisitTimestamp:now,
+      lastChatVisitTimestampNegative:-1*now,
+    });
+    admin.database().ref('users/'+userID).push({
+      timestamp:now,
+      personalTeam:teamID,
     });
   });
 });

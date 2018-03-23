@@ -11,9 +11,8 @@ import { databaseService } from './database.service';
   selector: 'userSettings',
   template: `
   <div class="sheet" style="background-color:#f5f5f5">
-  <div class="buttonDiv" style="color:red;float:right" (click)="this.logout();router.navigate(['login']);">logout</div>
+  <div class="buttonDiv" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div class="title">Teams</div>
-  <div style="font-size:10px;padding:10px;color:#888">(Your personal team is where specific messages are sent to you and were you should keep your personal COINS.)</div>
   <ul class="listLight">
     <li style="cursor:default" *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam">
@@ -25,12 +24,6 @@ import { databaseService } from './database.service';
       <div style="width:100px;height:30px;float:left">
       <div *ngIf="!DB.getTeamLeader(team.$key,UI.focusUser)" class="buttonDiv" style="font-size:11px;color:red" (click)="db.object('userTeams/'+UI.currentUser+'/'+team.$key).update({following:false})">Stop following</div>
       </div>
-      <div style="width:150px;height:30px:float:left">
-      <div *ngIf="personalTeam==DB.getUserPersonalTeam(UI.focusUser)">
-        <div *ngIf="DB.getTeamLeader(team.$key,UI.focusUser)&&personalTeam!=team.$key" class="buttonDiv" style="font-size:11px;color:blue" (click)="personalTeam=team.$key;db.list('users/'+UI.focusUser).push({personalTeam:team.$key})">Set as personal team</div>
-      <div *ngIf="personalTeam==team.$key" class="buttonDiv" style="cursor:default;font-size:11px;color:green;border:none">Personal team</div>
-      </div>
-      </div>
       <div class="seperator"></div>
       </div>
     </li>
@@ -39,14 +32,12 @@ import { databaseService } from './database.service';
   `,
 })
 export class UserSettingsComponent {
-  personalTeam:string;
   userTeams: FirebaseListObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       this.UI.currentTeam="";
-      this.personalTeam=this.DB.getUserPersonalTeam(this.UI.focusUser);
       this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
         query:{
           orderByChild:'lastChatVisitTimestampNegative',

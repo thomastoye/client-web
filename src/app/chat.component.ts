@@ -15,7 +15,9 @@ import { databaseService } from './database.service';
   <div>
   <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
-    <li *ngFor="let message of teamMessages | async ; let last = last">
+    <li *ngFor="let message of teamMessages | async ; let last = last"
+      (click)="timestampChatVisit()"
+      style="cursor:pointer">
       <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
       <div [style.background-color]="message.action=='confirmation'?'#e6efe6':message.action=='warning'?'#efeac6':''">
       <div style="display:inline;float:left;height:35px;width:5px;margin-top:5px"></div>
@@ -47,7 +49,6 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none">
-    <div *ngIf="DB.getUserFollowing(UI.currentUser,UI.currentTeam)" style="color:blue; padding:5px 0 5px 15px; cursor:pointer;float:left" (click)="timestampChatVisit()">Mark all read</div>
     <ul style="list-style:none;float:left;">
       <li *ngFor="let user of draftMessageUsers | async">
       <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{DB.getUserFirstName(user.$key)}}...</div>

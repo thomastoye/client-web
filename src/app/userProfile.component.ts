@@ -14,7 +14,7 @@ import { databaseService } from './database.service';
   <div style="float:left;width:80%">
   <div class='title' style="float:left;font-size:16px">{{DB.getUserFirstName(UI.focusUser)}} {{DB.getUserLastName(UI.focusUser)}}</div>
   <img class='editButton' style="width:20px" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="this.router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
-  <div style="color:#888;font-size:11px;padding:0 5px 5px 10px">Joined {{DB.getUserCreatedTimestamp(UI.focusUser)|date:'MMMM yyyy'}}, {{DB.getUserMessageCount(UI.focusUser)==null?0:DB.getUserMessageCount(UI.focusUser)}} Messages</div>
+  <div style="color:#888;font-size:11px;padding:0 5px 5px 10px;clear:both">Joined {{DB.getUserCreatedTimestamp(UI.focusUser)|date:'MMMM yyyy'}}, {{DB.getUserMessageCount(UI.focusUser)==null?0:DB.getUserMessageCount(UI.focusUser)}} Messages</div>
   </div>
   <div style="float:right;width:20%;position:relative">
   <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(DB.getUserPhotoURL(UI.focusUser))">

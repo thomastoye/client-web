@@ -10,6 +10,12 @@ import { databaseService } from './database.service';
   selector: 'login',
   template: `
   <div id="login">
+  <div style="width:300px;display:block;margin: 0 auto;padding:25px;">
+  <div style="font-size:25px;line-height:35px;color:#555">Public.</div>
+  <div style="font-size:25px;line-height:35px;color:#555">Chat.</div>
+  <div style="font-size:25px;line-height:35px;color:#555">And exchange.</div>
+  <div style="font-size:25px;line-height:35px;color:#555">For everyone.</div>
+  </div>
     <div class="module form-module">
       <div class="form">
         <form>
@@ -130,7 +136,7 @@ export class LoginComponent  {
     const now = Date.now();
     var teamID = this.db.list('ids/').push(true).key;
     this.db.list('teams/'+teamID).push({
-      user:this.UI.currentUser,
+      user:userID,
       name:teamName,
       addLeader:userID,
       timestamp:firebase.database.ServerValue.TIMESTAMP,
