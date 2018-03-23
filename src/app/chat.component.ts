@@ -40,7 +40,7 @@ import { databaseService } from './database.service';
         <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px" (click)="router.navigate(['user',message.linkUser])">
         <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
       </div>
-      <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0;border-radius:3px" (click)="showFullScreenImage(message.image)">
+      <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0" (click)="showFullScreenImage(message.image)">
       {{last?scrollToBottom(message.timestamp):''}}
       </div>
     </li>
