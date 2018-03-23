@@ -23,7 +23,7 @@ import { databaseService } from './database.service';
       <div class="seperator"></div>
     </li>
   </ul>
-  <div style="text-align:center;padding:10px"><a style="font-size:10px" href='mailto:perrinnlimited@gmail.com'>Stuck? no problem just email PERRINN now</a></div>
+  <div style="text-align:center;padding:10px"><a style="font-size:10px" href='mailto:perrinnlimited@gmail.com'>Stuck? no problem, email PERRINN now</a></div>
   </div>
   `,
 })

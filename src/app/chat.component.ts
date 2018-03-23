@@ -18,31 +18,33 @@ import { databaseService } from './database.service';
     <li *ngFor="let message of teamMessages | async ; let last = last"
       (click)="timestampChatVisit()"
       style="cursor:pointer">
-      <div class="newDay" *ngIf="isMessageNewGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
-      <div [style.background-color]="message.action=='confirmation'?'#e6efe6':message.action=='warning'?'#efeac6':''">
-      <div style="display:inline;float:left;height:35px;width:5px;margin-top:5px"></div>
-      <div style="display:inline;float:left;height:35px;width:3px;margin-top:5px">
-      <div [hidden]="lastChatVisitTimestamp>=message.timestamp" style="height:35px;width:3px;background-color:red"></div>
+      <div class="newDay" *ngIf="isMessageNewTimeGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
+      <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)" style="width:100%;height:10px"></div>
+      <div style="margin:0 10px 0 7px;border-width:0 0 0 3px;border-style:solid" [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'?'#e6efe6':message.action=='warning'?'#efeac6':''">
+      <div style="float:left;width:60px;min-height:10px">
+        <img (error)="errorHandler($event)" *ngIf="isMessageNewUserGroup(message.user,message.timestamp)" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
       </div>
-      <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display: inline; float: left; margin: 5px 10px 10px 5px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
-      <div style="font-weight: bold; display: inline; float: left; margin-right: 10px">{{DB.getUserFirstName(message.user)}}</div>
-      <div style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
-      <img *ngIf="message.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-      <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-      <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-      <img *ngIf="message.action=='process'" src="./../assets/App icons/process.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-      <div *ngIf="!message.image" style="color: #404040;padding: 0 50px 10px 0;" [innerHTML]="message.text | linky"></div>
-      <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin: 0 5px 10px 100px">
-        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px" (click)="router.navigate(['team',message.linkTeam])">
-        <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
+      <div>
+        <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)" style="font-weight:bold;display:inline;float:left;margin-right:10px">{{DB.getUserFirstName(message.user)}}</div>
+        <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)" style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
+        <img *ngIf="message.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+        <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+        <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+        <img *ngIf="message.action=='process'" src="./../assets/App icons/process.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+        <div *ngIf="!message.image" style="color:#404040;padding: 0 50px 10px 0" [innerHTML]="message.text | linky"></div>
+        <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin: 0 5px 10px 50px">
+          <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px" (click)="router.navigate(['team',message.linkTeam])">
+          <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
+        </div>
+        <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin: 0 5px 10px 50px">
+          <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px" (click)="router.navigate(['user',message.linkUser])">
+          <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
+        </div>
+        <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0" (click)="showFullScreenImage(message.image)">
       </div>
-      <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin: 0 5px 10px 100px">
-        <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px" (click)="router.navigate(['user',message.linkUser])">
-        <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
       </div>
-      <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0" (click)="showFullScreenImage(message.image)">
+      {{storeMessageValues(message.user,message.timestamp)}}
       {{last?scrollToBottom(message.timestamp):''}}
-      </div>
     </li>
   </ul>
   <div style="height:125px;width:100%"></div>
@@ -54,16 +56,13 @@ import { databaseService } from './database.service';
       <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{DB.getUserFirstName(user.$key)}}...</div>
       </li>
     </ul>
-    <div *ngIf="DB.getTeamBalance(UI.currentTeam)>'0'">
-      <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-      <label class="buttonUploadImage" *ngIf='DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser)' for="chatImage" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">
-      <img src="./../assets/App icons/camera.png" style="width:25px">
-      <span class="tipText">Max 3.0Mb</span>
-      </label>
-      <img src="./../assets/App icons/help.svg" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
-    </div>
-    <textarea *ngIf="DB.getTeamBalance(UI.currentTeam)>'0'" [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
-    <div *ngIf="!(DB.getTeamBalance(UI.currentTeam)>'0')||DB.getTeamBalance(UI.currentTeam)==null" style="font-size:10px;color:red;clear:both;padding:5px 0 5px 15px;cursor:pointer" [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' (click)="router.navigate(['wallet',UI.currentTeam])">COIN balance low, please send COINS to this team or buy new COINS to use this chat</div>
+    <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+    <label class="buttonUploadImage" *ngIf='DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser)' for="chatImage" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">
+    <img src="./../assets/App icons/camera.png" style="width:25px">
+    <span class="tipText">Max 3.0Mb</span>
+    </label>
+    <img src="./../assets/App icons/help.svg" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
+    <textarea [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
     `,
@@ -78,11 +77,13 @@ export class ChatComponent {
   lastChatVisitTimestamp: number;
   scrollMessageTimestamp: number;
   previousMessageTimestamp: number;
+  previousMessageUser: string;
 
   constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
       this.previousMessageTimestamp=0;
+      this.previousMessageUser="";
       this.draftMessageDB=false;
       this.draftImage="";
       this.draftMessage="";
@@ -104,11 +105,21 @@ export class ChatComponent {
     fullScreenImage.style.visibility='visible';
   }
 
-  isMessageNewGroup (messageTimestamp) {
-    var isMessageNewGroup: boolean;
-    isMessageNewGroup= Math.abs(messageTimestamp-this.previousMessageTimestamp)>1000*60*60*4;
-    this.previousMessageTimestamp=messageTimestamp;
-    return isMessageNewGroup;
+  isMessageNewTimeGroup (messageTimestamp) {
+    var isMessageNewTimeGroup: boolean;
+    isMessageNewTimeGroup= Math.abs(messageTimestamp-this.previousMessageTimestamp)>1000*60*60*4;
+    return isMessageNewTimeGroup;
+  }
+
+  isMessageNewUserGroup (user,messageTimestamp) {
+    var isMessageNewUserGroup: boolean;
+    isMessageNewUserGroup= Math.abs(messageTimestamp-this.previousMessageTimestamp)>1000*60*5||(user!=this.previousMessageUser);
+    return isMessageNewUserGroup;
+  }
+
+  storeMessageValues (user,timestamp) {
+    this.previousMessageTimestamp=timestamp;
+    this.previousMessageUser=user;
   }
 
   isDraftMessageRecent (draftMessageTimestamp) {

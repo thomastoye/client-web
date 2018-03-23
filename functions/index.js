@@ -140,6 +140,7 @@ function createTransaction (amount, sender, receiver, user, reference) {
               return;
             });
             createMessage (sender,"PERRINN","Transaction cancelled: Not enough COINS, transaction rejected","","warning","","");
+            createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Transaction cancelled: Not enough COINS, transaction rejected","","warning",sender,"");
           } else {
             return;
           }

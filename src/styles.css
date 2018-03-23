@@ -91,7 +91,7 @@ body {
 }
 .chat .newDay{
   text-align: center;
-  padding: 15px;
+  padding: 25px 15px 15px 15px;
   color: #777;
   text-decoration: underline;
 }
