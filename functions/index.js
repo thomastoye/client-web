@@ -232,10 +232,10 @@ function scanService (service,message,team) {
               var variable=service.child('process').child(currentProcess.val().step).child('input').val().variable;
               if (variable) {
                 var valueString=value[0];
-                if (service.child('process').child(currentProcess.val().step).child('input').val().tolowercase) {
+                if (service.child('process').child(currentProcess.val().step).child('input').val().toLowerCase) {
                   valueString=valueString.toLowerCase();
                 }
-                if (service.child('process').child(currentProcess.val().step).child('input').val().touppercase) {
+                if (service.child('process').child(currentProcess.val().step).child('input').val().toUpperCase) {
                   valueString=valueString.toUpperCase();
                 }
                 admin.database().ref('PERRINNTeamServices/'+team+'/inputs').update({

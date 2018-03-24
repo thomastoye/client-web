@@ -10,14 +10,14 @@ import { databaseService } from './database.service';
   selector: 'wallet',
   template: `
   <div class="sheet">
-    <div style="width:100px;font-size:12px;cursor:pointer;color:blue;padding:10px;float:left" (click)="router.navigate(['chat',UI.currentTeam])">< Chat</div>
-    <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="router.navigate(['project','-KsNoWUAB5jAWOClrGdT'])">COIN info ></div>
+    <div style="width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:left;background-color:#eff5ff;padding:5px" (click)="router.navigate(['chat',UI.currentTeam])">< Chat</div>
+    <div style="width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['project','-KsNoWUAB5jAWOClrGdT'])">COIN info ></div>
     <div style="clear:both;text-align:center">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
     <div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
-    <div style="font-size: 25px;line-height:normal; color: black;">{{DB.getTeamBalance(UI.currentTeam) | number:'1.2-2'}}</div>
+    <div style="font-size: 25px;line-height:normal; color: black;">{{DB.getTeamBalance(UI.currentTeam)|number:'1.2-2'}}</div>
     </div>
     <div style="float: right; width: 50%; text-align: left; padding: 5px">
     <div style="color: black;">COINS</div>

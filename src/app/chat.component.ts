@@ -12,6 +12,9 @@ import { databaseService } from './database.service';
   template: `
   <div class="sheet">
   <div class="chat" id="chat-scroll">
+  <div style="float:right;width:100px;text-align:center">
+  <div style="font-size:12px;position:fixed;color:blue;cursor:pointer;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">C{{DB.getTeamBalance(UI.currentTeam)|number:'1.2-2'}} ></div>
+  </div>
   <div>
   <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">

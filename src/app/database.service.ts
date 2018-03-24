@@ -97,7 +97,7 @@ export class databaseService {
   }
   getTeamBalance(ID:string):string{
     if(this.teamBalance[ID]==null) this.db.object('PERRINNTeamBalance/'+ID).subscribe(snapshot=>{this.teamBalance[ID]=snapshot.balance});
-    return this.teamBalance[ID];
+    return this.teamBalance[ID]||0;
   }
   getTeamLastMessageTimestamp(ID:string):string{
     if(this.teamLastMessageTimestamp[ID]==null) this.db.object('teamActivities/'+ID).subscribe(snapshot=>{this.teamLastMessageTimestamp[ID]=snapshot.lastMessageTimestamp});
