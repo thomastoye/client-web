@@ -223,7 +223,8 @@ function scanService (service,message,team) {
       admin.database().ref('/PERRINNTeamServices/'+team+'/currentProcess').once('value').then(currentProcess => {
         if (service.key==currentProcess.val().service&&message.user==currentProcess.val().user) {
           if (service.child('process').child(currentProcess.val().step).val().input) {
-            var value=message.text.match(service.child('process').child(currentProcess.val().step).child('input').val().regex);
+            var inputRegex = new RegExp(service.child('process').child(currentProcess.val().step).child('input').val().regex,"i");
+            var value=message.text.match(inputRegex);
             if (value) {
               admin.database().ref('PERRINNTeamServices/'+team+'/currentProcess').child('step').transaction((step)=>{
                 return step+1;
