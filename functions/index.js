@@ -139,8 +139,8 @@ function createTransaction (amount, sender, receiver, user, reference) {
             createTransactionHalf (amount,sender,receiver,user,reference+" (rejected)",now).then(()=>{
               return;
             });
-            createMessage (sender,"PERRINN","Transaction cancelled: Not enough COINS, transaction rejected","","warning","","");
-            createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Transaction cancelled: Not enough COINS, transaction rejected","","warning",sender,"");
+            createMessage (sender,"PERRINN","Transaction cancelled: Not enough COINS.","","warning","","");
+            createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Transaction cancelled: Not enough COINS.","","warning",sender,"");
           } else {
             return;
           }

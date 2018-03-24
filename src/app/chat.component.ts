@@ -15,18 +15,18 @@ import { databaseService } from './database.service';
   <div>
   <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
-    <li *ngFor="let message of teamMessages | async ; let last = last"
+    <li *ngFor="let message of teamMessages | async;let first=first;let last=last"
       (click)="timestampChatVisit()"
       style="cursor:pointer">
-      <div class="newDay" *ngIf="isMessageNewTimeGroup(message.timestamp)">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
-      <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)" style="width:100%;height:10px"></div>
+      <div class="newDay" *ngIf="isMessageNewTimeGroup(message.timestamp)||first">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
+      <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="width:100%;height:10px"></div>
       <div style="margin:0 10px 0 7px;border-width:0 0 0 3px;border-style:solid" [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'?'#e6efe6':message.action=='warning'?'#efeac6':''">
       <div style="float:left;width:60px;min-height:10px">
-        <img (error)="errorHandler($event)" *ngIf="isMessageNewUserGroup(message.user,message.timestamp)" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
+        <img (error)="errorHandler($event)" *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
       </div>
       <div>
-        <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)" style="font-weight:bold;display:inline;float:left;margin-right:10px">{{DB.getUserFirstName(message.user)}}</div>
-        <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)" style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
+        <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin-right:10px">{{DB.getUserFirstName(message.user)}}</div>
+        <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
         <img *ngIf="message.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
         <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
         <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
