@@ -20,7 +20,7 @@ import { databaseService } from './database.service';
   <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(DB.getUserPhotoURL(UI.focusUser))">
   </div>
   </div>
-  <div class='sheet' style="margin-top:10px">
+  <div class='sheet' style="margin-top:5px">
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       (click)="router.navigate(['chat',team.$key])">
