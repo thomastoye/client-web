@@ -16,9 +16,8 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li style="cursor:default" *ngFor="let service of services | async">
       <div style="padding:5px 10px 5px 10px">
-        <div style="float:left;width:200px;font-size:11px;font-weight:bold">{{service.command}}</div>
-        <div style="float:left;width:200px;font-size:11px">{{service.description}}</div>
-        <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(service.command)">Send to chat</div>
+        <div style="float:left;width:250px;font-size:11px;font-weight:bold;color:blue;cursor:pointer" (click)="addMessage(service.command)">{{service.command}}</div>
+        <div style="float:left;width:250px;font-size:11px">{{service.description}}</div>
       </div>
       <div class="seperator"></div>
     </li>

@@ -21,7 +21,6 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="buttonDiv" *ngIf="(UI.currentUser==UI.focusUser)" style="float:right;margin:5px" (click)="this.router.navigate(['createTeam'])">New team</div>
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       (click)="router.navigate(['chat',team.$key])">

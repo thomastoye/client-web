@@ -187,6 +187,24 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
   });
 }
 
+function createNewTeam(user,name,photoURL) {
+  const now = Date.now();
+  var teamID = admin.database().ref('ids/').push(true).key;
+  admin.database().ref('teams/'+teamID).push({
+    user:user,
+    name:name,
+    photoURL:photoURL,
+    addLeader:user,
+    timestamp:now,
+  });
+  admin.database().ref('userTeams/'+user+'/'+teamID).update({
+    following:true,
+    lastChatVisitTimestamp:now,
+    lastChatVisitTimestampNegative:-1*now,
+  });
+  return teamID;
+}
+
 function scanService (service,message,team) {
   if(service.child('exemptions').child(message.user).val()==null) {
     var serviceRegex = new RegExp(service.val().regex,"i");
@@ -203,11 +221,11 @@ function scanService (service,message,team) {
         );
       }
       if (service.val().process) {
-        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').remove();
         admin.database().ref('PERRINNTeamServices/'+team+'/currentProcess').update({
           service:service.key,
           step:1,
-          user:message.user,
+        }).then(()=>{
+          performProcessStep(message.user,team);
         });
       }
       if (service.val().serviceCost) {
@@ -221,13 +239,15 @@ function scanService (service,message,team) {
       }
     } else {
       admin.database().ref('/PERRINNTeamServices/'+team+'/currentProcess').once('value').then(currentProcess => {
-        if (service.key==currentProcess.val().service&&message.user==currentProcess.val().user) {
+        if (service.key==currentProcess.val().service) {
           if (service.child('process').child(currentProcess.val().step).val().input) {
             var inputRegex = new RegExp(service.child('process').child(currentProcess.val().step).child('input').val().regex,"i");
             var value=message.text.match(inputRegex);
             if (value) {
               admin.database().ref('PERRINNTeamServices/'+team+'/currentProcess').child('step').transaction((step)=>{
                 return step+1;
+              }).then(()=>{
+                performProcessStep(message.user,team);
               });
               var variable=service.child('process').child(currentProcess.val().step).child('input').val().variable;
               if (variable) {
@@ -240,6 +260,8 @@ function scanService (service,message,team) {
                 }
                 admin.database().ref('PERRINNTeamServices/'+team+'/inputs').update({
                   [variable]:valueString,
+                }).then(()=>{
+                  return;
                 });
               }
             } else {
@@ -248,19 +270,85 @@ function scanService (service,message,team) {
             }
           }
         }
-      }).catch(()=>{
-        console.log("error 123")
+      }).catch(error=>{
+        console.log("error 123:"+error)
       });
     }
   }
 }
 
+function performProcessStep(user,team) {
+  return admin.database().ref('/PERRINNTeamServices/'+team+'/currentProcess').once('value').then(currentProcess => {
+    admin.database().ref('appSettings/PERRINNServices/'+currentProcess.val().service+'/process/'+currentProcess.val().step).once('value').then(processStep => {
+      if (processStep.val().message) {
+        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
+          var text='';
+          if (processStep.child('message').child('listInputs').val()) {
+            inputs.forEach((input)=>{
+              text=text+input.key+':'+input.val()+', ';
+            });
+          }
+          text=text+processStep.child('message').val().text;
+          createMessage(
+            team,
+            processStep.child('message').val().user?processStep.child('message').val().user:"PERRINN",
+            text,
+            processStep.child('message').val().image?processStep.child('message').val().image:"",
+            processStep.child('message').val().action?processStep.child('message').val().action:"process",
+            processStep.child('message').val().linkTeam?processStep.child('message').val().linkTeam:"",
+            processStep.child('message').val().linkUser?processStep.child('message').val().linkUser:""
+          );
+        });
+      }
+      if (processStep.val().transaction) {
+        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
+          createTransaction (
+            inputs.val().amount,
+            team,
+            inputs.val().receiver,
+            user,
+            inputs.val().reference
+          );
+          clearCurrentProcess(team);
+        });
+      }
+      if (processStep.val().updateKeyValue) {
+        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
+          updateKeyValue (
+            user,
+            team,
+            processStep.child('updateKeyValue').val().ref,
+            processStep.child('updateKeyValue').val().key,
+            inputs.child(processStep.child('updateKeyValue').val().value).val()
+          );
+          clearCurrentProcess(team);
+        });
+      }
+      if (processStep.val().createNewTeam) {
+        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
+          createNewTeam (
+            user,
+            inputs.child('name').val(),
+            inputs.child('photoURL').val()
+          );
+          clearCurrentProcess(team);
+        });
+      }
+    }).catch(error=>{
+      console.log("error 456:"+error);
+    });
+  });
+}
+
 function clearCurrentProcess(team){
-  admin.database().ref('PERRINNTeamServices/'+team+'/inputs').remove();
-  admin.database().ref('PERRINNTeamServices/'+team+'/currentProcess').update({
-    service:"",
-    step:0,
-    user:"",
+  return admin.database().ref('PERRINNTeamServices/'+team+'/inputs').remove().then(()=>{
+    return admin.database().ref('PERRINNTeamServices/'+team+'/currentProcess').update({
+      service:"",
+      step:0,
+      user:"",
+    }).then(()=>{
+      return;
+    });
   });
 }
 
@@ -355,8 +443,8 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
     }
     return updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"name",profile.name).then((newName)=>{
       return updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL).then((newPhotoURL)=>{
-        return addListKeyValue('PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,"true",2).then((newLeader)=>{
-          return addListKeyValue('PERRINNTeams/'+event.params.team,"members",profile.addMember,"true",6).then((newMember)=>{
+        return addListKeyValue('PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,true,2).then((newLeader)=>{
+          return addListKeyValue('PERRINNTeams/'+event.params.team,"members",profile.addMember,true,6).then((newMember)=>{
             return removeListKey('PERRINNTeams/'+event.params.team,"members",profile.removeMember).then((oldMember)=>{
               return admin.database().ref('PERRINNTeams/'+event.params.team).once('value').then(newProfile=>{
                 if (newName) {
@@ -395,58 +483,6 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
         });
       });
     });
-  });
-});
-
-exports.newProcessStep = functions.database.ref('/PERRINNTeamServices/{team}/currentProcess').onWrite(event => {
-  const currentProcess = event.data.val();
-  admin.database().ref('appSettings/PERRINNServices/'+currentProcess.service+'/process/'+currentProcess.step).once('value').then(processStep => {
-    if (processStep.val().message) {
-      admin.database().ref('PERRINNTeamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
-        var text='';
-        if (processStep.child('message').child('listInputs').val()) {
-          inputs.forEach((input)=>{
-            text=text+input.key+':'+input.val()+', ';
-          });
-        }
-        text=text+processStep.child('message').val().text;
-        createMessage(
-          event.params.team,
-          processStep.child('message').val().user?processStep.child('message').val().user:"PERRINN",
-          text,
-          processStep.child('message').val().image?processStep.child('message').val().image:"",
-          processStep.child('message').val().action?processStep.child('message').val().action:"process",
-          processStep.child('message').val().linkTeam?processStep.child('message').val().linkTeam:"",
-          processStep.child('message').val().linkUser?processStep.child('message').val().linkUser:""
-        );
-      });
-    }
-    if (processStep.val().transaction) {
-      admin.database().ref('PERRINNTeamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
-        createTransaction (
-          inputs.val().amount,
-          event.params.team,
-          inputs.val().receiver,
-          currentProcess.user,
-          inputs.val().reference
-        );
-        clearCurrentProcess(event.params.team);
-      });
-    }
-    if (processStep.val().updateKeyValue) {
-      admin.database().ref('PERRINNTeamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
-        updateKeyValue (
-          currentProcess.user,
-          event.params.team,
-          processStep.child('updateKeyValue').val().ref,
-          processStep.child('updateKeyValue').val().key,
-          inputs.child(processStep.child('updateKeyValue').val().value).val()
-        );
-        clearCurrentProcess(event.params.team);
-      });
-    }
-  }).catch(()=>{
-    console.log("error 456");
   });
 });
 
@@ -509,6 +545,23 @@ exports.createUserPersonalTeam = functions.database.ref('tot').onCreate(event =>
     admin.database().ref('users/'+userID).push({
       timestamp:now,
       personalTeam:teamID,
+    });
+  });
+});
+
+exports.loopPERRINNTeams = functions.database.ref('tot').onCreate(event => {
+  return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
+    teams.forEach(team=>{
+      admin.database().ref('PERRINNTeams/'+team.key+'/leaders').once('value').then(leaders=>{
+        leaders.forEach(leader=>{
+          if (leader.val()=="true"||leader.val()=="false") console.log('team:'+team.key);
+        });
+      });
+      admin.database().ref('PERRINNTeams/'+team.key+'/members').once('value').then(members=>{
+        members.forEach(member=>{
+          if (member.val()=="true"||member.val()=="false") console.log('team:'+team.key);
+        });
+      });
     });
   });
 });
