@@ -23,21 +23,23 @@ function updateKeyValue (user,team,ref,key,value) {
         return;
       }
       if (currentValue.val()==value) {
-        createMessage (team,"PERRINN",key+" unchanged.","","confirmation","","");
+        createMessage (team,"PERRINN",key+" unchanged: "+value,"","confirmation","","");
         return;
       } else {
         return admin.database().ref(ref).update({
           [key]:value,
         }).then(()=>{
-          createMessage (team,"PERRINN",key+" updated.","","confirmation","","");
+          createMessage (team,"PERRINN",key+" updated: "+value,"","confirmation","","");
           return value;
         });
       }
     });
+  }).catch(error=>{
+    console.log("error updateKeyValue:"+error);
   });
 }
 
-function addListKeyValue (ref,list,key,value,maxCount) {
+function addListKeyValue (user,team,ref,list,key,value,maxCount) {
   const counter=list+"Count";
   return admin.database().ref(ref).child(list).once('value').then((currentList)=>{
     if (!ref||!list||!key||!maxCount) {
@@ -139,8 +141,8 @@ function createTransaction (amount, sender, receiver, user, reference) {
             createTransactionHalf (amount,sender,receiver,user,reference+" (rejected)",now).then(()=>{
               return;
             });
-            createMessage (sender,"PERRINN","Transaction cancelled: Not enough COINS.","","warning","","");
-            createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Transaction cancelled: Not enough COINS.","","warning",sender,"");
+            createMessage (sender,"PERRINN","COIN balance low.","","warning","","");
+            createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","COIN balance low.","","warning",sender,"");
           } else {
             return;
           }
@@ -187,22 +189,33 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
   });
 }
 
-function createNewTeam(user,name,photoURL) {
+function createTeam(user,team,name,photoURL) {
   const now = Date.now();
-  var teamID = admin.database().ref('ids/').push(true).key;
-  admin.database().ref('teams/'+teamID).push({
-    user:user,
-    name:name,
-    photoURL:photoURL,
-    addLeader:user,
-    timestamp:now,
+  admin.database().ref('PERRINNTeams/'+team).update({
+    createdTimestamp:now,
   });
-  admin.database().ref('userTeams/'+user+'/'+teamID).update({
+  createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",team,"");
+  updateKeyValue (user,team,'PERRINNTeams/',"name",name);
+  updateKeyValue (user,team,'PERRINNTeams/',"photoURL",photoURL);
+  addListKeyValue(user,team,'PERRINNTeams/'+team,"leaders",user,true,2);
+  admin.database().ref('userTeams/'+user+'/'+team).update({
     following:true,
     lastChatVisitTimestamp:now,
     lastChatVisitTimestampNegative:-1*now,
   });
-  return teamID;
+  return team;
+}
+
+function createUser(user,team,firstName,lastName,photoURL) {
+  const now = Date.now();
+  admin.database().ref('PERRINNUsers/'+user).update({
+    createdTimestamp:now,
+  });
+  createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",user);
+  updateKeyValue (user,team,'PERRINNUsers/',"firstName",firstName);
+  updateKeyValue (user,team,'PERRINNUsers/',"lastName",lastName);
+  updateKeyValue (user,team,'PERRINNUsers/',"photoURL",photoURL);
+  return user;
 }
 
 function scanService (service,message,team) {
@@ -324,13 +337,16 @@ function performProcessStep(user,team) {
           clearCurrentProcess(team);
         });
       }
-      if (processStep.val().createNewTeam) {
+      if (processStep.val().createTeam) {
+        var newTeam = admin.database().ref('ids/').push(true).key;
         admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
-          createNewTeam (
+          createTeam (
             user,
+            newTeam,
             inputs.child('name').val(),
             inputs.child('photoURL').val()
           );
+          createMessage (team,"PERRINN","New team:","","",newTeam,"");
           clearCurrentProcess(team);
         });
       }
@@ -443,16 +459,10 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
     }
     return updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"name",profile.name).then((newName)=>{
       return updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL).then((newPhotoURL)=>{
-        return addListKeyValue('PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,true,2).then((newLeader)=>{
-          return addListKeyValue('PERRINNTeams/'+event.params.team,"members",profile.addMember,true,6).then((newMember)=>{
+        return addListKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,true,2).then((newLeader)=>{
+          return addListKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"members",profile.addMember,true,6).then((newMember)=>{
             return removeListKey('PERRINNTeams/'+event.params.team,"members",profile.removeMember).then((oldMember)=>{
               return admin.database().ref('PERRINNTeams/'+event.params.team).once('value').then(newProfile=>{
-                if (newName) {
-                  createMessage (event.params.team,"PERRINN","New team name: "+newName,"","confirmation","","");
-                }
-                if (newPhotoURL) {
-                  createMessage (event.params.team,"PERRINN","Team photo has been updated:","","confirmation",event.params.team,"");
-                }
                 if (profile.addLeader&&newLeader==profile.addLeader) {
                   createMessage (event.params.team,"PERRINN","New team leader:","","confirmation","",profile.addLeader);
                   admin.database().ref('PERRINNUsers/'+profile.addLeader).child('personalTeam').once('value').then((personalTeam)=>{
@@ -520,48 +530,6 @@ exports.checkUsersWithNoPersonalTeam = functions.database.ref('tot').onCreate(ev
       if (user.val().personalTeam==null) {
         console.log(user.key);
       }
-    });
-  });
-});
-
-exports.createUserPersonalTeam = functions.database.ref('tot').onCreate(event => {
-  var userID='91MTOGx4KXRCTpwCbWleDhWO3Ew2';
-  return admin.database().ref('PERRINNUsers/'+userID).once('value').then(user=>{
-    var teamName=user.val().firstName+' '+user.val().lastName;
-    teamName = teamName.toUpperCase();
-    const now = Date.now();
-    var teamID = admin.database().ref('ids/').push(true).key;
-    admin.database().ref('teams/'+teamID).push({
-      user:userID,
-      name:teamName,
-      addLeader:userID,
-      timestamp:now,
-    });
-    admin.database().ref('userTeams/'+userID+'/'+teamID).update({
-      following:true,
-      lastChatVisitTimestamp:now,
-      lastChatVisitTimestampNegative:-1*now,
-    });
-    admin.database().ref('users/'+userID).push({
-      timestamp:now,
-      personalTeam:teamID,
-    });
-  });
-});
-
-exports.loopPERRINNTeams = functions.database.ref('tot').onCreate(event => {
-  return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
-    teams.forEach(team=>{
-      admin.database().ref('PERRINNTeams/'+team.key+'/leaders').once('value').then(leaders=>{
-        leaders.forEach(leader=>{
-          if (leader.val()=="true"||leader.val()=="false") console.log('team:'+team.key);
-        });
-      });
-      admin.database().ref('PERRINNTeams/'+team.key+'/members').once('value').then(members=>{
-        members.forEach(member=>{
-          if (member.val()=="true"||member.val()=="false") console.log('team:'+team.key);
-        });
-      });
     });
   });
 });

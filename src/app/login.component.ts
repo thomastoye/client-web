@@ -123,7 +123,7 @@ export class LoginComponent  {
               photoURL:photoURL,
             }).then(_ => {
               var teamName = firstName+" "+lastName;
-              this.createNewTeam(auth.uid, teamName);
+              this.createTeam(auth.uid, teamName);
             });
           });
         });
@@ -131,7 +131,7 @@ export class LoginComponent  {
     }
   }
 
-  createNewTeam(userID: string, teamName: string) {
+  createTeam(userID: string, teamName: string) {
     teamName = teamName.toUpperCase();
     const now = Date.now();
     var teamID = this.db.list('ids/').push(true).key;
