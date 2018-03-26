@@ -14,15 +14,15 @@ import { databaseService } from './database.service';
     <progress value='0' max='100' id='uploader'>0%</progress>
     <div *ngIf="DB.getPERRINNGlobalMessage()" style="text-align:center;margin:5px;color:red;font-size:10px">{{DB.getPERRINNGlobalMessage()}}</div>
     <div class='menu'>
-    <div style="width:300px;display:block;margin: 0 auto;">
+    <div style="width:350px;display:block;margin: 0 auto;">
     <div class='iconSmall' (click)="clickUserIcon()">
     <img src="./../assets/App icons/Perrinn_02.png" style="width:30px;margin-top:5px;border-radius:3px;">
     <div class='activity' [hidden]="!globalChatActivity"></div>
     </div>
-    <div style="text-align:center;width:150px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
+    <div style="text-align:center;width:200px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
         <div *ngIf="UI.currentTeam" style="height:40px">
-        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" style="object-fit:cover;margin-top:5px;height:15px;width:150px;border-radius:3px">
-        <div style="position:absolute;width:150px;top:20px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{DB.getTeamName(UI.currentTeam)}}{{(DB.getTeamLeader(UI.currentTeam,UI.currentUser)?" *":"")}}</div>
+        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:200px;border-radius:3px">
+        <div style="position:absolute;width:200px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{DB.getTeamName(UI.currentTeam)}}{{(DB.getTeamLeader(UI.currentTeam,UI.currentUser)?" *":"")}}</div>
         </div>
     </div>
     <div class='iconSmall' (click)="router.navigate(['search'])">
