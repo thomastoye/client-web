@@ -8,7 +8,6 @@ export class userInterfaceService {
   focusUser:string;
   focusProject:string;
   currentTeam:string;
-  searchFilter: string;
   currentUser: string;
 
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase) {

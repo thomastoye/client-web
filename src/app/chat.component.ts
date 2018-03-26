@@ -23,7 +23,7 @@ import { databaseService } from './database.service';
       style="cursor:pointer">
       <div class="newDay" *ngIf="isMessageNewTimeGroup(message.timestamp)||first">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
       <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="width:100%;height:10px"></div>
-      <div style="margin:0 10px 0 7px;border-width:0 0 0 3px;border-style:solid" [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'?'#e6efe6':message.action=='warning'?'#efeac6':''">
+      <div style="margin:0 10px 0 7px;border-width:0 0 0 3px;border-style:solid" [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'||message.action=='add'?'#e6efe6':message.action=='warning'||message.action=='remove'?'#efeac6':''">
       <div style="float:left;width:60px;min-height:10px">
         <img (error)="errorHandler($event)" *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
       </div>
@@ -34,13 +34,15 @@ import { databaseService } from './database.service';
         <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
         <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
         <img *ngIf="message.action=='process'" src="./../assets/App icons/process.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+        <img *ngIf="message.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+        <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
         <div *ngIf="!message.image" style="color:#404040;padding: 0 50px 10px 0" [innerHTML]="message.text | linky"></div>
-        <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin: 0 5px 10px 50px">
-          <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px" (click)="router.navigate(['team',message.linkTeam])">
+        <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin: 0 5px 10px 50px" (click)="router.navigate(['chat',message.linkTeam])">
+          <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
           <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
         </div>
-        <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin: 0 5px 10px 50px">
-          <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px" (click)="router.navigate(['user',message.linkUser])">
+        <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin: 0 5px 10px 50px" (click)="router.navigate(['user',message.linkUser])">
+          <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px">
           <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
         </div>
         <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0" (click)="showFullScreenImage(message.image)">
@@ -142,6 +144,7 @@ export class ChatComponent {
     this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
+      following:true,
     });
   }
 
@@ -161,10 +164,7 @@ export class ChatComponent {
         lastMessageText:this.draftMessage,
         lastMessageUser:this.UI.currentUser,
       });
-      this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
-        lastChatVisitTimestamp:now,
-        lastChatVisitTimestampNegative:-1*now,
-      });
+      this.timestampChatVisit();
       this.draftMessage = "";
       this.draftImage = "";
     }

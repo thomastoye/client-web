@@ -9,7 +9,11 @@ import { userInterfaceService } from './userInterface.service';
   selector: 'search',
   template: `
   <div class="sheet">
-  <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="UI.searchFilter" placeholder="Search">
+  <div style="z-index:9999;position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:left;background-color:#eff5ff;padding:5px" (click)="router.navigate(['chat',UI.currentTeam])">< Chat</div>
+  <div style="float:right;width:100px;text-align:center">
+    <div style="z-index:9999;position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">Wallet ></div>
+  </div>
+  <input id="searchInput" maxlength="500" style="margin-top:40px" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Search">
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="title">Users</div>
@@ -67,6 +71,7 @@ export class SearchComponent  {
   teams: FirebaseListObservable<any>;
   projects: FirebaseListObservable<any>;
   images: FirebaseListObservable<any>;
+  searchFilter: string;
 
   constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.images = this.db.list('appSettings/photoLibrary', {
@@ -82,29 +87,29 @@ export class SearchComponent  {
   }
 
   refreshSearchLists () {
-    if (this.UI.searchFilter) {
-      if (this.UI.searchFilter.length>1) {
+    if (this.searchFilter) {
+      if (this.searchFilter.length>1) {
         this.users = this.db.list('PERRINNUsers/', {
           query:{
             orderByChild:'firstName',
-            startAt: this.UI.searchFilter.toLowerCase(),
-            endAt: this.UI.searchFilter.toLowerCase()+"\uf8ff",
+            startAt: this.searchFilter.toLowerCase(),
+            endAt: this.searchFilter.toLowerCase()+"\uf8ff",
             limitToFirst: 10
           }
         });
         this.teams = this.db.list('PERRINNTeams/', {
           query:{
             orderByChild:'name',
-            startAt: this.UI.searchFilter.toUpperCase(),
-            endAt: this.UI.searchFilter.toUpperCase()+"\uf8ff",
+            startAt: this.searchFilter.toUpperCase(),
+            endAt: this.searchFilter.toUpperCase()+"\uf8ff",
             limitToFirst: 10
           }
         });
         this.projects = this.db.list('projects/', {
           query:{
             orderByChild:'name',
-            startAt: this.UI.searchFilter.toUpperCase(),
-            endAt: this.UI.searchFilter.toUpperCase()+"\uf8ff",
+            startAt: this.searchFilter.toUpperCase(),
+            endAt: this.searchFilter.toUpperCase()+"\uf8ff",
             limitToFirst: 10
           }
         });

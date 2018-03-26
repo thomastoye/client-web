@@ -10,6 +10,10 @@ import { databaseService } from './database.service';
   selector: 'team',
   template: `
   <div class='sheet'>
+  <div style="z-index:9999;position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:left;background-color:#eff5ff;padding:5px" (click)="router.navigate(['chat',UI.currentTeam])">< Chat</div>
+  <div style="float:right;width:100px;text-align:center">
+    <div style="z-index:9999;position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">Wallet ></div>
+  </div>
   <div style="position:relative;margin-bottom:-115px">
   <img class="imageWithZoom" (error)="errorHandler($event)"[src]="DB.getTeamPhotoURL(this.UI.currentTeam)" style="object-fit:cover;background-color:#0e0e0e;max-height:250px; width:100%" (click)="showFullScreenImage(DB.getTeamPhotoURL(this.UI.currentTeam))">
   <div class="sheetBadge" style="position:relative;top:-115px">
@@ -27,23 +31,7 @@ import { databaseService } from './database.service';
       <div style="margin:0 0 5px 15px;font-size:12px;line-height:15px;font-family:sans-serif;">{{DB.getUserFirstName(user.$key)}}{{DB.getUserFollowing(user.$key,UI.currentTeam)?"":" (NF)"}}</div>
     </li>
   </ul>
-  <div style="clear:both"></div>
-  <div class="buttonDiv" *ngIf='DB.getTeamLeader(UI.currentTeam,UI.currentUser)' style="font-size:11px" (click)="this.router.navigate(['addMember'])">Add a member</div>
   </div>
-  </div>
-  </div>
-  <div class='sheet'>
-  <div class='appIcon' (click)="router.navigate(['chat',UI.currentTeam])">
-  <img src="./../assets/App icons/communication-icons-6.png" style="width:30px">
-  <div style="font-size:11px">Chat</div>
-  </div>
-  <div class='appIcon' (click)="router.navigate(['wallet',UI.currentTeam])">
-  <img src="./../assets/App icons/icon_share_03.svg" style="width:30px">
-  <div style="font-size:11px">Wallet</div>
-  </div>
-  <div class='appIcon' *ngIf="DB.getTeamLeader(UI.currentTeam,UI.currentUser)" (click)="router.navigate(['teamSettings',UI.currentTeam])">
-  <img src="./../assets/App icons/settings.png" style="width:30px">
-  <div style="font-size:11px">Settings</div>
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
