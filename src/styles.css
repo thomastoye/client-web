@@ -386,6 +386,9 @@ iframe {
 .appIcon:hover {
   background-color: #EEE;
 }
+img {
+  image-orientation:from-image;
+}
 img:hover {
   opacity: 0.95;
 }

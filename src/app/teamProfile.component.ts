@@ -84,48 +84,12 @@ export class TeamProfileComponent  {
     fullScreenImage.style.visibility='visible';
   }
 
-  saveTeamProfile() {
-    this.DB.teamName[this.UI.currentTeam] = this.DB.teamName[this.UI.currentTeam].toUpperCase();
-    this.db.list('teams/' + this.UI.currentTeam).push({
-      user:this.UI.currentUser,
-      name:this.DB.teamName[this.UI.currentTeam],
-      photoURL: this.DB.teamPhotoURL[this.UI.currentTeam],
-      timestamp:firebase.database.ServerValue.TIMESTAMP,
-    })
-  }
-
   followTeam (teamID: string, userID: string) {
     this.db.object('userTeams/'+userID+'/'+teamID).update({
       following:true,
       lastChatVisitTimestamp:firebase.database.ServerValue.TIMESTAMP
     });
     this.router.navigate(['user',this.UI.currentUser]);
-  }
-
-  onImageChange(event) {
-    let image = event.target.files[0];
-    var uploader = <HTMLInputElement>document.getElementById('uploader');
-    var storageRef = firebase.storage().ref('images/'+Date.now()+image.name);
-    var task = storageRef.put(image);
-    task.on('state_changed',
-      function progress(snapshot){
-        document.getElementById('buttonFile').style.visibility = "hidden";
-        document.getElementById('uploader').style.visibility = "visible";
-        var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
-        uploader.value=percentage.toString();
-      },
-      function error(){
-        document.getElementById('buttonFile').style.visibility = "visible";
-        document.getElementById('uploader').style.visibility = "hidden";
-        uploader.value='0';
-      },
-      ()=>{
-        uploader.value='0';
-        document.getElementById('buttonFile').style.visibility = "visible";
-        document.getElementById('uploader').style.visibility = "hidden";
-        this.DB.teamPhotoURL[this.UI.currentTeam]=task.snapshot.downloadURL;
-      }
-    );
   }
 
   errorHandler(event) {

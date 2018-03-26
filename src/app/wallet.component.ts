@@ -10,8 +10,10 @@ import { databaseService } from './database.service';
   selector: 'wallet',
   template: `
   <div class="sheet">
-    <div style="width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:left;background-color:#eff5ff;padding:5px" (click)="router.navigate(['chat',UI.currentTeam])">< Chat</div>
-    <div style="width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['project','-KsNoWUAB5jAWOClrGdT'])">COIN info ></div>
+    <div style="position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:left;background-color:#eff5ff;padding:5px" (click)="router.navigate(['chat',UI.currentTeam])">< Chat</div>
+    <div style="float:right;width:100px;text-align:center">
+      <div style="position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['project','-KsNoWUAB5jAWOClrGdT'])">COIN info ></div>
+    </div>
     <div style="clear:both;text-align:center">
     <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>

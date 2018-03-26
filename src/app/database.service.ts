@@ -6,67 +6,39 @@ import { userInterfaceService } from './userInterface.service';
 
 @Injectable()
 export class databaseService {
-  userFirstName: string[];
-  userLastName: string[];
-  userPhotoURL: string[];
-  userCreatedTimestamp: string[];
-  userMessageCount: string[];
-  userPersonalTeam: string[];
-  teamName: string[];
-  teamPhotoURL: string[];
-  teamMembersCount: string[];
-  teamBalance: string[];
-  teamLastMessageTimestamp: string[];
-  teamLastMessageText: string[];
-  teamLastMessageUser: string[];
-  projectName: string[];
-  projectPhotoURL: string[];
-  projectGoal: string[];
-  projectDocument: string[];
 
   constructor(public db: AngularFireDatabase, public UI: userInterfaceService) {
-    this.userFirstName=[''];
-    this.userLastName=[''];
-    this.userPhotoURL=[''];
-    this.userCreatedTimestamp=[''];
-    this.userMessageCount=[''];
-    this.userPersonalTeam=[''];
-    this.teamName=[''];
-    this.teamPhotoURL=[''];
-    this.teamMembersCount=[''];
-    this.teamBalance=[''];
-    this.teamLastMessageTimestamp=[''];
-    this.teamLastMessageText=[''];
-    this.teamLastMessageUser=[''];
-    this.projectName=[''];
-    this.projectPhotoURL=[''];
-    this.projectGoal=[''];
-    this.projectDocument=[''];
   }
 
   getUserFirstName(ID:string):string{
-    if(this.userFirstName[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userFirstName[ID]=snapshot.firstName});
-    return this.userFirstName[ID];
+    var output;
+    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.firstName});
+    return output;
   }
   getUserLastName(ID:string):string{
-    if(this.userLastName[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userLastName[ID]=snapshot.lastName});
-    return this.userLastName[ID];
+    var output;
+    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.lastName});
+    return output;
   }
   getUserPhotoURL(ID:string):string{
-    if(this.userPhotoURL[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userPhotoURL[ID]=snapshot.photoURL});
-    return this.userPhotoURL[ID];
+    var output;
+    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.photoURL});
+    return output;
   }
   getUserCreatedTimestamp(ID:string):string{
-    if(this.userCreatedTimestamp[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userCreatedTimestamp[ID]=snapshot.createdTimestamp});
-    return this.userCreatedTimestamp[ID];
+    var output;
+    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.createdTimestamp});
+    return output;
   }
   getUserMessageCount(ID:string):string{
-    if(this.userMessageCount[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userMessageCount[ID]=snapshot.messageCount});
-    return this.userMessageCount[ID];
+    var output;
+    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.messageCount});
+    return output;
   }
   getUserPersonalTeam(ID:string):string{
-    if(this.userPersonalTeam[ID]==null) this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{this.userPersonalTeam[ID]=snapshot.personalTeam});
-    return this.userPersonalTeam[ID];
+    var output;
+    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.personalTeam});
+    return output;
   }
   getUserFollowing(userID,teamID):string{
     var output;
@@ -74,12 +46,14 @@ export class databaseService {
     return output;
   }
   getTeamName(ID:string):string{
-    if(this.teamName[ID]==null) this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{this.teamName[ID]=snapshot.name});
-    return this.teamName[ID];
+    var output;
+    this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{output=snapshot.name});
+    return output;
   }
   getTeamPhotoURL(ID:string):string{
-    if(this.teamPhotoURL[ID]==null) this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{this.teamPhotoURL[ID]=snapshot.photoURL});
-    return this.teamPhotoURL[ID];
+    var output;
+    this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{output=snapshot.photoURL});
+    return output;
   }
   getTeamLeader(teamID:string,userID:string):boolean{
     var output;
@@ -92,24 +66,29 @@ export class databaseService {
     return output;
   }
   getTeamMembersCount(ID:string):string{
-    if(this.teamMembersCount[ID]==null) this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{this.teamMembersCount[ID]=snapshot.membersCount});
-    return this.teamMembersCount[ID];
+    var output;
+    this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{output=snapshot.membersCount});
+    return output;
   }
   getTeamBalance(ID:string):string{
-    if(this.teamBalance[ID]==null) this.db.object('PERRINNTeamBalance/'+ID).subscribe(snapshot=>{this.teamBalance[ID]=snapshot.balance});
-    return this.teamBalance[ID]||0;
+    var output;
+    this.db.object('PERRINNTeamBalance/'+ID).subscribe(snapshot=>{output=snapshot.balance?snapshot.balance:0});
+    return output;
   }
   getTeamLastMessageTimestamp(ID:string):string{
-    if(this.teamLastMessageTimestamp[ID]==null) this.db.object('teamActivities/'+ID).subscribe(snapshot=>{this.teamLastMessageTimestamp[ID]=snapshot.lastMessageTimestamp});
-    return this.teamLastMessageTimestamp[ID];
+    var output;
+    this.db.object('teamActivities/'+ID).subscribe(snapshot=>{output=snapshot.lastMessageTimestamp});
+    return output;
   }
   getTeamLastMessageText(ID:string):string{
-    if(this.teamLastMessageText[ID]==null) this.db.object('teamActivities/'+ID).subscribe(snapshot=>{this.teamLastMessageText[ID]=snapshot.lastMessageText});
-    return this.teamLastMessageText[ID];
+    var output;
+    this.db.object('teamActivities/'+ID).subscribe(snapshot=>{output=snapshot.lastMessageText});
+    return output;
   }
   getTeamLastMessageUser(ID:string):string{
-    if(this.teamLastMessageUser[ID]==null) this.db.object('teamActivities/'+ID).subscribe(snapshot=>{this.teamLastMessageUser[ID]=snapshot.lastMessageUser});
-    return this.teamLastMessageUser[ID];
+    var output;
+    this.db.object('teamActivities/'+ID).subscribe(snapshot=>{output=snapshot.lastMessageUser});
+    return output;
   }
   getProjectTeamLeader(projectID,teamID):string{
     var output;
@@ -127,20 +106,24 @@ export class databaseService {
     return output;
   }
   getProjectName(ID:string):string{
-    if(this.projectName[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectName[ID]=snapshot.name});
-    return this.projectName[ID];
+    var output;
+    this.db.object('projects/'+ID).subscribe(snapshot=>{output=snapshot.name});
+    return output;
   }
   getProjectPhotoURL(ID:string):string{
-    if(this.projectPhotoURL[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectPhotoURL[ID]=snapshot.photoURL});
-    return this.projectPhotoURL[ID];
+    var output;
+    this.db.object('projects/'+ID).subscribe(snapshot=>{output=snapshot.photoURL});
+    return output;
   }
   getProjectGoal(ID:string):string{
-    if(this.projectGoal[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectGoal[ID]=snapshot.goal});
-    return this.projectGoal[ID];
+    var output;
+    this.db.object('projects/'+ID).subscribe(snapshot=>{output=snapshot.goal});
+    return output;
   }
   getProjectDocument(ID:string):string{
-    if(this.projectDocument[ID]==null) this.db.object('projects/'+ID).subscribe(snapshot=>{this.projectDocument[ID]=snapshot.document});
-    return this.projectDocument[ID];
+    var output;
+    this.db.object('projects/'+ID).subscribe(snapshot=>{output=snapshot.document});
+    return output;
   }
   getPERRINNGlobalMessage():string{
     var output;
