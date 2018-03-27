@@ -77,20 +77,34 @@ function addListKeyValue (user,team,ref,list,key,value,maxCount) {
   });
 }
 
-function removeListKey (ref,list,key) {
-  const counter=list+"Count";
-  return admin.database().ref(ref).child(list).once('value').then((currentList)=>{
-    if (!ref||!list||!key) {
-      return;
+function removeListKey (user,team,ref,list,key) {
+  return admin.database().ref('PERRINNTeams/'+team).once('value').then((PERRINNTeam)=>{
+    if (ref=="PERRINNUsers/"){
+      ref=ref+user;
     }
-    if (!currentList.child(key).val()) {
-      return;
+    if (ref=="PERRINNTeams/"){
+      if (PERRINNTeam.val().leadersCount>0&&!PERRINNTeam.child('leaders').child(user).val()) {
+        createMessage (team,"PERRINN","You need to be team leader to do that.","","warning","","");
+        return;
+      }
+      ref=ref+team;
     }
-    return admin.database().ref(ref).child(list).child(key).remove().then(()=>{
-      return admin.database().ref(ref).update({
-        [counter]:currentList.numChildren()-1,
-      }).then(()=>{
-        return key;
+    const counter=list+"Count";
+    return admin.database().ref(ref).child(list).once('value').then((currentList)=>{
+      if (!ref||!list||!key) {
+        createMessage (team,"PERRINN",list+" remove didn't work because an input was missing.","","warning","","");
+        return;
+      }
+      if (!currentList.child(key).val()) {
+        createMessage (team,"PERRINN","Was not in "+list,"","warning","","");
+        return;
+      }
+      return admin.database().ref(ref).child(list).child(key).remove().then(()=>{
+        return admin.database().ref(ref).update({
+          [counter]:currentList.numChildren()-1,
+        }).then(()=>{
+          return key;
+        });
       });
     });
   });
@@ -204,189 +218,32 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
 
 function createTeam(user,team,name,photoURL) {
   const now = Date.now();
-  admin.database().ref('PERRINNTeams/'+team).update({
-    createdTimestamp:now,
+  return updateKeyValue (user,team,'PERRINNTeams/'+team,"createdTimestamp",now).then(()=>{
+    updateKeyValue (user,team,'PERRINNTeams/'+team,"name",name);
+    updateKeyValue (user,team,'PERRINNTeams/'+team,"photoURL",photoURL);
+    addListKeyValue(user,team,'PERRINNTeams/'+team,"leaders",user,true,2);
+    admin.database().ref('userTeams/'+user+'/'+team).update({
+      following:true,
+      lastChatVisitTimestamp:now,
+      lastChatVisitTimestampNegative:-1*now,
+    });
+    return team;
   });
-  updateKeyValue (user,team,'PERRINNTeams/',"name",name);
-  updateKeyValue (user,team,'PERRINNTeams/',"photoURL",photoURL);
-  addListKeyValue(user,team,'PERRINNTeams/'+team,"leaders",user,true,2);
-  admin.database().ref('userTeams/'+user+'/'+team).update({
-    following:true,
-    lastChatVisitTimestamp:now,
-    lastChatVisitTimestampNegative:-1*now,
-  });
-  return team;
 }
 
 function createUser(user,team,firstName,lastName,photoURL) {
   const now = Date.now();
-  admin.database().ref('PERRINNUsers/'+user).update({
-    createdTimestamp:now,
-  });
-  updateKeyValue (user,team,'PERRINNUsers/',"firstName",firstName);
-  updateKeyValue (user,team,'PERRINNUsers/',"lastName",lastName);
-  updateKeyValue (user,team,'PERRINNUsers/',"photoURL",photoURL);
-  return user;
-}
-
-function scanService (service,message,team) {
-  if(service.child('exemptions').child(message.user).val()==null) {
-    var serviceRegex = new RegExp(service.val().regex,"i");
-    if (message.text.match(serviceRegex)) {
-      if (service.val().message) {
-        createMessage(
-          team,
-          service.child('message').val().user?service.child('message').val().user:"PERRINN",
-          service.child('message').val().text,
-          service.child('message').val().image?service.child('message').val().image:"",
-          service.child('message').val().action?service.child('message').val().action:"process",
-          service.child('message').val().linkTeam?service.child('message').val().linkTeam:"",
-          service.child('message').val().linkUser?service.child('message').val().linkUser:""
-        );
-      }
-      if (service.val().process) {
-        admin.database().ref('PERRINNTeamServices/'+team+'/currentProcess').update({
-          service:service.key,
-          step:1,
-        }).then(()=>{
-          performProcessStep(message.user,team);
-        });
-      }
-      if (service.val().serviceCost) {
-        createTransaction (
-          service.child('serviceCost').val().amount,
-          team,
-          service.child('serviceCost').val().receiver,
-          "PERRINN",
-          service.child('serviceCost').val().reference
-        );
-      }
-    } else {
-      admin.database().ref('/PERRINNTeamServices/'+team+'/currentProcess').once('value').then(currentProcess => {
-        if (service.key==currentProcess.val().service) {
-          if (service.child('process').child(currentProcess.val().step).val().input) {
-            var inputRegex = new RegExp(service.child('process').child(currentProcess.val().step).child('input').val().regex,"i");
-            var value=message.text.match(inputRegex);
-            if (value) {
-              admin.database().ref('PERRINNTeamServices/'+team+'/currentProcess').child('step').transaction((step)=>{
-                return step+1;
-              }).then(()=>{
-                performProcessStep(message.user,team);
-              });
-              var variable=service.child('process').child(currentProcess.val().step).child('input').val().variable;
-              if (variable) {
-                var valueString=value[0];
-                if (service.child('process').child(currentProcess.val().step).child('input').val().toLowerCase) {
-                  valueString=valueString.toLowerCase();
-                }
-                if (service.child('process').child(currentProcess.val().step).child('input').val().toUpperCase) {
-                  valueString=valueString.toUpperCase();
-                }
-                admin.database().ref('PERRINNTeamServices/'+team+'/inputs').update({
-                  [variable]:valueString,
-                }).then(()=>{
-                  return;
-                });
-              }
-            } else {
-              clearCurrentProcess(team);
-              createMessage (team,"PERRINN","Bye.","","process","","");
-            }
-          }
-        }
-      }).catch(error=>{
-        console.log("error 123:"+error)
-      });
-    }
-  }
-}
-
-function performProcessStep(user,team) {
-  return admin.database().ref('/PERRINNTeamServices/'+team+'/currentProcess').once('value').then(currentProcess => {
-    admin.database().ref('appSettings/PERRINNServices/'+currentProcess.val().service+'/process/'+currentProcess.val().step).once('value').then(processStep => {
-      if (processStep.val().message) {
-        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
-          var text='';
-          if (processStep.child('message').child('listInputs').val()) {
-            inputs.forEach((input)=>{
-              text=text+input.key+':'+input.val()+', ';
-            });
-          }
-          text=text+processStep.child('message').val().text;
-          createMessage(
-            team,
-            processStep.child('message').val().user?processStep.child('message').val().user:"PERRINN",
-            text,
-            processStep.child('message').val().image?processStep.child('message').val().image:"",
-            processStep.child('message').val().action?processStep.child('message').val().action:"process",
-            processStep.child('message').val().linkTeam?processStep.child('message').val().linkTeam:"",
-            processStep.child('message').val().linkUser?processStep.child('message').val().linkUser:""
-          );
-        });
-      }
-      if (processStep.val().transaction) {
-        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
-          createTransaction (
-            inputs.val().amount,
-            team,
-            inputs.val().receiver,
-            user,
-            inputs.val().reference
-          );
-          clearCurrentProcess(team);
-        });
-      }
-      if (processStep.val().updateKeyValue) {
-        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
-          updateKeyValue (
-            user,
-            team,
-            processStep.child('updateKeyValue').val().ref,
-            processStep.child('updateKeyValue').val().key,
-            inputs.child(processStep.child('updateKeyValue').val().value).val()
-          );
-          clearCurrentProcess(team);
-        });
-      }
-      if (processStep.val().addListKeyValue) {
-        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
-          addListKeyValue (
-            user,
-            team,
-            processStep.child('addListKeyValue').val().ref,
-            processStep.child('addListKeyValue').val().list,
-            inputs.child(processStep.child('addListKeyValue').val().key).val(),
-            true,
-            processStep.child('addListKeyValue').val().maxCount
-          );
-          clearCurrentProcess(team);
-        });
-      }
-      if (processStep.val().createTeam) {
-        var newTeam = admin.database().ref('ids/').push(true).key;
-        admin.database().ref('PERRINNTeamServices/'+team+'/inputs').once('value').then(inputs => {
-          createTeam (
-            user,
-            newTeam,
-            inputs.child('name').val(),
-            inputs.child('photoURL').val()
-          );
-          clearCurrentProcess(team);
-        });
-      }
-    }).catch(error=>{
-      console.log("error 456:"+error);
-    });
+  return updateKeyValue (user,team,'PERRINNUsers/',"createdTimestamp",now).then(()=>{
+    updateKeyValue (user,team,'PERRINNUsers/',"firstName",firstName);
+    updateKeyValue (user,team,'PERRINNUsers/',"lastName",lastName);
+    updateKeyValue (user,team,'PERRINNUsers/',"photoURL",photoURL);
+    return user;
   });
 }
 
 function clearCurrentProcess(team){
-  return admin.database().ref('PERRINNTeamServices/'+team+'/inputs').remove().then(()=>{
-    return admin.database().ref('PERRINNTeamServices/'+team+'/currentProcess').update({
-      service:"",
-      step:0,
-      user:"",
-    }).then(()=>{
+  return admin.database().ref('teamServices/'+team+'/inputs').remove().then(()=>{
+    return admin.database().ref('teamServices/'+team+'/currentProcess').remove().then(()=>{
       return;
     });
   });
@@ -465,23 +322,103 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
     if(profile.photoURL) updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL);
     if(profile.addLeader) addListKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,true,2);
     if(profile.addMember) addListKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"members",profile.addMember,true,6);
-    if(profile.removeMember) removeListKey('PERRINNTeams/'+event.params.team,"members",profile.removeMember);
+    if(profile.removeMember) removeListKey("",event.params.team,'PERRINNTeams/'+event.params.team,"members",profile.removeMember);
   });
 });
 
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate(event => {
   const message = event.data.val();
-  admin.database().ref('appSettings/PERRINNServices/').once('value').then(services => {
-    services.forEach((service)=>{
-      scanService(service,message,event.params.team);
-    })
-  });
+  if (message.user!="PERRINN") {
+    createTransaction (
+      0.01,
+      event.params.team,
+      "-L6XIigvAphrJr5w2jbf",
+      "PERRINN",
+      "Message"
+    );
+  }
   admin.database().ref('PERRINNUsers/'+message.user).child('messageCount').transaction((messageCount)=>{
     if (messageCount==null) {
       return 1;
     } else {
       return messageCount+1;
     }
+  });
+});
+
+exports.processReadyForServer = functions.database.ref('/teamServices/{team}/currentProcess/readyForServer').onCreate(event => {
+  return admin.database().ref('/teamServices/'+event.params.team+'/currentProcess').once('value').then(currentProcess => {
+    admin.database().ref('appSettings/PERRINNServices/'+currentProcess.val().service+'/process/'+currentProcess.val().step).once('value').then(processStep => {
+      if (processStep.val().transaction) {
+        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
+          createTransaction (
+            inputs.val().amount,
+            event.params.team,
+            inputs.val().receiver,
+            currentProcess.val().user,
+            inputs.val().reference
+          ).then(()=>{
+            clearCurrentProcess(event.params.team);
+          });
+        });
+      }
+      if (processStep.val().updateKeyValue) {
+        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
+          updateKeyValue (
+            currentProcess.val().user,
+            event.params.team,
+            processStep.child('updateKeyValue').val().ref,
+            processStep.child('updateKeyValue').val().key,
+            inputs.child(processStep.child('updateKeyValue').val().value).val()
+          ).then(()=>{
+            clearCurrentProcess(event.params.team);
+          });
+        });
+      }
+      if (processStep.val().addListKeyValue) {
+        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
+          addListKeyValue (
+            currentProcess.val().user,
+            event.params.team,
+            processStep.child('addListKeyValue').val().ref,
+            processStep.child('addListKeyValue').val().list,
+            inputs.child(processStep.child('addListKeyValue').val().key).val(),
+            true,
+            processStep.child('addListKeyValue').val().maxCount
+          ).then(()=>{
+            clearCurrentProcess(event.params.team);
+          });
+        });
+      }
+      if (processStep.val().removeListKey) {
+        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
+          removeListKey (
+            currentProcess.val().user,
+            event.params.team,
+            processStep.child('removeListKey').val().ref,
+            processStep.child('removeListKey').val().list,
+            inputs.child(processStep.child('removeListKey').val().key).val()
+          ).then(()=>{
+            clearCurrentProcess(event.params.team);
+          });
+        });
+      }
+      if (processStep.val().createTeam) {
+        var newTeam = admin.database().ref('ids/').push(true).key;
+        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
+          createTeam (
+            currentProcess.val().user,
+            newTeam,
+            inputs.child('name').val(),
+            inputs.child('photoURL').val()
+          ).then(()=>{
+            clearCurrentProcess(event.params.team);
+          });
+        });
+      }
+    }).catch(error=>{
+      console.log("processReadyForServer:"+error);
+    });
   });
 });
 
@@ -503,7 +440,7 @@ exports.userLastNameUpdate = functions.database.ref('/PERRINNUsers/{user}/lastNa
 
 exports.userPhotoURLUpdate = functions.database.ref('/PERRINNUsers/{user}/photoURL').onUpdate(event => {
   admin.database().ref('PERRINNUsers/'+event.params.user).child('personalTeam').once('value').then((personalTeam)=>{
-    createMessage (personalTeam.val(),"PERRINN","Your photo is updated."+event.data.val(),"","confirmation","","");
+    createMessage (personalTeam.val(),"PERRINN","Your photo is updated.","","confirmation","","");
   });
 });
 

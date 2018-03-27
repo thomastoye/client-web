@@ -12,12 +12,11 @@ import { databaseService } from './database.service';
   template: `
   <div class="sheet" style="background-color:#f5f5f5">
   <div style="position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:left;background-color:#eff5ff;padding:5px" (click)="router.navigate(['chat',UI.currentTeam])">< Chat</div>
-  <div class="title" style="margin-top:30px">Chat commands</div>
+  <div class="title" style="margin-top:30px">What do you want to do?</div>
   <ul class="listLight">
     <li style="cursor:default" *ngFor="let service of services | async">
       <div style="padding:5px 10px 5px 10px">
-        <div style="float:left;width:250px;font-size:11px;font-weight:bold;color:blue;cursor:pointer" (click)="addMessage(service.command)">{{service.command}}</div>
-        <div style="float:left;width:250px;font-size:11px">{{service.description}}</div>
+        <div style="float:left;width:250px;font-size:11px;font-weight:bold;color:blue;cursor:pointer" (click)="addMessage(service.regex )">{{service.regex}}</div>
       </div>
       <div class="seperator"></div>
     </li>
@@ -32,7 +31,7 @@ export class HelpComponent {
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.services=db.list('appSettings/PERRINNServices', {
       query:{
-        orderByChild:'command',
+        orderByChild:'regex',
       }
     });
   }
@@ -53,6 +52,7 @@ export class HelpComponent {
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
     });
+    this.UI.processNewMessage(text);
     this.router.navigate(['chat',this.UI.currentTeam])
   }
 

@@ -19,18 +19,26 @@ import { databaseService } from './database.service';
   <div class="sheetBadge" style="position:relative;top:-115px">
   <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{DB.getTeamName(this.UI.currentTeam)}}</div>
   <div class="buttonDiv" *ngIf="!DB.getUserFollowing(UI.currentUser,UI.currentTeam)" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
+  <div style="width:50%;float:left">
   <ul class='listLight' style="display:inline-block;float:left">
-    <li class='userIcon' *ngFor="let user of teamLeaders | async" (click)="router.navigate(['user',user.$key])">
-      <img (error)="errorHandler($event)"[src]="DB.getUserPhotoURL(user.$key)" style="object-fit: cover; height:140px; width:140px">
-      <div style="margin:0 0 5px 15px;font-size:12px;line-height:15px;font-family:sans-serif;">{{DB.getUserFirstName(user.$key)}}*</div>
+    <li *ngFor="let user of teamLeaders|async;let first=first" (click)="router.navigate(['user',user.$key])">
+      <div *ngIf="first" style="color:#333;text-align:center;font-size:11px;padding:5px">Leaders</div>
+      <div *ngIf="!first" class="seperator"></div>
+      <img (error)="errorHandler($event)"[src]="DB.getUserPhotoURL(user.$key)" style="float:left;object-fit:cover;height:50px;width:50px;border-radius:3px;margin:5px 5px 5px 10px">
+      <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{DB.getUserFirstName(user.$key)}}</div>
     </li>
   </ul>
+  </div>
+  <div style="width:50%;float:right">
   <ul class='listLight' style="display:inline-block">
-    <li class='userIcon' *ngFor="let user of teamMembers | async" (click)="router.navigate(['user',user.$key])">
-      <img (error)="errorHandler($event)"[src]="DB.getUserPhotoURL(user.$key)" style="object-fit: cover; height:70px; width:70px">
-      <div style="margin:0 0 5px 15px;font-size:12px;line-height:15px;font-family:sans-serif;">{{DB.getUserFirstName(user.$key)}}{{DB.getUserFollowing(user.$key,UI.currentTeam)?"":" (NF)"}}</div>
+    <li *ngFor="let user of teamMembers|async;let first=first" (click)="router.navigate(['user',user.$key])">
+      <div *ngIf="first" style="color:#333;text-align:center;font-size:11px;padding:5px">Members</div>
+      <div *ngIf="!first" class="seperator"></div>
+      <img (error)="errorHandler($event)"[src]="DB.getUserPhotoURL(user.$key)" style="float:left;object-fit:cover;height:30px;width:30px;border-radius:3px;margin:5px 5px 5px 10px">
+      <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{DB.getUserFirstName(user.$key)}}{{DB.getUserFollowing(user.$key,UI.currentTeam)?"":" (NF)"}}</div>
     </li>
   </ul>
+  </div>
   </div>
   </div>
   </div>

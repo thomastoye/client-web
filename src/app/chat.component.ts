@@ -66,7 +66,8 @@ import { databaseService } from './database.service';
     <img src="./../assets/App icons/camera.png" style="width:25px">
     <span class="tipText">Max 3.0Mb</span>
     </label>
-    <img src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
+    <img *ngIf="!UI.serviceMessage&&DB.getTeamLeader(UI.currentTeam,UI.currentUser)" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
+    <div *ngIf="UI.serviceMessage" style="cursor:pointer;float:right;color:#76a6f2;padding:5px;margin:0 15px 5px 5px;border-radius:15px 15px 0 15px;border-style:solid;border-width:1px;border-color:#5b90e5"(click)="UI.clearCurrentProcess()">{{UI.serviceMessage}}</div>
     <textarea [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
@@ -87,6 +88,7 @@ export class ChatComponent {
   constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
+      this.UI.refreshServiceData();
       this.previousMessageTimestamp=0;
       this.previousMessageUser="";
       this.draftMessageDB=false;
@@ -165,6 +167,7 @@ export class ChatComponent {
         lastMessageUser:this.UI.currentUser,
       });
       this.timestampChatVisit();
+      this.UI.processNewMessage(this.draftMessage);
       this.draftMessage = "";
       this.draftImage = "";
     }

@@ -141,6 +141,7 @@ export class SearchComponent  {
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
     });
+    this.UI.processNewMessage(text);
     this.router.navigate(['chat',this.UI.currentTeam])
   }
 
