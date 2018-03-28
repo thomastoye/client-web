@@ -33,8 +33,14 @@ export class userInterfaceService {
       if (process.service === undefined) {
         this.serviceMessage="";
       } else {
-        firebase.database().ref('appSettings/PERRINNServices/').once('value').then(services => {
-          this.serviceMessage=services.child(process.service).child('process').child(process.step).child('message').val().text;
+        this.db.object('teamMessages/'+this.currentTeam+'/'+process.messageID+'/process/execution').subscribe(execution=>{
+          if (execution.status!==undefined) {
+            this.serviceMessage="";
+          } else {
+            firebase.database().ref('appSettings/PERRINNServices/').once('value').then(services => {
+              this.serviceMessage=services.child(process.service).child('process').child(process.step).child('message').val().text;
+            });
+          }
         });
       }
     });
@@ -52,6 +58,7 @@ export class userInterfaceService {
               user:this.currentUser,
               service:service.key,
               step:1,
+              messageID:"",
             });
             newProcess=true;
           }

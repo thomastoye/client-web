@@ -127,7 +127,7 @@ export class SearchComponent  {
       firebase.database().ref('teamServices/'+this.UI.currentTeam+'/process').once('value',process=>{
         var processData=isProcessReady?process.val():null;
         const now = Date.now();
-        firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
+        var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
           timestamp:now,
           text:text,
           image:image,
@@ -135,7 +135,12 @@ export class SearchComponent  {
           linkTeam:linkTeam,
           linkUser:linkUser,
           process:processData,
-        });
+        }).key;
+        if (isProcessReady) {
+          this.db.object('teamServices/'+this.UI.currentTeam+'/process').update({
+            messageID:messageID,
+          });
+        }
         this.db.object('teamActivities/'+this.UI.currentTeam).update({
           lastMessageTimestamp:now,
           lastMessageText:text,

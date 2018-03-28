@@ -36,14 +36,17 @@ import { databaseService } from './database.service';
         <img *ngIf="message.action=='process'" src="./../assets/App icons/process.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
         <img *ngIf="message.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
         <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-        <div *ngIf="!message.image" style="color:#404040;padding: 0 50px 10px 0" [innerHTML]="message.text | linky"></div>
+        <div *ngIf="!message.image" style="float:left;color:#404040;padding:5px" [innerHTML]="message.text | linky"></div>
         <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin: 0 5px 10px 50px" (click)="router.navigate(['chat',message.linkTeam])">
           <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
           <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
         </div>
-        <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin: 0 5px 10px 50px" (click)="router.navigate(['user',message.linkUser])">
+        <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.linkUser])">
           <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px">
           <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
+        </div>
+        <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
+          <div *ngIf="message.process.execution!==undefined" style="font-size:11px;line-height:normal">{{message.process.execution.result}}</div>
         </div>
         <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0" (click)="showFullScreenImage(message.image)">
       </div>
@@ -157,14 +160,19 @@ export class ChatComponent {
         firebase.database().ref('teamServices/'+this.UI.currentTeam+'/process').once('value',process=>{
           var processData=isProcessReady?process.val():null;
           const now = Date.now();
-          firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
+          var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
             timestamp:now,
             text:this.draftMessage,
             image:this.draftImage,
             user:this.UI.currentUser,
             action:"chat",
             process:processData,
-          });
+          }).key;
+          if (isProcessReady) {
+            this.db.object('teamServices/'+this.UI.currentTeam+'/process').update({
+              messageID:messageID,
+            });
+          }
           this.db.object('teamActivities/'+this.UI.currentTeam).update({
             lastMessageTimestamp:now,
             lastMessageText:this.draftMessage,
