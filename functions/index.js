@@ -374,10 +374,7 @@ exports.newProcess = functions.database.ref('/teamMessages/{team}/{message}/proc
       result="";
     }
     event.data.adminRef.update({
-      execution:{
-        status:'done',
-        result:result
-      }
+      result:result,
     });
   });
 });

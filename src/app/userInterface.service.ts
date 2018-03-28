@@ -33,8 +33,8 @@ export class userInterfaceService {
       if (process.service === undefined) {
         this.serviceMessage="";
       } else {
-        this.db.object('teamMessages/'+this.currentTeam+'/'+process.messageID+'/process/execution').subscribe(execution=>{
-          if (execution.status!==undefined) {
+        this.db.object('teamMessages/'+this.currentTeam+'/'+process.messageID+'/process').subscribe(process=>{
+          if (process.result!==undefined) {
             this.serviceMessage="";
           } else {
             firebase.database().ref('appSettings/PERRINNServices/').once('value').then(services => {
