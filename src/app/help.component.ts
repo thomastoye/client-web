@@ -37,23 +37,28 @@ export class HelpComponent {
   }
 
   addMessage(text) {
-    const now = Date.now();
-    this.db.list('teamMessages/'+this.UI.currentTeam).push({
-      timestamp:now,
-      text:text,
-      user:this.UI.currentUser,
+    this.UI.processNewMessage(text).then(isProcessReady=>{
+      firebase.database().ref('teamServices/'+this.UI.currentTeam+'/process').once('value',process=>{
+        var processData=isProcessReady?process.val():null;
+        const now = Date.now();
+        firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
+          timestamp:now,
+          text:text,
+          user:this.UI.currentUser,
+          process:processData,
+        });
+        this.db.object('teamActivities/'+this.UI.currentTeam).update({
+          lastMessageTimestamp:now,
+          lastMessageText:text,
+          lastMessageUser:this.UI.currentUser,
+        });
+        this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
+          lastChatVisitTimestamp:now,
+          lastChatVisitTimestampNegative:-1*now,
+        });
+        this.router.navigate(['chat',this.UI.currentTeam])
+      });
     });
-    this.db.object('teamActivities/'+this.UI.currentTeam).update({
-      lastMessageTimestamp:now,
-      lastMessageText:text,
-      lastMessageUser:this.UI.currentUser,
-    });
-    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
-      lastChatVisitTimestamp:now,
-      lastChatVisitTimestampNegative:-1*now,
-    });
-    this.UI.processNewMessage(text);
-    this.router.navigate(['chat',this.UI.currentTeam])
   }
 
 }

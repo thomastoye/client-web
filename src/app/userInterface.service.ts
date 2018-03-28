@@ -28,33 +28,27 @@ export class userInterfaceService {
     });
   }
 
-  refreshServiceData(){
-    firebase.database().ref('appSettings/PERRINNServices/').once('value').then(services => {
-      services;
-      this.db.object('teamServices/'+this.currentTeam+'/currentProcess').subscribe(currentProcess=>{
-        currentProcess;
-        if (currentProcess.service === undefined) {
-          this.serviceMessage="";
-        } else {
-          this.serviceMessage=services.child(currentProcess.service).child('process').child(currentProcess.step).child('message').val().text;
-          if (currentProcess.step>0&&!services.child(currentProcess.service).child('process').child(currentProcess.step+1).val()){
-            firebase.database().ref('teamServices/'+this.currentTeam+'/currentProcess').update({
-              readyForServer:true,
-            });
-          }
-        }
-      });
+  refreshServiceMessage(){
+    this.db.object('teamServices/'+this.currentTeam+'/process').subscribe(process=>{
+      if (process.service === undefined) {
+        this.serviceMessage="";
+      } else {
+        firebase.database().ref('appSettings/PERRINNServices/').once('value').then(services => {
+          this.serviceMessage=services.child(process.service).child('process').child(process.step).child('message').val().text;
+        });
+      }
     });
   }
 
   processNewMessage(text){
     var newProcess=false;
+    var isProcessReady=false;
     return firebase.database().ref('appSettings/PERRINNServices/').once('value').then(services => {
       services.forEach((service)=>{
         var serviceRegex = new RegExp(service.val().regex,"i");
         if (text.match(serviceRegex)) {
           if (service.val().process) {
-            firebase.database().ref('teamServices/'+this.currentTeam+'/currentProcess').update({
+            firebase.database().ref('teamServices/'+this.currentTeam+'/process').update({
               user:this.currentUser,
               service:service.key,
               step:1,
@@ -64,42 +58,53 @@ export class userInterfaceService {
         }
       });
       if (newProcess) {
-        return;
+        return isProcessReady;
       }
       services.forEach((service)=>{
-        firebase.database().ref('teamServices/'+this.currentTeam+'/currentProcess').once('value').then(currentProcess => {
-          if (service.key==currentProcess.val().service) {
-            if (service.child('process').child(currentProcess.val().step).val().input) {
-              var inputRegex = new RegExp(service.child('process').child(currentProcess.val().step).child('input').val().regex,"i");
+        firebase.database().ref('teamServices/'+this.currentTeam+'/process').once('value').then(process => {
+          if (service.key==process.val().service) {
+            if (service.child('process').child(process.val().step).val().input) {
+              var inputRegex = new RegExp(service.child('process').child(process.val().step).child('input').val().regex,"i");
               var value=text.match(inputRegex);
               if (value) {
-                firebase.database().ref('teamServices/'+this.currentTeam+'/currentProcess').child('step').transaction((step)=>{
+                firebase.database().ref('teamServices/'+this.currentTeam+'/process').child('step').transaction((step)=>{
                   return step+1;
                 });
-                var variable=service.child('process').child(currentProcess.val().step).child('input').val().variable;
+                var variable=service.child('process').child(process.val().step).child('input').val().variable;
                 if (variable) {
                   var valueString=value[0];
-                  if (service.child('process').child(currentProcess.val().step).child('input').val().toLowerCase) {
+                  if (service.child('process').child(process.val().step).child('input').val().toLowerCase) {
                     valueString=valueString.toLowerCase();
                   }
-                  if (service.child('process').child(currentProcess.val().step).child('input').val().toUpperCase) {
+                  if (service.child('process').child(process.val().step).child('input').val().toUpperCase) {
                     valueString=valueString.toUpperCase();
                   }
-                  this.db.object('teamServices/'+this.currentTeam+'/inputs').update({
+                  this.db.object('teamServices/'+this.currentTeam+'/process/inputs').update({
                     [variable]:valueString,
                   });
                 }
+                if (!service.child('process').child(process.val().step+1).child('input').val()){
+                  isProcessReady=true;
+                  return isProcessReady;
+                } else {
+                  return isProcessReady;
+                }
               } else {
-                this.clearCurrentProcess();
+                this.clearProcessData();
+                return isProcessReady;
               }
             }
           }
+        }).catch(error=>{
+          console.log("cannot read service");
         });
       });
+    }).then(()=>{
+      return isProcessReady;
     });
   }
 
-  clearCurrentProcess(){
+  clearProcessData(){
     firebase.database().ref('teamServices/'+this.currentTeam).remove();
   }
 

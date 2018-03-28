@@ -241,11 +241,73 @@ function createUser(user,team,firstName,lastName,photoURL) {
   });
 }
 
-function clearCurrentProcess(team){
-  return admin.database().ref('teamServices/'+team+'/inputs').remove().then(()=>{
-    return admin.database().ref('teamServices/'+team+'/currentProcess').remove().then(()=>{
-      return;
-    });
+function clearProcessData(team){
+  return admin.database().ref('teamServices/'+team+'/process').remove().then(()=>{
+    return;
+  });
+}
+
+function executeMessageProcess(team,message){
+  admin.database().ref('appSettings/PERRINNServices/'+message.process.service+'/process/'+message.process.step).once('value').then(processStep => {
+    if (processStep.val().transaction) {
+      createTransaction (
+        message.process.inputs.amount,
+        team,
+        message.process.inputs.receiver,
+        message.process.user,
+        message.process.inputs.reference
+      ).then(()=>{
+        clearProcessData(team);
+      });
+    }
+    if (processStep.val().updateKeyValue) {
+      updateKeyValue (
+        message.process.user,
+        team,
+        processStep.child('updateKeyValue').val().ref,
+        processStep.child('updateKeyValue').val().key,
+        message.process.inputs[processStep.child('updateKeyValue').val().value]
+      ).then(()=>{
+        clearProcessData(team);
+      });
+    }
+    if (processStep.val().addListKeyValue) {
+      addListKeyValue (
+        message.process.user,
+        team,
+        processStep.child('addListKeyValue').val().ref,
+        processStep.child('addListKeyValue').val().list,
+        message.process.inputs[processStep.child('addListKeyValue').val().key],
+        true,
+        processStep.child('addListKeyValue').val().maxCount
+      ).then(()=>{
+        clearProcessData(team);
+      });
+    }
+    if (processStep.val().removeListKey) {
+      removeListKey (
+        message.process.user,
+        team,
+        processStep.child('removeListKey').val().ref,
+        processStep.child('removeListKey').val().list,
+        message.process.inputs[processStep.child('removeListKey').val().key]
+      ).then(()=>{
+        clearProcessData(team);
+      });
+    }
+    if (processStep.val().createTeam) {
+      var newTeam = admin.database().ref('ids/').push(true).key;
+      createTeam (
+        message.process.user,
+        newTeam,
+        message.process.inputs.name,
+        message.process.inputs.photoURL
+      ).then(()=>{
+        clearProcessData(team);
+      });
+    }
+  }).catch(error=>{
+    console.log("executeMessageProcess:"+error);
   });
 }
 
@@ -328,6 +390,9 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
 
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate(event => {
   const message = event.data.val();
+  if (message.process) {
+    executeMessageProcess(event.params.team,message);
+  }
   if (message.user!="PERRINN") {
     createTransaction (
       0.01,
@@ -343,82 +408,6 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
     } else {
       return messageCount+1;
     }
-  });
-});
-
-exports.processReadyForServer = functions.database.ref('/teamServices/{team}/currentProcess/readyForServer').onCreate(event => {
-  return admin.database().ref('/teamServices/'+event.params.team+'/currentProcess').once('value').then(currentProcess => {
-    admin.database().ref('appSettings/PERRINNServices/'+currentProcess.val().service+'/process/'+currentProcess.val().step).once('value').then(processStep => {
-      if (processStep.val().transaction) {
-        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
-          createTransaction (
-            inputs.val().amount,
-            event.params.team,
-            inputs.val().receiver,
-            currentProcess.val().user,
-            inputs.val().reference
-          ).then(()=>{
-            clearCurrentProcess(event.params.team);
-          });
-        });
-      }
-      if (processStep.val().updateKeyValue) {
-        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
-          updateKeyValue (
-            currentProcess.val().user,
-            event.params.team,
-            processStep.child('updateKeyValue').val().ref,
-            processStep.child('updateKeyValue').val().key,
-            inputs.child(processStep.child('updateKeyValue').val().value).val()
-          ).then(()=>{
-            clearCurrentProcess(event.params.team);
-          });
-        });
-      }
-      if (processStep.val().addListKeyValue) {
-        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
-          addListKeyValue (
-            currentProcess.val().user,
-            event.params.team,
-            processStep.child('addListKeyValue').val().ref,
-            processStep.child('addListKeyValue').val().list,
-            inputs.child(processStep.child('addListKeyValue').val().key).val(),
-            true,
-            processStep.child('addListKeyValue').val().maxCount
-          ).then(()=>{
-            clearCurrentProcess(event.params.team);
-          });
-        });
-      }
-      if (processStep.val().removeListKey) {
-        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
-          removeListKey (
-            currentProcess.val().user,
-            event.params.team,
-            processStep.child('removeListKey').val().ref,
-            processStep.child('removeListKey').val().list,
-            inputs.child(processStep.child('removeListKey').val().key).val()
-          ).then(()=>{
-            clearCurrentProcess(event.params.team);
-          });
-        });
-      }
-      if (processStep.val().createTeam) {
-        var newTeam = admin.database().ref('ids/').push(true).key;
-        admin.database().ref('teamServices/'+event.params.team+'/inputs').once('value').then(inputs => {
-          createTeam (
-            currentProcess.val().user,
-            newTeam,
-            inputs.child('name').val(),
-            inputs.child('photoURL').val()
-          ).then(()=>{
-            clearCurrentProcess(event.params.team);
-          });
-        });
-      }
-    }).catch(error=>{
-      console.log("processReadyForServer:"+error);
-    });
   });
 });
 
