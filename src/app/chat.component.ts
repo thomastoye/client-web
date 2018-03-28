@@ -46,7 +46,7 @@ import { databaseService } from './database.service';
           <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
         </div>
         <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
-          <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{message.process.result}}</div>
+          <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{DB.getServiceRegex(message.process.service)}}: {{message.process.result}}</div>
         </div>
         <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0" (click)="showFullScreenImage(message.image)">
       </div>
@@ -71,7 +71,7 @@ import { databaseService } from './database.service';
     </label>
     <img *ngIf="!UI.serviceMessage&&DB.getTeamLeader(UI.currentTeam,UI.currentUser)" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
     <div *ngIf="UI.serviceMessage" style="cursor:pointer;float:right;color:#76a6f2;padding:5px;margin:0 15px 5px 5px;border-radius:15px 15px 0 15px;border-style:solid;border-width:1px;border-color:#5b90e5"(click)="UI.clearProcessData()">{{UI.serviceMessage}}</div>
-    <textarea [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
+    <textarea id="inputMessage" [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
   </div>
   </div>
     `,
@@ -107,6 +107,10 @@ export class ChatComponent {
         this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
       });
     });
+  }
+
+  ngAfterContentInit () {
+    document.getElementById("inputMessage").focus();
   }
 
   showFullScreenImage(src){

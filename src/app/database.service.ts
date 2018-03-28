@@ -130,4 +130,9 @@ export class databaseService {
     this.db.object('appSettings/').subscribe(snapshot=>{output=snapshot.PERRINNGlobalMessage});
     return output;
   }
+  getServiceRegex(ID:string):string{
+    var output;
+    this.db.object('appSettings/PERRINNServices/'+ID).subscribe(snapshot=>{output=snapshot.regex});
+    return output;
+  }
 }
