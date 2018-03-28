@@ -10,7 +10,7 @@ import { databaseService } from './database.service';
 @Component({
   selector: 'chat',
   template: `
-  <div class="sheet">
+  <div class="sheet" style="background-color:#ede3e3">
   <div class="chat" id="chat-scroll">
   <div style="float:right;width:100px;text-align:center">
   <div style="font-size:12px;position:fixed;color:blue;cursor:pointer;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">C{{DB.getTeamBalance(UI.currentTeam)|number:'1.2-2'}} ></div>
@@ -18,38 +18,36 @@ import { databaseService } from './database.service';
   <div>
   <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
-    <li *ngFor="let message of teamMessages | async;let first=first;let last=last"
-      (click)="timestampChatVisit()"
-      style="cursor:pointer">
-      <div class="newDay" *ngIf="isMessageNewTimeGroup(message.timestamp)||first">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
-      <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="width:100%;height:10px"></div>
-      <div style="margin:0 10px 0 7px;border-width:0 0 0 3px;border-style:solid" [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'||message.action=='add'?'#e6efe6':message.action=='warning'||message.action=='remove'?'#efeac6':''">
-      <div style="float:left;width:60px;min-height:10px">
-        <img (error)="errorHandler($event)" *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
-      </div>
-      <div>
-        <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin-right:10px">{{DB.getUserFirstName(message.user)}}</div>
-        <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
-        <img *ngIf="message.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-        <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-        <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-        <img *ngIf="message.action=='process'" src="./../assets/App icons/process.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-        <img *ngIf="message.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-        <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-        <div *ngIf="!message.image" style="float:left;color:#404040;padding:5px" [innerHTML]="message.text | linky"></div>
-        <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin: 0 5px 10px 50px" (click)="router.navigate(['chat',message.linkTeam])">
-          <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
-          <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
+    <li *ngFor="let message of teamMessages | async;let first=first;let last=last">
+      <div *ngIf="isMessageNewTimeGroup(message.timestamp)||first" style="text-align:center;padding:25px 15px 15px 15px;color:#777">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
+      <div style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-width:0 0 0 3px;border-style:solid;border-radius:7px" [style.margin]="isMessageNewUserGroup(message.user,message.timestamp)||first?'15px 25px 0 10px':'2px 25px 0 70px'"
+      [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'||message.action=='add'?'#e6efe6':message.action=='warning'||message.action=='remove'?'#efeac6':'white'" (click)="timestampChatVisit()">
+        <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="float:left;width:60px;min-height:10px">
+          <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
         </div>
-        <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.linkUser])">
-          <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px">
-          <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
+        <div>
+          <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin-right:10px">{{DB.getUserFirstName(message.user)}}</div>
+          <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
+          <img *ngIf="message.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+          <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+          <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+          <img *ngIf="message.action=='process'" src="./../assets/App icons/process.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+          <img *ngIf="message.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+          <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+          <div *ngIf="!message.image" style="float:left;color:#404040;margin:5px" [innerHTML]="message.text | linky"></div>
+          <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['chat',message.linkTeam])">
+            <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
+            <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
+          </div>
+          <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.linkUser])">
+            <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px">
+            <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
+          </div>
+          <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
+            <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{DB.getServiceRegex(message.process.service)}}: {{message.process.result}}</div>
+          </div>
+          <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:both;width:95%;max-height:250px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.image)">
         </div>
-        <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
-          <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{DB.getServiceRegex(message.process.service)}}: {{message.process.result}}</div>
-        </div>
-        <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:left;width:100%;max-height:350px;object-fit:contain;padding: 0 0 10px 0" (click)="showFullScreenImage(message.image)">
-      </div>
       </div>
       {{storeMessageValues(message.user,message.timestamp)}}
       {{last?scrollToBottom(message.timestamp):''}}
@@ -58,20 +56,23 @@ import { databaseService } from './database.service';
   <div style="height:125px;width:100%"></div>
   </div>
   </div>
-  <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none">
+  <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none;background-color:#ededed">
     <ul style="list-style:none;float:left;">
       <li *ngFor="let user of draftMessageUsers | async">
       <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{DB.getUserFirstName(user.$key)}}...</div>
       </li>
     </ul>
-    <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-    <label class="buttonUploadImage" *ngIf='DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser)' for="chatImage" id="buttonFile" style="float:right;padding:5px 35px 5px 0px;">
-    <img src="./../assets/App icons/camera.png" style="width:25px">
-    <span class="tipText">Max 3.0Mb</span>
-    </label>
     <img *ngIf="!UI.serviceMessage&&DB.getTeamLeader(UI.currentTeam,UI.currentUser)" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
-    <div *ngIf="UI.serviceMessage" style="cursor:pointer;float:right;color:#76a6f2;padding:5px;margin:0 15px 5px 5px;border-radius:15px 15px 0 15px;border-style:solid;border-width:1px;border-color:#5b90e5"(click)="UI.clearProcessData()">{{UI.serviceMessage}}</div>
-    <textarea id="inputMessage" [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' class="textAreaChat" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
+    <div *ngIf="UI.serviceMessage" style="cursor:pointer;float:right;color:#192368;padding:3px;margin:5px;border-radius:15px 15px 0 15px;border-style:solid;border-width:1px;border-color:#5b90e5"(click)="UI.clearProcessData()">{{UI.serviceMessage}}</div>
+    <div style="clear:both;float:left;width:90%">
+      <textarea id="inputMessage" [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
+    </div>
+    <div style="float:right;width:10%">
+      <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+      <label class="buttonUploadImage" *ngIf='DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser)' for="chatImage" id="buttonFile">
+      <img src="./../assets/App icons/camera.png" style="width:25px;margin:20px 5px 5px 5px">
+      </label>
+    </div>
   </div>
   </div>
     `,
@@ -107,10 +108,6 @@ export class ChatComponent {
         this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
       });
     });
-  }
-
-  ngAfterContentInit () {
-    document.getElementById("inputMessage").focus();
   }
 
   showFullScreenImage(src){

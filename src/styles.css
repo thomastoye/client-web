@@ -89,12 +89,6 @@ body {
   margin: 10px;
   user-select: none;
 }
-.chat .newDay{
-  text-align: center;
-  padding: 25px 15px 15px 15px;
-  color: #777;
-  text-decoration: underline;
-}
 .listLight {
   color: #666;
   list-style-type: none;
@@ -178,26 +172,6 @@ input {
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
   border-radius: 4px;
-}
-.textAreaChat {
-  width: 90%;
-  border-style: solid;
-  border-width: thin;
-  padding: 9px;
-  margin: 5px 10px 5px 10px;
-  border-radius: 4px;
-  resize: none;
-  overflow-y: scroll;
-}
-.textAreaAdvert {
-  width: 90%;
-  border-style: none;
-  padding: 9px;
-  resize: none;
-  overflow-y: scroll;
-  color: #201c5b;
-  background-color: #d3e8d4;
-  border-radius: 0px;
 }
 .textAreaInput {
   resize: none;
@@ -335,16 +309,6 @@ progress::-webkit-progress-bar {
 }
 progress::-webkit-progress-value {
   background-color: #4e86e0 !important;
-}
-.buttonUploadImage:hover .tipText {
-  visibility: visible;
-}
-.tipText {
-  visibility: hidden;
-  text-align: center;
-  color: white;
-  background-color: #666;
-  padding: 5px;
 }
 .fullScreenImage {
   z-index: 99999999999;
