@@ -1,5 +1,9 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
+# private keys
+perrinn-d5fc1-firebase-adminsdk-rh8x2-b26a8ffeef.json
+app.module.ts
+
 # compiled output
 /dist
 /tmp
