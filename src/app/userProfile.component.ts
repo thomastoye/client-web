@@ -17,7 +17,7 @@ import { databaseService } from './database.service';
   <div style="color:#888;font-size:11px;padding:0 5px 5px 10px;clear:both">Joined {{DB.getUserCreatedTimestamp(UI.focusUser)|date:'MMMM yyyy'}}, {{DB.getUserMessageCount(UI.focusUser)==null?0:DB.getUserMessageCount(UI.focusUser)}} Messages</div>
   </div>
   <div style="float:right;width:20%;position:relative">
-  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(DB.getUserPhotoURL(UI.focusUser))">
+  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoThumb(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(DB.getUserPhotoOriginal(UI.focusUser))">
   </div>
   </div>
   <div class='sheet' style="margin-top:5px">
@@ -26,7 +26,7 @@ import { databaseService } from './database.service';
       (click)="router.navigate(['chat',team.$key])">
       <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
       <div style="float:left">
-        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
+        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoThumb(team.$key)" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
       </div>
       <div>
         <div *ngIf="DB.getUserPersonalTeam(UI.focusUser)==team.$key" style="float:left;margin:15px 5px 0 0;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>

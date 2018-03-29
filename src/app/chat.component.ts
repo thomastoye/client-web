@@ -23,7 +23,7 @@ import { databaseService } from './database.service';
       <div style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-width:0 0 0 3px;border-style:solid;border-radius:7px" [style.margin]="isMessageNewUserGroup(message.user,message.timestamp)||first?'15px 25px 0 10px':'2px 25px 0 70px'"
       [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'||message.action=='add'?'#e6efe6':message.action=='warning'||message.action=='remove'?'#efeac6':'white'" (click)="timestampChatVisit()">
         <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="float:left;width:60px;min-height:10px">
-          <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
+          <img (error)="errorHandler($event)" [src]="DB.getUserPhotoThumb(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
         </div>
         <div>
           <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin-right:10px">{{DB.getUserFirstName(message.user)}}</div>
@@ -36,17 +36,17 @@ import { databaseService } from './database.service';
           <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <div *ngIf="!message.image" style="float:left;color:#404040;margin:5px" [innerHTML]="message.text | linky"></div>
           <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['chat',message.linkTeam])">
-            <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
+            <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoThumb(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
             <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
           </div>
           <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.linkUser])">
-            <img (error)="errorHandler($event)" [src]="DB.getUserPhotoURL(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px">
+            <img (error)="errorHandler($event)" [src]="DB.getUserPhotoThumb(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px">
             <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
           </div>
           <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
             <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{DB.getServiceRegex(message.process.service)}}: {{message.process.result}}</div>
           </div>
-          <img class="imageWithZoom" *ngIf="message.image" [src]="message.image" style="clear:both;width:95%;max-height:250px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.image)">
+          <img class="imageWithZoom" *ngIf="message.image" [src]="DB.getMessageImageThumb(message.image)" style="clear:both;width:95%;max-height:250px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(DB.getMessageImageOriginal(message.image))">
         </div>
       </div>
       {{storeMessageValues(message.user,message.timestamp)}}
@@ -63,7 +63,7 @@ import { databaseService } from './database.service';
       </li>
     </ul>
     <img *ngIf="!UI.serviceMessage&&DB.getTeamLeader(UI.currentTeam,UI.currentUser)" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
-    <div *ngIf="UI.serviceMessage" style="cursor:pointer;float:right;color:#192368;padding:3px;margin:5px;border-radius:15px 15px 0 15px;border-style:solid;border-width:1px;border-color:#5b90e5"(click)="UI.clearProcessData()">{{UI.serviceMessage}}</div>
+    <div *ngIf="UI.serviceMessage" style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-radius:7px 7px 0 7px;background-color:white;float:right;color:#192368;padding:3px;margin:5px"(click)="UI.clearProcessData()">{{UI.serviceMessage}}</div>
     <div style="clear:both;float:left;width:90%">
       <textarea id="inputMessage" [hidden]='!(DB.getTeamLeader(UI.currentTeam,UI.currentUser)||DB.getTeamMember(UI.currentTeam,UI.currentUser))' style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
     </div>
@@ -219,8 +219,8 @@ export class ChatComponent {
         uploader.value='0';
         document.getElementById('buttonFile').style.visibility = "visible";
         document.getElementById('uploader').style.visibility = "hidden";
-        this.draftMessage=task.snapshot.downloadURL;
-        this.draftImage=task.snapshot.downloadURL;
+        this.draftMessage=task.snapshot.ref.name.substring(0,13);
+        this.draftImage=task.snapshot.ref.name.substring(0,13);
         this.addMessage();
       }
     );

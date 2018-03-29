@@ -18,7 +18,7 @@ import { databaseService } from './database.service';
       [class.selected]="team.$key === UI.currentTeam">
       <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
       <div style="width:300px;float:left">
-      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:20px;width:30px;border-radius:3px">
+      <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoThumb(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:20px;width:30px;border-radius:3px">
       <div style="float:left;margin-top:10px;color:#222">{{DB.getTeamName(team.$key)}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>
       </div>
       <div style="width:100px;height:30px;float:left">

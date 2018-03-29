@@ -20,9 +20,32 @@ export class databaseService {
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.lastName});
     return output;
   }
-  getUserPhotoURL(ID:string):string{
+  getUserPhotoOriginal(ID:string):string{
     var output;
-    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.photoURL});
+    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
+      output=snapshot.photoURL;
+      if (output!==undefined) {
+        if (output.indexOf('.')===-1) {
+          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+            output=snapshot.original;
+          });
+        }
+      }
+    });
+    return output;
+  }
+  getUserPhotoThumb(ID:string):string{
+    var output;
+    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
+      output=snapshot.photoURL;
+      if (output!==undefined) {
+        if (output.indexOf('.')===-1) {
+          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+            output=snapshot.thumb;
+          });
+        }
+      }
+    });
     return output;
   }
   getUserCreatedTimestamp(ID:string):string{
@@ -50,9 +73,32 @@ export class databaseService {
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{output=snapshot.name});
     return output;
   }
-  getTeamPhotoURL(ID:string):string{
+  getTeamPhotoOriginal(ID:string):string{
     var output;
-    this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{output=snapshot.photoURL});
+    this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
+      output=snapshot.photoURL;
+      if (output!==undefined) {
+        if (output.indexOf('.')===-1) {
+          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+            output=snapshot.original;
+          });
+        }
+      }
+    });
+    return output;
+  }
+  getTeamPhotoThumb(ID:string):string{
+    var output;
+    this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
+      output=snapshot.photoURL;
+      if (output!==undefined) {
+        if (output.indexOf('.')===-1) {
+          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+            output=snapshot.thumb;
+          });
+        }
+      }
+    });
     return output;
   }
   getTeamLeader(teamID:string,userID:string):boolean{
@@ -110,9 +156,32 @@ export class databaseService {
     this.db.object('projects/'+ID).subscribe(snapshot=>{output=snapshot.name});
     return output;
   }
-  getProjectPhotoURL(ID:string):string{
+  getProjectPhotoOriginal(ID:string):string{
     var output;
-    this.db.object('projects/'+ID).subscribe(snapshot=>{output=snapshot.photoURL});
+    this.db.object('projects/'+ID).subscribe(snapshot=>{
+      output=snapshot.photoURL;
+      if (output!==undefined) {
+        if (output.indexOf('.')===-1) {
+          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+            output=snapshot.original;
+          });
+        }
+      }
+    });
+    return output;
+  }
+  getProjectPhotoThumb(ID:string):string{
+    var output;
+    this.db.object('projects/'+ID).subscribe(snapshot=>{
+      output=snapshot.photoURL;
+      if (output!==undefined) {
+        if (output.indexOf('.')===-1) {
+          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+            output=snapshot.thumb;
+          });
+        }
+      }
+    });
     return output;
   }
   getProjectGoal(ID:string):string{
@@ -133,6 +202,24 @@ export class databaseService {
   getServiceRegex(ID:string):string{
     var output;
     this.db.object('appSettings/PERRINNServices/'+ID).subscribe(snapshot=>{output=snapshot.regex});
+    return output;
+  }
+  getMessageImageOriginal(ID:string):string{
+    var output;
+    if (ID.indexOf('.')!==-1) {
+      output=ID;
+    } else {
+      this.db.object('PERRINNImages/'+ID).subscribe(snapshot=>{output=snapshot.original});
+    }
+    return output;
+  }
+  getMessageImageThumb(ID:string):string{
+    var output;
+    if (ID.indexOf('.')!==-1) {
+      output=ID;
+    } else {
+      this.db.object('PERRINNImages/'+ID).subscribe(snapshot=>{output=snapshot.thumb});
+    }
     return output;
   }
 }

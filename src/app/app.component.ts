@@ -21,7 +21,7 @@ import { databaseService } from './database.service';
     </div>
     <div style="text-align:center;width:200px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
         <div *ngIf="UI.currentTeam" style="height:40px">
-        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoURL(UI.currentTeam)" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:200px;border-radius:3px">
+        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoThumb(UI.currentTeam)" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:200px;border-radius:3px">
         <div style="position:absolute;width:200px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{DB.getTeamName(UI.currentTeam)}}{{(DB.getTeamLeader(UI.currentTeam,UI.currentUser)?" *":"")}}</div>
         </div>
     </div>
