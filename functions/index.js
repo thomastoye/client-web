@@ -495,3 +495,62 @@ exports.processImage = functions.storage.object().onChange(event=>{
     });
   });
 });
+
+exports.loopPhotoURL = functions.database.ref('tot').onCreate(event => {
+  return admin.database().ref('PERRINNTeams/-L7jqFf8OuGlZrfEK6dT').once('value').then(team=>{
+    const photoURL=team.val().photoURL;
+    const image=photoURL.split('/').pop().substring(9,22);
+    if (image.match(/\d{13}/)===-1){
+      return;
+    }
+    admin.database().ref('PERRINNTeams/'+team.key).update({
+      image:image,
+    });
+    const fileName=photoURL.split('/').pop().substring(9).split('?')[0].replace('%',' ');
+    const filePath='images/'+fileName;
+    const fileBucket=functions.config().firebase.storageBucket;
+    const bucket=gcs.bucket(fileBucket);
+    const object=bucket.file(filePath);
+    const tempFilePath=`/tmp/${fileName}`;
+    const ref=admin.database().ref();
+    const file=bucket.file(filePath);
+    const thumbFilePath=filePath.replace(/(\/)?([^\/]*)$/,'$1thumb_$2');
+    if (fileName.startsWith('thumb_')){
+      return;
+    }
+    if (!object.contentType.startsWith('image/')){
+      return;
+    }
+    if (object.resourceState==='not_exists'){
+      return;
+    }
+    return bucket.file(filePath).download({
+      destination:tempFilePath,
+    }).then(()=>{
+      return spawn('convert',[tempFilePath,'-thumbnail','500x500>',tempFilePath]);
+    }).then(()=>{
+      return bucket.upload(tempFilePath,{
+        destination:thumbFilePath,
+      });
+    }).then(()=>{
+      const thumbFile=bucket.file(thumbFilePath);
+      const config={
+        action:'read',
+        expires:'01-01-2501'
+      };
+      return Promise.all([
+        thumbFile.getSignedUrl(config),
+        file.getSignedUrl(config)
+      ]);
+    }).then(results=>{
+      const thumbResult=results[0];
+      const originalResult=results[1];
+      const thumbFileUrl=thumbResult[0];
+      const fileUrl=originalResult[0];
+      return admin.database().ref('PERRINNImages/'+fileName.substring(0,13)).update({
+        original:fileUrl,
+        thumb:thumbFileUrl,
+      });
+    });
+  });
+});

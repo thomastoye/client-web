@@ -46,7 +46,7 @@ import { databaseService } from './database.service';
           <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
             <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{DB.getServiceRegex(message.process.service)}}: {{message.process.result}}</div>
           </div>
-          <img class="imageWithZoom" *ngIf="message.image" [src]="DB.getMessageImageThumb(message.image)" style="clear:both;width:95%;max-height:250px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(DB.getMessageImageOriginal(message.image))">
+          <img class="imageWithZoom" *ngIf="message.image" [src]="DB.getMessageImageThumb(message.image)?DB.getMessageImageThumb(message.image):message.imageDownloadURL" style="clear:both;width:95%;max-height:250px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(DB.getMessageImageOriginal(message.image)?DB.getMessageImageOriginal(message.image):message.imageDownloadURL)">
         </div>
       </div>
       {{storeMessageValues(message.user,message.timestamp)}}
@@ -80,6 +80,7 @@ import { databaseService } from './database.service';
 export class ChatComponent {
   draftMessage: string;
   draftImage: string;
+  draftImageDownloadURL: string;
   draftMessageDB: boolean;
   draftMessageUsers: FirebaseListObservable<any>;
   teamMessages: FirebaseListObservable<any>;
@@ -97,6 +98,7 @@ export class ChatComponent {
       this.previousMessageUser="";
       this.draftMessageDB=false;
       this.draftImage="";
+      this.draftImageDownloadURL="";
       this.draftMessage="";
       this.messageNumberDisplay = 15;
       this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam, {query: {
@@ -165,6 +167,7 @@ export class ChatComponent {
             timestamp:now,
             text:this.draftMessage,
             image:this.draftImage,
+            imageDownloadURL:this.draftImageDownloadURL,
             user:this.UI.currentUser,
             action:"chat",
             process:processData,
@@ -182,6 +185,7 @@ export class ChatComponent {
           this.timestampChatVisit();
           this.draftMessage = "";
           this.draftImage = "";
+          this.draftImageDownloadURL = "";
         });
       });
     }
@@ -221,6 +225,7 @@ export class ChatComponent {
         document.getElementById('uploader').style.visibility = "hidden";
         this.draftMessage=task.snapshot.ref.name.substring(0,13);
         this.draftImage=task.snapshot.ref.name.substring(0,13);
+        this.draftImageDownloadURL=task.snapshot.downloadURL;
         this.addMessage();
       }
     );
