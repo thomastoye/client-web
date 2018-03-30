@@ -14,7 +14,7 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let project of projects | async"
       [class.selected]="project.$key === selectedProjectID"
       (click)="selectedProjectID = project.$key">
-      <img (error)="errorHandler($event)"[src]="project.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img (error)="errorHandler($event)"[src]="DB.getProjectPhotoThumb(project.image)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{project.name}}
     </li>
   </ul>
@@ -26,7 +26,7 @@ import { userInterfaceService } from './userInterface.service';
 export class FollowProjectComponent  {
 
   firstName: string;
-  photoURL: string;
+  image: string;
   selectedProjectID: string;
   projects: FirebaseListObservable<any>;
   filter: string;

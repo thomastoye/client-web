@@ -23,7 +23,7 @@ export class databaseService {
   getUserPhotoOriginal(ID:string):string{
     var output;
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
-      output=snapshot.photoURL;
+      output=snapshot.image;
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
@@ -37,7 +37,7 @@ export class databaseService {
   getUserPhotoThumb(ID:string):string{
     var output;
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
-      output=snapshot.photoURL;
+      output=snapshot.image;
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
@@ -76,7 +76,7 @@ export class databaseService {
   getTeamPhotoOriginal(ID:string):string{
     var output;
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
-      output=snapshot.photoURL;
+      output=snapshot.image;
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
@@ -90,7 +90,7 @@ export class databaseService {
   getTeamPhotoThumb(ID:string):string{
     var output;
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
-      output=snapshot.photoURL;
+      output=snapshot.image;
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
@@ -159,7 +159,7 @@ export class databaseService {
   getProjectPhotoOriginal(ID:string):string{
     var output;
     this.db.object('projects/'+ID).subscribe(snapshot=>{
-      output=snapshot.photoURL;
+      output=snapshot.image;
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
@@ -173,7 +173,7 @@ export class databaseService {
   getProjectPhotoThumb(ID:string):string{
     var output;
     this.db.object('projects/'+ID).subscribe(snapshot=>{
-      output=snapshot.photoURL;
+      output=snapshot.image;
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{

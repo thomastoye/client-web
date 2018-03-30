@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
+import { databaseService } from './database.service';
 
 @Component({
   selector: 'search',
@@ -20,7 +21,7 @@ import { userInterfaceService } from './userInterface.service';
   <ul class="listLight">
     <li *ngFor="let user of users | async"
       (click)="router.navigate(['user',user.$key])">
-      <img (error)="errorHandler($event)"[src]="user.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img (error)="errorHandler($event)"[src]="DB.getUserPhotoThumb(user.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{user.firstName}} {{user.lastName}}</div>
       <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(user.$key,'','',user.$key)">Send to chat</div>
     </li>
@@ -31,7 +32,7 @@ import { userInterfaceService } from './userInterface.service';
   <ul class="listLight">
     <li *ngFor="let team of teams | async"
       (click)="router.navigate(['chat',team.$key]);">
-      <img (error)="errorHandler($event)"[src]="team.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img (error)="errorHandler($event)"[src]="DB.getTeamPhotoThumb(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{team.name}}</div>
       <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,'',team.$key,'')">Send to chat</div>
     </li>
@@ -42,7 +43,7 @@ import { userInterfaceService } from './userInterface.service';
   <ul class="listLight">
     <li *ngFor="let project of projects | async"
       (click)="router.navigate(['project',project.$key])">
-      <img (error)="errorHandler($event)"[src]="project.photoURL" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img (error)="errorHandler($event)"[src]="DB.getProjectPhotoThumb(project.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{project.name}}
     </li>
   </ul>
@@ -54,10 +55,10 @@ import { userInterfaceService } from './userInterface.service';
     [class.selected]="image.$key === selectedImageID"
     (click)="selectedImageID=image.$key"
     style="text-align:center;padding:10px;float:left">
-      <img [src]="image.photoURL" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
+      <img [src]="image.image" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
       <div style="line-height:normal">{{image.name}}</div>
       <div style="height:30px">
-      <div class="buttonDiv" *ngIf="image.$key===selectedImageID" (click)="addMessage(image.photoURL,image.photoURL,'','')">Send to chat</div>
+      <div class="buttonDiv" *ngIf="image.$key===selectedImageID" (click)="addMessage(image.image,image.image,'','')">Send to chat</div>
       </div>
     </li>
   </ul>
@@ -73,7 +74,7 @@ export class SearchComponent  {
   images: FirebaseListObservable<any>;
   searchFilter: string;
 
-  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
     this.images = this.db.list('appSettings/photoLibrary', {
       query:{
         orderByChild:'name',

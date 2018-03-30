@@ -30,7 +30,7 @@ import { databaseService } from './database.service';
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *" (keyup)="messageUser=''"/>
           <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *" (keyup)="messageUser=''"/>
           <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name *" (keyup)="messageUser=''"/>
-          <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName,photoURL)">Register</button>
+          <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName)">Register</button>
           </div>
           </div>
           <div [hidden]="UI.currentUser==null">
@@ -52,13 +52,11 @@ export class LoginComponent  {
   passwordConfirm: string;
   firstName: string;
   lastName: string;
-  photoURL: string;
   message: string;
   messageUser: string;
   newUser: boolean;
 
   constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase,  public UI: userInterfaceService, public DB: databaseService) {
-    this.photoURL="./../assets/App icons/me.png";
     this.newUser=false;
     this.UI.currentTeam="";
     this.afAuth.authState.subscribe((auth) => {
@@ -96,8 +94,8 @@ export class LoginComponent  {
     .catch(err => this.messageUser="You were not logged in");
   }
 
-  register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string, photoURL: string) {
-    if (email==null||password==null||passwordConfirm==null||firstName==null||lastName==null||photoURL==null) {
+  register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string) {
+    if (email==null||password==null||passwordConfirm==null||firstName==null||lastName==null) {
         this.messageUser="You need to fill all the fields";
     }
     else {
@@ -120,7 +118,6 @@ export class LoginComponent  {
               timestamp:firebase.database.ServerValue.TIMESTAMP,
               firstName:firstName,
               lastName:lastName,
-              photoURL:photoURL,
             }).then(_ => {
               var teamName = firstName+" "+lastName;
               this.createTeam(auth.uid, teamName);

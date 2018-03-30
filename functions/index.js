@@ -202,11 +202,11 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
   });
 }
 
-function createTeam(user,team,name,photoURL) {
+function createTeam(user,team,name,image) {
   const now = Date.now();
   return updateKeyValue (user,team,'PERRINNTeams/'+team,"createdTimestamp",now).then(()=>{
     updateKeyValue (user,team,'PERRINNTeams/'+team,"name",name);
-    updateKeyValue (user,team,'PERRINNTeams/'+team,"photoURL",photoURL);
+    updateKeyValue (user,team,'PERRINNTeams/'+team,"image",image);
     addListKeyValue(user,team,'PERRINNTeams/'+team,"leaders",user,true,2);
     admin.database().ref('userTeams/'+user+'/'+team).update({
       following:true,
@@ -217,12 +217,12 @@ function createTeam(user,team,name,photoURL) {
   });
 }
 
-function createUser(user,team,firstName,lastName,photoURL) {
+function createUser(user,team,firstName,lastName,image) {
   const now = Date.now();
   return updateKeyValue (user,team,'PERRINNUsers/',"createdTimestamp",now).then(()=>{
     updateKeyValue (user,team,'PERRINNUsers/',"firstName",firstName);
     updateKeyValue (user,team,'PERRINNUsers/',"lastName",lastName);
-    updateKeyValue (user,team,'PERRINNUsers/',"photoURL",photoURL);
+    updateKeyValue (user,team,'PERRINNUsers/',"image",image);
     return user;
   });
 }
@@ -281,7 +281,7 @@ function executeProcess(team,process){
         process.user,
         newTeam,
         process.inputs.name,
-        process.inputs.photoURL
+        process.inputs.image
       ).then(result=>{
         return result;
       });
@@ -349,7 +349,7 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
     }
     if (profile.firstName) updateKeyValue(event.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+event.params.user,"firstName",profile.firstName);
     if (profile.lastName) updateKeyValue(event.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+event.params.user,"lastName",profile.lastName);
-    if (profile.photoURL) updateKeyValue(event.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+event.params.user,"photoURL",profile.photoURL);
+    if (profile.image) updateKeyValue(event.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+event.params.user,"image",profile.image);
     if (profile.personalTeam) updateKeyValue(event.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+event.params.user,"personalTeam",profile.personalTeam);
   });
 });
@@ -363,7 +363,7 @@ exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCrea
       });
     }
     if(profile.name) updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"name",profile.name);
-    if(profile.photoURL) updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"photoURL",profile.photoURL);
+    if(profile.image) updateKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"image",profile.image);
     if(profile.addLeader) addListKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"leaders",profile.addLeader,true,2);
     if(profile.addMember) addListKeyValue("",event.params.team,'PERRINNTeams/'+event.params.team,"members",profile.addMember,true,6);
     if(profile.removeMember) removeListKey("",event.params.team,'PERRINNTeams/'+event.params.team,"members",profile.removeMember);
@@ -405,7 +405,7 @@ exports.userCreation = functions.database.ref('/PERRINNUsers/{user}/createdTimes
   createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",event.params.user);
 });
 
-exports.teamCreation = functions.database.ref('/PERRINNteams/{team}/createdTimestamp').onCreate(event => {
+exports.teamCreation = functions.database.ref('/PERRINNTeams/{team}/createdTimestamp').onCreate(event => {
   createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",event.params.team,"");
 });
 
@@ -495,71 +495,3 @@ exports.processImage = functions.storage.object().onChange(event=>{
     });
   });
 });
-
-exports.loopPhotoURL = functions.database.ref('tot').onCreate(event => {
-  return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
-    teams.forEach(team=>{
-      processTeamPhotoURL(team);
-    });
-  });
-});
-
-function processTeamPhotoURL(team){
-  const photoURL=team.val().photoURL;
-  if (photoURL!==undefined) {
-    const image=photoURL.split('/').pop().substring(9,22);
-    if (image.match(/\d{13}/g)===null){
-    } else {
-      console.log("processing: "+image);
-      admin.database().ref('PERRINNTeams/'+team.key).update({
-        image:image,
-      });
-      const fileName=photoURL.split('/').pop().substring(9).split('?')[0].replace(/[%]20/g,' ');
-      const filePath='images/'+fileName;
-      const fileBucket=functions.config().firebase.storageBucket;
-      const bucket=gcs.bucket(fileBucket);
-      const object=bucket.file(filePath);
-      const tempFilePath=`/tmp/${fileName}`;
-      const ref=admin.database().ref();
-      const file=bucket.file(filePath);
-      const thumbFilePath=filePath.replace(/(\/)?([^\/]*)$/,'$1thumb_$2');
-      if (fileName.startsWith('thumb_')){
-      } else {
-        if (object.resourceState==='not_exists'){
-        } else {
-          return bucket.file(filePath).download({
-            destination:tempFilePath,
-          }).then(()=>{
-            return spawn('convert',[tempFilePath,'-thumbnail','500x500>',tempFilePath]);
-          }).then(()=>{
-            return bucket.upload(tempFilePath,{
-              destination:thumbFilePath,
-            });
-          }).then(()=>{
-            const thumbFile=bucket.file(thumbFilePath);
-            const config={
-              action:'read',
-              expires:'01-01-2501'
-            };
-            return Promise.all([
-              thumbFile.getSignedUrl(config),
-              file.getSignedUrl(config)
-            ]);
-          }).then(results=>{
-            const thumbResult=results[0];
-            const originalResult=results[1];
-            const thumbFileUrl=thumbResult[0];
-            const fileUrl=originalResult[0];
-            admin.database().ref('PERRINNImages/'+fileName.substring(0,13)).update({
-              original:fileUrl,
-              thumb:thumbFileUrl,
-            });
-            console.log("success: "+image);
-          }).catch(error=>{
-            console.log(error);
-          });
-        }
-      }
-    }
-  }
-}
