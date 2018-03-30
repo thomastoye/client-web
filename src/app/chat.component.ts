@@ -185,7 +185,6 @@ export class ChatComponent {
           this.timestampChatVisit();
           this.draftMessage = "";
           this.draftImage = "";
-          this.draftImageDownloadURL = "";
         });
       });
     }

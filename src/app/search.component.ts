@@ -55,7 +55,7 @@ import { databaseService } from './database.service';
     [class.selected]="image.$key === selectedImageID"
     (click)="selectedImageID=image.$key"
     style="text-align:center;padding:10px;float:left">
-      <img [src]="image.image" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
+      <img [src]="DB.getImageUrlThumb(image.image)" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
       <div style="line-height:normal">{{image.name}}</div>
       <div style="height:30px">
       <div class="buttonDiv" *ngIf="image.$key===selectedImageID" (click)="addMessage(image.image,image.image,'','')">Send to chat</div>

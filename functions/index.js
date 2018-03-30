@@ -495,3 +495,37 @@ exports.processImage = functions.storage.object().onChange(event=>{
     });
   });
 });
+
+exports.loopProjects = functions.database.ref('tot').onCreate(event => {
+  return admin.database().ref('appSettings/photoLibrary/').once('value').then(photos=>{
+    photos.forEach(photo=>{
+      copyPhotoURL(photo);
+    });
+  });
+});
+
+function copyPhotoURL(photo){
+  const photoURL=photo.val().photoURL;
+  if (photoURL!==undefined) {
+    const image=photoURL.split('/').pop().substring(9,22);
+    if (image.match(/\d{13}/g)===null){
+    } else {
+      console.log("processing: "+image);
+      admin.database().ref('appSettings/photoLibrary/'+photo.key).update({
+        image:image,
+      });
+      const fileName=photoURL.split('/').pop().substring(9).split('?')[0].replace(/[%]20/g,' ');
+      const fileNameCopy=fileName.split('.')[0]+'copy'+'.'+fileName.split('.')[1]
+      const filePath='images/'+fileName;
+      const filePathCopy='images/'+fileNameCopy;
+      const fileBucket=functions.config().firebase.storageBucket;
+      const bucket=gcs.bucket(fileBucket);
+      const object=bucket.file(filePath);
+      return object.copy(bucket.file(filePathCopy)).then(()=>{
+        return;
+      }).catch(error=>{
+        return;
+      });
+    }
+  }
+}

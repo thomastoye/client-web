@@ -222,4 +222,14 @@ export class databaseService {
     }
     return output;
   }
+  getImageUrlOriginal(ID:string):string{
+    var output;
+    this.db.object('PERRINNImages/'+ID).subscribe(snapshot=>{output=snapshot.original});
+    return output;
+  }
+  getImageUrlThumb(ID:string):string{
+    var output;
+    this.db.object('PERRINNImages/'+ID).subscribe(snapshot=>{output=snapshot.thumb});
+    return output;
+  }
 }
