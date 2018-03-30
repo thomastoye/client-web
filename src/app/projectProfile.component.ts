@@ -16,7 +16,7 @@ import { databaseService } from './database.service';
   <div style="padding:10px;font-size:12px" [innerHTML]="DB.getProjectGoal(UI.focusProject) | linky"></div>
   </div>
   <div style="float: right; width: 40%;position:relative">
-  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getProjectPhotoThumb(UI.focusProject)" style="background-color:#0e0e0e;object-fit:contain; height:200px; width:100%" (click)="showFullScreenImage(DB.getProjectPhotoOriginal(UI.focusProject))">
+  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getProjectPhotoThumb(UI.focusProject)" style="object-fit:contain; height:200px; width:100%" (click)="showFullScreenImage(DB.getProjectPhotoOriginal(UI.focusProject))">
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">

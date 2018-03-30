@@ -17,7 +17,7 @@ import { databaseService } from './database.service';
   <div style="color:#888;font-size:11px;padding:0 5px 5px 10px;clear:both">Joined {{DB.getUserCreatedTimestamp(UI.focusUser)|date:'MMMM yyyy'}}, {{DB.getUserMessageCount(UI.focusUser)==null?0:DB.getUserMessageCount(UI.focusUser)}} Messages</div>
   </div>
   <div style="float:right;width:20%;position:relative">
-  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoThumb(UI.focusUser)" style="background-color:#0e0e0e;float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(DB.getUserPhotoOriginal(UI.focusUser))">
+  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getUserPhotoThumb(UI.focusUser)" style="float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(DB.getUserPhotoOriginal(UI.focusUser))">
   </div>
   </div>
   <div class='sheet' style="margin-top:5px">
