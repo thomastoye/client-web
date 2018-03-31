@@ -15,7 +15,7 @@ import { databaseService } from './database.service';
     <div style="z-index:9999;position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">Wallet ></div>
   </div>
   <div style="position:relative;margin-bottom:-115px">
-  <img class="imageWithZoom" (error)="errorHandler($event)"[src]="DB.getTeamPhotoOriginal(this.UI.currentTeam)" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(DB.getTeamPhotoOriginal(this.UI.currentTeam))">
+  <img class="imageWithZoom" (error)="errorHandler($event)"[src]="DB.getTeamPhotoMedium(this.UI.currentTeam)" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(DB.getTeamPhotoOriginal(this.UI.currentTeam))">
   <div class="sheetBadge" style="position:relative;top:-115px">
   <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{DB.getTeamName(this.UI.currentTeam)}}</div>
   <div class="buttonDiv" *ngIf="!DB.getUserFollowing(UI.currentUser,UI.currentTeam)" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>

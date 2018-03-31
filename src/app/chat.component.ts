@@ -46,7 +46,9 @@ import { databaseService } from './database.service';
           <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
             <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{DB.getServiceRegex(message.process.service)}}: {{message.process.result}}</div>
           </div>
-          <img class="imageWithZoom" *ngIf="message.image" [src]="DB.getMessageImageThumb(message.image)?DB.getMessageImageThumb(message.image):message.imageDownloadURL" style="clear:both;width:95%;max-height:250px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(DB.getMessageImageOriginal(message.image)?DB.getMessageImageOriginal(message.image):message.imageDownloadURL)">
+          <div style="clear:both;text-align:center">
+            <img class="imageWithZoom" *ngIf="message.image" [src]="DB.getMessageImageMedium(message.image)?DB.getMessageImageMedium(message.image):message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(DB.getMessageImageOriginal(message.image)?DB.getMessageImageOriginal(message.image):message.imageDownloadURL)">
+          </div>
         </div>
       </div>
       {{storeMessageValues(message.user,message.timestamp)}}

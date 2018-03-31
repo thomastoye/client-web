@@ -454,11 +454,13 @@ exports.processImage = functions.storage.object().onChange(event=>{
   const fileBucket=object.bucket;
   const bucket=gcs.bucket(fileBucket);
   const tempFilePath=`/tmp/${fileName}`;
+  const tempFilePath2=`/tmp/2${fileName}`;
   const ref=admin.database().ref();
   const file=bucket.file(filePath);
   const originalFilePath=filePath.replace(/(\/)?([^\/]*)$/,'$1original_$2');
+  const mediumFilePath=filePath.replace(/(\/)?([^\/]*)$/,'$1medium_$2');
   const thumbFilePath=filePath.replace(/(\/)?([^\/]*)$/,'$1thumb_$2');
-  if (fileName.startsWith('thumb_')||fileName.startsWith('original_')){
+  if (fileName.startsWith('thumb_')||fileName.startsWith('original_')||fileName.startsWith('medium_')){
     return;
   }
   if (!object.contentType.startsWith('image/')){
@@ -489,31 +491,44 @@ exports.processImage = functions.storage.object().onChange(event=>{
       destination:originalFilePath,
     });
   }).then(()=>{
-    return spawn('convert',[tempFilePath,'-thumbnail','500x500>',tempFilePath]);
+    return spawn('convert',[tempFilePath,'-thumbnail','540x540>',tempFilePath2]);
+  }).then(()=>{
+    return bucket.upload(tempFilePath2,{
+      destination:mediumFilePath,
+    });
+  }).then(()=>{
+    return spawn('convert',[tempFilePath,'-thumbnail','180x180>',tempFilePath]);
   }).then(()=>{
     return bucket.upload(tempFilePath,{
       destination:thumbFilePath,
     });
   }).then(()=>{
-    const thumbFile=bucket.file(thumbFilePath);
     const originalFile=bucket.file(originalFilePath);
+    const mediumFile=bucket.file(mediumFilePath);
+    const thumbFile=bucket.file(thumbFilePath);
     const config={
       action:'read',
       expires:'01-01-2501'
     };
     return Promise.all([
-      thumbFile.getSignedUrl(config),
-      originalFile.getSignedUrl(config)
+      originalFile.getSignedUrl(config),
+      mediumFile.getSignedUrl(config),
+      thumbFile.getSignedUrl(config)
     ]);
   }).then(results=>{
-    const thumbResult=results[0];
-    const originalResult=results[1];
-    const thumbFileUrl=thumbResult[0];
+    const originalResult=results[0];
+    const mediumResult=results[1];
+    const thumbResult=results[2];
     const originalFileUrl=originalResult[0];
+    const mediumFileUrl=mediumResult[0];
+    const thumbFileUrl=thumbResult[0];
     return admin.database().ref('PERRINNImages/'+fileName.substring(0,13)).update({
       original:originalFileUrl,
+      medium:mediumFileUrl,
       thumb:thumbFileUrl,
     });
+  }).catch(error=>{
+    console.log("error image processing: "+error);
   });
 });
 

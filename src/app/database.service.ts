@@ -34,6 +34,20 @@ export class databaseService {
     });
     return output;
   }
+  getUserPhotoMedium(ID:string):string{
+    var output;
+    this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
+      output=snapshot.image;
+      if (output!==undefined) {
+        if (output.indexOf('.')===-1) {
+          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+            output=snapshot.medium;
+          });
+        }
+      }
+    });
+    return output;
+  }
   getUserPhotoThumb(ID:string):string{
     var output;
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
@@ -81,6 +95,20 @@ export class databaseService {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
             output=snapshot.original;
+          });
+        }
+      }
+    });
+    return output;
+  }
+  getTeamPhotoMedium(ID:string):string{
+    var output;
+    this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
+      output=snapshot.image;
+      if (output!==undefined) {
+        if (output.indexOf('.')===-1) {
+          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+            output=snapshot.medium;
           });
         }
       }
@@ -170,6 +198,20 @@ export class databaseService {
     });
     return output;
   }
+  getProjectPhotoMedium(ID:string):string{
+    var output;
+    this.db.object('projects/'+ID).subscribe(snapshot=>{
+      output=snapshot.image;
+      if (output!==undefined) {
+        if (output.indexOf('.')===-1) {
+          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+            output=snapshot.medium;
+          });
+        }
+      }
+    });
+    return output;
+  }
   getProjectPhotoThumb(ID:string):string{
     var output;
     this.db.object('projects/'+ID).subscribe(snapshot=>{
@@ -213,6 +255,15 @@ export class databaseService {
     }
     return output;
   }
+  getMessageImageMedium(ID:string):string{
+    var output;
+    if (ID.indexOf('.')!==-1) {
+      output=ID;
+    } else {
+      this.db.object('PERRINNImages/'+ID).subscribe(snapshot=>{output=snapshot.medium});
+    }
+    return output;
+  }
   getMessageImageThumb(ID:string):string{
     var output;
     if (ID.indexOf('.')!==-1) {
@@ -225,6 +276,11 @@ export class databaseService {
   getImageUrlOriginal(ID:string):string{
     var output;
     this.db.object('PERRINNImages/'+ID).subscribe(snapshot=>{output=snapshot.original});
+    return output;
+  }
+  getImageUrlMedium(ID:string):string{
+    var output;
+    this.db.object('PERRINNImages/'+ID).subscribe(snapshot=>{output=snapshot.medium});
     return output;
   }
   getImageUrlThumb(ID:string):string{
