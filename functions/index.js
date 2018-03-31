@@ -456,8 +456,9 @@ exports.processImage = functions.storage.object().onChange(event=>{
   const tempFilePath=`/tmp/${fileName}`;
   const ref=admin.database().ref();
   const file=bucket.file(filePath);
+  const originalFilePath=filePath.replace(/(\/)?([^\/]*)$/,'$1original_$2');
   const thumbFilePath=filePath.replace(/(\/)?([^\/]*)$/,'$1thumb_$2');
-  if (fileName.startsWith('thumb_')){
+  if (fileName.startsWith('thumb_')||fileName.startsWith('original_')){
     return;
   }
   if (!object.contentType.startsWith('image/')){
@@ -469,6 +470,25 @@ exports.processImage = functions.storage.object().onChange(event=>{
   return bucket.file(filePath).download({
     destination:tempFilePath,
   }).then(()=>{
+    return spawn('identify', ['-verbose', tempFilePath], {capture: ['stdout', 'stderr']});
+  }).then(result => {
+    const metadata = imageMagickOutputToObject(result.stdout);
+    return admin.database().ref('PERRINNImages/'+fileName.substring(0,13)).update({
+      metadata:metadata,
+    });
+  }).then(()=>{
+    return admin.database().ref('PERRINNImages/'+fileName.substring(0,13)+'/metadata').once('value');
+  }).then(metadata=>{
+    if (metadata.val().Orientation=="RightTop") {
+      return spawn('convert',[tempFilePath,'-rotate','90',tempFilePath]);
+    } else return;
+  }).then(()=>{
+    return spawn('convert',[tempFilePath,'-strip',tempFilePath]);
+  }).then(()=>{
+    return bucket.upload(tempFilePath,{
+      destination:originalFilePath,
+    });
+  }).then(()=>{
     return spawn('convert',[tempFilePath,'-thumbnail','500x500>',tempFilePath]);
   }).then(()=>{
     return bucket.upload(tempFilePath,{
@@ -476,25 +496,63 @@ exports.processImage = functions.storage.object().onChange(event=>{
     });
   }).then(()=>{
     const thumbFile=bucket.file(thumbFilePath);
+    const originalFile=bucket.file(originalFilePath);
     const config={
       action:'read',
       expires:'01-01-2501'
     };
     return Promise.all([
       thumbFile.getSignedUrl(config),
-      file.getSignedUrl(config)
+      originalFile.getSignedUrl(config)
     ]);
   }).then(results=>{
     const thumbResult=results[0];
     const originalResult=results[1];
     const thumbFileUrl=thumbResult[0];
-    const fileUrl=originalResult[0];
+    const originalFileUrl=originalResult[0];
     return admin.database().ref('PERRINNImages/'+fileName.substring(0,13)).update({
-      original:fileUrl,
+      original:originalFileUrl,
       thumb:thumbFileUrl,
     });
   });
 });
+
+/**
+ * Convert the output of ImageMagick's `identify -verbose` command to a JavaScript Object.
+ */
+function imageMagickOutputToObject(output) {
+  let previousLineIndent = 0;
+  const lines = output.match(/[^\r\n]+/g);
+  lines.shift(); // Remove First line
+  lines.forEach((line, index) => {
+    const currentIdent = line.search(/\S/);
+    line = line.trim();
+    if (line.endsWith(':')) {
+      lines[index] = makeKeyFirebaseCompatible(`"${line.replace(':', '":{')}`);
+    } else {
+      const split = line.replace('"', '\\"').split(': ');
+      split[0] = makeKeyFirebaseCompatible(split[0]);
+      lines[index] = `"${split.join('":"')}",`;
+    }
+    if (currentIdent < previousLineIndent) {
+      lines[index - 1] = lines[index - 1].substring(0, lines[index - 1].length - 1);
+      lines[index] = new Array(1 + (previousLineIndent - currentIdent) / 2).join('}') + ',' + lines[index];
+    }
+    previousLineIndent = currentIdent;
+  });
+  output = lines.join('');
+  output = '{' + output.substring(0, output.length - 1) + '}'; // remove trailing comma.
+  output = JSON.parse(output);
+  return output;
+}
+
+/**
+ * Makes sure the given string does not contain characters that can't be used as Firebase
+ * Realtime Database keys such as '.' and replaces them by '*'.
+ */
+function makeKeyFirebaseCompatible(key) {
+  return key.replace(/\./g, '*');
+}
 
 exports.loopProjects = functions.database.ref('tot').onCreate(event => {
   return admin.database().ref('appSettings/photoLibrary/').once('value').then(photos=>{
