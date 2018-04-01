@@ -133,6 +133,8 @@ export class SearchComponent  {
           text:text,
           image:image,
           user:this.UI.currentUser,
+          firstName:this.DB.getUserFirstName(this.UI.currentUser),
+          imageUrlThumbUser:this.DB.getImageUrlThumb(this.UI.currentUser),
           linkTeam:linkTeam,
           linkUser:linkUser,
           process:processData,

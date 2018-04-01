@@ -1,0 +1,666 @@
+[debug] [2018-04-01T16:07:17.102Z] ----------------------------------------------------------------------
+[debug] [2018-04-01T16:07:17.105Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy --only functions
+[debug] [2018-04-01T16:07:17.105Z] CLI Version:   3.13.1
+[debug] [2018-04-01T16:07:17.105Z] Platform:      darwin
+[debug] [2018-04-01T16:07:17.105Z] Node Version:  v6.9.5
+[debug] [2018-04-01T16:07:17.106Z] Time:          Sun Apr 01 2018 17:07:17 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:17.106Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-04-01T16:07:17.119Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-04-01T16:07:17.119Z] > authorizing via signed-in user
+[debug] [2018-04-01T16:07:17.125Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/perrinn-d5fc1  
+ Sun Apr 01 2018 17:07:17 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:17.817Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:17.818Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/perrinn-d5fc1/tokens  
+ Sun Apr 01 2018 17:07:17 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:18.426Z] <<< HTTP RESPONSE 200
+[info] 1
+[info] 
+[info] === Deploying to 'perrinn-d5fc1'...
+[info] 
+[info] i  deploying functions
+[debug] [2018-04-01T16:07:19.060Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "dependencies": {
+    "@google-cloud/storage": "^1.6.0",
+    "child-process-promise": "^2.2.1",
+    "firebase-admin": "^4.2.1",
+    "firebase-functions": "^0.5.7",
+    "stripe": "^4.15.0"
+  },
+  "private": true
+}
+[info] i  functions: ensuring necessary APIs are enabled...
+[info] i  runtimeconfig: ensuring necessary APIs are enabled...
+[debug] [2018-04-01T16:07:19.062Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/cloudfunctions.googleapis.com/projectSettings/perrinn-d5fc1?view=CONSUMER_VIEW  
+ Sun Apr 01 2018 17:07:19 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:19.062Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/runtimeconfig.googleapis.com/projectSettings/perrinn-d5fc1?view=CONSUMER_VIEW  
+ Sun Apr 01 2018 17:07:19 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:20.265Z] <<< HTTP RESPONSE 200
+[info] ✔  runtimeconfig: all necessary APIs are enabled
+[debug] [2018-04-01T16:07:20.282Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: all necessary APIs are enabled
+[debug] [2018-04-01T16:07:20.283Z] >>> HTTP REQUEST GET https://appengine.googleapis.com/v1/apps/perrinn-d5fc1  
+ Sun Apr 01 2018 17:07:20 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:20.284Z] >>> HTTP REQUEST GET https://apikeys.googleapis.com/v1/projects/perrinn-d5fc1/apiKeys  
+ Sun Apr 01 2018 17:07:20 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:20.962Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:21.066Z] <<< HTTP RESPONSE 200
+[info] i  functions: preparing functions directory for uploading...
+[debug] [2018-04-01T16:07:22.452Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/perrinn-d5fc1/configs  
+ Sun Apr 01 2018 17:07:22 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:22.687Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:22.688Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/perrinn-d5fc1/configs/stripe/variables  
+ Sun Apr 01 2018 17:07:22 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:23.524Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:23.524Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/perrinn-d5fc1/configs/stripe/variables/token  
+ Sun Apr 01 2018 17:07:23 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:23.525Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/perrinn-d5fc1/configs/stripe/variables/currency  
+ Sun Apr 01 2018 17:07:23 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:23.723Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:24.333Z] <<< HTTP RESPONSE 200
+[info] i  functions: packaged functions (8.87 KB) for uploading
+[debug] [2018-04-01T16:07:26.394Z] >>> HTTP REQUEST GET https://www.googleapis.com/storage/v1/b/staging.perrinn-d5fc1.appspot.com  
+ Sun Apr 01 2018 17:07:26 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:26.632Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:26.633Z] >>> HTTP REQUEST POST https://www.googleapis.com/upload/storage/v1/b/staging.perrinn-d5fc1.appspot.com/o?uploadType=media&name=firebase-functions-source ReadStream {
+  _readableState: 
+   ReadableState {
+     objectMode: false,
+     highWaterMark: 65536,
+     buffer: BufferList { head: [Object], tail: [Object], length: 1 },
+     length: 9084,
+     pipes: null,
+     pipesCount: 0,
+     flowing: null,
+     ended: true,
+     endEmitted: false,
+     reading: false,
+     sync: false,
+     needReadable: false,
+     emittedReadable: true,
+     readableListening: false,
+     resumeScheduled: false,
+     defaultEncoding: 'utf8',
+     ranOut: false,
+     awaitDrain: 0,
+     readingMore: false,
+     decoder: null,
+     encoding: null },
+  readable: true,
+  domain: null,
+  _events: { end: [Function] },
+  _eventsCount: 1,
+  _maxListeners: undefined,
+  path: '/var/folders/yc/ss46257163d523_p6mxw8pm00000gn/T/firebase-functions-32440Q56VnyGIVie1.zip',
+  fd: 19,
+  flags: 'r',
+  mode: 438,
+  start: undefined,
+  end: undefined,
+  autoClose: true,
+  pos: undefined,
+  bytesRead: 9084 } 
+ Sun Apr 01 2018 17:07:26 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.099Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: functions folder uploaded successfully
+[info] i  starting release process (may take several minutes)...
+[debug] [2018-04-01T16:07:28.102Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions  
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.884Z] <<< HTTP RESPONSE 200
+[info] i  functions: updating function createPERRINNTransactionOnPaymentComplete...
+[debug] [2018-04-01T16:07:28.888Z] Trigger is: 
+[info] i  functions: updating function updateProjectLeader...
+[debug] [2018-04-01T16:07:28.889Z] Trigger is: 
+[info] i  functions: updating function newStripeCharge...
+[debug] [2018-04-01T16:07:28.890Z] Trigger is: 
+[info] i  functions: updating function newUserProfile...
+[debug] [2018-04-01T16:07:28.891Z] Trigger is: 
+[info] i  functions: updating function newTeamProfile...
+[debug] [2018-04-01T16:07:28.892Z] Trigger is: 
+[info] i  functions: updating function newProcess...
+[debug] [2018-04-01T16:07:28.892Z] Trigger is: 
+[info] i  functions: updating function newMessage...
+[debug] [2018-04-01T16:07:28.892Z] Trigger is: 
+[info] i  functions: updating function userCreation...
+[debug] [2018-04-01T16:07:28.894Z] Trigger is: 
+[info] i  functions: updating function teamCreation...
+[debug] [2018-04-01T16:07:28.895Z] Trigger is: 
+[info] i  functions: updating function teamMemberWrite...
+[debug] [2018-04-01T16:07:28.895Z] Trigger is: 
+[info] i  functions: updating function teamLeaderWrite...
+[debug] [2018-04-01T16:07:28.895Z] Trigger is: 
+[info] i  functions: updating function returnCOINS...
+[debug] [2018-04-01T16:07:28.896Z] Trigger is: 
+[info] i  functions: updating function processImage...
+[debug] [2018-04-01T16:07:28.897Z] Trigger is: 
+[info] i  functions: updating function loopProjects...
+[debug] [2018-04-01T16:07:28.897Z] Trigger is: 
+[info] i  functions: updating function loopMessages...
+[debug] [2018-04-01T16:07:28.899Z] Trigger is: 
+[debug] [2018-04-01T16:07:28.900Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/createPERRINNTransactionOnPaymentComplete { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/createPERRINNTransactionOnPaymentComplete',
+  entryPoint: 'createPERRINNTransactionOnPaymentComplete',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/teamPayments/{user}/{chargeID}/response/outcome',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.901Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/updateProjectLeader { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/updateProjectLeader',
+  entryPoint: 'updateProjectLeader',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/projectTeams',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.write' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.901Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/newStripeCharge { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/newStripeCharge',
+  entryPoint: 'newStripeCharge',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/teamPayments/{user}/{chargeID}',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.902Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/newUserProfile { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/newUserProfile',
+  entryPoint: 'newUserProfile',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/users/{user}/{editID}',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.902Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/newTeamProfile { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/newTeamProfile',
+  entryPoint: 'newTeamProfile',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/teams/{team}/{editID}',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.902Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/newProcess { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/newProcess',
+  entryPoint: 'newProcess',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/teamMessages/{team}/{message}/process',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.903Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/newMessage { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/newMessage',
+  entryPoint: 'newMessage',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/teamMessages/{team}/{message}',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.903Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/userCreation { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/userCreation',
+  entryPoint: 'userCreation',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/PERRINNUsers/{user}/createdTimestamp',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.903Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/teamCreation { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/teamCreation',
+  entryPoint: 'teamCreation',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/PERRINNTeams/{team}/createdTimestamp',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.906Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/teamMemberWrite { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/teamMemberWrite',
+  entryPoint: 'teamMemberWrite',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/PERRINNTeams/{team}/members/{member}',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.write' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.907Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/teamLeaderWrite { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/teamLeaderWrite',
+  entryPoint: 'teamLeaderWrite',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/PERRINNTeams/{team}/leaders/{leader}',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.write' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.907Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/returnCOINS { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/returnCOINS',
+  entryPoint: 'returnCOINS',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/tot',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.908Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/processImage { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/processImage',
+  entryPoint: 'processImage',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/buckets/perrinn-d5fc1.appspot.com',
+     eventType: 'providers/cloud.storage/eventTypes/object.change' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.909Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/loopProjects { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/loopProjects',
+  entryPoint: 'loopProjects',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/tot',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:28.909Z] >>> HTTP REQUEST PUT https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions/loopMessages { sourceArchiveUrl: 'gs://staging.perrinn-d5fc1.appspot.com/firebase-functions-source',
+  name: 'projects/perrinn-d5fc1/locations/us-central1/functions/loopMessages',
+  entryPoint: 'loopMessages',
+  timeout: '60s',
+  availableMemoryMb: 256,
+  eventTrigger: 
+   { resource: 'projects/_/instances/perrinn-d5fc1/refs/tot',
+     eventType: 'providers/google.firebase.database/eventTypes/ref.create' } } 
+ Sun Apr 01 2018 17:07:28 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:29.629Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:29.743Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:29.748Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:29.844Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:29.851Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:29.852Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:29.932Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:29.984Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.054Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.057Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.143Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.146Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.280Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.382Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.406Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.410Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/projects/perrinn-d5fc1/locations/us-central1/functions  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.411Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.411Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.411Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.411Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.412Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.413Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.413Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.414Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.415Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.416Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTWVtYmVyV3JpdGUvQUIxSkdsUXBkME0  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.416Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.417Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.418Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.418Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.418Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8  
+ Sun Apr 01 2018 17:07:30 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:30.626Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.641Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.642Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.645Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.646Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.647Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.650Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.650Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.651Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.651Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.653Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.654Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.655Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.656Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.676Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: createPERRINNTransactionOnPaymentComplete: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: updateProjectLeader: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: newStripeCharge: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: newUserProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: newTeamProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: newProcess: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: newMessage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: userCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: teamCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: teamMemberWrite: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTWVtYmVyV3JpdGUvQUIxSkdsUXBkME0 is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: teamLeaderWrite: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: returnCOINS: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA is not done.
+[debug] [2018-04-01T16:07:30.678Z] [functions] operation poll: processImage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E is not done.
+[debug] [2018-04-01T16:07:30.679Z] [functions] operation poll: loopProjects: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc is not done.
+[debug] [2018-04-01T16:07:30.679Z] [functions] operation poll: loopMessages: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8 is not done.
+[debug] [2018-04-01T16:07:31.171Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.682Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.682Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.682Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.682Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.683Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.683Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.683Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.684Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.684Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.686Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTWVtYmVyV3JpdGUvQUIxSkdsUXBkME0  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.686Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.686Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.686Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.686Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.686Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8  
+ Sun Apr 01 2018 17:07:35 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:35.906Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.907Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.913Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.920Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.922Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.926Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.927Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.927Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.929Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.929Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.936Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.936Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.937Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.944Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.965Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: createPERRINNTransactionOnPaymentComplete: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: updateProjectLeader: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: newStripeCharge: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: newUserProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: newTeamProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: newProcess: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: newMessage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: userCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: teamCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: teamMemberWrite: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTWVtYmVyV3JpdGUvQUIxSkdsUXBkME0 is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: teamLeaderWrite: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk is not done.
+[debug] [2018-04-01T16:07:35.966Z] [functions] operation poll: returnCOINS: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA is not done.
+[debug] [2018-04-01T16:07:35.967Z] [functions] operation poll: processImage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E is not done.
+[debug] [2018-04-01T16:07:35.967Z] [functions] operation poll: loopProjects: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc is not done.
+[debug] [2018-04-01T16:07:35.967Z] [functions] operation poll: loopMessages: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8 is not done.
+[debug] [2018-04-01T16:07:40.977Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.977Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.978Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.978Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.979Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.979Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.979Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.979Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.979Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.980Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTWVtYmVyV3JpdGUvQUIxSkdsUXBkME0  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.980Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.980Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.980Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.980Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:40.981Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8  
+ Sun Apr 01 2018 17:07:40 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:41.220Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.224Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.225Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.225Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.226Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.227Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.227Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.229Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.229Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.230Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.230Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.235Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.236Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.240Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.243Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:41.243Z] [functions] operation poll: createPERRINNTransactionOnPaymentComplete: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ is not done.
+[debug] [2018-04-01T16:07:41.243Z] [functions] operation poll: updateProjectLeader: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF is not done.
+[debug] [2018-04-01T16:07:41.243Z] [functions] operation poll: newStripeCharge: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg is not done.
+[debug] [2018-04-01T16:07:41.244Z] [functions] operation poll: newUserProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ is not done.
+[debug] [2018-04-01T16:07:41.244Z] [functions] operation poll: newTeamProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: newProcess: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: newMessage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: userCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: teamCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: teamMemberWrite: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTWVtYmVyV3JpdGUvQUIxSkdsUXBkME0 is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: teamLeaderWrite: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: returnCOINS: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: processImage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: loopProjects: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc is not done.
+[debug] [2018-04-01T16:07:41.245Z] [functions] operation poll: loopMessages: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8 is not done.
+[debug] [2018-04-01T16:07:46.248Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.249Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.249Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.249Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.250Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.250Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.250Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.250Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.250Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.250Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTWVtYmVyV3JpdGUvQUIxSkdsUXBkME0  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.251Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.251Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.252Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.252Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.252Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8  
+ Sun Apr 01 2018 17:07:46 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:46.491Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.495Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.495Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.497Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.498Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.500Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.511Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.512Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.512Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.515Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.520Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.523Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.530Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.556Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.593Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: createPERRINNTransactionOnPaymentComplete: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: updateProjectLeader: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: newStripeCharge: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: newUserProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: newTeamProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: newProcess: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: newMessage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: userCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: teamCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: teamMemberWrite: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTWVtYmVyV3JpdGUvQUIxSkdsUXBkME0 is done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: teamLeaderWrite: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: returnCOINS: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: processImage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: loopProjects: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc is not done.
+[debug] [2018-04-01T16:07:46.594Z] [functions] operation poll: loopMessages: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8 is not done.
+[debug] [2018-04-01T16:07:51.605Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.605Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.605Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.605Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.606Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.606Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.606Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.606Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.606Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.607Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.607Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.607Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.608Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.608Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8  
+ Sun Apr 01 2018 17:07:51 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:51.834Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.844Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.850Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.859Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.864Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.866Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.867Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.874Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.877Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.880Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.884Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.885Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.885Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.899Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: createPERRINNTransactionOnPaymentComplete: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: updateProjectLeader: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: newStripeCharge: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: newUserProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: newTeamProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: newProcess: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: newMessage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: userCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91c2VyQ3JlYXRpb24vd3FaM3BkMTNxUzQ is done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: teamCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: teamLeaderWrite: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtTGVhZGVyV3JpdGUvRktZZjY2aTEwbFk is done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: returnCOINS: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: processImage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E is not done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: loopProjects: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wUHJvamVjdHMva01BanZzTUZiOGc is done.
+[debug] [2018-04-01T16:07:51.900Z] [functions] operation poll: loopMessages: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8 is not done.
+[debug] [2018-04-01T16:07:56.905Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.906Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.906Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.906Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.906Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.906Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.906Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.906Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.907Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.907Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:56.907Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8  
+ Sun Apr 01 2018 17:07:56 GMT+0100 (BST)
+[debug] [2018-04-01T16:07:57.166Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.168Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.168Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.170Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.170Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.171Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.171Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.174Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.175Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.175Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.179Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: createPERRINNTransactionOnPaymentComplete: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ is not done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: updateProjectLeader: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS91cGRhdGVQcm9qZWN0TGVhZGVyL2g2c0Q4V3UyTlBF is done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: newStripeCharge: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg is not done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: newUserProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ is not done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: newTeamProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw is not done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: newProcess: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw is not done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: newMessage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdNZXNzYWdlL2txdDd5ZVhBR2tJ is done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: teamCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk is not done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: returnCOINS: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9yZXR1cm5DT0lOUy93YnRWWDRpWmVaMA is done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: processImage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E is not done.
+[debug] [2018-04-01T16:07:57.180Z] [functions] operation poll: loopMessages: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8 is not done.
+[debug] [2018-04-01T16:08:02.190Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ  
+ Sun Apr 01 2018 17:08:02 GMT+0100 (BST)
+[debug] [2018-04-01T16:08:02.191Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg  
+ Sun Apr 01 2018 17:08:02 GMT+0100 (BST)
+[debug] [2018-04-01T16:08:02.191Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ  
+ Sun Apr 01 2018 17:08:02 GMT+0100 (BST)
+[debug] [2018-04-01T16:08:02.191Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw  
+ Sun Apr 01 2018 17:08:02 GMT+0100 (BST)
+[debug] [2018-04-01T16:08:02.192Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw  
+ Sun Apr 01 2018 17:08:02 GMT+0100 (BST)
+[debug] [2018-04-01T16:08:02.192Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk  
+ Sun Apr 01 2018 17:08:02 GMT+0100 (BST)
+[debug] [2018-04-01T16:08:02.192Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E  
+ Sun Apr 01 2018 17:08:02 GMT+0100 (BST)
+[debug] [2018-04-01T16:08:02.193Z] >>> HTTP REQUEST GET https://cloudfunctions.googleapis.com/v1beta2/operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8  
+ Sun Apr 01 2018 17:08:02 GMT+0100 (BST)
+[debug] [2018-04-01T16:08:02.433Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:08:02.435Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:08:02.436Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:08:02.440Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:08:02.447Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:08:02.450Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:08:02.454Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:08:02.484Z] <<< HTTP RESPONSE 200
+[debug] [2018-04-01T16:08:02.488Z] [functions] operation poll: createPERRINNTransactionOnPaymentComplete: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9jcmVhdGVQRVJSSU5OVHJhbnNhY3Rpb25PblBheW1lbnRDb21wbGV0ZS9fWUp5UTk0VDB4QQ is not done.
+[debug] [2018-04-01T16:08:02.488Z] [functions] operation poll: newStripeCharge: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdTdHJpcGVDaGFyZ2UvbjZyMzVSM0g5eDg is not done.
+[debug] [2018-04-01T16:08:02.488Z] [functions] operation poll: newUserProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdVc2VyUHJvZmlsZS95S1l3OXVqU002QQ is not done.
+[debug] [2018-04-01T16:08:02.488Z] [functions] operation poll: newTeamProfile: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdUZWFtUHJvZmlsZS9lRDZWZVNCSzJjcw is not done.
+[debug] [2018-04-01T16:08:02.488Z] [functions] operation poll: newProcess: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9uZXdQcm9jZXNzL0ZJdl9pdDU4XzQw is not done.
+[debug] [2018-04-01T16:08:02.488Z] [functions] operation poll: teamCreation: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS90ZWFtQ3JlYXRpb24vTnhmTU1uaV9vaUk is done.
+[debug] [2018-04-01T16:08:02.488Z] [functions] operation poll: processImage: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9wcm9jZXNzSW1hZ2UvTTZ6WVlyOEpmR0E is done.
+[debug] [2018-04-01T16:08:02.488Z] [functions] operation poll: loopMessages: update operations/cGVycmlubi1kNWZjMS91cy1jZW50cmFsMS9sb29wTWVzc2FnZXMvWW5PVV9aVzVhSm8 is done.

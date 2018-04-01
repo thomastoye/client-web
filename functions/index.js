@@ -106,19 +106,25 @@ function removeListKey (user,team,ref,list,key) {
 
 function createMessage (team, user, text, image, action, linkTeam, linkUser) {
   const now = Date.now();
-  return admin.database().ref('teamMessages/'+team).push({
-    timestamp:now,
-    text:text,
-    user:user,
-    image:image,
-    action:action,
-    linkTeam:linkTeam,
-    linkUser:linkUser,
-  }).then(()=>{
-    return admin.database().ref('teamActivities/'+team).update({
-      lastMessageTimestamp:now,
-      lastMessageText:text,
-      lastMessageUser:user,
+  return admin.database().ref('PERRINNUsers/'+user).once('value').then(userData=>{
+    return admin.database().ref('PERRINNImages/'+userData.val().image).once('value').then(imageData=>{
+      return admin.database().ref('teamMessages/'+team).push({
+        timestamp:now,
+        text:text,
+        user:user,
+        firstName:userData.val().firstName,
+        imageUrlThumbUser:imageData.val().thumb,
+        image:image,
+        action:action,
+        linkTeam:linkTeam,
+        linkUser:linkUser,
+      }).then(()=>{
+        return admin.database().ref('teamActivities/'+team).update({
+          lastMessageTimestamp:now,
+          lastMessageText:text,
+          lastMessageUser:user,
+        });
+      });
     });
   });
 }
@@ -602,3 +608,28 @@ function copyPhotoURL(photo){
     }
   }
 }
+
+exports.loopMessages = functions.database.ref('tot').onCreate(event => {
+  return admin.database().ref('teamMessages/').once('value').then(teams=>{
+    teams.forEach(team=>{
+      admin.database().ref('teamMessages/'+team.key).once('value').then(messages=>{
+        messages.forEach(message=>{
+          if (message.user!=undefined) {
+            admin.database().ref('PERRINNUsers/'+message.val().user).once('value').then(user=>{
+              if (user.firstName!=undefined){
+                admin.database().ref('PERRINNImages/'+user.val().image).once('value').then(image=>{
+                  if (image.thumb!=undefined){
+                    admin.database().ref('teamMessages/'+team.key+'/'+message.key).update({
+                      firstName:user.val().firstName,
+                      imageUrlThumbUser:image.val().thumb,
+                    });
+                  }
+                }).catch(()=>{});
+              }
+            }).catch(()=>{});
+          }
+        });
+      }).catch(()=>{});
+    });
+  });
+});

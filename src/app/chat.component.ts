@@ -23,10 +23,11 @@ import { databaseService } from './database.service';
       <div style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-width:0 0 0 3px;border-style:solid;border-radius:7px" [style.margin]="isMessageNewUserGroup(message.user,message.timestamp)||first?'15px 25px 0 10px':'2px 25px 0 70px'"
       [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'||message.action=='add'?'#e6efe6':message.action=='warning'||message.action=='remove'?'#efeac6':'white'" (click)="timestampChatVisit()">
         <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="float:left;width:60px;min-height:10px">
-          <img (error)="errorHandler($event)" [src]="DB.getUserImageUrlThumb(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
+          <img (error)="errorHandler($event)" [src]="message?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
+          {{image?.imageUrlThumbUser}}
         </div>
         <div>
-          <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin-right:10px">{{DB.getUserFirstName(message.user)}}</div>
+          <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin-right:10px">{{message.firstName}}</div>
           <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="color: #AAA;">{{message.timestamp | date:'jm'}}</div>
           <img *ngIf="message.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
@@ -61,7 +62,7 @@ import { databaseService } from './database.service';
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none;background-color:#ededed">
     <ul style="list-style:none;float:left;">
       <li *ngFor="let user of draftMessageUsers | async">
-      <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{DB.getUserFirstName(user.$key)}}...</div>
+      <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.firstName}}...</div>
       </li>
     </ul>
     <img *ngIf="!UI.serviceMessage&&DB.getTeamLeader(UI.currentTeam,UI.currentUser)" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
@@ -171,6 +172,8 @@ export class ChatComponent {
             image:this.draftImage,
             imageDownloadURL:this.draftImageDownloadURL,
             user:this.UI.currentUser,
+            firstName:this.DB.getUserFirstName(this.UI.currentUser),
+            imageUrlThumbUser:this.DB.getUserImageUrlThumb(this.UI.currentUser),
             action:"chat",
             process:processData,
           }).key;
@@ -194,7 +197,11 @@ export class ChatComponent {
 
   updateDraftMessageDB () {
     if ((this.draftMessage!="")!=this.draftMessageDB) {
-      this.db.object('teamActivities/'+this.UI.currentTeam+'/draftMessages/'+this.UI.currentUser).update({draftMessage:this.draftMessage!="",draftMessageTimestamp:firebase.database.ServerValue.TIMESTAMP});
+      this.db.object('teamActivities/'+this.UI.currentTeam+'/draftMessages/'+this.UI.currentUser).update({
+        firstName:this.DB.getUserFirstName(this.UI.currentUser),
+        draftMessage:this.draftMessage!="",
+        draftMessageTimestamp:firebase.database.ServerValue.TIMESTAMP,
+      });
     }
     this.draftMessageDB=(this.draftMessage!="");
   }
