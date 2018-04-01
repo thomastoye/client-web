@@ -20,7 +20,7 @@ export class databaseService {
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.lastName});
     return output;
   }
-  getUserPhotoOriginal(ID:string):string{
+  getUserImageUrlOriginal(ID:string):string{
     var output;
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
       output=snapshot.image;
@@ -34,7 +34,7 @@ export class databaseService {
     });
     return output;
   }
-  getUserPhotoMedium(ID:string):string{
+  getUserImageUrlMedium(ID:string):string{
     var output;
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
       output=snapshot.image;
@@ -48,7 +48,7 @@ export class databaseService {
     });
     return output;
   }
-  getUserPhotoThumb(ID:string):string{
+  getUserImageUrlThumb(ID:string):string{
     var output;
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
       output=snapshot.image;
@@ -87,7 +87,7 @@ export class databaseService {
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{output=snapshot.name});
     return output;
   }
-  getTeamPhotoOriginal(ID:string):string{
+  getTeamImageUrlOriginal(ID:string):string{
     var output;
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
       output=snapshot.image;
@@ -101,7 +101,7 @@ export class databaseService {
     });
     return output;
   }
-  getTeamPhotoMedium(ID:string):string{
+  getTeamImageUrlMedium(ID:string):string{
     var output;
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
       output=snapshot.image;
@@ -115,7 +115,7 @@ export class databaseService {
     });
     return output;
   }
-  getTeamPhotoThumb(ID:string):string{
+  getTeamImageUrlThumb(ID:string):string{
     var output;
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
       output=snapshot.image;
@@ -184,7 +184,7 @@ export class databaseService {
     this.db.object('projects/'+ID).subscribe(snapshot=>{output=snapshot.name});
     return output;
   }
-  getProjectPhotoOriginal(ID:string):string{
+  getProjectImageUrlOriginal(ID:string):string{
     var output;
     this.db.object('projects/'+ID).subscribe(snapshot=>{
       output=snapshot.image;
@@ -198,7 +198,7 @@ export class databaseService {
     });
     return output;
   }
-  getProjectPhotoMedium(ID:string):string{
+  getProjectImageUrlMedium(ID:string):string{
     var output;
     this.db.object('projects/'+ID).subscribe(snapshot=>{
       output=snapshot.image;
@@ -212,7 +212,7 @@ export class databaseService {
     });
     return output;
   }
-  getProjectPhotoThumb(ID:string):string{
+  getProjectImageUrlThumb(ID:string):string{
     var output;
     this.db.object('projects/'+ID).subscribe(snapshot=>{
       output=snapshot.image;
@@ -246,7 +246,7 @@ export class databaseService {
     this.db.object('appSettings/PERRINNServices/'+ID).subscribe(snapshot=>{output=snapshot.regex});
     return output;
   }
-  getMessageImageOriginal(ID:string):string{
+  getMessageImageUrlOriginal(ID:string):string{
     var output;
     if (ID.indexOf('.')!==-1) {
       output=ID;
@@ -255,7 +255,7 @@ export class databaseService {
     }
     return output;
   }
-  getMessageImageMedium(ID:string):string{
+  getMessageImageUrlMedium(ID:string):string{
     var output;
     if (ID.indexOf('.')!==-1) {
       output=ID;
@@ -264,7 +264,7 @@ export class databaseService {
     }
     return output;
   }
-  getMessageImageThumb(ID:string):string{
+  getMessageImageUrlThumb(ID:string):string{
     var output;
     if (ID.indexOf('.')!==-1) {
       output=ID;

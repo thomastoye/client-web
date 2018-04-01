@@ -23,7 +23,7 @@ import { databaseService } from './database.service';
       <div style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-width:0 0 0 3px;border-style:solid;border-radius:7px" [style.margin]="isMessageNewUserGroup(message.user,message.timestamp)||first?'15px 25px 0 10px':'2px 25px 0 70px'"
       [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'||message.action=='add'?'#e6efe6':message.action=='warning'||message.action=='remove'?'#efeac6':'white'" (click)="timestampChatVisit()">
         <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="float:left;width:60px;min-height:10px">
-          <img (error)="errorHandler($event)" [src]="DB.getUserPhotoThumb(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
+          <img (error)="errorHandler($event)" [src]="DB.getUserImageUrlThumb(message.user)" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
         </div>
         <div>
           <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin-right:10px">{{DB.getUserFirstName(message.user)}}</div>
@@ -36,18 +36,18 @@ import { databaseService } from './database.service';
           <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <div *ngIf="!message.image" style="float:left;color:#404040;margin:5px" [innerHTML]="message.text | linky"></div>
           <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['chat',message.linkTeam])">
-            <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoThumb(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
+            <img (error)="errorHandler($event)" [src]="DB.getTeamImageUrlThumb(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
             <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
           </div>
           <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.linkUser])">
-            <img (error)="errorHandler($event)" [src]="DB.getUserPhotoThumb(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px">
+            <img (error)="errorHandler($event)" [src]="DB.getUserImageUrlThumb(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px">
             <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
           </div>
           <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
             <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{DB.getServiceRegex(message.process.service)}}: {{message.process.result}}</div>
           </div>
           <div style="clear:both;text-align:center">
-            <img class="imageWithZoom" *ngIf="message.image" [src]="DB.getMessageImageMedium(message.image)?DB.getMessageImageMedium(message.image):message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(DB.getMessageImageOriginal(message.image)?DB.getMessageImageOriginal(message.image):message.imageDownloadURL)">
+            <img class="imageWithZoom" *ngIf="message.image" [src]="DB.getMessageImageUrlMedium(message.image)?DB.getMessageImageUrlMedium(message.image):message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(DB.getMessageImageUrlOriginal(message.image)?DB.getMessageImageUrlOriginal(message.image):message.imageDownloadURL)">
           </div>
         </div>
       </div>
