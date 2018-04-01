@@ -14,24 +14,20 @@ import { databaseService } from './database.service';
     <progress value='0' max='100' id='uploader'>0%</progress>
     <div *ngIf="DB.getPERRINNGlobalMessage()" style="text-align:center;margin:5px;color:red;font-size:10px">{{DB.getPERRINNGlobalMessage()}}</div>
     <div class='menu'>
-    <div style="float:left;width:20%">
-      <div class='iconSmall' (click)="clickUserIcon()">
-      <img src="./../assets/App icons/Perrinn_02.png" style="width:30px;margin-top:5px;border-radius:3px;">
-      <div class='activity' [hidden]="!globalChatActivity"></div>
-      </div>
+    <div style="width:320px;display:block;margin: 0 auto">
+    <div class='iconSmall' (click)="clickUserIcon()">
+    <img src="./../assets/App icons/Perrinn_02.png" style="width:30px;margin-top:5px;border-radius:3px;">
+    <div class='activity' [hidden]="!globalChatActivity"></div>
     </div>
-    <div style="float:left;width:60%">
-      <div style="text-align:center;width:200px;height:40px;cursor:pointer;display:block;margin: 0 auto" (click)="router.navigate(['team',UI.currentTeam])">
-          <div *ngIf="UI.currentTeam" style="height:40px">
-          <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoThumb(UI.currentTeam)" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:200px;border-radius:3px">
-          <div style="position:absolute;width:200px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{DB.getTeamName(UI.currentTeam)}}{{(DB.getTeamLeader(UI.currentTeam,UI.currentUser)?" *":"")}}</div>
-          </div>
-      </div>
+    <div style="text-align:center;width:170px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
+        <div *ngIf="UI.currentTeam" style="height:40px">
+        <img (error)="errorHandler($event)" [src]="DB.getTeamPhotoThumb(UI.currentTeam)" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:170px;border-radius:3px">
+        <div style="position:absolute;width:170px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{DB.getTeamName(UI.currentTeam)}}{{(DB.getTeamLeader(UI.currentTeam,UI.currentUser)?" *":"")}}</div>
+        </div>
     </div>
-    <div style="float:left;width:20%">
-      <div class='iconSmall' (click)="router.navigate(['search'])">
-      <img src="./../assets/App icons/search.png" style="width:30px;margin-top:5px;border-radius:3px;-webkit-filter:brightness(100);filter:brightness(100);">
-      </div>
+    <div class='iconSmall' (click)="router.navigate(['search'])">
+    <img src="./../assets/App icons/search.png" style="width:30px;margin-top:5px;border-radius:3px;-webkit-filter:brightness(100);filter:brightness(100);">
+    </div>
     </div>
     </div>
     <div id='main_container'>

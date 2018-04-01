@@ -68,10 +68,9 @@ body {
   z-index: 999999;
 }
 .menu .iconSmall {
-  display:block;
-  margin: 0 auto;
   cursor: pointer;
   text-align: center;
+  float: left;
   width: 75px;
   user-select: none;
   position: relative;
