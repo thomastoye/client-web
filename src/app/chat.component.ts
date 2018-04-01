@@ -12,7 +12,7 @@ import { databaseService } from './database.service';
   template: `
   <div class="sheet" style="background-color:#f5f5f5">
   <div class="chat" id="chat-scroll">
-  <div style="float:right;width:100px;text-align:center">
+  <div style="float:right;width:105px;text-align:center">
   <div style="font-size:12px;position:fixed;color:blue;cursor:pointer;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">C{{DB.getTeamBalance(UI.currentTeam)|number:'1.2-2'}} ></div>
   </div>
   <div>

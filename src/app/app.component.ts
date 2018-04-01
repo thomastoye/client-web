@@ -31,7 +31,6 @@ import { databaseService } from './database.service';
     </div>
     </div>
     <div id='main_container'>
-    <div style="height:40px;width:100%;z-index:1"></div>
     <router-outlet></router-outlet>
     </div>
   `,
