@@ -8,13 +8,23 @@ export class userInterfaceService {
   focusUser:string;
   focusProject:string;
   currentTeam:string;
-  currentUser: string;
-  serviceMessage: string;
+  currentUser:string;
+  currentUserFirstName:string;
+  currentUserLastName:string;
+  currentUserImageUrlThumb:string;
+  serviceMessage:string;
 
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.afAuth.authState.subscribe((auth) => {
       if (auth!=null) {
         this.currentUser=auth.uid;
+        this.db.object('PERRINNUsers/'+this.currentUser).subscribe(snapshot=>{
+          this.currentUserFirstName=snapshot.firstName;
+          this.currentUserLastName=snapshot.lastName;
+          this.db.object('PERRINNImages/'+snapshot.image).subscribe(snapshot=>{
+            this.currentUserImageUrlThumb=snapshot.thumb;
+          });
+        });
         if (this.focusUser==null) this.focusUser=auth.uid;
         this.db.object('PERRINNUsers/'+this.focusUser).subscribe(snapshot=>{
           if (this.currentTeam==null) this.currentTeam=snapshot.personalTeam;

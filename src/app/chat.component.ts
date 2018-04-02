@@ -48,7 +48,7 @@ import { databaseService } from './database.service';
             <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{DB.getServiceRegex(message.process.service)}}: {{message.process.result}}</div>
           </div>
           <div style="clear:both;text-align:center">
-            <img class="imageWithZoom" *ngIf="message.image" [src]="DB.getMessageImageUrlMedium(message.image)?DB.getMessageImageUrlMedium(message.image):message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(DB.getMessageImageUrlOriginal(message.image)?DB.getMessageImageUrlOriginal(message.image):message.imageDownloadURL)">
+            <img class="imageWithZoom" *ngIf="message.image" [src]="message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.imageDownloadURL)">
           </div>
         </div>
       </div>
@@ -172,8 +172,8 @@ export class ChatComponent {
             image:this.draftImage,
             imageDownloadURL:this.draftImageDownloadURL,
             user:this.UI.currentUser,
-            firstName:this.DB.getUserFirstName(this.UI.currentUser),
-            imageUrlThumbUser:this.DB.getUserImageUrlThumb(this.UI.currentUser),
+            firstName:this.UI.currentUserFirstName,
+            imageUrlThumbUser:this.UI.currentUserImageUrlThumb,
             action:"chat",
             process:processData,
           }).key;

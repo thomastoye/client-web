@@ -45,8 +45,8 @@ export class HelpComponent {
           timestamp:now,
           text:text,
           user:this.UI.currentUser,
-          firstName:this.DB.getUserFirstName(this.UI.currentUser),
-          imageUrlThumbUser:this.DB.getUserImageUrlThumb(this.UI.currentUser),
+          firstName:this.UI.currentUserFirstName,
+          imageUrlThumbUser:this.UI.currentUserImageUrlThumb,
           process:processData,
         }).key;
         if (isProcessReady) {
