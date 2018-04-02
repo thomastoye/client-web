@@ -16,7 +16,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li style="cursor:default" *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam">
-      <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
+      <div *ngIf="team.following">
       <div style="width:200px;float:left">
       <img (error)="errorHandler($event)" [src]="DB.getTeamImageUrlThumb(team.$key)" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:20px;width:30px;border-radius:3px">
       <div style="width:150px;float:left;margin-top:10px;color:#222;font-size:11px">{{DB.getTeamName(team.$key)}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>

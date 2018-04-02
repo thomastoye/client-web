@@ -24,7 +24,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of userTeams | async"
       (click)="router.navigate(['chat',team.$key])">
-      <div *ngIf="DB.getUserFollowing(UI.focusUser,team.$key)">
+      <div *ngIf="team.following">
       <div style="float:left">
         <img (error)="errorHandler($event)" [src]="DB.getTeamImageUrlThumb(team.$key)" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
       </div>
