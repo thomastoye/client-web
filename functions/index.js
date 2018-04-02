@@ -734,3 +734,40 @@ exports.updateTeamsMissingData = functions.database.ref('tot').onCreate(event =>
     console.log(error);
   });
 });
+
+exports.updateUsersMissingData = functions.database.ref('tot').onCreate(event => {
+  let userKeys=[];
+  let keys=[];
+  const maxIter=1000;
+  let iter=0;
+  return admin.database().ref('PERRINNUsers/').once('value').then(users=>{
+    let values=[];
+    users.forEach(user=>{
+      if (user.val().imageUrlThumb==undefined&&user.val().image!=undefined) {
+        userKeys.push(user.key);
+        keys.push('imageUrlThumb');
+        values.push(admin.database().ref('PERRINNImages/'+user.val().image.replace(/[\\/:"*?<>|\.#=]/g,'')).child('thumb').once('value'));
+      }
+    });
+    return Promise.all(values);
+  }).then(values=>{
+    let updateObj={};
+    console.log('number of items:'+values.length);
+    for(i=0;i<values.length;i++) {
+      if (values[i]!=undefined&&i<maxIter) {
+        if (values[i].val()!=null) {
+          updateObj[`PERRINNUsers/${userKeys[i]}/${keys[i]}`]=values[i].val();
+          iter+=1;
+        }
+      }
+    }
+    console.log('number of updates:'+iter);
+    console.log(updateObj);
+    return admin.database().ref().update(updateObj);
+  }).then(()=>{
+    console.log('all done.');
+    return iter;
+  }).catch(error=>{
+    console.log(error);
+  });
+});

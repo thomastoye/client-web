@@ -21,9 +21,9 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let user of users | async"
       (click)="router.navigate(['user',user.$key])">
-      <img (error)="errorHandler($event)"[src]="DB.getUserImageUrlThumb(user.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img (error)="errorHandler($event)"[src]="user.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{user.firstName}} {{user.lastName}}</div>
-      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(user.$key,'','',user.$key)">Send to chat</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(user.$key,'','','','','',user.$key,user.firstName,user.lastName,user.imageUrlThumb)">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -34,7 +34,7 @@ import { databaseService } from './database.service';
       (click)="router.navigate(['chat',team.$key]);">
       <img (error)="errorHandler($event)"[src]="team?.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{team.name}}</div>
-      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,'',team.$key,'')">Send to chat</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,'','',team.$key,team.name,team.imageUrlThumb,'','','','')">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -43,7 +43,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let project of projects | async"
       (click)="router.navigate(['project',project.$key])">
-      <img (error)="errorHandler($event)"[src]="DB.getProjectImageUrlThumb(project.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img (error)="errorHandler($event)"[src]="project?.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{project.name}}
     </li>
   </ul>
@@ -55,10 +55,10 @@ import { databaseService } from './database.service';
     [class.selected]="image.$key === selectedImageID"
     (click)="selectedImageID=image.$key"
     style="text-align:center;padding:10px;float:left">
-      <img [src]="DB.getImageUrlThumb(image.image)" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
+      <img [src]="image?.thumb" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
       <div style="line-height:normal">{{image.name}}</div>
       <div style="height:30px">
-      <div class="buttonDiv" *ngIf="image.$key===selectedImageID" (click)="addMessage(image.image,image.image,'','')">Send to chat</div>
+      <div class="buttonDiv" *ngIf="image.$key===selectedImageID" (click)="addMessage(image.image,image.image,image.thumb,'','','','','','','')">Send to chat</div>
       </div>
     </li>
   </ul>
@@ -123,7 +123,7 @@ export class SearchComponent  {
     }
   }
 
-  addMessage(text,image,linkTeam,linkUser) {
+  addMessage(text,image,imageDownloadURL,linkTeam,linkTeamName,linkTeamImageUrlThumb,linkUser,linkUserFirstName,linkUserLastName,linkUserImageUrlThumb) {
     this.UI.processNewMessage(text).then(isProcessReady=>{
       firebase.database().ref('teamServices/'+this.UI.currentTeam+'/process').once('value',process=>{
         var processData=isProcessReady?process.val():null;
@@ -132,16 +132,17 @@ export class SearchComponent  {
           timestamp:now,
           text:text,
           image:image,
+          imageDownloadURL:imageDownloadURL?imageDownloadURL:'',
           user:this.UI.currentUser,
           firstName:this.UI.currentUserFirstName,
           imageUrlThumbUser:this.UI.currentUserImageUrlThumb,
           linkTeam:linkTeam,
-          linkTeamName:linkTeam?this.DB.getTeamName(linkTeam):null,
-          linkTeamImageUrlThumb:this.DB.getTeamImageUrlThumb(linkTeam)!=undefined?this.DB.getTeamImageUrlThumb(linkTeam):null,
+          linkTeamName:linkTeamName?linkTeamName:'',
+          linkTeamImageUrlThumb:linkTeamImageUrlThumb?linkTeamImageUrlThumb:'',
           linkUser:linkUser,
-          linkUserFirstName:linkUser?this.DB.getUserFirstName(linkUser):null,
-          linkUserLastName:linkUser?this.DB.getUserLastName(linkUser):null,
-          linkUserImageUrlThumb:this.DB.getUserImageUrlThumb(linkUser)!=undefined?this.DB.getUserImageUrlThumb(linkUser):null,
+          linkUserFirstName:linkUserFirstName?linkUserFirstName:'',
+          linkUserLastName:linkUserLastName?linkUserLastName:'',
+          linkUserImageUrlThumb:linkUserImageUrlThumb?linkUserImageUrlThumb:'',
           process:processData,
         }).key;
         if (isProcessReady) {
