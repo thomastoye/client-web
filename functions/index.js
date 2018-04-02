@@ -606,7 +606,121 @@ exports.updateMessageMissingFirstName = functions.database.ref('tot').onCreate(e
       if (firstNames[i]!=undefined&&i<maxIter) {
         if (firstNames[i].val()!=null) {
           updateObj[`teamMessages/${teamKeys[i]}/${messageKeys[i]}/firstName`]=firstNames[i].val();
-          iter+=iter;
+          iter+=1;
+        }
+      }
+    }
+    console.log('number of updates:'+iter);
+    console.log(updateObj);
+    return admin.database().ref().update(updateObj);
+  }).then(()=>{
+    console.log('all done.');
+    return iter;
+  }).catch(error=>{
+    console.log(error);
+  });
+});
+
+exports.updateUserTeamsMissingData = functions.database.ref('tot').onCreate(event => {
+  let userKeys=[];
+  let teamKeys=[];
+  let keys=[];
+  const maxIter=1000;
+  let iter=0;
+  return admin.database().ref('userTeams/').once('value').then(users=>{
+    let values=[];
+    users.forEach(user=>{
+      user.forEach(team=>{
+        if (team.val().name==undefined) {
+          userKeys.push(user.key);
+          teamKeys.push(team.key);
+          keys.push('name');
+          values.push(admin.database().ref('PERRINNTeams/'+team.key).child('name').once('value'));
+        }
+        if (team.val().balance==undefined) {
+          userKeys.push(user.key);
+          teamKeys.push(team.key);
+          keys.push('balance');
+          values.push(admin.database().ref('PERRINNTeamBalance/'+team.key).child('balance').once('value'));
+        }
+        if (team.val().lastMessageTimestamp==undefined) {
+          userKeys.push(user.key);
+          teamKeys.push(team.key);
+          keys.push('lastMessageTimestamp');
+          values.push(admin.database().ref('teamActivities/'+team.key).child('lastMessageTimestamp').once('value'));
+        }
+        if (team.val().lastMessageText==undefined) {
+          userKeys.push(user.key);
+          teamKeys.push(team.key);
+          keys.push('lastMessageText');
+          values.push(admin.database().ref('teamActivities/'+team.key).child('lastMessageText').once('value'));
+        }
+        if (team.val().lastMessageUser==undefined) {
+          userKeys.push(user.key);
+          teamKeys.push(team.key);
+          keys.push('lastMessageUser');
+          values.push(admin.database().ref('teamActivities/'+team.key).child('lastMessageUser').once('value'));
+        }
+        if (team.val().lastMessageUserFirstName==undefined) {
+          userKeys.push(user.key);
+          teamKeys.push(team.key);
+          keys.push('lastMessageUserFirstName');
+          values.push(admin.database().ref('PERRINNUsers/'+team.val().lastMessageUser).child('firstName').once('value'));
+        }
+        if (team.val().imageUrlThumb==undefined) {
+          userKeys.push(user.key);
+          teamKeys.push(team.key);
+          keys.push('imageUrlThumb');
+          values.push(admin.database().ref('PERRINNTeams/'+team.key).child('imageUrlThumb').once('value'));
+        }
+      });
+    });
+    return Promise.all(values);
+  }).then(values=>{
+    let updateObj={};
+    console.log('number of items:'+values.length);
+    for(i=0;i<values.length;i++) {
+      if (values[i]!=undefined&&i<maxIter) {
+        if (values[i].val()!=null) {
+          updateObj[`userTeams/${userKeys[i]}/${teamKeys[i]}/${keys[i]}`]=values[i].val();
+          iter+=1;
+        }
+      }
+    }
+    console.log('number of updates:'+iter);
+    console.log(updateObj);
+    return admin.database().ref().update(updateObj);
+  }).then(()=>{
+    console.log('all done.');
+    return iter;
+  }).catch(error=>{
+    console.log(error);
+  });
+});
+
+exports.updateTeamsMissingData = functions.database.ref('tot').onCreate(event => {
+  let teamKeys=[];
+  let keys=[];
+  const maxIter=1000;
+  let iter=0;
+  return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
+    let values=[];
+    teams.forEach(team=>{
+      if (team.val().imageUrlThumb==undefined&&team.val().image!=undefined) {
+        teamKeys.push(team.key);
+        keys.push('imageUrlThumb');
+        values.push(admin.database().ref('PERRINNImages/'+team.val().image.replace(/[\\/:"*?<>|\.#=]/g,'')).child('thumb').once('value'));
+      }
+    });
+    return Promise.all(values);
+  }).then(values=>{
+    let updateObj={};
+    console.log('number of items:'+values.length);
+    for(i=0;i<values.length;i++) {
+      if (values[i]!=undefined&&i<maxIter) {
+        if (values[i].val()!=null) {
+          updateObj[`PERRINNTeams/${teamKeys[i]}/${keys[i]}`]=values[i].val();
+          iter+=1;
         }
       }
     }

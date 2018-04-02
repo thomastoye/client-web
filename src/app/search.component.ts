@@ -32,7 +32,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li *ngFor="let team of teams | async"
       (click)="router.navigate(['chat',team.$key]);">
-      <img (error)="errorHandler($event)"[src]="DB.getTeamImageUrlThumb(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img (error)="errorHandler($event)"[src]="team?.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{team.name}}</div>
       <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,'',team.$key,'')">Send to chat</div>
     </li>

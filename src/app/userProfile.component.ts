@@ -22,19 +22,19 @@ import { databaseService } from './database.service';
   </div>
   <div class='sheet' style="margin-top:5px">
   <ul class="listLight">
-    <li *ngFor="let team of userTeams | async"
+    <li *ngFor="let team of userTeams|async;let last=last"
       (click)="router.navigate(['chat',team.$key])">
       <div *ngIf="team.following">
       <div style="float:left">
-        <img (error)="errorHandler($event)" [src]="DB.getTeamImageUrlThumb(team.$key)" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
+        <img (error)="errorHandler($event)" [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
       </div>
       <div>
         <div *ngIf="DB.getUserPersonalTeam(UI.focusUser)==team.$key" style="float:left;margin:15px 5px 0 0;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>
-        <img [hidden]="!(DB.getTeamBalance(team.$key)>0)" src="./../assets/App icons/icon_share_03.svg" style="float:left;height:17px;margin:5px;margin-top:17px">
-        <div style="float:left;margin-top:15px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{DB.getTeamName(team.$key)}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>
-        <div style="float:left;margin:5px;margin-top:19px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="DB.getTeamLastMessageTimestamp(team.$key)>team.lastChatVisitTimestamp"></div>
+        <img [hidden]="!(team.balance>0)" src="./../assets/App icons/icon_share_03.svg" style="float:left;height:17px;margin:5px;margin-top:17px">
+        <div style="float:left;margin-top:15px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{team.name}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>
+        <div style="float:left;margin:5px;margin-top:19px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.lastMessageTimestamp>team.lastChatVisitTimestamp"></div>
         <div style="float:right;margin-top:10px;color:#999;margin-right:10px">{{team.lastChatVisitTimestamp|date:'d MMM'}}</div>
-        <div *ngIf="DB.getTeamLastMessageText(team.$key)" style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{DB.getUserFirstName(DB.getTeamLastMessageUser(team.$key))}}: {{DB.getTeamLastMessageText(team.$key)}}</div>
+        <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team.lastMessageUserFirstName}}: {{team?.lastMessageText}}</div>
       </div>
       <div class="seperator"></div>
       </div>
