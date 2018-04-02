@@ -188,7 +188,6 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
       return Number(balance)+Number(amount);
     }, function(error, committed, balance) {
       if (error) {
-        createMessage (team,"PERRINN","Transaction error, we will be in touch shortly","","warning","","");
         createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Transaction error reference:","","warning",team,user);
       } else if (!committed) {
       } else {
@@ -415,32 +414,6 @@ exports.teamCreation = functions.database.ref('/PERRINNTeams/{team}/createdTimes
   createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",event.params.team,"");
 });
 
-exports.teamMemberWrite = functions.database.ref('/PERRINNTeams/{team}/members/{member}').onWrite(event => {
-  if (event.data.exists()) {
-    admin.database().ref('PERRINNUsers/'+event.params.member).child('personalTeam').once('value').then((personalTeam)=>{
-      createMessage (personalTeam.val(),"PERRINN","You are a member of:","","add",event.params.team,"");
-    });
-  }
-  if (!event.data.exists()) {
-    admin.database().ref('PERRINNUsers/'+event.params.member).child('personalTeam').once('value').then((personalTeam)=>{
-      createMessage (personalTeam.val(),"PERRINN","You are not anymore a member of:","","remove",event.params.team,"");
-    });
-  }
-});
-
-exports.teamLeaderWrite = functions.database.ref('/PERRINNTeams/{team}/leaders/{leader}').onWrite(event => {
-  if (event.data.exists()) {
-    admin.database().ref('PERRINNUsers/'+event.params.leader).child('personalTeam').once('value').then((personalTeam)=>{
-      createMessage (personalTeam.val(),"PERRINN","You are leader of:","","confirmation",event.params.team,"");
-    });
-  }
-  if (!event.data.exists()) {
-    admin.database().ref('PERRINNUsers/'+event.params.leader).child('personalTeam').once('value').then((personalTeam)=>{
-      createMessage (personalTeam.val(),"PERRINN","You are not anymore leader of:","","remove",event.params.team,"");
-    });
-  }
-});
-
 exports.returnCOINS = functions.database.ref('tot').onCreate(event => {
   return admin.database().ref('PERRINNTeamBalance/').once('value').then(teams=>{
     var totalAmount = teams.child('-L6XIigvAphrJr5w2jbf').val().balance;
@@ -609,27 +582,41 @@ function copyPhotoURL(photo){
   }
 }
 
-exports.loopMessages = functions.database.ref('tot').onCreate(event => {
+exports.updateMessageMissingFirstName = functions.database.ref('tot').onCreate(event => {
+  let teamKeys=[];
+  let messageKeys=[];
+  const maxIter=1000;
+  let iter=0;
   return admin.database().ref('teamMessages/').once('value').then(teams=>{
+    let firstNames=[];
     teams.forEach(team=>{
-      admin.database().ref('teamMessages/'+team.key).once('value').then(messages=>{
-        messages.forEach(message=>{
-          if (message.user!=undefined) {
-            admin.database().ref('PERRINNUsers/'+message.val().user).once('value').then(user=>{
-              if (user.firstName!=undefined){
-                admin.database().ref('PERRINNImages/'+user.val().image).once('value').then(image=>{
-                  if (image.thumb!=undefined){
-                    admin.database().ref('teamMessages/'+team.key+'/'+message.key).update({
-                      firstName:user.val().firstName,
-                      imageUrlThumbUser:image.val().thumb,
-                    });
-                  }
-                }).catch(()=>{});
-              }
-            }).catch(()=>{});
-          }
-        });
-      }).catch(()=>{});
+      team.forEach(message=>{
+        if (message.val().firstName==undefined&&iter<maxIter) {
+          teamKeys.push(team.key);
+          messageKeys.push(message.key);
+          firstNames.push(admin.database().ref('PERRINNUsers/'+message.val().user).child('firstName').once('value'));
+        }
+      });
     });
+    return Promise.all(firstNames);
+  }).then(firstNames=>{
+    let updateObj={};
+    console.log('number of items:'+firstNames.length);
+    for(i=0;i<firstNames.length;i++) {
+      if (firstNames[i]!=undefined&&i<maxIter) {
+        if (firstNames[i].val()!=null) {
+          updateObj[`teamMessages/${teamKeys[i]}/${messageKeys[i]}/firstName`]=firstNames[i].val();
+          iter+=iter;
+        }
+      }
+    }
+    console.log('number of updates:'+iter);
+    console.log(updateObj);
+    return admin.database().ref().update(updateObj);
+  }).then(()=>{
+    console.log('all done.');
+    return iter;
+  }).catch(error=>{
+    console.log(error);
   });
 });

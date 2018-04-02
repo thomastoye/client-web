@@ -23,7 +23,7 @@ import { databaseService } from './database.service';
       (click)="router.navigate(['user',user.$key])">
       <img (error)="errorHandler($event)"[src]="DB.getUserImageUrlThumb(user.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{user.firstName}} {{user.lastName}}</div>
-      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(user.$key,'','',user.$key)">Send to chat</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage('','','',user.$key)">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -34,7 +34,7 @@ import { databaseService } from './database.service';
       (click)="router.navigate(['chat',team.$key]);">
       <img (error)="errorHandler($event)"[src]="DB.getTeamImageUrlThumb(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{team.name}}</div>
-      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,'',team.$key,'')">Send to chat</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage('','',team.$key,'')">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -134,9 +134,14 @@ export class SearchComponent  {
           image:image,
           user:this.UI.currentUser,
           firstName:this.DB.getUserFirstName(this.UI.currentUser),
-          imageUrlThumbUser:this.DB.getImageUrlThumb(this.UI.currentUser),
+          imageUrlThumbUser:this.DB.getUserImageUrlThumb(this.UI.currentUser),
           linkTeam:linkTeam,
+          linkTeamName:linkTeam?this.DB.getTeamName(linkTeam):null,
+          linkTeamImageUrlThumb:this.DB.getTeamImageUrlThumb(linkTeam)!=undefined?this.DB.getTeamImageUrlThumb(linkTeam):null,
           linkUser:linkUser,
+          linkUserFirstName:linkUser?this.DB.getUserFirstName(linkUser):null,
+          linkUserLastName:linkUser?this.DB.getUserLastName(linkUser):null,
+          linkUserImageUrlThumb:this.DB.getUserImageUrlThumb(linkUser)!=undefined?this.DB.getUserImageUrlThumb(linkUser):null,
           process:processData,
         }).key;
         if (isProcessReady) {

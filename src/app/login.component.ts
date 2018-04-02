@@ -14,7 +14,6 @@ import { databaseService } from './database.service';
   <div style="font-size:25px;line-height:35px;color:#555">Public.</div>
   <div style="font-size:25px;line-height:35px;color:#555">Chat.</div>
   <div style="font-size:25px;line-height:35px;color:#555">And exchange.</div>
-  <div style="font-size:25px;line-height:35px;color:#555">For everyone.</div>
   </div>
     <div class="module form-module">
       <div class="form">

@@ -37,12 +37,12 @@ import { databaseService } from './database.service';
           <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <div *ngIf="!message.image" style="float:left;color:#404040;margin:5px" [innerHTML]="message.text | linky"></div>
           <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['chat',message.linkTeam])">
-            <img (error)="errorHandler($event)" [src]="DB.getTeamImageUrlThumb(message.linkTeam)" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
-            <div style="font-size:11px;padding:5px;">{{DB.getTeamName(message.linkTeam)}}</div>
+            <img (error)="errorHandler($event)" [src]="message?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
+            <div style="font-size:11px;padding:5px;">{{message?.linkTeamName}}</div>
           </div>
           <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.linkUser])">
-            <img (error)="errorHandler($event)" [src]="DB.getUserImageUrlThumb(message.linkUser)" style="float:left;object-fit:cover;height:25px;width:25px">
-            <div style="font-size:11px;padding:5px;">{{DB.getUserFirstName(message.linkUser)}} {{DB.getUserLastName(message.linkUser)}}</div>
+            <img (error)="errorHandler($event)" [src]="message?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
+            <div style="font-size:11px;padding:5px;">{{message?.linkUserFirstName}} {{message?.linkUserLastName}}</div>
           </div>
           <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
             <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{DB.getServiceRegex(message.process.service)}}: {{message.process.result}}</div>
