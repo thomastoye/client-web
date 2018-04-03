@@ -54,11 +54,6 @@ export class HelpComponent {
             messageID:messageID,
           });
         }
-        this.db.object('teamActivities/'+this.UI.currentTeam).update({
-          lastMessageTimestamp:now,
-          lastMessageText:text,
-          lastMessageUser:this.UI.currentUser,
-        });
         this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
           lastChatVisitTimestamp:now,
           lastChatVisitTimestampNegative:-1*now,

@@ -80,6 +80,11 @@ export class TeamProfileComponent  {
     this.db.object('userTeams/'+userID+'/'+teamID).update({
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
+      name:this.UI.currentTeamObj.name,
+      imageUrlThumb:this.UI.currentTeamObj.imageUrlThumb?this.UI.currentTeamObj.imageUrlThumb:'',
+    });
+    this.db.object('teamUsers/'+teamID).update({
+      [userID]:true,
     });
     this.router.navigate(['user',this.UI.currentUser]);
   }

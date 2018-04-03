@@ -158,6 +158,11 @@ export class ChatComponent {
     this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
+      name:this.UI.currentTeamObj.name,
+      imageUrlThumb:this.UI.currentTeamObj.imageUrlThumb?this.UI.currentTeamObj.imageUrlThumb:'',
+    });
+    this.db.object('teamUsers/'+this.UI.currentTeam).update({
+      [this.UI.currentUser]:true,
     });
   }
 
@@ -184,11 +189,6 @@ export class ChatComponent {
               messageID:messageID,
             });
           }
-          this.db.object('teamActivities/'+this.UI.currentTeam).update({
-            lastMessageTimestamp:now,
-            lastMessageText:this.draftMessage,
-            lastMessageUser:this.UI.currentUser,
-          });
           this.timestampChatVisit();
           this.draftMessage = "";
           this.draftImage = "";

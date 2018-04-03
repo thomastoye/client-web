@@ -120,7 +120,6 @@ function createMessage (team, user, text, image, action, linkTeam, linkUser) {
         linkUser:linkUser,
       }).then(()=>{
         return admin.database().ref('teamActivities/'+team).update({
-          lastMessageTimestamp:now,
           lastMessageText:text,
           lastMessageUser:user,
         });
@@ -403,6 +402,7 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
       return messageCount+1;
     }
   });
+  fanoutLastMessageData(event.params.team,message.timestamp,message.firstName,message.text);
 });
 
 exports.userCreation = functions.database.ref('/PERRINNUsers/{user}/createdTimestamp').onCreate(event => {
@@ -660,10 +660,10 @@ exports.updateUserTeamsMissingData = functions.database.ref('tot').onCreate(even
           keys.push('lastMessageUser');
           values.push(admin.database().ref('teamActivities/'+team.key).child('lastMessageUser').once('value'));
         }
-        if (team.val().lastMessageUserFirstName==undefined) {
+        if (team.val().lastMessageFirstName==undefined) {
           userKeys.push(user.key);
           teamKeys.push(team.key);
-          keys.push('lastMessageUserFirstName');
+          keys.push('lastMessageFirstName');
           values.push(admin.database().ref('PERRINNUsers/'+team.val().lastMessageUser).child('firstName').once('value'));
         }
         if (team.val().imageUrlThumb==undefined) {
@@ -782,3 +782,27 @@ exports.loopUserTeamsRemoveUnfollow = functions.database.ref('toto').onCreate(ev
     });
   });
 });
+
+exports.populateTeamUsers=functions.database.ref('toto').onCreate(event=>{
+  return admin.database().ref('userTeams/').once('value').then(userTeams=>{
+    userTeams.forEach(user=>{
+      user.forEach(team=>{
+        admin.database().ref('teamUsers/'+team.key).update({
+          [user.key]:true,
+        });
+      });
+    });
+  });
+});
+
+function fanoutLastMessageData(team,timestamp,firsName,text){
+  return admin.database().ref('/teamUsers/'+team).once('value').then(users=>{
+    let updateObj={};
+    users.forEach(user=>{
+      updateObj['userTeams/'+user.key+'/'+team+'/lastMessageTimestamp']=timestamp;
+      updateObj['userTeams/'+user.key+'/'+team+'/lastMessageFirstName']=firstName;
+      updateObj['userTeams/'+user.key+'/'+team+'/lastMessageText']=text;
+    });
+    return admin.database().ref().update(updateObj);
+  });
+}

@@ -88,6 +88,13 @@
         }
       }
     },
+    "teamUsers": {
+      "$teamid": {
+        "$uid": {
+          ".write": "auth.uid === $uid"
+        }
+      }
+    },
     "userTeams": {
       "$uid": {
         ".write": "newData.exists() && auth.uid === $uid"

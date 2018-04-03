@@ -144,21 +144,6 @@ export class databaseService {
     this.db.object('PERRINNTeamBalance/'+ID).subscribe(snapshot=>{output=snapshot.balance?snapshot.balance:0});
     return output;
   }
-  getTeamLastMessageTimestamp(ID:string):string{
-    var output;
-    this.db.object('teamActivities/'+ID).subscribe(snapshot=>{output=snapshot.lastMessageTimestamp});
-    return output;
-  }
-  getTeamLastMessageText(ID:string):string{
-    var output;
-    this.db.object('teamActivities/'+ID).subscribe(snapshot=>{output=snapshot.lastMessageText});
-    return output;
-  }
-  getTeamLastMessageUser(ID:string):string{
-    var output;
-    this.db.object('teamActivities/'+ID).subscribe(snapshot=>{output=snapshot.lastMessageUser});
-    return output;
-  }
   getProjectTeamLeader(projectID,teamID):string{
     var output;
     this.db.object('projectTeams/'+projectID+'/'+teamID).subscribe(snapshot=>{output=snapshot.leader});

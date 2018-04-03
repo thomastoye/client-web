@@ -21,7 +21,7 @@ import { databaseService } from './database.service';
       <div style="width:150px;float:left;margin-top:10px;color:#222;font-size:11px">{{team.name}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>
       </div>
       <div style="width:100px;height:30px;float:left">
-      <div *ngIf="!DB.getTeamLeader(team.$key,UI.focusUser)" class="buttonDiv" style="font-size:11px;color:red" (click)="db.object('userTeams/'+UI.currentUser+'/'+team.$key).remove()">Stop following</div>
+      <div *ngIf="!DB.getTeamLeader(team.$key,UI.focusUser)" class="buttonDiv" style="font-size:11px;color:red" (click)="stopFollowing(team.$key)">Stop following</div>
       </div>
       <div class="seperator"></div>
     </li>
@@ -42,6 +42,11 @@ export class UserSettingsComponent {
         }
       });
     });
+  }
+
+  stopFollowing(team){
+    this.db.object('userTeams/'+this.UI.currentUser+'/'+team).remove();
+    this.db.object('teamUsers/'+team+'/'+this.UI.currentUser).remove();
   }
 
   logout() {
