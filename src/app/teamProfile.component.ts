@@ -17,7 +17,7 @@ import { databaseService } from './database.service';
   <div style="position:relative;margin-bottom:-115px">
   <img class="imageWithZoom" [src]="DB.getTeamImageUrlMedium(this.UI.currentTeam)?DB.getTeamImageUrlMedium(this.UI.currentTeam):DB.getTeamImageUrlOriginal(this.UI.currentTeam)" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(DB.getTeamImageUrlOriginal(this.UI.currentTeam))">
   <div class="sheetBadge" style="position:relative;top:-115px">
-  <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{DB.getTeamName(this.UI.currentTeam)}}</div>
+  <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{UI.currentTeamObj?.name}}</div>
   <div class="buttonDiv" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
   <div style="width:50%;float:left">
   <ul class='listLight' style="display:inline-block;float:left">

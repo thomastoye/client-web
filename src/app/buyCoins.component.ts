@@ -25,8 +25,8 @@ import { databaseService } from './database.service';
       </ul>
       <div class="content" style="text-align:center; padding-top:20px">{{amountCharge/100 | number:'1.2-2'}} {{currentCurrencyID | uppercase}} to be paid.</div>
       <div style="text-align:center">
-        <button [hidden]='!DB.getTeamLeader(UI.currentTeam,UI.currentUser)' type="button" (click)="enteringAmount=false;enteringCardDetails=true">Proceed to payment</button>
-        <div class='content' [hidden]='DB.getTeamLeader(UI.currentTeam,UI.currentUser)' style='font-weight:bold'>You need to be leader to buy COINS for this team.</div>
+        <button [hidden]='!UI.currentTeamObj?.leaders[UI.currentUser]' type="button" (click)="enteringAmount=false;enteringCardDetails=true">Proceed to payment</button>
+        <div class='content' [hidden]='UI.currentTeamObj?.leaders[UI.currentUser]' style='font-weight:bold'>You need to be leader to buy COINS for this team.</div>
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@ import { databaseService } from './database.service';
   <div class="top">
   <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="enteringAmount=true;enteringCardDetails=false">back</div>
   <img src="./../assets/App icons/icon_share_03.svg" style="width:50px">
-  <div style="color:black">{{DB.getTeamName(UI.currentTeam)}}</div>
+  <div style="color:black">{{UI.currentTeamObj?.name}}</div>
   <div style="color:black;padding-bottom:15px">{{amountCOINSPurchased | number:'1.2-2'}} COINS</div>
   </div>
   <div class="form">
