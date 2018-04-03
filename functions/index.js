@@ -214,7 +214,6 @@ function createTeam(user,team,name,image) {
     updateKeyValue (user,team,'PERRINNTeams/'+team,"image",image);
     addListKeyValue(user,team,'PERRINNTeams/'+team,"leaders",user,true,2);
     admin.database().ref('userTeams/'+user+'/'+team).update({
-      following:true,
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
     });
@@ -769,5 +768,17 @@ exports.updateUsersMissingData = functions.database.ref('tot').onCreate(event =>
     return iter;
   }).catch(error=>{
     console.log(error);
+  });
+});
+
+exports.loopUserTeamsRemoveUnfollow = functions.database.ref('toto').onCreate(event=>{
+  return admin.database().ref('userTeams').once('value').then(userTeams=>{
+    userTeams.forEach(user=>{
+      user.forEach(team=>{
+        if (team.val().following===false) {
+          admin.database().ref('userTeams/'+user.key+'/'+team.key).remove();
+        }
+      });
+    });
   });
 });

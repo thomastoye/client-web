@@ -138,7 +138,6 @@ export class LoginComponent  {
       timestamp:firebase.database.ServerValue.TIMESTAMP,
     });
     this.db.object('userTeams/'+userID+'/'+teamID).update({
-      following:true,
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
     });

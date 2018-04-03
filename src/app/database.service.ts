@@ -77,11 +77,6 @@ export class databaseService {
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{output=snapshot.personalTeam});
     return output;
   }
-  getUserFollowing(userID,teamID):string{
-    var output;
-    this.db.object('userTeams/'+userID+'/'+teamID).subscribe(snapshot=>{output=snapshot.following});
-    return output;
-  }
   getTeamName(ID:string):string{
     var output;
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{output=snapshot.name});
@@ -172,11 +167,6 @@ export class databaseService {
   getProjectTeamMember(projectID,teamID):string{
     var output;
     this.db.object('projectTeams/'+projectID+'/'+teamID).subscribe(snapshot=>{output=snapshot.member});
-    return output;
-  }
-  getProjectTeamFollowing(teamID,projectID):string{
-    var output;
-    this.db.object('teamProjects/'+teamID+'/'+projectID).subscribe(snapshot=>{output=snapshot.following});
     return output;
   }
   getProjectName(ID:string):string{

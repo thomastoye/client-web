@@ -18,7 +18,7 @@ import { databaseService } from './database.service';
   <img class="imageWithZoom" (error)="errorHandler($event)"[src]="DB.getTeamImageUrlMedium(this.UI.currentTeam)?DB.getTeamImageUrlMedium(this.UI.currentTeam):DB.getTeamImageUrlOriginal(this.UI.currentTeam)" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(DB.getTeamImageUrlOriginal(this.UI.currentTeam))">
   <div class="sheetBadge" style="position:relative;top:-115px">
   <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{DB.getTeamName(this.UI.currentTeam)}}</div>
-  <div class="buttonDiv" *ngIf="!DB.getUserFollowing(UI.currentUser,UI.currentTeam)" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
+  <div class="buttonDiv" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
   <div style="width:50%;float:left">
   <ul class='listLight' style="display:inline-block;float:left">
     <li *ngFor="let user of teamLeaders|async;let first=first" (click)="router.navigate(['user',user.$key])">
@@ -35,7 +35,7 @@ import { databaseService } from './database.service';
       <div *ngIf="first" style="color:#333;text-align:center;font-size:11px;padding:5px">Members</div>
       <div *ngIf="!first" class="seperator"></div>
       <img (error)="errorHandler($event)"[src]="DB.getUserImageUrlThumb(user.$key)" style="float:left;object-fit:cover;height:30px;width:30px;border-radius:3px;margin:5px 5px 5px 10px">
-      <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{DB.getUserFirstName(user.$key)}}{{DB.getUserFollowing(user.$key,UI.currentTeam)?"":" (NF)"}}</div>
+      <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{DB.getUserFirstName(user.$key)}}</div>
     </li>
   </ul>
   </div>
@@ -63,12 +63,7 @@ export class TeamProfileComponent  {
   constructor(public db: AngularFireDatabase,public router: Router,public UI: userInterfaceService,public DB: databaseService,private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
-      this.teamProjects = this.db.list('teamProjects/'+this.UI.currentTeam, {
-        query:{
-          orderByChild:'following',
-          equalTo: true,
-        }
-      });
+      this.teamProjects = this.db.list('teamProjects/'+this.UI.currentTeam);
       this.teamLeaders = this.db.list('PERRINNTeams/'+this.UI.currentTeam+'/leaders');
       this.teamMembers = this.db.list('PERRINNTeams/'+this.UI.currentTeam+'/members');
     });
@@ -81,9 +76,10 @@ export class TeamProfileComponent  {
   }
 
   followTeam (teamID: string, userID: string) {
+    const now = Date.now();
     this.db.object('userTeams/'+userID+'/'+teamID).update({
-      following:true,
-      lastChatVisitTimestamp:firebase.database.ServerValue.TIMESTAMP
+      lastChatVisitTimestamp:now,
+      lastChatVisitTimestampNegative:-1*now,
     });
     this.router.navigate(['user',this.UI.currentUser]);
   }

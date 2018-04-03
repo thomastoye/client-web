@@ -155,7 +155,6 @@ export class ChatComponent {
     this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
-      following:true,
     });
   }
 

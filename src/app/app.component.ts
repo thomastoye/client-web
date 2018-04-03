@@ -5,14 +5,12 @@ import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { Router, NavigationEnd } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
-import { databaseService } from './database.service';
 
 @Component({
   selector: 'app-root',
   template: `
     <img class="fullScreenImage" id="fullScreenImage" (click)="hideFullScreenImage()">
     <progress value='0' max='100' id='uploader'>0%</progress>
-    <div *ngIf="DB.getPERRINNGlobalMessage()" style="text-align:center;margin:5px;color:red;font-size:10px">{{DB.getPERRINNGlobalMessage()}}</div>
     <div class='menu'>
     <div style="width:320px;display:block;margin: 0 auto">
     <div class='iconSmall' (click)="clickUserIcon()">
@@ -21,8 +19,8 @@ import { databaseService } from './database.service';
     </div>
     <div style="text-align:center;width:170px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
         <div *ngIf="UI.currentTeam" style="height:40px">
-        <img (error)="errorHandler($event)" [src]="DB.getTeamImageUrlThumb(UI.currentTeam)" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:170px;border-radius:3px">
-        <div style="position:absolute;width:170px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{DB.getTeamName(UI.currentTeam)}}{{(DB.getTeamLeader(UI.currentTeam,UI.currentUser)?" *":"")}}</div>
+        <img (error)="errorHandler($event)" [src]="currentTeamObj?.imageUrlThumb" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:170px;border-radius:3px">
+        <div style="position:absolute;width:170px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{currentTeamObj?.name}}</div>
         </div>
     </div>
     <div class='iconSmall' (click)="router.navigate(['search'])">
@@ -36,27 +34,23 @@ import { databaseService } from './database.service';
   `,
 })
 export class AppComponent {
-  globalChatActivity: boolean;
+  globalChatActivity:boolean;
+  currentTeamObj:any;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
+  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.afAuth.authState.subscribe((auth) => {
-      if (auth==null) {}
-      else {
-        db.list('userTeams/'+this.UI.currentUser).subscribe(userTeams=>{
-          console.log("loop 5");
-          this.globalChatActivity = false;
-          userTeams.forEach(userTeam=>{
-            if (userTeam.following) {
-              db.object('teamActivities/'+userTeam.$key+'/lastMessageTimestamp').subscribe(lastMessageTimestamp=>{
-                console.log("loop 6");
-                var chatActivity = (lastMessageTimestamp.$value > userTeam.lastChatVisitTimestamp);
-                this.globalChatActivity = chatActivity?true:this.globalChatActivity;
-                document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
-              });
-            }
-          });
+      db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
+        this.currentTeamObj=snapshot;
+      });
+      db.list('userTeams/'+this.UI.currentUser).subscribe(userTeams=>{
+        console.log("loop 5");
+        this.globalChatActivity = false;
+        userTeams.forEach(userTeam=>{
+          var chatActivity = (userTeam.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
+          this.globalChatActivity = chatActivity?true:this.globalChatActivity;
+          document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
         });
-      }
+      });
     });
   }
 

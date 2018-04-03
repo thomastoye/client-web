@@ -34,7 +34,6 @@ export class CreateProjectComponent {
     var projectID = this.db.list('ids/').push(true).key;
     this.db.object('projectTeams/'+projectID+'/'+teamID).update({member: true, leader: true});
     this.db.object('projects/'+projectID).update({name: projectName, goal: this.projectGoal, image: this.image});
-    this.db.object('teamProjects/'+teamID+'/'+projectID).update({following: true});
     this.router.navigate(['team',teamID]);
   }
 

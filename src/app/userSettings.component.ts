@@ -16,16 +16,14 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li style="cursor:default" *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam">
-      <div *ngIf="team.following">
       <div style="width:200px;float:left">
       <img (error)="errorHandler($event)" [src]="team.imageUrlThumb" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:20px;width:30px;border-radius:3px">
       <div style="width:150px;float:left;margin-top:10px;color:#222;font-size:11px">{{team.name}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>
       </div>
       <div style="width:100px;height:30px;float:left">
-      <div *ngIf="!DB.getTeamLeader(team.$key,UI.focusUser)" class="buttonDiv" style="font-size:11px;color:red" (click)="db.object('userTeams/'+UI.currentUser+'/'+team.$key).update({following:false})">Stop following</div>
+      <div *ngIf="!DB.getTeamLeader(team.$key,UI.focusUser)" class="buttonDiv" style="font-size:11px;color:red" (click)="db.object('userTeams/'+UI.currentUser+'/'+team.$key).remove()">Stop following</div>
       </div>
       <div class="seperator"></div>
-      </div>
     </li>
   </ul>
   </div>
