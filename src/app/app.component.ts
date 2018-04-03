@@ -19,8 +19,8 @@ import { userInterfaceService } from './userInterface.service';
     </div>
     <div style="text-align:center;width:170px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
         <div *ngIf="UI.currentTeam" style="height:40px">
-        <img (error)="errorHandler($event)" [src]="currentTeamObj?.imageUrlThumb" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:170px;border-radius:3px">
-        <div style="position:absolute;width:170px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{currentTeamObj?.name}}</div>
+        <img *ngIf="UI.currentTeamObj?.imageUrlThumb" [src]="UI.currentTeamObj?.imageUrlThumb" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:170px;border-radius:3px">
+        <div style="position:absolute;width:170px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{UI.currentTeamObj?.name}}</div>
         </div>
     </div>
     <div class='iconSmall' (click)="router.navigate(['search'])">
@@ -35,13 +35,9 @@ import { userInterfaceService } from './userInterface.service';
 })
 export class AppComponent {
   globalChatActivity:boolean;
-  currentTeamObj:any;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.afAuth.authState.subscribe((auth) => {
-      db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
-        this.currentTeamObj=snapshot;
-      });
       db.list('userTeams/'+this.UI.currentUser).subscribe(userTeams=>{
         console.log("loop 5");
         this.globalChatActivity = false;
@@ -72,10 +68,6 @@ export class AppComponent {
     else {
       this.router.navigate(['login']);
     }
-  }
-
-  errorHandler(event) {
-    event.target.src = "https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1522405973933planet-earth-transparent-background-d-render-isolated-additional-file-high-quality-texture-realistic-70169166.jpg?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=fyOGQP1j7szg08kMxnoK4cT%2FNGDfxrW4rk1z3mmMD%2FExGHERqnSfAxAZXAKBVeaHGdRNHRczKws0pWQeQwLcpiiA9f5bSW0GgEot31eaBp5x691YSQ9dAQXmSodSJ9NAv5cxKQ1oHwPG4DA1YBvtKnx%2BVbtmW8%2BapFK17UgGBsr5qnu7Qz16bc4BDx3INwEeF5MghjTu39sd106Mkd7qklWle5Kvo45VKntGM2oWXNYJY%2FYIJbili0c725VgGSHZqW6V6FpYgBgrHkzRhGBObmqz4PFnKEsTUaaF8AsneCTUpm3ClC6knFzIN7btlh7rqbDRkTddv7l2bUhfIN%2FpqA%3D%3D";
   }
 
 }

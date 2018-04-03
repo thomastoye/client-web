@@ -16,7 +16,7 @@ import { userInterfaceService } from './userInterface.service';
   <div style="color:#888;font-size:11px;padding:0 5px 5px 10px;clear:both">Joined {{userObj?.createdTimestamp|date:'MMMM yyyy'}}, {{userObj?.messageCount?userObj?.messageCount:0}} Messages</div>
   </div>
   <div style="float:right;width:20%;position:relative">
-  <img (error)="errorHandler($event)" class="imageWithZoom" [src]="userObj?.imageUrlThumb" style="float:right;object-fit:cover;height:60px;width:60px" (click)="userObj?.imageUrlOriginal">
+  <img class="imageWithZoom" [src]="userObj?.imageUrlThumb" style="float:right;object-fit:cover;height:60px;width:60px" (click)="userObj?.imageUrlOriginal">
   </div>
   </div>
   <div class='sheet' style="margin-top:5px">
@@ -24,7 +24,8 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let team of userTeams|async;let last=last"
       (click)="router.navigate(['chat',team.$key])">
       <div style="float:left">
-        <img (error)="errorHandler($event)" [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
+        <img *ngIf="team?.imageUrlThumb" [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
+        <div *ngIf="!team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;height:55px;width:100px;border-radius:3px;text-align:center;line-height:55px;font-size:25px;border-style:solid;border-width:1px">{{team?.name.slice(0,3)}}</div>
       </div>
       <div>
         <div *ngIf="userObj?.personalTeam==team.$key" style="float:left;margin:15px 5px 0 0;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>
@@ -50,6 +51,9 @@ export class UserProfileComponent {
       db.object('PERRINNUsers/'+this.UI.focusUser).subscribe(snapshot=>{
         this.userObj=snapshot;
         this.UI.currentTeam=snapshot.personalTeam;
+        db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
+          this.UI.currentTeamObj=snapshot;
+        });
       });
       this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
         query:{
@@ -63,10 +67,6 @@ export class UserProfileComponent {
     var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
     fullScreenImage.src=src;
     fullScreenImage.style.visibility='visible';
-  }
-
-  errorHandler(event) {
-    event.target.src = "https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1522405973933planet-earth-transparent-background-d-render-isolated-additional-file-high-quality-texture-realistic-70169166.jpg?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=fyOGQP1j7szg08kMxnoK4cT%2FNGDfxrW4rk1z3mmMD%2FExGHERqnSfAxAZXAKBVeaHGdRNHRczKws0pWQeQwLcpiiA9f5bSW0GgEot31eaBp5x691YSQ9dAQXmSodSJ9NAv5cxKQ1oHwPG4DA1YBvtKnx%2BVbtmW8%2BapFK17UgGBsr5qnu7Qz16bc4BDx3INwEeF5MghjTu39sd106Mkd7qklWle5Kvo45VKntGM2oWXNYJY%2FYIJbili0c725VgGSHZqW6V6FpYgBgrHkzRhGBObmqz4PFnKEsTUaaF8AsneCTUpm3ClC6knFzIN7btlh7rqbDRkTddv7l2bUhfIN%2FpqA%3D%3D";
   }
 
 }

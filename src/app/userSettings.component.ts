@@ -17,7 +17,7 @@ import { databaseService } from './database.service';
     <li style="cursor:default" *ngFor="let team of userTeams | async"
       [class.selected]="team.$key === UI.currentTeam">
       <div style="width:200px;float:left">
-      <img (error)="errorHandler($event)" [src]="team.imageUrlThumb" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:20px;width:30px;border-radius:3px">
+      <img [src]="team.imageUrlThumb" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:20px;width:30px;border-radius:3px">
       <div style="width:150px;float:left;margin-top:10px;color:#222;font-size:11px">{{team.name}}{{(DB.getTeamLeader(team.$key,UI.focusUser)?" *":"")}}</div>
       </div>
       <div style="width:100px;height:30px;float:left">
@@ -46,10 +46,6 @@ export class UserSettingsComponent {
 
   logout() {
     this.afAuth.auth.signOut()
-  }
-
-  errorHandler(event) {
-    event.target.src = "https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1522405973933planet-earth-transparent-background-d-render-isolated-additional-file-high-quality-texture-realistic-70169166.jpg?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=fyOGQP1j7szg08kMxnoK4cT%2FNGDfxrW4rk1z3mmMD%2FExGHERqnSfAxAZXAKBVeaHGdRNHRczKws0pWQeQwLcpiiA9f5bSW0GgEot31eaBp5x691YSQ9dAQXmSodSJ9NAv5cxKQ1oHwPG4DA1YBvtKnx%2BVbtmW8%2BapFK17UgGBsr5qnu7Qz16bc4BDx3INwEeF5MghjTu39sd106Mkd7qklWle5Kvo45VKntGM2oWXNYJY%2FYIJbili0c725VgGSHZqW6V6FpYgBgrHkzRhGBObmqz4PFnKEsTUaaF8AsneCTUpm3ClC6knFzIN7btlh7rqbDRkTddv7l2bUhfIN%2FpqA%3D%3D";
   }
 
 }

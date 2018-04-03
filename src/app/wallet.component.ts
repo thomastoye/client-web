@@ -15,7 +15,7 @@ import { databaseService } from './database.service';
       <div style="position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['project','-KsNoWUAB5jAWOClrGdT'])">COIN info ></div>
     </div>
     <div style="clear:both;text-align:center">
-    <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:60px">
+    <img src="./../assets/App icons/icon_share_03.svg" style="width:60px">
     </div>
     <div>
     <div style="float: left; width: 50%; text-align: right; padding: 5px">
@@ -59,12 +59,11 @@ constructor(public db: AngularFireDatabase, public router: Router, public UI: us
   this.transactionNumberDisplay = 30;
   this.route.params.subscribe(params => {
     this.UI.currentTeam=params['id'];
+    db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
+      this.UI.currentTeamObj=snapshot;
+    });
     this.PERRINNTeamTransactions = db.list('PERRINNTeamTransactions/'+this.UI.currentTeam,{query:{orderByChild:'timestampNegative',limitToFirst:this.transactionNumberDisplay}});
   });
-}
-
-errorHandler(event) {
-  event.target.src = "https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1522405973933planet-earth-transparent-background-d-render-isolated-additional-file-high-quality-texture-realistic-70169166.jpg?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=fyOGQP1j7szg08kMxnoK4cT%2FNGDfxrW4rk1z3mmMD%2FExGHERqnSfAxAZXAKBVeaHGdRNHRczKws0pWQeQwLcpiiA9f5bSW0GgEot31eaBp5x691YSQ9dAQXmSodSJ9NAv5cxKQ1oHwPG4DA1YBvtKnx%2BVbtmW8%2BapFK17UgGBsr5qnu7Qz16bc4BDx3INwEeF5MghjTu39sd106Mkd7qklWle5Kvo45VKntGM2oWXNYJY%2FYIJbili0c725VgGSHZqW6V6FpYgBgrHkzRhGBObmqz4PFnKEsTUaaF8AsneCTUpm3ClC6knFzIN7btlh7rqbDRkTddv7l2bUhfIN%2FpqA%3D%3D";
 }
 
 }

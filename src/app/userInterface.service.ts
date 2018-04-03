@@ -8,6 +8,7 @@ export class userInterfaceService {
   focusUser:string;
   focusProject:string;
   currentTeam:string;
+  currentTeamObj:any;
   currentUser:string;
   currentUserFirstName:string;
   currentUserLastName:string;

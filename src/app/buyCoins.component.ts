@@ -34,16 +34,16 @@ import { databaseService } from './database.service';
   <div class="module form-module">
   <div class="top">
   <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="enteringAmount=true;enteringCardDetails=false">back</div>
-  <img (error)="errorHandler($event)" src="./../assets/App icons/icon_share_03.svg" style="width:50px">
+  <img src="./../assets/App icons/icon_share_03.svg" style="width:50px">
   <div style="color:black">{{DB.getTeamName(UI.currentTeam)}}</div>
   <div style="color:black;padding-bottom:15px">{{amountCOINSPurchased | number:'1.2-2'}} COINS</div>
   </div>
   <div class="form">
   <form>
   <div style="text-align:left;padding:0 0 20px 10px;float:left">Safe transfer</div>
-  <img (error)="errorHandler($event)" src="./../assets/App icons/Payment Method Icons/Light Color/22.png" style="width:40px;float:right;margin-right:10px">
-  <img (error)="errorHandler($event)" src="./../assets/App icons/Payment Method Icons/Light Color/2.png" style="width:40px;float:right">
-  <img (error)="errorHandler($event)" src="./../assets/App icons/Payment Method Icons/Light Color/1.png" style="width:40px;float:right">
+  <img src="./../assets/App icons/Payment Method Icons/Light Color/22.png" style="width:40px;float:right;margin-right:10px">
+  <img src="./../assets/App icons/Payment Method Icons/Light Color/2.png" style="width:40px;float:right">
+  <img src="./../assets/App icons/Payment Method Icons/Light Color/1.png" style="width:40px;float:right">
   <input [(ngModel)]="cardNumber" name="card-number" type="text" placeholder="Card number *" (keyup)='messagePayment=""'>
   <div>
   <input [(ngModel)]="expiryMonth" style="width:30%;float:left" name="expiry-month" type="text" placeholder="MM *" (keyup)='messagePayment=""'>
@@ -139,10 +139,6 @@ export class BuyCoinsComponent {
     firebase.database().ref('appSettings/currencyList/'+this.currentCurrencyID).once('value').then(currency=>{
       this.amountCharge = Number((this.amountCOINSPurchased / currency.val().toCOIN * 100).toFixed(0));
     });
-  }
-
-  errorHandler(event) {
-    event.target.src = "https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1522405973933planet-earth-transparent-background-d-render-isolated-additional-file-high-quality-texture-realistic-70169166.jpg?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=fyOGQP1j7szg08kMxnoK4cT%2FNGDfxrW4rk1z3mmMD%2FExGHERqnSfAxAZXAKBVeaHGdRNHRczKws0pWQeQwLcpiiA9f5bSW0GgEot31eaBp5x691YSQ9dAQXmSodSJ9NAv5cxKQ1oHwPG4DA1YBvtKnx%2BVbtmW8%2BapFK17UgGBsr5qnu7Qz16bc4BDx3INwEeF5MghjTu39sd106Mkd7qklWle5Kvo45VKntGM2oWXNYJY%2FYIJbili0c725VgGSHZqW6V6FpYgBgrHkzRhGBObmqz4PFnKEsTUaaF8AsneCTUpm3ClC6knFzIN7btlh7rqbDRkTddv7l2bUhfIN%2FpqA%3D%3D";
   }
 
 }

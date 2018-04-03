@@ -16,7 +16,7 @@ import { databaseService } from './database.service';
   <div style="padding:10px;font-size:12px" [innerHTML]="DB.getProjectGoal(UI.focusProject) | linky"></div>
   </div>
   <div style="float: right; width: 40%;position:relative">
-  <img class="imageWithZoom" (error)="errorHandler($event)" [src]="DB.getProjectImageUrlThumb(UI.focusProject)" style="object-fit:contain; height:200px; width:100%" (click)="showFullScreenImage(DB.getProjectImageUrlOriginal(UI.focusProject))">
+  <img class="imageWithZoom" [src]="DB.getProjectImageUrlThumb(UI.focusProject)" style="object-fit:contain; height:200px; width:100%" (click)="showFullScreenImage(DB.getProjectImageUrlOriginal(UI.focusProject))">
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
@@ -25,7 +25,7 @@ import { databaseService } from './database.service';
     <li *ngFor="let team of projectTeams | async"
       [class.selected]="team.$key === UI.currentTeam"
       (click)="router.navigate(['team',team.$key])">
-      <img (error)="errorHandler($event)" [src]="DB.getTeamImageUrlThumb(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img [src]="DB.getTeamImageUrlThumb(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div style="width:15px;height:25px;float:left;">{{DB.getTeamLeader(team.$key,UI.currentUser)?"*":""}}</div>
       <div style="width:300px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}{{(DB.getProjectTeamLeader(UI.focusProject,team.$key)? " **" : "")}}</div>
     </li>
@@ -76,10 +76,6 @@ export class ProjectProfileComponent {
     this.db.object('projectTeams/' + projectID + '/' + teamID).update({member:false})
     .then(_ => this.router.navigate(['team',teamID]))
     .catch(err => this.messageCancelMembership="Error: Only a leader can cancel a membership - A leader's membership cannot be cancelled");
-  }
-
-  errorHandler(event) {
-    event.target.src = "https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1522405973933planet-earth-transparent-background-d-render-isolated-additional-file-high-quality-texture-realistic-70169166.jpg?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=fyOGQP1j7szg08kMxnoK4cT%2FNGDfxrW4rk1z3mmMD%2FExGHERqnSfAxAZXAKBVeaHGdRNHRczKws0pWQeQwLcpiiA9f5bSW0GgEot31eaBp5x691YSQ9dAQXmSodSJ9NAv5cxKQ1oHwPG4DA1YBvtKnx%2BVbtmW8%2BapFK17UgGBsr5qnu7Qz16bc4BDx3INwEeF5MghjTu39sd106Mkd7qklWle5Kvo45VKntGM2oWXNYJY%2FYIJbili0c725VgGSHZqW6V6FpYgBgrHkzRhGBObmqz4PFnKEsTUaaF8AsneCTUpm3ClC6knFzIN7btlh7rqbDRkTddv7l2bUhfIN%2FpqA%3D%3D";
   }
 
 }

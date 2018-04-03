@@ -15,7 +15,7 @@ import { databaseService } from './database.service';
     <div style="z-index:9999;position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">Wallet ></div>
   </div>
   <div style="position:relative;margin-bottom:-115px">
-  <img class="imageWithZoom" (error)="errorHandler($event)"[src]="DB.getTeamImageUrlMedium(this.UI.currentTeam)?DB.getTeamImageUrlMedium(this.UI.currentTeam):DB.getTeamImageUrlOriginal(this.UI.currentTeam)" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(DB.getTeamImageUrlOriginal(this.UI.currentTeam))">
+  <img class="imageWithZoom" [src]="DB.getTeamImageUrlMedium(this.UI.currentTeam)?DB.getTeamImageUrlMedium(this.UI.currentTeam):DB.getTeamImageUrlOriginal(this.UI.currentTeam)" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(DB.getTeamImageUrlOriginal(this.UI.currentTeam))">
   <div class="sheetBadge" style="position:relative;top:-115px">
   <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{DB.getTeamName(this.UI.currentTeam)}}</div>
   <div class="buttonDiv" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
@@ -24,7 +24,7 @@ import { databaseService } from './database.service';
     <li *ngFor="let user of teamLeaders|async;let first=first" (click)="router.navigate(['user',user.$key])">
       <div *ngIf="first" style="color:#333;text-align:center;font-size:11px;padding:5px">Leaders</div>
       <div *ngIf="!first" class="seperator"></div>
-      <img (error)="errorHandler($event)"[src]="DB.getUserImageUrlThumb(user.$key)" style="float:left;object-fit:cover;height:50px;width:50px;border-radius:3px;margin:5px 5px 5px 10px">
+      <img [src]="DB.getUserImageUrlThumb(user.$key)" style="float:left;object-fit:cover;height:50px;width:50px;border-radius:3px;margin:5px 5px 5px 10px">
       <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{DB.getUserFirstName(user.$key)}}</div>
     </li>
   </ul>
@@ -34,7 +34,7 @@ import { databaseService } from './database.service';
     <li *ngFor="let user of teamMembers|async;let first=first" (click)="router.navigate(['user',user.$key])">
       <div *ngIf="first" style="color:#333;text-align:center;font-size:11px;padding:5px">Members</div>
       <div *ngIf="!first" class="seperator"></div>
-      <img (error)="errorHandler($event)"[src]="DB.getUserImageUrlThumb(user.$key)" style="float:left;object-fit:cover;height:30px;width:30px;border-radius:3px;margin:5px 5px 5px 10px">
+      <img [src]="DB.getUserImageUrlThumb(user.$key)" style="float:left;object-fit:cover;height:30px;width:30px;border-radius:3px;margin:5px 5px 5px 10px">
       <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{DB.getUserFirstName(user.$key)}}</div>
     </li>
   </ul>
@@ -46,7 +46,7 @@ import { databaseService } from './database.service';
   <div class="title" style="float:left">Following</div>
   <ul class='listLight'>
     <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.$key])">
-      <img (error)="errorHandler($event)"[src]="DB.getProjectImageUrlThumb(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
+      <img [src]="DB.getProjectImageUrlThumb(project.$key)" style="object-fit: cover; height:125px; width:125px;position:relative">
       <div style="height:25px;font-size:10px;line-height:10px">{{DB.getProjectName(project.$key)}}{{(DB.getProjectTeamLeader(project.$key,UI.currentTeam)? " **" : "")}}</div>
     </li>
   </ul>
@@ -82,10 +82,6 @@ export class TeamProfileComponent  {
       lastChatVisitTimestampNegative:-1*now,
     });
     this.router.navigate(['user',this.UI.currentUser]);
-  }
-
-  errorHandler(event) {
-    event.target.src = "https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1522405973933planet-earth-transparent-background-d-render-isolated-additional-file-high-quality-texture-realistic-70169166.jpg?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=fyOGQP1j7szg08kMxnoK4cT%2FNGDfxrW4rk1z3mmMD%2FExGHERqnSfAxAZXAKBVeaHGdRNHRczKws0pWQeQwLcpiiA9f5bSW0GgEot31eaBp5x691YSQ9dAQXmSodSJ9NAv5cxKQ1oHwPG4DA1YBvtKnx%2BVbtmW8%2BapFK17UgGBsr5qnu7Qz16bc4BDx3INwEeF5MghjTu39sd106Mkd7qklWle5Kvo45VKntGM2oWXNYJY%2FYIJbili0c725VgGSHZqW6V6FpYgBgrHkzRhGBObmqz4PFnKEsTUaaF8AsneCTUpm3ClC6knFzIN7btlh7rqbDRkTddv7l2bUhfIN%2FpqA%3D%3D";
   }
 
 }

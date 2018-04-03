@@ -23,7 +23,7 @@ import { databaseService } from './database.service';
       <div style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-width:0 0 0 3px;border-style:solid;border-radius:7px" [style.margin]="isMessageNewUserGroup(message.user,message.timestamp)||first?'15px 25px 0 10px':'2px 25px 0 70px'"
       [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'||message.action=='add'?'#e6efe6':message.action=='warning'||message.action=='remove'?'#efeac6':'white'" (click)="timestampChatVisit()">
         <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="float:left;width:60px;min-height:10px">
-          <img (error)="errorHandler($event)" [src]="message?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
+          <img [src]="message?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
           {{image?.imageUrlThumbUser}}
         </div>
         <div>
@@ -37,11 +37,11 @@ import { databaseService } from './database.service';
           <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <div *ngIf="!message.image" style="float:left;color:#404040;margin:5px" [innerHTML]="message.text | linky"></div>
           <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['chat',message.linkTeam])">
-            <img (error)="errorHandler($event)" [src]="message?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
+            <img [src]="message?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
             <div style="font-size:11px;padding:5px;">{{message?.linkTeamName}}</div>
           </div>
           <div *ngIf="message.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.linkUser])">
-            <img (error)="errorHandler($event)" [src]="message?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
+            <img [src]="message?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
             <div style="font-size:11px;padding:5px;">{{message?.linkUserFirstName}} {{message?.linkUserLastName}}</div>
           </div>
           <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
@@ -96,6 +96,9 @@ export class ChatComponent {
   constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
+      db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
+        this.UI.currentTeamObj=snapshot;
+      });
       this.UI.refreshServiceMessage();
       this.previousMessageTimestamp=0;
       this.previousMessageUser="";
@@ -203,10 +206,6 @@ export class ChatComponent {
       });
     }
     this.draftMessageDB=(this.draftMessage!="");
-  }
-
-  errorHandler(event) {
-    event.target.src = "https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1522405973933planet-earth-transparent-background-d-render-isolated-additional-file-high-quality-texture-realistic-70169166.jpg?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=fyOGQP1j7szg08kMxnoK4cT%2FNGDfxrW4rk1z3mmMD%2FExGHERqnSfAxAZXAKBVeaHGdRNHRczKws0pWQeQwLcpiiA9f5bSW0GgEot31eaBp5x691YSQ9dAQXmSodSJ9NAv5cxKQ1oHwPG4DA1YBvtKnx%2BVbtmW8%2BapFK17UgGBsr5qnu7Qz16bc4BDx3INwEeF5MghjTu39sd106Mkd7qklWle5Kvo45VKntGM2oWXNYJY%2FYIJbili0c725VgGSHZqW6V6FpYgBgrHkzRhGBObmqz4PFnKEsTUaaF8AsneCTUpm3ClC6knFzIN7btlh7rqbDRkTddv7l2bUhfIN%2FpqA%3D%3D";
   }
 
   onImageChange(event) {
