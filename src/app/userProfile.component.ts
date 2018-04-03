@@ -11,12 +11,12 @@ import { userInterfaceService } from './userInterface.service';
   template: `
   <div class="sheet">
   <div style="float:left;width:80%">
-  <div class='title' style="float:left;font-size:16px">{{userObj?.firstName}} {{userObj?.lastName}}</div>
+  <div class='title' style="float:left;font-size:16px">{{UI.focusUserObj?.firstName}} {{UI.focusUserObj?.lastName}}</div>
   <img class='editButton' style="width:20px" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="this.router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
-  <div style="color:#888;font-size:11px;padding:0 5px 5px 10px;clear:both">Joined {{userObj?.createdTimestamp|date:'MMMM yyyy'}}, {{userObj?.messageCount?userObj?.messageCount:0}} Messages</div>
+  <div style="color:#888;font-size:11px;padding:0 5px 5px 10px;clear:both">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages</div>
   </div>
   <div style="float:right;width:20%;position:relative">
-  <img class="imageWithZoom" [src]="userObj?.imageUrlThumb" style="float:right;object-fit:cover;height:60px;width:60px" (click)="userObj?.imageUrlOriginal">
+  <img class="imageWithZoom" [src]="UI.focusUserObj?.imageUrlThumb" style="float:right;object-fit:cover;height:60px;width:60px" (click)="UI.focusUserObj?.imageUrlOriginal">
   </div>
   </div>
   <div class='sheet' style="margin-top:5px">
@@ -28,7 +28,7 @@ import { userInterfaceService } from './userInterface.service';
         <div *ngIf="!team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;height:55px;width:100px;border-radius:3px;text-align:center;line-height:55px;font-size:25px;border-style:solid;border-width:1px">{{team?.name.slice(0,3)}}</div>
       </div>
       <div>
-        <div *ngIf="userObj?.personalTeam==team.$key" style="float:left;margin:15px 5px 0 0;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>
+        <div *ngIf="UI.focusUserObj?.personalTeam==team.$key" style="float:left;margin:15px 5px 0 0;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>
         <img [hidden]="!(team.balance>0)" src="./../assets/App icons/icon_share_03.svg" style="float:left;height:17px;margin:5px;margin-top:17px">
         <div style="float:left;margin-top:15px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{team.name}}</div>
         <div style="float:left;margin:5px;margin-top:19px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.lastMessageTimestamp>team.lastChatVisitTimestamp"></div>
@@ -42,14 +42,13 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class UserProfileComponent {
-  userObj:any;
   userTeams:FirebaseListObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       db.object('PERRINNUsers/'+this.UI.focusUser).subscribe(snapshot=>{
-        this.userObj=snapshot;
+        this.UI.focusUserObj=snapshot;
         this.UI.currentTeam=snapshot.personalTeam;
         db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
           this.UI.currentTeamObj=snapshot;

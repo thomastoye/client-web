@@ -19,10 +19,11 @@ import { databaseService } from './database.service';
   <div class='sheet' style="margin-top:10px">
   <div class="title">Users</div>
   <ul class="listLight">
-    <li *ngFor="let user of users | async"
-      (click)="router.navigate(['user',user.$key])">
+    <li *ngFor="let user of users | async">
+      <div style="float:left;width:150px" (click)="router.navigate(['user',user.$key])">
       <img [src]="user.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{user.firstName}} {{user.lastName}}</div>
+      </div>
       <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(user.$key,'','','','','',user.$key,user.firstName,user.lastName,user.imageUrlThumb)">Send to chat</div>
     </li>
   </ul>
@@ -30,10 +31,11 @@ import { databaseService } from './database.service';
   <div class='sheet' style="margin-top:10px">
   <div class="title">Teams</div>
   <ul class="listLight">
-    <li *ngFor="let team of teams | async"
-      (click)="router.navigate(['chat',team.$key]);">
+    <li *ngFor="let team of teams | async">
+      <div style="float:left;width:150px" (click)="router.navigate(['chat',team.$key])">
       <img [src]="team?.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{team.name}}</div>
+      </div>
       <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,'','',team.$key,team.name,team.imageUrlThumb,'','','','')">Send to chat</div>
     </li>
   </ul>
@@ -134,8 +136,8 @@ export class SearchComponent  {
           image:image,
           imageDownloadURL:imageDownloadURL?imageDownloadURL:'',
           user:this.UI.currentUser,
-          firstName:this.UI.currentUserFirstName,
-          imageUrlThumbUser:this.UI.currentUserImageUrlThumb,
+          firstName:this.UI.currentUserObj.firstName,
+          imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb,
           linkTeam:linkTeam,
           linkTeamName:linkTeamName?linkTeamName:'',
           linkTeamImageUrlThumb:linkTeamImageUrlThumb?linkTeamImageUrlThumb:'',

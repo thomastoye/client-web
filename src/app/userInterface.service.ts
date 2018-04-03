@@ -6,10 +6,12 @@ import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable }
 @Injectable()
 export class userInterfaceService {
   focusUser:string;
+  focusUserObj:any;
   focusProject:string;
   currentTeam:string;
   currentTeamObj:any;
   currentUser:string;
+  currentUserObj:any;
   currentUserFirstName:string;
   currentUserLastName:string;
   currentUserImageUrlThumb:string;
@@ -20,11 +22,7 @@ export class userInterfaceService {
       if (auth!=null) {
         this.currentUser=auth.uid;
         this.db.object('PERRINNUsers/'+this.currentUser).subscribe(snapshot=>{
-          this.currentUserFirstName=snapshot.firstName;
-          this.currentUserLastName=snapshot.lastName;
-          this.db.object('PERRINNImages/'+snapshot.image).subscribe(snapshot=>{
-            this.currentUserImageUrlThumb=snapshot.thumb;
-          });
+          this.currentUserObj=snapshot;
         });
         if (this.focusUser==null) this.focusUser=auth.uid;
         this.db.object('PERRINNUsers/'+this.focusUser).subscribe(snapshot=>{

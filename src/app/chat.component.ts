@@ -174,8 +174,8 @@ export class ChatComponent {
             image:this.draftImage,
             imageDownloadURL:this.draftImageDownloadURL,
             user:this.UI.currentUser,
-            firstName:this.UI.currentUserFirstName,
-            imageUrlThumbUser:this.UI.currentUserImageUrlThumb,
+            firstName:this.UI.currentUserObj.firstName,
+            imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb,
             action:"chat",
             process:processData,
           }).key;
