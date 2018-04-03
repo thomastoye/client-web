@@ -795,7 +795,7 @@ exports.populateTeamUsers=functions.database.ref('toto').onCreate(event=>{
   });
 });
 
-function fanoutLastMessageData(team,timestamp,firsName,text){
+function fanoutLastMessageData(team,timestamp,firstName,text){
   return admin.database().ref('/teamUsers/'+team).once('value').then(users=>{
     let updateObj={};
     users.forEach(user=>{
