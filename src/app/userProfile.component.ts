@@ -48,10 +48,6 @@ export class UserProfileComponent {
       this.UI.focusUser = params['id'];
       db.object('PERRINNUsers/'+this.UI.focusUser).subscribe(snapshot=>{
         this.UI.focusUserObj=snapshot;
-        this.UI.currentTeam=snapshot.personalTeam;
-        db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
-          this.UI.currentTeamObj=snapshot;
-        });
       });
       this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
         query:{
