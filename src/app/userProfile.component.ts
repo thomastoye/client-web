@@ -24,8 +24,7 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let team of userTeams|async;let last=last"
       (click)="router.navigate(['chat',team.$key])">
       <div style="float:left">
-        <img *ngIf="team?.imageUrlThumb" [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
-        <div *ngIf="!team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;height:55px;width:100px;border-radius:3px;text-align:center;line-height:55px;font-size:25px;border-style:solid;border-width:1px">{{team?.name.slice(0,3)}}</div>
+        <img [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
       </div>
       <div>
         <div *ngIf="UI.focusUserObj?.personalTeam==team.$key" style="float:left;margin:15px 5px 0 0;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>
