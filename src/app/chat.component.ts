@@ -65,16 +65,18 @@ import { databaseService } from './database.service';
       <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.firstName}}...</div>
       </li>
     </ul>
-    <img *ngIf="!UI.serviceMessage&&UI.currentTeamObj?.leaders[UI.currentUser]" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
-    <div *ngIf="UI.serviceMessage" style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-radius:7px 7px 0 7px;background-color:white;float:right;color:#192368;padding:3px;margin:5px"(click)="UI.clearProcessData()">{{UI.serviceMessage}}</div>
-    <div style="clear:both;float:left;width:90%">
-      <textarea id="inputMessage" [hidden]='!(UI.currentTeamObj?.leaders[UI.currentUser]||UI.currentTeamObj?.members[UI.currentUser])' style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
-    </div>
-    <div style="float:right;width:10%">
-      <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-      <label class="buttonUploadImage" *ngIf='(UI.currentTeamObj?.leaders[UI.currentUser]||UI.currentTeamObj?.members[UI.currentUser])' for="chatImage" id="buttonFile">
-      <img src="./../assets/App icons/camera.png" style="width:25px;margin:20px 5px 5px 5px">
-      </label>
+    <div *ngIf="isCurrentUserLeader||isCurrentUserMember">
+      <img *ngIf="!UI.serviceMessage" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
+      <div *ngIf="UI.serviceMessage" style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-radius:7px 7px 0 7px;background-color:white;float:right;color:#192368;padding:3px;margin:5px"(click)="UI.clearProcessData()">{{UI.serviceMessage}}</div>
+      <div style="clear:both;float:left;width:90%">
+        <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
+      </div>
+      <div style="float:right;width:10%">
+        <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+        <label class="buttonUploadImage" for="chatImage" id="buttonFile">
+        <img src="./../assets/App icons/camera.png" style="width:25px;margin:20px 5px 5px 5px">
+        </label>
+      </div>
     </div>
   </div>
   </div>
@@ -92,12 +94,24 @@ export class ChatComponent {
   scrollMessageTimestamp: number;
   previousMessageTimestamp: number;
   previousMessageUser: string;
+  isCurrentUserLeader:boolean;
+  isCurrentUserMember:boolean;
 
   constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
+      this.isCurrentUserLeader=false;
+      this.isCurrentUserMember=false;
       db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
         this.UI.currentTeamObj=snapshot;
+        if(this.UI.currentUser){
+          if(this.UI.currentTeamObj.leaders!=undefined){
+            this.isCurrentUserLeader=this.UI.currentTeamObj.leaders[UI.currentUser]?true:false;
+          }
+          if(this.UI.currentTeamObj.members!=undefined){
+            this.isCurrentUserMember=this.UI.currentTeamObj.members[UI.currentUser]?true:false;
+          }
+        }
       });
       this.UI.refreshServiceMessage();
       this.previousMessageTimestamp=0;
