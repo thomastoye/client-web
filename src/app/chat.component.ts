@@ -67,7 +67,7 @@ import { databaseService } from './database.service';
     </ul>
     <div *ngIf="isCurrentUserLeader||isCurrentUserMember">
       <img *ngIf="!UI.serviceMessage" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
-      <div *ngIf="UI.serviceMessage" style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-radius:7px 7px 0 7px;background-color:white;float:right;color:#192368;padding:3px;margin:5px"(click)="UI.clearProcessData()">{{UI.serviceMessage}}</div>
+      <div *ngIf="UI.serviceMessage" style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-radius:7px 7px 0 7px;background-color:white;float:right;color:#192368;padding:3px;margin:5px"(click)="UI.clearProcessData();UI.refreshServiceMessage()">{{UI.serviceMessage}}</div>
       <div style="clear:both;float:left;width:90%">
         <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
       </div>
@@ -183,31 +183,27 @@ export class ChatComponent {
   addMessage() {
     this.draftMessage = this.draftMessage.replace(/(\r\n|\n|\r)/gm,"");
     if (this.draftMessage!=""||this.draftImage!="") {
-      this.UI.processNewMessage(this.draftMessage).then(isProcessReady=>{
-        firebase.database().ref('teamServices/'+this.UI.currentTeam+'/process').once('value',process=>{
-          var processData=isProcessReady?process.val():null;
-          const now = Date.now();
-          var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
-            timestamp:now,
-            text:this.draftMessage,
-            image:this.draftImage,
-            imageDownloadURL:this.draftImageDownloadURL,
-            user:this.UI.currentUser,
-            firstName:this.UI.currentUserObj.firstName,
-            imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb,
-            action:"chat",
-            process:processData,
-          }).key;
-          if (isProcessReady) {
-            this.db.object('teamServices/'+this.UI.currentTeam+'/process').update({
-              messageID:messageID,
-            });
-          }
-          this.timestampChatVisit();
-          this.draftMessage = "";
-          this.draftImage = "";
-        });
-      });
+      var isProcessReady=this.UI.processNewMessage(this.draftMessage);
+      var processData=isProcessReady?this.UI.serviceProcess[this.UI.currentTeam]:null;
+      const now = Date.now();
+      var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
+        timestamp:now,
+        text:this.draftMessage,
+        image:this.draftImage,
+        imageDownloadURL:this.draftImageDownloadURL,
+        user:this.UI.currentUser,
+        firstName:this.UI.currentUserObj.firstName,
+        imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb,
+        action:"chat",
+        process:processData,
+      }).key;
+      if (isProcessReady) {
+        this.UI.serviceProcess[this.UI.currentTeam].messageID=messageID;
+        this.UI.refreshServiceMessage();
+      }
+      this.timestampChatVisit();
+      this.draftMessage = "";
+      this.draftImage = "";
     }
   }
 

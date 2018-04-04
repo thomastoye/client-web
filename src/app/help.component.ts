@@ -37,30 +37,26 @@ export class HelpComponent {
   }
 
   addMessage(text) {
-    this.UI.processNewMessage(text).then(isProcessReady=>{
-      firebase.database().ref('teamServices/'+this.UI.currentTeam+'/process').once('value',process=>{
-        var processData=isProcessReady?process.val():null;
-        const now = Date.now();
-        var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
-          timestamp:now,
-          text:text,
-          user:this.UI.currentUser,
-          firstName:this.UI.currentUserObj.firstName,
-          imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb,
-          process:processData,
-        }).key;
-        if (isProcessReady) {
-          this.db.object('teamServices/'+this.UI.currentTeam+'/process').update({
-            messageID:messageID,
-          });
-        }
-        this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
-          lastChatVisitTimestamp:now,
-          lastChatVisitTimestampNegative:-1*now,
-        });
-        this.router.navigate(['chat',this.UI.currentTeam])
-      });
+    var isProcessReady=this.UI.processNewMessage(text);
+    var processData=isProcessReady?this.UI.serviceProcess[this.UI.currentTeam]:null;
+    const now = Date.now();
+    var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
+      timestamp:now,
+      text:text,
+      user:this.UI.currentUser,
+      firstName:this.UI.currentUserObj.firstName,
+      imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb,
+      process:processData,
+    }).key;
+    if (isProcessReady) {
+      this.UI.serviceProcess[this.UI.currentTeam].messageID=messageID;
+      this.UI.refreshServiceMessage();
+    }
+    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
+      lastChatVisitTimestamp:now,
+      lastChatVisitTimestampNegative:-1*now,
     });
+    this.router.navigate(['chat',this.UI.currentTeam])
   }
 
 }

@@ -78,16 +78,6 @@
         }
       }
     },
-    "teamServices": {
-      "$teamid": {
-        ".write": "root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).val() === true",
-        "currentProcess": {
-          "user": {
-            ".validate": "newData.val()==auth.uid"
-          }
-        }
-      }
-    },
     "teamUsers": {
       "$teamid": {
         "$uid": {
