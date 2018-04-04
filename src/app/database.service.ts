@@ -22,7 +22,7 @@ export class databaseService {
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
-            output=snapshot.thumb;
+            output=snapshot.imageUrlThumb;
           });
         }
       }
@@ -41,7 +41,7 @@ export class databaseService {
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
-            output=snapshot.original;
+            output=snapshot.imageUrlOriginal;
           });
         }
       }
@@ -69,7 +69,7 @@ export class databaseService {
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
-            output=snapshot.thumb;
+            output=snapshot.imageUrlThumb;
           });
         }
       }
@@ -108,7 +108,7 @@ export class databaseService {
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
-            output=snapshot.original;
+            output=snapshot.imageUrlOriginal;
           });
         }
       }
@@ -136,7 +136,7 @@ export class databaseService {
       if (output!==undefined) {
         if (output.indexOf('.')===-1) {
           this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
-            output=snapshot.thumb;
+            output=snapshot.imageUrlThumb;
           });
         }
       }
@@ -151,11 +151,6 @@ export class databaseService {
   getProjectDocument(ID:string):string{
     var output;
     this.db.object('projects/'+ID).subscribe(snapshot=>{output=snapshot.document});
-    return output;
-  }
-  getServiceRegex(ID:string):string{
-    var output;
-    this.db.object('appSettings/PERRINNServices/'+ID).subscribe(snapshot=>{output=snapshot.regex});
     return output;
   }
 }

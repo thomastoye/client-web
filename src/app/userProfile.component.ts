@@ -16,7 +16,7 @@ import { userInterfaceService } from './userInterface.service';
   <div style="color:#888;font-size:11px;padding:0 5px 5px 10px;clear:both">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages</div>
   </div>
   <div style="float:right;width:20%;position:relative">
-  <img class="imageWithZoom" [src]="UI.focusUserObj?.imageUrlThumb" style="float:right;object-fit:cover;height:60px;width:60px" (click)="UI.focusUserObj?.imageUrlOriginal">
+  <img class="imageWithZoom" [src]="UI.focusUserObj?.imageUrlThumb" style="float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(UI.focusUserObj?.imageUrlOriginal)">
   </div>
   </div>
   <div class='sheet' style="margin-top:5px">
