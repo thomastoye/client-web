@@ -84,6 +84,7 @@ export class userInterfaceService {
       }
     });
     if (newProcess) {
+      this.refreshServiceMessage();
       return isProcessReady;
     }
     this.services.forEach((service)=>{
@@ -109,16 +110,15 @@ export class userInterfaceService {
                   isProcessReady=true;
                 }
                 this.serviceProcess[this.currentTeam].step+=1;
-                this.refreshServiceMessage();
               } else {
                 this.clearProcessData();
-                this.refreshServiceMessage();
               }
             }
           }
         }
       }
     });
+    this.refreshServiceMessage();
     return isProcessReady;
   }
 

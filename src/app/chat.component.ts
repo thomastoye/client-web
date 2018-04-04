@@ -243,6 +243,7 @@ export class ChatComponent {
         this.draftImage=task.snapshot.ref.name.substring(0,13);
         this.draftImageDownloadURL=task.snapshot.downloadURL;
         this.addMessage();
+        event.target.value = '';
       }
     );
   }
