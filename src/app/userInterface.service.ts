@@ -87,30 +87,34 @@ export class userInterfaceService {
       return isProcessReady;
     }
     this.services.forEach((service)=>{
-      if (service.key==this.serviceProcess[this.currentTeam].service) {
-        if (service.child('process').child(this.serviceProcess[this.currentTeam].step).val().input) {
-          var inputRegex = new RegExp(service.child('process').child(this.serviceProcess[this.currentTeam].step).child('input').val().regex,"i");
-          var value=text.match(inputRegex);
-          if (value) {
-            var variable=service.child('process').child(this.serviceProcess[this.currentTeam].step).child('input').val().variable;
-            if (variable) {
-              var valueString=value[0];
-              if (service.child('process').child(this.serviceProcess[this.currentTeam].step).child('input').val().toLowerCase) {
-                valueString=valueString.toLowerCase();
+      if (this.serviceProcess !== undefined) {
+        if (this.serviceProcess[this.currentTeam] !== undefined) {
+          if (service.key==this.serviceProcess[this.currentTeam].service) {
+            if (service.child('process').child(this.serviceProcess[this.currentTeam].step).val().input) {
+              var inputRegex = new RegExp(service.child('process').child(this.serviceProcess[this.currentTeam].step).child('input').val().regex,"i");
+              var value=text.match(inputRegex);
+              if (value) {
+                var variable=service.child('process').child(this.serviceProcess[this.currentTeam].step).child('input').val().variable;
+                if (variable) {
+                  var valueString=value[0];
+                  if (service.child('process').child(this.serviceProcess[this.currentTeam].step).child('input').val().toLowerCase) {
+                    valueString=valueString.toLowerCase();
+                  }
+                  if (service.child('process').child(this.serviceProcess[this.currentTeam].step).child('input').val().toUpperCase) {
+                    valueString=valueString.toUpperCase();
+                  }
+                  this.serviceProcess[this.currentTeam].inputs[variable]=valueString ;
+                }
+                if (!service.child('process').child(this.serviceProcess[this.currentTeam].step+1).child('input').val()){
+                  isProcessReady=true;
+                }
+                this.serviceProcess[this.currentTeam].step+=1;
+                this.refreshServiceMessage();
+              } else {
+                this.clearProcessData();
+                this.refreshServiceMessage();
               }
-              if (service.child('process').child(this.serviceProcess[this.currentTeam].step).child('input').val().toUpperCase) {
-                valueString=valueString.toUpperCase();
-              }
-              this.serviceProcess[this.currentTeam].inputs[variable]=valueString ;
             }
-            if (!service.child('process').child(this.serviceProcess[this.currentTeam].step+1).child('input').val()){
-              isProcessReady=true;
-            }
-            this.serviceProcess[this.currentTeam].step+=1;
-            this.refreshServiceMessage();
-          } else {
-            this.clearProcessData();
-            this.refreshServiceMessage();
           }
         }
       }
