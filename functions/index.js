@@ -771,7 +771,7 @@ exports.populateTimestampNegative=functions.database.ref('toto').onCreate((data,
   return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
     let updateObj={};
     teams.forEach(team=>{
-      if(team.val().lastMessageTimestamp!=undefined){
+      if(team.val().lastMessageTimestamp!=null){
         updateObj['PERRINNTeams/'+team.key+'/lastMessageTimestampNegative']=-team.val().lastMessageTimestamp;
       } else {
         updateObj['PERRINNTeams/'+team.key+'/lastMessageTimestampNegative']=0;
