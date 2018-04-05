@@ -428,6 +428,7 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
   }
   return admin.database().ref('PERRINNTeams/'+context.params.team).update({
     lastMessageTimestamp:message.timestamp,
+    lastMessageTimestampNegative:-message.timestamp,
     lastMessageFirstName:message.firstName,
     lastMessageText:message.text,
   }).then(()=>{
@@ -730,7 +731,7 @@ function newValidData(key,beforeData,afterData){
 exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,context)=>{
   const beforeData = data.before.val();
   const afterData = data.after.val();
-  var keys=['lastMessageTimestamp','lastMessageFirstName','lastMessageText','name','imageUrlThumb'];
+  var keys=['lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','name','imageUrlThumb'];
   var updateKeys=[];
   keys.forEach(key=>{
     if(newValidData(key,beforeData,afterData))updateKeys.push(key);
@@ -766,12 +767,14 @@ exports.newImageUserSubscription=functions.database.ref('subscribeImageUsers/{im
   });
 });
 
-exports.populateMissingImages=functions.database.ref('toto').onCreate((data,context)=>{
-  return admin.database().ref('PERRINNUsers/').once('value').then(users=>{
+exports.populateTimestampNegative=functions.database.ref('toto').onCreate((data,context)=>{
+  return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
     let updateObj={};
-    users.forEach(user=>{
-      if(user.val().imageUrlThumb==undefined){
-        updateObj['subscribeImageUsers/1522962619747/'+user.key]=true;
+    teams.forEach(team=>{
+      if(team.val().lastMessageTimestamp!=undefined){
+        updateObj['PERRINNTeams/'+team.key+'/lastMessageTimestampNegative']=-team.val().lastMessageTimestamp;
+      } else {
+        updateObj['PERRINNTeams/'+team.key+'/lastMessageTimestampNegative']=0;
       }
     });
     return admin.database().ref().update(updateObj);
