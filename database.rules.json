@@ -38,6 +38,13 @@
         ".write": "(!data.exists() || newData.exists() && root.child('PERRINNTeams').child(root.child('projects').child($projectid).child('leader').val()).child('leaders').child(auth.uid).val() === true) && auth != null"
       }
     },
+    "subscribeTeamUsers": {
+      "$teamid": {
+        "$uid": {
+          ".write": "auth.uid === $uid"
+        }
+      }
+    },
     "teamActivities": {
       "$teamid": {
         ".write": "newData.exists() && (root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).val() === true || root.child('PERRINNTeams').child($teamid).child('members').child(auth.uid).val() === true)"
@@ -78,23 +85,16 @@
         }
       }
     },
-    "teamUsers": {
-      "$teamid": {
-        "$uid": {
-          ".write": "auth.uid === $uid"
-        }
-      }
-    },
-    "userTeams": {
-      "$uid": {
-        ".write": "newData.exists() && auth.uid === $uid"
-      }
-    },
     "users": {
       "$uid": {
         "$entry": {
             ".write": "!data.exists() && auth.uid === $uid"
         }
+      }
+    },
+    "viewUserTeams": {
+      "$uid": {
+        ".write": "newData.exists() && auth.uid === $uid"
       }
     }
   }

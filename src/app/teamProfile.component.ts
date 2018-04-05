@@ -15,7 +15,7 @@ import { databaseService } from './database.service';
     <div style="z-index:9999;position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">Wallet ></div>
   </div>
   <div style="position:relative;margin-bottom:-115px">
-  <img class="imageWithZoom" [src]="UI.currentTeamObj?.imageUrlMedium" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(UI.currentTeamObj?.imageUrlOriginal)">
+  <img class="imageWithZoom" [src]="UI.currentTeamObj?.imageUrlMedium?UI.currentTeamObj?.imageUrlMedium:UI.currentTeamObj?.imageUrlThumb" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(UI.currentTeamObj?.imageUrlOriginal)">
   <div class="sheetBadge" style="position:relative;top:-115px">
   <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{UI.currentTeamObj?.name}}</div>
   <div class="buttonDiv" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
@@ -58,7 +58,6 @@ export class TeamProfileComponent  {
   teamLeaders: FirebaseListObservable<any>;
   teamMembers: FirebaseListObservable<any>;
   teamProjects: FirebaseListObservable<any>;
-  newMemberID: string;
 
   constructor(public db: AngularFireDatabase,public router: Router,public UI: userInterfaceService,public DB: databaseService,private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
@@ -77,13 +76,13 @@ export class TeamProfileComponent  {
 
   followTeam (teamID: string, userID: string) {
     const now = Date.now();
-    this.db.object('userTeams/'+userID+'/'+teamID).update({
+    this.db.object('viewUserTeams/'+userID+'/'+teamID).update({
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
       name:this.UI.currentTeamObj.name,
       imageUrlThumb:this.UI.currentTeamObj.imageUrlThumb?this.UI.currentTeamObj.imageUrlThumb:'',
     });
-    this.db.object('teamUsers/'+teamID).update({
+    this.db.object('subscribeTeamUsers/'+teamID).update({
       [userID]:true,
     });
     this.router.navigate(['user',this.UI.currentUser]);

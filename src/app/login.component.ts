@@ -137,7 +137,7 @@ export class LoginComponent  {
       addLeader:userID,
       timestamp:firebase.database.ServerValue.TIMESTAMP,
     });
-    this.db.object('userTeams/'+userID+'/'+teamID).update({
+    this.db.object('viewUserTeams/'+userID+'/'+teamID).update({
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
     });

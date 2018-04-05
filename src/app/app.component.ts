@@ -38,10 +38,10 @@ export class AppComponent {
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.afAuth.authState.subscribe((auth) => {
-      db.list('userTeams/'+this.UI.currentUser).subscribe(userTeams=>{
+      db.list('viewUserTeams/'+this.UI.currentUser).subscribe(viewUserTeams=>{
         console.log("loop 5");
         this.globalChatActivity = false;
-        userTeams.forEach(userTeam=>{
+        viewUserTeams.forEach(userTeam=>{
           var chatActivity = (userTeam.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
           this.globalChatActivity = chatActivity?true:this.globalChatActivity;
           document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";

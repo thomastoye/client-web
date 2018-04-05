@@ -14,7 +14,7 @@ import { databaseService } from './database.service';
   <div class="buttonDiv" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div class="title">Teams</div>
   <ul class="listLight">
-    <li style="cursor:default" *ngFor="let team of userTeams | async"
+    <li style="cursor:default" *ngFor="let team of viewUserTeams | async"
       [class.selected]="team.$key === UI.currentTeam">
       <div style="width:200px;float:left">
       <img [src]="team.imageUrlThumb" style="display: inline; float: left; margin: 7px 10px 7px 10px;object-fit:cover;height:20px;width:30px;border-radius:3px">
@@ -30,13 +30,13 @@ import { databaseService } from './database.service';
   `,
 })
 export class UserSettingsComponent {
-  userTeams: FirebaseListObservable<any>;
+  viewUserTeams: FirebaseListObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       this.UI.currentTeam="";
-      this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
+      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser, {
         query:{
           orderByChild:'lastChatVisitTimestampNegative',
         }
@@ -45,8 +45,8 @@ export class UserSettingsComponent {
   }
 
   stopFollowing(team){
-    this.db.object('userTeams/'+this.UI.currentUser+'/'+team).remove();
-    this.db.object('teamUsers/'+team+'/'+this.UI.currentUser).remove();
+    this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+team).remove();
+    this.db.object('subscribeTeamUsers/'+team+'/'+this.UI.currentUser).remove();
   }
 
   logout() {

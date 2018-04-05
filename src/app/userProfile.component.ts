@@ -21,7 +21,7 @@ import { userInterfaceService } from './userInterface.service';
   </div>
   <div class='sheet' style="margin-top:5px">
   <ul class="listLight">
-    <li *ngFor="let team of userTeams|async;let last=last"
+    <li *ngFor="let team of viewUserTeams|async;let last=last"
       (click)="router.navigate(['chat',team.$key])">
       <div style="float:left">
         <img [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
@@ -41,7 +41,7 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class UserProfileComponent {
-  userTeams:FirebaseListObservable<any>;
+  viewUserTeams:FirebaseListObservable<any>;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
@@ -49,7 +49,7 @@ export class UserProfileComponent {
       db.object('PERRINNUsers/'+this.UI.focusUser).subscribe(snapshot=>{
         this.UI.focusUserObj=snapshot;
       });
-      this.userTeams=db.list('userTeams/'+this.UI.focusUser, {
+      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser, {
         query:{
           orderByChild:'lastChatVisitTimestampNegative',
         }

@@ -150,7 +150,7 @@ export class SearchComponent  {
       this.UI.serviceProcess[this.UI.currentTeam].messageID=messageID;
       this.UI.refreshServiceMessage();
     }
-    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
+    this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
     });

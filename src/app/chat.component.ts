@@ -126,7 +126,7 @@ export class ChatComponent {
         limitToLast:this.messageNumberDisplay,
       }});
       this.draftMessageUsers = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/');
-      this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
+      this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).subscribe(userTeam=>{
         this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
       });
     });
@@ -169,13 +169,13 @@ export class ChatComponent {
 
   timestampChatVisit(){
     const now = Date.now();
-    this.db.object('userTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
+    this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
       name:this.UI.currentTeamObj.name,
       imageUrlThumb:this.UI.currentTeamObj.imageUrlThumb?this.UI.currentTeamObj.imageUrlThumb:'',
     });
-    this.db.object('teamUsers/'+this.UI.currentTeam).update({
+    this.db.object('subscribeTeamUsers/'+this.UI.currentTeam).update({
       [this.UI.currentUser]:true,
     });
   }
