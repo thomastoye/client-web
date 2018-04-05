@@ -38,34 +38,6 @@ export class databaseService {
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{output=snapshot.name});
     return output;
   }
-  getTeamImageUrlOriginal(ID:string):string{
-    var output;
-    this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
-      output=snapshot.image;
-      if (output!==undefined) {
-        if (output.indexOf('.')===-1) {
-          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
-            output=snapshot.imageUrlOriginal;
-          });
-        }
-      }
-    });
-    return output;
-  }
-  getTeamImageUrlMedium(ID:string):string{
-    var output;
-    this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
-      output=snapshot.image;
-      if (output!==undefined) {
-        if (output.indexOf('.')===-1) {
-          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
-            output=snapshot.medium;
-          });
-        }
-      }
-    });
-    return output;
-  }
   getTeamImageUrlThumb(ID:string):string{
     var output;
     this.db.object('PERRINNTeams/'+ID).subscribe(snapshot=>{
