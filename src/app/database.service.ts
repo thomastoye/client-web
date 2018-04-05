@@ -18,12 +18,16 @@ export class databaseService {
   getUserImageUrlThumb(ID:string):string{
     var output;
     this.db.object('PERRINNUsers/'+ID).subscribe(snapshot=>{
-      output=snapshot.image;
-      if (output!==undefined) {
-        if (output.indexOf('.')===-1) {
-          this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
-            output=snapshot.imageUrlThumb;
-          });
+      if(snapshot.imageUrlThumb!=undefined){
+        output=snapshot.imageUrlThumb;
+      } else {
+        output=snapshot.image;
+        if (output!==undefined) {
+          if (output.indexOf('.')===-1) {
+            this.db.object('PERRINNImages/'+output).subscribe(snapshot=>{
+              output=snapshot.imageUrlThumb;
+            });
+          }
         }
       }
     });

@@ -136,7 +136,7 @@ export class SearchComponent  {
       imageDownloadURL:imageDownloadURL?imageDownloadURL:'',
       user:this.UI.currentUser,
       firstName:this.UI.currentUserObj.firstName,
-      imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb,
+      imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb?this.UI.currentUserObj.imageUrlThumb:'',
       linkTeam:linkTeam,
       linkTeamName:linkTeamName?linkTeamName:'',
       linkTeamImageUrlThumb:linkTeamImageUrlThumb?linkTeamImageUrlThumb:'',

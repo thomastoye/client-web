@@ -141,6 +141,9 @@ export class LoginComponent  {
       lastChatVisitTimestamp:now,
       lastChatVisitTimestampNegative:-1*now,
     });
+    this.db.object('subscribeTeamUsers/'+teamID).update({
+      [userID]:true,
+    });
     this.db.list('users/'+userID).push({
       timestamp:firebase.database.ServerValue.TIMESTAMP,
       personalTeam:teamID,

@@ -388,7 +388,7 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
   });
 });
 
-exports.newTeamProfile = functions.database.ref('/teams/{team}/{editID}').onCreate((data,context)=>{
+exports.newTeamProfile = functions.database.ref('teams/{team}/{editID}').onCreate((data,context)=>{
   const profile = data.val();
   return admin.database().ref('PERRINNTeams/'+context.params.team).once('value').then((currentProfile)=>{
     if (currentProfile.val()==null) {
@@ -521,6 +521,9 @@ exports.processImage = functions.storage.object().onFinalize((data,context)=>{
     if (metadata.val().Orientation=="RightTop") {
       return spawn('convert',[tempFilePath,'-rotate','90',tempFilePath]);
     } else return 0;
+  }).catch(error=>{
+    console.log("error retrieving metadata: "+error);
+    return 0;
   }).then(()=>{
     return spawn('convert',[tempFilePath,'-strip',tempFilePath]);
   }).then(()=>{
@@ -738,6 +741,38 @@ exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,
       updateKeys.forEach(updateKey=>{
         updateObj['viewUserTeams/'+user.key+'/'+context.params.team+'/'+updateKey]=afterData[updateKey];
       });
+    });
+    return admin.database().ref().update(updateObj);
+  });
+});
+
+exports.newImageTeamSubscription=functions.database.ref('subscribeImageTeams/{image}/{team}').onCreate((data,context)=>{
+  return admin.database().ref('PERRINNImages/'+context.params.image).once('value').then(imageData=>{
+    if(imageData!=null||imageData!=undefined){
+      if(imageData.val().imageUrlThumb!=undefined&&imageData.val().imageUrlMedium!=undefined&&imageData.val().imageUrlOriginal!=undefined){
+        return writeImageDataToUsersAndTeamsAndImages(context.params.image,imageData.val().imageUrlThumb,imageData.val().imageUrlMedium,imageData.val().imageUrlOriginal);
+      }
+    }
+  });
+});
+
+exports.newImageUserSubscription=functions.database.ref('subscribeImageUsers/{image}/{user}').onCreate((data,context)=>{
+  return admin.database().ref('PERRINNImages/'+context.params.image).once('value').then(imageData=>{
+    if(imageData!=null||imageData!=undefined){
+      if(imageData.val().imageUrlThumb!=undefined&&imageData.val().imageUrlMedium!=undefined&&imageData.val().imageUrlOriginal!=undefined){
+        return writeImageDataToUsersAndTeamsAndImages(context.params.image,imageData.val().imageUrlThumb,imageData.val().imageUrlMedium,imageData.val().imageUrlOriginal);
+      }
+    }
+  });
+});
+
+exports.populateMissingImages=functions.database.ref('toto').onCreate((data,context)=>{
+  return admin.database().ref('PERRINNUsers/').once('value').then(users=>{
+    let updateObj={};
+    users.forEach(user=>{
+      if(user.val().imageUrlThumb==undefined){
+        updateObj['subscribeImageUsers/1522962619747/'+user.key]=true;
+      }
     });
     return admin.database().ref().update(updateObj);
   });

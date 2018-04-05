@@ -193,7 +193,7 @@ export class ChatComponent {
         imageDownloadURL:this.draftImageDownloadURL,
         user:this.UI.currentUser,
         firstName:this.UI.currentUserObj.firstName,
-        imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb,
+        imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb?this.UI.currentUserObj.imageUrlThumb:'',
         action:"chat",
         process:processData,
       }).key;
