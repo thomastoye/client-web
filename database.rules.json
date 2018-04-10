@@ -18,9 +18,6 @@
         ".indexOn": ["timestampNegative"]
       }
     },
-    "PERRINNTransactions": {
-      ".indexOn": ["sender","receiver"]
-    },
     "PERRINNUsers": {
       ".indexOn": ["firstName"]
     },

@@ -170,7 +170,7 @@ function createTransaction (amount, sender, receiver, user, reference) {
           createTransactionHalf (amount,receiver,sender,user,reference,now);
           if (user!="PERRINN") {
             createMessage (receiver,"PERRINN","You have received "+amount+" COINS from:","","confirmation",sender,"");
-            admin.database().ref('PERRINNUsers/'+user).child('transactionCount').transaction((transactionCount)=>{
+            admin.database().ref('PERRINNUsers/'+user).child('transactionCount').transaction(transactionCount=>{
               if (transactionCount==null) {
                 return 1;
               } else {
@@ -417,16 +417,44 @@ exports.newProcess = functions.database.ref('/teamMessages/{team}/{message}/proc
   });
 });
 
+function chainMessage(team,message){
+  return admin.database().ref('PERRINNTeamMessageChain/'+team).once('value').then(messageChain=>{
+    if(messageChain.val()!=undefined&&messageChain.val()!=null){
+      if (messageChain.val().busy){
+        return admin.database().ref('PERRINNTeamMessageChain/'+team+'/unprocessedMessages').update({
+          [team]:true,
+        }).then(()=>{
+          return false;
+        });
+      }
+    }
+    return admin.database().ref('PERRINNTeamMessageChain/'+team).child('busy').transaction(busy=>{
+      return true;
+    }).then(()=>{
+      const now = Date.now();
+      let updateObj={};
+      let previousMessage=false;
+      if (messageChain.val()!=undefined&&messageChain.val()!=null){
+        previousMessage=messageChain.val().previousMessage?messageChain.val().previousMessage:false;
+      }
+      updateObj['teamMessages/'+team+'/'+message+'/chain/previousMessage']=previousMessage;
+      if(previousMessage)updateObj['teamMessages/'+team+'/'+previousMessage+'/chain/nextMessage']=message;
+      updateObj['PERRINNTeamMessageChain/'+team+'/previousMessage']=message;
+      return admin.database().ref().update(updateObj).then(()=>{
+        return admin.database().ref('PERRINNTeamMessageChain/'+team).child('busy').transaction(busy=>{
+          return false;
+        }).then(()=>{
+          return true;
+        });
+      });
+    });
+  });
+}
+
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate((data,context)=>{
   const message = data.val();
   if (message.user!="PERRINN") {
-    createTransaction (
-      0.01,
-      context.params.team,
-      "-L6XIigvAphrJr5w2jbf",
-      "PERRINN",
-      "Message"
-    );
+    createTransaction (0.01,context.params.team,"-L6XIigvAphrJr5w2jbf","PERRINN","Message");
   }
   return admin.database().ref('PERRINNTeams/'+context.params.team).update({
     lastMessageTimestamp:message.timestamp,
@@ -434,12 +462,16 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
     lastMessageFirstName:message.firstName,
     lastMessageText:message.text,
   }).then(()=>{
-    return admin.database().ref('PERRINNUsers/'+message.user).child('messageCount').transaction((messageCount)=>{
+    return admin.database().ref('PERRINNUsers/'+message.user).child('messageCount').transaction(messageCount=>{
       if (messageCount==null) {
         return 1;
       } else {
         return messageCount+1;
       }
+    }).then(()=>{
+      return chainMessage(context.params.team,context.params.message).then(()=>{
+        return 'done';
+      });
     });
   });
 });
@@ -765,20 +797,6 @@ exports.newImageUserSubscription=functions.database.ref('subscribeImageUsers/{im
         return fanoutImage(context.params.image,imageData.val().imageUrlThumb,imageData.val().imageUrlMedium,imageData.val().imageUrlOriginal);
       }
     }
-  });
-});
-
-exports.populateTimestampNegative=functions.database.ref('toto').onCreate((data,context)=>{
-  return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
-    let updateObj={};
-    teams.forEach(team=>{
-      if(team.val().lastMessageTimestamp!=null){
-        updateObj['PERRINNTeams/'+team.key+'/lastMessageTimestampNegative']=-team.val().lastMessageTimestamp;
-      } else {
-        updateObj['PERRINNTeams/'+team.key+'/lastMessageTimestampNegative']=0;
-      }
-    });
-    return admin.database().ref().update(updateObj);
   });
 });
 

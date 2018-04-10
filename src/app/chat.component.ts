@@ -35,7 +35,7 @@ import { databaseService } from './database.service';
           <img *ngIf="message.action=='process'" src="./../assets/App icons/process.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <img *ngIf="message.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-          <div *ngIf="!message.image" style="float:left;color:#404040;margin:5px" [innerHTML]="message.text | linky"></div>
+          <div *ngIf="!message.image" style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.text | linky"></div>
           <div *ngIf="message.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['chat',message.linkTeam])">
             <img [src]="message?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
             <div style="font-size:11px;padding:5px;">{{message?.linkTeamName}}</div>
@@ -50,9 +50,12 @@ import { databaseService } from './database.service';
           <div style="clear:both;text-align:center">
             <img class="imageWithZoom" *ngIf="message.image" [src]="message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.imageDownloadURL)">
           </div>
+          <div style="clear:both;height:17px">
+            <img *ngIf="message?.chain?.previousMessage==previousMessage" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 5px 2px 5px">
+          </div>
         </div>
       </div>
-      {{storeMessageValues(message.user,message.timestamp)}}
+      {{storeMessageValues(message.$key,message.user,message.timestamp)}}
       {{last?scrollToBottom(message.timestamp):''}}
     </li>
   </ul>
@@ -94,6 +97,7 @@ export class ChatComponent {
   scrollMessageTimestamp: number;
   previousMessageTimestamp: number;
   previousMessageUser: string;
+  previousMessage: string;
   isCurrentUserLeader:boolean;
   isCurrentUserMember:boolean;
 
@@ -116,6 +120,7 @@ export class ChatComponent {
       this.UI.refreshServiceMessage();
       this.previousMessageTimestamp=0;
       this.previousMessageUser="";
+      this.previousMessage="";
       this.draftMessageDB=false;
       this.draftImage="";
       this.draftImageDownloadURL="";
@@ -150,9 +155,10 @@ export class ChatComponent {
     return isMessageNewUserGroup;
   }
 
-  storeMessageValues (user,timestamp) {
-    this.previousMessageTimestamp=timestamp;
+  storeMessageValues (message,user,timestamp) {
+    this.previousMessage=message;
     this.previousMessageUser=user;
+    this.previousMessageTimestamp=timestamp;
   }
 
   isDraftMessageRecent (draftMessageTimestamp) {

@@ -39,7 +39,6 @@ export class AppComponent {
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.afAuth.authState.subscribe((auth) => {
       db.list('viewUserTeams/'+this.UI.currentUser).subscribe(viewUserTeams=>{
-        console.log("loop 5");
         this.globalChatActivity = false;
         viewUserTeams.forEach(userTeam=>{
           var chatActivity = (userTeam.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
