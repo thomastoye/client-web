@@ -51,7 +51,9 @@ import { databaseService } from './database.service';
             <img class="imageWithZoom" *ngIf="message.image" [src]="message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.imageDownloadURL)">
           </div>
           <div style="clear:both;height:17px">
-            <img *ngIf="message?.chain?.previousMessage==previousMessage" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 5px 2px 5px">
+            <img *ngIf="message?.chain?.previousMessage==previousMessage" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 2px">
+            <div *ngIf="message?.chain?.balance" style="font-size:9px;float:right;height:15px;margin:0 0 2px 5px;line-height:15px;color:orange">C{{message?.chain?.balance|number:'1.2-2'}}</div>
+            <div *ngIf="message?.chain?.order" style="font-size:9px;float:right;height:15px;margin:0 0 2px 5px;line-height:15px;color:#aaa">#{{message?.chain?.order}}</div>
           </div>
         </div>
       </div>

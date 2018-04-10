@@ -417,7 +417,7 @@ exports.newProcess = functions.database.ref('/teamMessages/{team}/{message}/proc
   });
 });
 
-function chainMessage(team,message){
+function chainMessage(team,message,amount){
   return admin.database().ref('PERRINNTeamMessageChain/'+team).once('value').then(messageChain=>{
     if(messageChain.val()!=undefined&&messageChain.val()!=null){
       if (messageChain.val().busy){
@@ -433,13 +433,21 @@ function chainMessage(team,message){
     }).then(()=>{
       const now = Date.now();
       let updateObj={};
-      let previousMessage=false;
+      let previousMessage='none';
+      let order=1;
+      let balance=0;
       if (messageChain.val()!=undefined&&messageChain.val()!=null){
-        previousMessage=messageChain.val().previousMessage?messageChain.val().previousMessage:false;
+        previousMessage=messageChain.val().previousMessage?messageChain.val().previousMessage:'none';
+        order=messageChain.val().previousOrder?Number(messageChain.val().previousOrder)+1:1;
+        balance=messageChain.val().previousBalance!=null?Number(messageChain.val().previousBalance)+amount:0;
       }
       updateObj['teamMessages/'+team+'/'+message+'/chain/previousMessage']=previousMessage;
-      if(previousMessage)updateObj['teamMessages/'+team+'/'+previousMessage+'/chain/nextMessage']=message;
+      updateObj['teamMessages/'+team+'/'+message+'/chain/order']=order;
+      updateObj['teamMessages/'+team+'/'+message+'/chain/balance']=balance;
+      updateObj['teamMessages/'+team+'/'+previousMessage+'/chain/nextMessage']=message;
       updateObj['PERRINNTeamMessageChain/'+team+'/previousMessage']=message;
+      updateObj['PERRINNTeamMessageChain/'+team+'/previousOrder']=order;
+      updateObj['PERRINNTeamMessageChain/'+team+'/previousBalance']=balance;
       return admin.database().ref().update(updateObj).then(()=>{
         return admin.database().ref('PERRINNTeamMessageChain/'+team).child('busy').transaction(busy=>{
           return false;
@@ -469,7 +477,7 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
         return messageCount+1;
       }
     }).then(()=>{
-      return chainMessage(context.params.team,context.params.message).then(()=>{
+      return chainMessage(context.params.team,context.params.message,-0.01).then(()=>{
         return 'done';
       });
     });
