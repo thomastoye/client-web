@@ -227,26 +227,29 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
   });
 }
 
-function createTeam(user,team,name,image) {
+function createTeam(user,team,name) {
   const now = Date.now();
-  return updateKeyValue (user,team,'PERRINNTeams/'+team,"createdTimestamp",now).then(()=>{
-    updateKeyValue (user,team,'PERRINNTeams/'+team,"name",name);
-    updateKeyValue (user,team,'PERRINNTeams/'+team,"image",image);
-    addListKeyValue(user,team,'PERRINNTeams/'+team,"leaders",user,true,2);
-    admin.database().ref('viewUserTeams/'+user+'/'+team).update({
-      lastChatVisitTimestamp:now,
-      lastChatVisitTimestampNegative:-1*now,
-    });
-    return team;
+  let updateObj={};
+  updateObj['PERRINNTeams/'+team+'/createdTimestamp']=now;
+  updateObj['PERRINNTeams/'+team+'/name']=name;
+  updateObj['PERRINNTeams/'+team+'/leaders/'+user]=true;
+  updateObj['PERRINNTeams/'+team+'/leadersCount']=1;
+  updateObj['PERRINNTeams/'+team+'/lastMessageTimestamp']=now;
+  updateObj['PERRINNTeams/'+team+'/lastMessageTimestampNegative']=-1*now;
+  updateObj['viewUserTeams/'+user+'/'+team+'/lastChatVisitTimestamp']=now;
+  updateObj['viewUserTeams/'+user+'/'+team+'/lastChatVisitTimestampNegative']=-1*now;
+  updateObj['viewUserTeams/'+user+'/'+team+'/name']=name;
+  updateObj['subscribeTeamUsers/'+team+'/'+user]=true;
+  return admin.database().ref().update(updateObj).then(()=>{
+    return 'done';
   });
 }
 
-function createUser(user,team,firstName,lastName,image) {
+function createUser(user,team,firstName,lastName) {
   const now = Date.now();
   return updateKeyValue (user,team,'PERRINNUsers/',"createdTimestamp",now).then(()=>{
     updateKeyValue (user,team,'PERRINNUsers/',"firstName",firstName);
     updateKeyValue (user,team,'PERRINNUsers/',"lastName",lastName);
-    updateKeyValue (user,team,'PERRINNUsers/',"image",image);
     return user;
   });
 }
@@ -314,8 +317,7 @@ function executeProcess(team,process){
       return createTeam (
         process.user,
         newTeam,
-        process.inputs.name,
-        process.inputs.image
+        process.inputs.name
       ).then(result=>{
         return result;
       });
@@ -462,7 +464,7 @@ exports.returnCOINS = functions.database.ref('tot').onCreate((data,context)=>{
   });
 });
 
-function writeImageDataToUsersAndTeamsAndImages(image,imageUrlThumb,imageUrlMedium,imageUrlOriginal){
+function fanoutImage(image,imageUrlThumb,imageUrlMedium,imageUrlOriginal){
   return admin.database().ref('/subscribeImageUsers/'+image).once('value').then(users=>{
     return admin.database().ref('/subscribeImageTeams/'+image).once('value').then(teams=>{
       let updateObj={};
@@ -563,7 +565,7 @@ exports.processImage = functions.storage.object().onFinalize((data,context)=>{
     const originalFileUrl=originalResult[0];
     const mediumFileUrl=mediumResult[0];
     const thumbFileUrl=thumbResult[0];
-    return writeImageDataToUsersAndTeamsAndImages(imageID,originalFileUrl,mediumFileUrl,thumbFileUrl);
+    return fanoutImage(imageID,thumbFileUrl,mediumFileUrl,originalFileUrl);
   }).then(()=>{
     return 1;
   }).catch(error=>{
@@ -720,12 +722,11 @@ exports.updateUsersMissingData = functions.database.ref('tot').onCreate((data,co
 });
 
 function newValidData(key,beforeData,afterData){
-  var isNewValidData=false;
-  if (afterData[key]!=undefined){
-    if(beforeData[key]==undefined)isNewValidData=true;
-    if(beforeData[key]!=afterData[key])isNewValidData=true;
-  }
-  return isNewValidData;
+  if(afterData[key]==undefined)return false;
+  if(beforeData==null||beforeData==undefined)return true;
+  if(beforeData[key]==undefined)return true;
+  if(beforeData[key]==afterData[key])return false;
+  return true;
 }
 
 exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,context)=>{
@@ -751,7 +752,7 @@ exports.newImageTeamSubscription=functions.database.ref('subscribeImageTeams/{im
   return admin.database().ref('PERRINNImages/'+context.params.image).once('value').then(imageData=>{
     if(imageData!=null||imageData!=undefined){
       if(imageData.val().imageUrlThumb!=undefined&&imageData.val().imageUrlMedium!=undefined&&imageData.val().imageUrlOriginal!=undefined){
-        return writeImageDataToUsersAndTeamsAndImages(context.params.image,imageData.val().imageUrlThumb,imageData.val().imageUrlMedium,imageData.val().imageUrlOriginal);
+        return fanoutImage(context.params.image,imageData.val().imageUrlThumb,imageData.val().imageUrlMedium,imageData.val().imageUrlOriginal);
       }
     }
   });
@@ -761,7 +762,7 @@ exports.newImageUserSubscription=functions.database.ref('subscribeImageUsers/{im
   return admin.database().ref('PERRINNImages/'+context.params.image).once('value').then(imageData=>{
     if(imageData!=null||imageData!=undefined){
       if(imageData.val().imageUrlThumb!=undefined&&imageData.val().imageUrlMedium!=undefined&&imageData.val().imageUrlOriginal!=undefined){
-        return writeImageDataToUsersAndTeamsAndImages(context.params.image,imageData.val().imageUrlThumb,imageData.val().imageUrlMedium,imageData.val().imageUrlOriginal);
+        return fanoutImage(context.params.image,imageData.val().imageUrlThumb,imageData.val().imageUrlMedium,imageData.val().imageUrlOriginal);
       }
     }
   });
@@ -778,5 +779,21 @@ exports.populateTimestampNegative=functions.database.ref('toto').onCreate((data,
       }
     });
     return admin.database().ref().update(updateObj);
+  });
+});
+
+exports.newUserRegistration=functions.auth.user().onCreate((data,context) => {
+  return admin.database().ref('appSettings/specialImages/newUser').once('value').then(image=>{
+    return admin.database().ref('subscribeImageUsers/'+image.val()).update({
+      [data.uid]:true,
+    });
+  });
+});
+
+exports.newTeam=functions.database.ref('PERRINNTeams/{team}').onCreate((data,context)=>{
+  return admin.database().ref('appSettings/specialImages/newTeam').once('value').then(image=>{
+    return admin.database().ref('subscribeImageTeams/'+image.val()).update({
+      [context.params.team]:true,
+    });
   });
 });
