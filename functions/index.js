@@ -417,12 +417,14 @@ exports.newProcess = functions.database.ref('/teamMessages/{team}/{message}/proc
   });
 });
 
-function chainMessage(team,message,amount){
+function addChainData(team,message){
   return admin.database().ref('PERRINNTeamMessageChain/'+team).once('value').then(messageChain=>{
     if(messageChain.val()!=undefined&&messageChain.val()!=null){
       if (messageChain.val().busy){
-        return admin.database().ref('PERRINNTeamMessageChain/'+team+'/unprocessedMessages').update({
-          [team]:true,
+        return admin.database().ref('PERRINNTeamMessageChain/'+team+'/skippedMessages').update({
+          [message]:true,
+        }).then(()=>{
+          return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Message chain skipped: "+message,"","warning",team,"");
         }).then(()=>{
           return false;
         });
@@ -434,20 +436,16 @@ function chainMessage(team,message,amount){
       const now = Date.now();
       let updateObj={};
       let previousMessage='none';
-      let order=1;
-      let balance=0;
+      let index=1;
       if (messageChain.val()!=undefined&&messageChain.val()!=null){
         previousMessage=messageChain.val().previousMessage?messageChain.val().previousMessage:'none';
-        order=messageChain.val().previousOrder?Number(messageChain.val().previousOrder)+1:1;
-        balance=messageChain.val().previousBalance!=null?Number(messageChain.val().previousBalance)+amount:0;
+        index=messageChain.val().previousIndex?Number(messageChain.val().previousIndex)+1:1;
       }
-      updateObj['teamMessages/'+team+'/'+message+'/chain/previousMessage']=previousMessage;
-      updateObj['teamMessages/'+team+'/'+message+'/chain/order']=order;
-      updateObj['teamMessages/'+team+'/'+message+'/chain/balance']=balance;
-      updateObj['teamMessages/'+team+'/'+previousMessage+'/chain/nextMessage']=message;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/previousMessage']=previousMessage;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/index']=index;
+      updateObj['teamMessages/'+team+'/'+previousMessage+'/PERRINN/chain/nextMessage']=message;
       updateObj['PERRINNTeamMessageChain/'+team+'/previousMessage']=message;
-      updateObj['PERRINNTeamMessageChain/'+team+'/previousOrder']=order;
-      updateObj['PERRINNTeamMessageChain/'+team+'/previousBalance']=balance;
+      updateObj['PERRINNTeamMessageChain/'+team+'/previousIndex']=index;
       return admin.database().ref().update(updateObj).then(()=>{
         return admin.database().ref('PERRINNTeamMessageChain/'+team).child('busy').transaction(busy=>{
           return false;
@@ -459,28 +457,113 @@ function chainMessage(team,message,amount){
   });
 }
 
+function addMessagingCostData(user,team,message){
+  return admin.database().ref('appSettings/messageTemplate/messagingCost').once('value').then(messagingCost=>{
+    if(user!='PERRINN'){
+      return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/messagingCost').set(messagingCost.val()).then(()=>{
+        return true;
+      });
+    } else {
+      return false;
+    }
+  });
+}
+
+function updateLastMessageTeamData(team,timestamp,firstName,text){
+  return admin.database().ref('PERRINNTeams/'+team).update({
+    lastMessageTimestamp:timestamp,
+    lastMessageTimestampNegative:-timestamp,
+    lastMessageFirstName:firstName,
+    lastMessageText:text,
+  }).catch(()=>{return 'error'});
+}
+
+function incrementUserMessageCounter(user){
+  return admin.database().ref('PERRINNUsers/'+user).child('messageCount').transaction(messageCount=>{
+    if (messageCount==null) {
+      return 1;
+    } else {
+      return messageCount+1;
+    }
+  }).catch(()=>{return 'error'});
+}
+
+function checkTransactionInputs(team,inputs){
+  if(inputs.amount>0&&inputs.amount<=10){
+    if(inputs.receiver!=team){
+      if(inputs.reference!=''){
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function addTransactionData(team,message,process){
+  let updateObj={};
+  let amount=0;
+  let receiver='none';
+  let reference='none';
+  if(process!=undefined&&process!=null){
+    if(process.service=='transactionStart'){
+      if(checkTransactionInputs(team,process.inputs)) {
+        amount=process.inputs.amount;
+        receiver=process.inputs.receiver;
+        reference=process.inputs.reference;
+      }
+    }
+  }
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/amount']=amount;
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/receiver']=receiver;
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/reference']=reference;
+  return admin.database().ref().update(updateObj).then(()=>{
+    return true;
+  }).catch(()=>{return 'error'});
+}
+
+function addWalletData(team,message){
+  return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
+    const amount=Number(messageObj.val().PERRINN.messagingCost.amount)+Number(messageObj.val().PERRINN.transaction.amount);
+    return admin.database().ref('teamMessages/'+team+'/'+messageObj.val().PERRINN.chain.previousMessage).once('value').then(previousMessageObj=>{
+      var previousBalance=0;
+      if(previousMessageObj.val().PERRINN.wallet!=undefined&&previousMessageObj.val().PERRINN.wallet!=null){
+        previousBalance=previousMessageObj.val().PERRINN.wallet.balance;
+      }
+      const balance=Math.round((Number(previousBalance)-amount)*100000)/100000;
+      let updateObj={};
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/amount']=amount;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/balance']=balance;
+      return admin.database().ref().update(updateObj).then(()=>{
+        return true;
+      });
+    });
+  }).catch(()=>{return 'error'});
+}
+
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate((data,context)=>{
   const message = data.val();
   if (message.user!="PERRINN") {
     createTransaction (0.01,context.params.team,"-L6XIigvAphrJr5w2jbf","PERRINN","Message");
   }
-  return admin.database().ref('PERRINNTeams/'+context.params.team).update({
-    lastMessageTimestamp:message.timestamp,
-    lastMessageTimestampNegative:-message.timestamp,
-    lastMessageFirstName:message.firstName,
-    lastMessageText:message.text,
-  }).then(()=>{
-    return admin.database().ref('PERRINNUsers/'+message.user).child('messageCount').transaction(messageCount=>{
-      if (messageCount==null) {
-        return 1;
-      } else {
-        return messageCount+1;
-      }
-    }).then(()=>{
-      return chainMessage(context.params.team,context.params.message,-0.01).then(()=>{
-        return 'done';
-      });
-    });
+  return updateLastMessageTeamData(context.params.team,message.timestamp,message.firstName,message.text
+  ).then(result=>{
+  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write message data'});
+  return incrementUserMessageCounter(message.user);
+}).then(result=>{
+  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not increment count'});
+  return addChainData(context.params.team,context.params.message);
+}).then(result=>{
+  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write chain'});
+  return addMessagingCostData(message.user,context.params.team,context.params.message);
+}).then(result=>{
+  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write message cost'});
+  return addTransactionData(context.params.team,context.params.message,message.process);
+}).then(result=>{
+  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write transaction'});
+  return addWalletData(context.params.team,context.params.message);
+}).then(result=>{
+  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write wallet'});
+  return data.ref.child('/PERRINN').update({dataWrite:'complete'});
   });
 });
 
@@ -684,45 +767,6 @@ function copyPhotoURL(photo){
     }
   }
 }
-
-exports.updateMessageMissingFirstName = functions.database.ref('tot').onCreate((data,context)=>{
-  let teamKeys=[];
-  let messageKeys=[];
-  const maxIter=1000;
-  let iter=0;
-  return admin.database().ref('teamMessages/').once('value').then(teams=>{
-    let firstNames=[];
-    teams.forEach(team=>{
-      team.forEach(message=>{
-        if (message.val().firstName==undefined&&iter<maxIter) {
-          teamKeys.push(team.key);
-          messageKeys.push(message.key);
-          firstNames.push(admin.database().ref('PERRINNUsers/'+message.val().user).child('firstName').once('value'));
-        }
-      });
-    });
-    return Promise.all(firstNames);
-  }).then(firstNames=>{
-    let updateObj={};
-    console.log('number of items:'+firstNames.length);
-    for(i=0;i<firstNames.length;i++) {
-      if (firstNames[i]!=undefined&&i<maxIter) {
-        if (firstNames[i].val()!=null) {
-          updateObj[`teamMessages/${teamKeys[i]}/${messageKeys[i]}/firstName`]=firstNames[i].val();
-          iter+=1;
-        }
-      }
-    }
-    console.log('number of updates:'+iter);
-    console.log(updateObj);
-    return admin.database().ref().update(updateObj);
-  }).then(()=>{
-    console.log('all done.');
-    return iter;
-  }).catch(error=>{
-    console.log(error);
-  });
-});
 
 exports.updateUsersMissingData = functions.database.ref('tot').onCreate((data,context)=>{
   let userKeys=[];

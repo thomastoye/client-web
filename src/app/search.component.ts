@@ -127,7 +127,7 @@ export class SearchComponent  {
 
   addMessage(text,image,imageDownloadURL,linkTeam,linkTeamName,linkTeamImageUrlThumb,linkUser,linkUserFirstName,linkUserLastName,linkUserImageUrlThumb) {
     var isProcessReady=this.UI.processNewMessage(text);
-    var processData=isProcessReady?this.UI.serviceProcess[this.UI.currentTeam]:null;
+    var processObject=isProcessReady?this.UI.serviceProcess[this.UI.currentTeam]:null;
     const now = Date.now();
     var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
       timestamp:now,
@@ -144,7 +144,7 @@ export class SearchComponent  {
       linkUserFirstName:linkUserFirstName?linkUserFirstName:'',
       linkUserLastName:linkUserLastName?linkUserLastName:'',
       linkUserImageUrlThumb:linkUserImageUrlThumb?linkUserImageUrlThumb:'',
-      process:processData,
+      process:processObject,
     }).key;
     if (isProcessReady) {
       this.UI.serviceProcess[this.UI.currentTeam].messageID=messageID;

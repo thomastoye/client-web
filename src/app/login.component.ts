@@ -10,15 +10,10 @@ import { databaseService } from './database.service';
   selector: 'login',
   template: `
   <div id="login">
-  <div style="width:300px;display:block;margin: 0 auto;padding:25px;">
-  <div style="font-size:25px;line-height:35px;color:#555">Public.</div>
-  <div style="font-size:25px;line-height:35px;color:#555">Chat.</div>
-  <div style="font-size:25px;line-height:35px;color:#555">And exchange.</div>
-  </div>
     <div class="module form-module">
       <div class="form">
         <form>
-          <img src="./../assets/App icons/PERRINN logo.png" style="width:70%">
+          <img src="./../assets/App icons/PERRINN logo.png" style="width:95%;margin:25px 0 25px 0">
           <div [hidden]="UI.currentUser!=null">
           <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser;messageUser=''">{{newUser?"Already have an account?":"Need a new account?"}}</div>
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *" (keyup)="messageUser=''" required/>

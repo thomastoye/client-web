@@ -19,9 +19,11 @@ import { databaseService } from './database.service';
   <div style="color:blue; padding:10px 0 10px 0; cursor:pointer; text-align:center" (click)="messageNumberDisplay=messageNumberDisplay+15;this.teamMessages = this.db.list('teamMessages/'+this.UI.currentTeam,{query: {limitToLast: messageNumberDisplay}});">More messages</div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async;let first=first;let last=last">
-      <div *ngIf="isMessageNewTimeGroup(message.timestamp)||first" style="text-align:center;padding:25px 15px 15px 15px;color:#777">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
-      <div style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-width:0 0 0 3px;border-style:solid;border-radius:7px" [style.margin]="isMessageNewUserGroup(message.user,message.timestamp)||first?'15px 25px 0 10px':'2px 25px 0 70px'"
-      [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" [style.background-color]="message.action=='confirmation'||message.action=='add'?'#e6efe6':message.action=='warning'||message.action=='remove'?'#efeac6':'white'" (click)="timestampChatVisit()">
+      <div *ngIf="isMessageNewTimeGroup(message.timestamp)||first" style="padding:25px 15px 15px 15px">
+        <div style="color:#777;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:10px">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
+      </div>
+      <div style="box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);cursor:pointer;border-width:0 0 0 3px;border-style:solid;border-radius:7px;background-color:white" [style.margin]="isMessageNewUserGroup(message.user,message.timestamp)||first?'15px 10px 5px 10px':'2px 10px 5px 70px'"
+      [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" (click)="timestampChatVisit()">
         <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="float:left;width:60px;min-height:10px">
           <img [src]="message?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
           {{image?.imageUrlThumbUser}}
@@ -50,14 +52,37 @@ import { databaseService } from './database.service';
           <div style="clear:both;text-align:center">
             <img class="imageWithZoom" *ngIf="message.image" [src]="message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.imageDownloadURL)">
           </div>
-          <div style="clear:both;height:17px">
-            <img *ngIf="message?.chain?.previousMessage==previousMessage" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 2px">
-            <div *ngIf="message?.chain?.balance" style="font-size:9px;float:right;height:15px;margin:0 0 2px 5px;line-height:15px;color:orange">C{{message?.chain?.balance|number:'1.2-2'}}</div>
-            <div *ngIf="message?.chain?.order" style="font-size:9px;float:right;height:15px;margin:0 0 2px 5px;line-height:15px;color:#aaa">#{{message?.chain?.order}}</div>
+          <div *ngIf="showAll">
+            <div style="clear:both;float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px">
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">CHAIN</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Index: #{{message?.PERRINN?.chain?.index}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Previous: {{message?.PERRINN?.chain?.previousMessage}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Current: {{message?.$key}}</div>
+            </div>
+            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px">
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">MESSAGING COST</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Amount: C{{message?.PERRINN?.messagingCost?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Receiver: {{message?.PERRINN?.messagingCost?.receiver}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Reference: {{message?.PERRINN?.messagingCost?.reference}}</div>
+            </div>
+            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px">
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">WALLET</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Balance: C{{message?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
+            </div>
+            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px">
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">TRANSACTION</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Amount: C{{message?.PERRINN?.transaction?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Receiver: {{message?.PERRINN?.transaction?.receiver}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Reference: {{message?.PERRINN?.transaction?.reference}}</div>
+            </div>
+          </div>
+          <div style="clear:both;height:15px" (click)="showAll=!showAll">
+            <img *ngIf="message?.PERRINN?.dataWrite=='complete'" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
+            <div style="float:right;font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">{{message?.PERRINN?.dataWrite!='complete'?message?.PERRINN?.dataWrite:''}}</div>
           </div>
         </div>
       </div>
-      {{storeMessageValues(message.$key,message.user,message.timestamp)}}
+      {{storeMessageValues(message.user,message.timestamp)}}
       {{last?scrollToBottom(message.timestamp):''}}
     </li>
   </ul>
@@ -99,13 +124,14 @@ export class ChatComponent {
   scrollMessageTimestamp: number;
   previousMessageTimestamp: number;
   previousMessageUser: string;
-  previousMessage: string;
   isCurrentUserLeader:boolean;
   isCurrentUserMember:boolean;
+  showAll:boolean;
 
   constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
+      this.showAll=false;
       this.isCurrentUserLeader=false;
       this.isCurrentUserMember=false;
       db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
@@ -122,7 +148,6 @@ export class ChatComponent {
       this.UI.refreshServiceMessage();
       this.previousMessageTimestamp=0;
       this.previousMessageUser="";
-      this.previousMessage="";
       this.draftMessageDB=false;
       this.draftImage="";
       this.draftImageDownloadURL="";
@@ -157,8 +182,7 @@ export class ChatComponent {
     return isMessageNewUserGroup;
   }
 
-  storeMessageValues (message,user,timestamp) {
-    this.previousMessage=message;
+  storeMessageValues (user,timestamp) {
     this.previousMessageUser=user;
     this.previousMessageTimestamp=timestamp;
   }
@@ -192,7 +216,7 @@ export class ChatComponent {
     this.draftMessage = this.draftMessage.replace(/(\r\n|\n|\r)/gm,"");
     if (this.draftMessage!=""||this.draftImage!="") {
       var isProcessReady=this.UI.processNewMessage(this.draftMessage);
-      var processData=isProcessReady?this.UI.serviceProcess[this.UI.currentTeam]:null;
+      var processObject=isProcessReady?this.UI.serviceProcess[this.UI.currentTeam]:null;
       const now = Date.now();
       var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
         timestamp:now,
@@ -203,7 +227,7 @@ export class ChatComponent {
         firstName:this.UI.currentUserObj.firstName,
         imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb?this.UI.currentUserObj.imageUrlThumb:'',
         action:"chat",
-        process:processData,
+        process:processObject,
       }).key;
       if (isProcessReady) {
         this.UI.serviceProcess[this.UI.currentTeam].messageID=messageID;
