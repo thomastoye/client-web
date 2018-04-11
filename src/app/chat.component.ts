@@ -53,23 +53,23 @@ import { databaseService } from './database.service';
             <img class="imageWithZoom" *ngIf="message.image" [src]="message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.imageDownloadURL)">
           </div>
           <div *ngIf="showAll">
-            <div style="clear:both;float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px">
+            <div style="clear:both;float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:100px">
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">CHAIN</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Index: #{{message?.PERRINN?.chain?.index}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Previous: {{message?.PERRINN?.chain?.previousMessage}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Current: {{message?.$key}}</div>
             </div>
-            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px">
+            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:100px">
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">MESSAGING COST</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Amount: C{{message?.PERRINN?.messagingCost?.amount|number:'1.2-20'}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Receiver: {{message?.PERRINN?.messagingCost?.receiver}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Reference: {{message?.PERRINN?.messagingCost?.reference}}</div>
             </div>
-            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px">
+            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:100px">
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">WALLET</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Balance: C{{message?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
             </div>
-            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px">
+            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:100px">
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">TRANSACTION</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Amount: C{{message?.PERRINN?.transaction?.amount|number:'1.2-20'}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Receiver: {{message?.PERRINN?.transaction?.receiver}}</div>
