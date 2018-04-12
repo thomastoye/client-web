@@ -20,7 +20,7 @@ import { databaseService } from './database.service';
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages | async;let first=first;let last=last">
       <div *ngIf="isMessageNewTimeGroup(message.timestamp)||first" style="padding:25px 15px 15px 15px">
-        <div style="color:#777;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:10px">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
+        <div style="box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);color:#777;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:10px">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
       </div>
       <div style="box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);cursor:pointer;border-width:0 0 0 3px;border-style:solid;border-radius:7px;background-color:white" [style.margin]="isMessageNewUserGroup(message.user,message.timestamp)||first?'15px 10px 5px 10px':'2px 10px 5px 70px'"
       [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" (click)="timestampChatVisit()">
@@ -50,36 +50,47 @@ import { databaseService } from './database.service';
             <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{message.process.result}}</div>
           </div>
           <div style="clear:both;text-align:center">
-            <img class="imageWithZoom" *ngIf="message.image" [src]="message.imageDownloadURL" style="clear:both;width:95%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.imageDownloadURL)">
+            <img class="imageWithZoom" *ngIf="message.image" [src]="message.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.imageDownloadURL)">
           </div>
-          <div *ngIf="showAll">
-            <div style="clear:both;float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:100px">
+          <div *ngIf="showDetails[message.$key]">
+            <div style="clear:both;float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:125px">
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">CHAIN</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Index: #{{message?.PERRINN?.chain?.index}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Previous: {{message?.PERRINN?.chain?.previousMessage}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Current: {{message?.$key}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Next: {{message?.PERRINN?.chain?.nextMessage}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Timestamp: {{message?.PERRINN?.chain?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:100px">
+            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:125px" [style.background-color]="message?.PERRINN?.messagingCost?.status=='rejected'?'#fcebb8':''">
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">MESSAGING COST</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Amount: C{{message?.PERRINN?.messagingCost?.amount|number:'1.2-20'}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Receiver: {{message?.PERRINN?.messagingCost?.receiver}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Reference: {{message?.PERRINN?.messagingCost?.reference}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Status: {{message?.PERRINN?.messagingCost?.status}}</div>
             </div>
-            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:100px">
+            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:125px">
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">WALLET</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Balance: C{{message?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Timestamp: {{message?.PERRINN?.wallet?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:100px">
+          </div>
+          <div *ngIf="showDetails[message.$key]||message?.PERRINN?.transaction?.status=='complete'">
+            <div style="float:left;border-radius:7px;border-style:solid;border-width:1px;border-color:#aaa;padding:10px;margin:5px;width:200px;height:125px">
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#888">TRANSACTION</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Amount: C{{message?.PERRINN?.transaction?.amount|number:'1.2-20'}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Receiver: {{message?.PERRINN?.transaction?.receiver}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Reference: {{message?.PERRINN?.transaction?.reference}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Status: {{message?.PERRINN?.transaction?.status}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Timestamp: {{message?.PERRINN?.transaction?.timestamp}}</div>
             </div>
           </div>
-          <div style="clear:both;height:15px" (click)="showAll=!showAll">
-            <img *ngIf="message?.PERRINN?.dataWrite=='complete'" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
-            <div style="float:right;font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">{{message?.PERRINN?.dataWrite!='complete'?message?.PERRINN?.dataWrite:''}}</div>
-          </div>
+        </div>
+        <div class='messageFooter' style="clear:both;height:15px" (click)="switchShowDetails(message.$key)">
+          <div style="float:left;width:50%;text-align:right;line-height:10px">...</div>
+          <img *ngIf="message?.PERRINN?.dataWrite=='complete'" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
+          <div style="float:right;font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">{{message?.PERRINN?.dataWrite!='complete'?message?.PERRINN?.dataWrite:''}}</div>
+          <div *ngIf="message?.PERRINN?.chain?.index" style="float:right;font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">#{{message?.PERRINN?.chain?.index}}</div>
+          <div *ngIf="message?.PERRINN?.chain?.nextMessage==undefined&&message?.PERRINN?.wallet?.balance!=undefined" style="float:right;font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#bbb">Balance: C{{message?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
         </div>
       </div>
       {{storeMessageValues(message.user,message.timestamp)}}
@@ -126,14 +137,14 @@ export class ChatComponent {
   previousMessageUser: string;
   isCurrentUserLeader:boolean;
   isCurrentUserMember:boolean;
-  showAll:boolean;
+  showDetails:{};
 
   constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
-      this.showAll=false;
       this.isCurrentUserLeader=false;
       this.isCurrentUserMember=false;
+      this.showDetails={};
       db.object('PERRINNTeams/'+this.UI.currentTeam).subscribe(snapshot=>{
         this.UI.currentTeamObj=snapshot;
         if(this.UI.currentUser){
@@ -162,6 +173,14 @@ export class ChatComponent {
         this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp);
       });
     });
+  }
+
+  switchShowDetails(message){
+    if(this.showDetails[message]==undefined){
+      this.showDetails[message]=true;
+    } else {
+      this.showDetails[message]=!this.showDetails[message];
+    }
   }
 
   showFullScreenImage(src){

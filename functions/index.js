@@ -417,65 +417,58 @@ exports.newProcess = functions.database.ref('/teamMessages/{team}/{message}/proc
   });
 });
 
-function addChainData(team,message){
-  return admin.database().ref('PERRINNTeamMessageChain/'+team).once('value').then(messageChain=>{
-    if(messageChain.val()!=undefined&&messageChain.val()!=null){
-      if (messageChain.val().busy){
-        return admin.database().ref('PERRINNTeamMessageChain/'+team+'/skippedMessages').update({
-          [message]:true,
-        }).then(()=>{
-          return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Message chain skipped: "+message,"","warning",team,"");
-        }).then(()=>{
-          return false;
-        });
-      }
-    }
-    return admin.database().ref('PERRINNTeamMessageChain/'+team).child('busy').transaction(busy=>{
-      return true;
-    }).then(()=>{
-      const now = Date.now();
-      let updateObj={};
-      let previousMessage='none';
-      let index=1;
-      if (messageChain.val()!=undefined&&messageChain.val()!=null){
-        previousMessage=messageChain.val().previousMessage?messageChain.val().previousMessage:'none';
-        index=messageChain.val().previousIndex?Number(messageChain.val().previousIndex)+1:1;
-      }
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/previousMessage']=previousMessage;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/index']=index;
-      updateObj['teamMessages/'+team+'/'+previousMessage+'/PERRINN/chain/nextMessage']=message;
-      updateObj['PERRINNTeamMessageChain/'+team+'/previousMessage']=message;
-      updateObj['PERRINNTeamMessageChain/'+team+'/previousIndex']=index;
-      return admin.database().ref().update(updateObj).then(()=>{
-        return admin.database().ref('PERRINNTeamMessageChain/'+team).child('busy').transaction(busy=>{
-          return false;
-        }).then(()=>{
-          return true;
+function writeChainData(team,message){
+  return admin.database().ref('PERRINNTeamMessageChain/'+team).child('lock').transaction(function(lock){
+    if(lock===null)return true;
+    else return;
+  }).then(result=>{
+    if (result.committed){
+      return admin.database().ref('PERRINNTeamMessageChain/'+team).once('value').then(messageChain=>{
+        let updateObj={};
+        let previousMessage='none';
+        let index=1;
+        if (messageChain.val()!=undefined&&messageChain.val()!=null){
+          previousMessage=messageChain.val().previousMessage?messageChain.val().previousMessage:'none';
+          index=messageChain.val().previousIndex?Number(messageChain.val().previousIndex)+1:1;
+        }
+        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/previousMessage']=previousMessage;
+        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/index']=index;
+        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/timestamp']=admin.database.ServerValue.TIMESTAMP;
+        return admin.database().ref().update(updateObj).then(()=>{
+          return 'done';
         });
       });
-    });
+    }
+  }).catch(error=>{
+    console.log(error);
   });
 }
 
-function addMessagingCostData(user,team,message){
+function writeMessagingCostData(user,team,message){
   return admin.database().ref('appSettings/messageTemplate/messagingCost').once('value').then(messagingCost=>{
     if(user!='PERRINN'){
       return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/messagingCost').set(messagingCost.val()).then(()=>{
-        return true;
+        return 'done';
       });
     } else {
-      return false;
+      return 'done';
     }
+  }).catch(error=>{
+    console.log(error);
   });
 }
 
-function updateLastMessageTeamData(team,timestamp,firstName,text){
+function writeMessageTeamData(team,timestamp,firstName,text){
   return admin.database().ref('PERRINNTeams/'+team).update({
     lastMessageTimestamp:timestamp,
     lastMessageTimestampNegative:-timestamp,
     lastMessageFirstName:firstName,
     lastMessageText:text,
-  }).catch(()=>{return 'error'});
+  }).then(()=>{
+    return 'done';
+  }).catch(error=>{
+    console.log(error);
+  });
 }
 
 function incrementUserMessageCounter(user){
@@ -485,7 +478,11 @@ function incrementUserMessageCounter(user){
     } else {
       return messageCount+1;
     }
-  }).catch(()=>{return 'error'});
+  }).then(()=>{
+    return 'done';
+  }).catch(error=>{
+    console.log(error);
+  });
 }
 
 function checkTransactionInputs(team,inputs){
@@ -499,7 +496,7 @@ function checkTransactionInputs(team,inputs){
   return false;
 }
 
-function addTransactionData(team,message,process){
+function writeTransactionData(team,message,process){
   let updateObj={};
   let amount=0;
   let receiver='none';
@@ -516,54 +513,130 @@ function addTransactionData(team,message,process){
   updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/amount']=amount;
   updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/receiver']=receiver;
   updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/reference']=reference;
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/timestamp']=admin.database.ServerValue.TIMESTAMP;
   return admin.database().ref().update(updateObj).then(()=>{
-    return true;
-  }).catch(()=>{return 'error'});
+    return 'done';
+  }).catch(error=>{
+    console.log(error);
+  });
 }
 
-function addWalletData(team,message){
+function writeWalletData(team,message){
   return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
-    const amount=Number(messageObj.val().PERRINN.messagingCost.amount)+Number(messageObj.val().PERRINN.transaction.amount);
     return admin.database().ref('teamMessages/'+team+'/'+messageObj.val().PERRINN.chain.previousMessage).once('value').then(previousMessageObj=>{
-      var previousBalance=0;
-      if(previousMessageObj.val().PERRINN.wallet!=undefined&&previousMessageObj.val().PERRINN.wallet!=null){
-        previousBalance=previousMessageObj.val().PERRINN.wallet.balance;
-      }
-      const balance=Math.round((Number(previousBalance)-amount)*100000)/100000;
       let updateObj={};
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/amount']=amount;
+      var previousBalance=0;
+      if(previousMessageObj.val()!=undefined&&previousMessageObj.val()!=null){
+        if(previousMessageObj.val().PERRINN.wallet!=undefined&&previousMessageObj.val().PERRINN.wallet!=null){
+          previousBalance=previousMessageObj.val().PERRINN.wallet.balance;
+        }
+      }
+      var balance=previousBalance;
+      if(messageObj.val().PERRINN.messagingCost.amount>0){
+        if((Math.round((Number(balance)-Number(messageObj.val().PERRINN.messagingCost.amount))*100000)/100000)>=0){
+          balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.messagingCost.amount))*100000)/100000;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='complete';
+        } else {
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='rejected';
+        }
+      } else {
+        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='none';
+      }
+      if(messageObj.val().PERRINN.transaction.amount>0){
+        if((Math.round((Number(balance)-Number(messageObj.val().PERRINN.transaction.amount))*100000)/100000)>=0){
+          balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.transaction.amount))*100000)/100000;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/status']='complete';
+        } else {
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/status']='rejected';
+        }
+      } else {
+        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/status']='none';
+      }
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/amount']=previousBalance-balance;
       updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/balance']=balance;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/timestamp']=admin.database.ServerValue.TIMESTAMP;
       return admin.database().ref().update(updateObj).then(()=>{
-        return true;
+        return 'done';
       });
     });
-  }).catch(()=>{return 'error'});
+  }).catch(error=>{
+    console.log(error);
+  });
+}
+
+function writeLockData(team,message){
+  return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
+    let updateObj={};
+    let previousMessage=messageObj.val().PERRINN.chain.previousMessage;
+    let index=messageObj.val().PERRINN.chain.index;
+    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/dataWrite']='complete';
+    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/timestampEnd']=admin.database.ServerValue.TIMESTAMP;
+    if(previousMessage!='none')updateObj['teamMessages/'+team+'/'+previousMessage+'/PERRINN/chain/nextMessage']=message;
+    updateObj['PERRINNTeamMessageChain/'+team+'/previousMessage']=message;
+    updateObj['PERRINNTeamMessageChain/'+team+'/previousIndex']=index;
+    return admin.database().ref().update(updateObj).then(()=>{
+      return 'done';
+    });
+  }).catch(error=>{
+    console.log(error);
+  });
 }
 
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate((data,context)=>{
-  const message = data.val();
+  const message=data.val();
+  let writeError=null;
   if (message.user!="PERRINN") {
     createTransaction (0.01,context.params.team,"-L6XIigvAphrJr5w2jbf","PERRINN","Message");
   }
-  return updateLastMessageTeamData(context.params.team,message.timestamp,message.firstName,message.text
-  ).then(result=>{
-  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write message data'});
-  return incrementUserMessageCounter(message.user);
-}).then(result=>{
-  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not increment count'});
-  return addChainData(context.params.team,context.params.message);
-}).then(result=>{
-  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write chain'});
-  return addMessagingCostData(message.user,context.params.team,context.params.message);
-}).then(result=>{
-  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write message cost'});
-  return addTransactionData(context.params.team,context.params.message,message.process);
-}).then(result=>{
-  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write transaction'});
-  return addWalletData(context.params.team,context.params.message);
-}).then(result=>{
-  if(result=='error') return data.ref.child('/PERRINN').update({dataWrite:'did not write wallet'});
-  return data.ref.child('/PERRINN').update({dataWrite:'complete'});
+  return data.ref.child('/PERRINN').update({
+    timestampStart:admin.database.ServerValue.TIMESTAMP,
+  }).then(result=>{
+    return writeMessageTeamData(context.params.team,message.timestamp,message.firstName,message.text);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write message data';
+      return null;
+    }
+    return incrementUserMessageCounter(message.user);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not increment count';
+      return null;
+    }
+    return writeChainData(context.params.team,context.params.message);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write chain';
+      return null;
+    }
+    return writeMessagingCostData(message.user,context.params.team,context.params.message);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write message cost';
+      return null;
+    }
+    return writeTransactionData(context.params.team,context.params.message,message.process);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write transaction';
+      return null;
+    }
+    return writeWalletData(context.params.team,context.params.message);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write wallet';
+      return null;
+    }
+    return writeLockData(context.params.team,context.params.message);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write lock';
+      return null;
+    }
+  }).then(result=>{
+    return admin.database().ref('PERRINNTeamMessageChain/'+context.params.team+'/lock').remove();
+  }).then(result=>{
+    if(writeError) return data.ref.child('/PERRINN').update({dataWrite:writeError});
   });
 });
 
