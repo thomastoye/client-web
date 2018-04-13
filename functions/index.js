@@ -485,7 +485,7 @@ function incrementUserMessageCounter(user){
   });
 }
 
-function checkTransactionInputs(team,inputs){
+function checkTransactionOutInputs(team,inputs){
   if(inputs.amount>0&&inputs.amount<=10){
     if(inputs.receiver!=team){
       if(inputs.reference!=''){
@@ -496,24 +496,24 @@ function checkTransactionInputs(team,inputs){
   return false;
 }
 
-function writeTransactionData(team,message,process){
+function writeTransactionOutData(team,message,process){
   let updateObj={};
   let amount=0;
   let receiver='none';
   let reference='none';
   if(process!=undefined&&process!=null){
     if(process.service=='transactionStart'){
-      if(checkTransactionInputs(team,process.inputs)) {
+      if(checkTransactionOutInputs(team,process.inputs)) {
         amount=process.inputs.amount;
         receiver=process.inputs.receiver;
         reference=process.inputs.reference;
       }
     }
   }
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/amount']=amount;
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/receiver']=receiver;
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/reference']=reference;
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/timestamp']=admin.database.ServerValue.TIMESTAMP;
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/amount']=amount;
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiver']=receiver;
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/reference']=reference;
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/timestamp']=admin.database.ServerValue.TIMESTAMP;
   return admin.database().ref().update(updateObj).then(()=>{
     return 'done';
   }).catch(error=>{
@@ -527,8 +527,10 @@ function writeWalletData(team,message){
       let updateObj={};
       var previousBalance=0;
       if(previousMessageObj.val()!=undefined&&previousMessageObj.val()!=null){
-        if(previousMessageObj.val().PERRINN.wallet!=undefined&&previousMessageObj.val().PERRINN.wallet!=null){
-          previousBalance=previousMessageObj.val().PERRINN.wallet.balance;
+        if(previousMessageObj.val().PERRINN!=undefined&&previousMessageObj.val().PERRINN!=null){
+          if(previousMessageObj.val().PERRINN.wallet!=undefined&&previousMessageObj.val().PERRINN.wallet!=null){
+            previousBalance=previousMessageObj.val().PERRINN.wallet.balance;
+          }
         }
       }
       var balance=previousBalance;
@@ -542,17 +544,18 @@ function writeWalletData(team,message){
       } else {
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='none';
       }
-      if(messageObj.val().PERRINN.transaction.amount>0){
-        if((Math.round((Number(balance)-Number(messageObj.val().PERRINN.transaction.amount))*100000)/100000)>=0){
-          balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.transaction.amount))*100000)/100000;
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/status']='complete';
+      if(messageObj.val().PERRINN.transactionOut.amount>0){
+        if((Math.round((Number(balance)-Number(messageObj.val().PERRINN.transactionOut.amount))*100000)/100000)>=0){
+          balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.transactionOut.amount))*100000)/100000;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='complete';
         } else {
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/status']='rejected';
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='rejected';
         }
       } else {
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transaction/status']='none';
+        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='none';
       }
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/amount']=previousBalance-balance;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/previousBalance']=previousBalance;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/amount']=balance-previousBalance;
       updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/balance']=balance;
       updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/timestamp']=admin.database.ServerValue.TIMESTAMP;
       return admin.database().ref().update(updateObj).then(()=>{
@@ -615,10 +618,10 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
       if(!writeError)writeError='did not write message cost';
       return null;
     }
-    return writeTransactionData(context.params.team,context.params.message,message.process);
+    return writeTransactionOutData(context.params.team,context.params.message,message.process);
   }).then(result=>{
     if(result!='done'){
-      if(!writeError)writeError='did not write transaction';
+      if(!writeError)writeError='did not write transaction out';
       return null;
     }
     return writeWalletData(context.params.team,context.params.message);
