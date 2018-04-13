@@ -123,7 +123,7 @@ function removeListKey (user,team,ref,list,key) {
   });
 }
 
-function createMessage (team, user, text, image, action, linkTeam, linkUser) {
+function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,donorMessage) {
   const now = Date.now();
   return admin.database().ref('PERRINNUsers/'+user).once('value').then(userData=>{
     return admin.database().ref('PERRINNUsers/'+linkUser).once('value').then(linkUserData=>{
@@ -143,6 +143,7 @@ function createMessage (team, user, text, image, action, linkTeam, linkUser) {
           linkUserFirstName:linkUserData.val().firstName?linkUserData.val().firstName:'',
           linkUserLastName:linkUserData.val().lastName?linkUserData.val().lastName:'',
           linkUserImageUrlThumb:linkUserData.val().imageUrlThumb?linkUserData.val().imageUrlThumb:'',
+          PERRINN:{transactionIn:{donor:donor,donorMessage:donorMessage}},
         });
       });
     });
@@ -169,7 +170,7 @@ function createTransaction (amount, sender, receiver, user, reference) {
         if (result.committed&&result.snapshot.val()>=0){
           createTransactionHalf (amount,receiver,sender,user,reference,now);
           if (user!="PERRINN") {
-            createMessage (receiver,"PERRINN","You have received "+amount+" COINS from:","","confirmation",sender,"");
+            createMessage (receiver,"PERRINN","You have received "+amount+" COINS from:","","confirmation",sender,"",'none','none');
             admin.database().ref('PERRINNUsers/'+user).child('transactionCount').transaction(transactionCount=>{
               if (transactionCount==null) {
                 return 1;
@@ -208,7 +209,7 @@ function createTransactionHalf (amount, team, otherTeam, user, reference, timest
       return Number(balance)+Number(amount);
     }, function(error, committed, balance) {
       if (error) {
-        createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Transaction error reference:","","warning",team,user);
+        createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Transaction error reference:","","warning",team,user,'none','none');
       } else if (!committed) {
       } else {
         admin.database().ref('PERRINNTeamBalance/'+team).update({balanceNegative:-balance.val()});
@@ -432,6 +433,7 @@ function writeChainData(team,message){
           index=messageChain.val().previousIndex?Number(messageChain.val().previousIndex)+1:1;
         }
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/previousMessage']=previousMessage;
+        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/nextMessage']='none';
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/index']=index;
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/timestamp']=admin.database.ServerValue.TIMESTAMP;
         return admin.database().ref().update(updateObj).then(()=>{
@@ -445,14 +447,23 @@ function writeChainData(team,message){
 }
 
 function writeMessagingCostData(user,team,message){
+  let updateObj={};
+  let amount=0;
+  let receiver='none';
+  let reference='none';
   return admin.database().ref('appSettings/messageTemplate/messagingCost').once('value').then(messagingCost=>{
     if(user!='PERRINN'){
-      return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/messagingCost').set(messagingCost.val()).then(()=>{
-        return 'done';
-      });
-    } else {
-      return 'done';
+      amount=messagingCost.val().amount;
+      receiver=messagingCost.val().receiver;
+      reference=messagingCost.val().reference;
     }
+    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/amount']=amount;
+    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/receiver']=receiver;
+    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/reference']=reference;
+    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/timestamp']=admin.database.ServerValue.TIMESTAMP;
+    return admin.database().ref().update(updateObj).then(()=>{
+      return 'done';
+    });
   }).catch(error=>{
     console.log(error);
   });
@@ -485,7 +496,7 @@ function incrementUserMessageCounter(user){
   });
 }
 
-function checkTransactionOutInputs(team,inputs){
+function checkTransactionInputs(team,inputs){
   if(inputs.amount>0&&inputs.amount<=10){
     if(inputs.receiver!=team){
       if(inputs.reference!=''){
@@ -500,22 +511,64 @@ function writeTransactionOutData(team,message,process){
   let updateObj={};
   let amount=0;
   let receiver='none';
+  let receiverMessage='none';
   let reference='none';
+  let inputCheck=false;
   if(process!=undefined&&process!=null){
     if(process.service=='transactionStart'){
-      if(checkTransactionOutInputs(team,process.inputs)) {
+      if(checkTransactionInputs(team,process.inputs)) {
         amount=process.inputs.amount;
         receiver=process.inputs.receiver;
         reference=process.inputs.reference;
+        inputCheck=true;
       }
     }
   }
   updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/amount']=amount;
   updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiver']=receiver;
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiverMessage']=receiverMessage;
   updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/reference']=reference;
   updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/timestamp']=admin.database.ServerValue.TIMESTAMP;
+  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/inputCheck']=inputCheck;
   return admin.database().ref().update(updateObj).then(()=>{
     return 'done';
+  }).catch(error=>{
+    console.log(error);
+  });
+}
+
+function writeTransactionInData(team,message){
+  return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/transactionIn').once('value').then(transactionInObj=>{
+    let donor='none';
+    let donorMessage='none';
+    if(transactionInObj.val()!=undefined&&transactionInObj.val()!=null){
+      if(transactionInObj.val().donor!=undefined&&transactionInObj.val().donor!=null){
+        if(transactionInObj.val().donorMessage!=undefined&&transactionInObj.val().donorMessage!=null){
+          donor=transactionInObj.val().donor;
+          donorMessage=transactionInObj.val().donorMessage;
+        }
+      }
+    }
+    return admin.database().ref('teamMessages/'+donor+'/'+donorMessage+'/PERRINN/transactionOut').once('value').then(donorTransactionOutObj=>{
+      let updateObj={};
+      let amount=0;
+      let reference='none';
+      let donorCheck=false;
+      if(donorTransactionOutObj.val()!=undefined&&donorTransactionOutObj.val()!=null) {
+        amount=donorTransactionOutObj.val().amount;
+        reference=donorTransactionOutObj.val().reference;
+        donorCheck=true;
+      }
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/amount']=amount;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donor']=donor;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorMessage']=donorMessage;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/reference']=reference;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/timestamp']=admin.database.ServerValue.TIMESTAMP;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorCheck']=donorCheck;
+      return admin.database().ref().update(updateObj).then(()=>{
+        return 'done';
+      });
+    });
   }).catch(error=>{
     console.log(error);
   });
@@ -539,23 +592,26 @@ function writeWalletData(team,message){
           balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.messagingCost.amount))*100000)/100000;
           updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='complete';
         } else {
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='rejected';
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='rejected balance low';
         }
       } else {
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='none';
       }
-      if(messageObj.val().PERRINN.transactionOut.amount>0){
+      if(messageObj.val().PERRINN.transactionOut.inputCheck){
         if((Math.round((Number(balance)-Number(messageObj.val().PERRINN.transactionOut.amount))*100000)/100000)>=0){
           balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.transactionOut.amount))*100000)/100000;
           updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='complete';
         } else {
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='rejected';
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='rejected balance low';
         }
       } else {
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='none';
       }
+      if(messageObj.val().PERRINN.transactionIn.donorCheck){
+        balance=Math.round((Number(balance)+Number(messageObj.val().PERRINN.transactionIn.amount))*100000)/100000;
+      }
       updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/previousBalance']=previousBalance;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/amount']=balance-previousBalance;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/amount']=Math.round((balance-previousBalance)*100000)/100000;
       updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/balance']=balance;
       updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/timestamp']=admin.database.ServerValue.TIMESTAMP;
       return admin.database().ref().update(updateObj).then(()=>{
@@ -572,14 +628,33 @@ function writeLockData(team,message){
     let updateObj={};
     let previousMessage=messageObj.val().PERRINN.chain.previousMessage;
     let index=messageObj.val().PERRINN.chain.index;
+    let messagingCostProcessed=messageObj.val().PERRINN.messagingCost.status=='complete'?true:false;
+    let transactionOutProcessed=messageObj.val().PERRINN.transactionOut.status=='complete'?true:false;
+    let transactionInProcessed=messageObj.val().PERRINN.transactionIn.donorCheck?true:false;
     updateObj['teamMessages/'+team+'/'+message+'/PERRINN/dataWrite']='complete';
     updateObj['teamMessages/'+team+'/'+message+'/PERRINN/timestampEnd']=admin.database.ServerValue.TIMESTAMP;
+    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/processed']=messagingCostProcessed;
+    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/processed']=transactionOutProcessed;
+    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/processed']=transactionInProcessed;
     if(previousMessage!='none')updateObj['teamMessages/'+team+'/'+previousMessage+'/PERRINN/chain/nextMessage']=message;
+    if(transactionInProcessed)updateObj['teamMessages/'+messageObj.val().PERRINN.transactionIn.donor+'/'+messageObj.val().PERRINN.transactionIn.donorMessage+'/PERRINN/transactionOut/receiverMessage']=message;
     updateObj['PERRINNTeamMessageChain/'+team+'/previousMessage']=message;
     updateObj['PERRINNTeamMessageChain/'+team+'/previousIndex']=index;
     return admin.database().ref().update(updateObj).then(()=>{
       return 'done';
     });
+  }).catch(error=>{
+    console.log(error);
+  });
+}
+
+function writeTransactionReceiverData(team,message){
+  return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/transactionOut').once('value').then(transactionOutObj=>{
+    if(transactionOutObj.val().processed){
+      return createMessage(transactionOutObj.val().receiver,"PERRINN","COINS for you.","","","","",team,message).then(()=>{
+        return 'done';
+      });
+    }
   }).catch(error=>{
     console.log(error);
   });
@@ -593,7 +668,7 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
   }
   return data.ref.child('/PERRINN').update({
     timestampStart:admin.database.ServerValue.TIMESTAMP,
-  }).then(result=>{
+  }).then(()=>{
     return writeMessageTeamData(context.params.team,message.timestamp,message.firstName,message.text);
   }).then(result=>{
     if(result!='done'){
@@ -624,6 +699,12 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
       if(!writeError)writeError='did not write transaction out';
       return null;
     }
+    return writeTransactionInData(context.params.team,context.params.message);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write transaction in';
+      return null;
+    }
     return writeWalletData(context.params.team,context.params.message);
   }).then(result=>{
     if(result!='done'){
@@ -636,19 +717,20 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
       if(!writeError)writeError='did not write lock';
       return null;
     }
-  }).then(result=>{
+    return writeTransactionReceiverData(context.params.team,context.params.message);
+  }).then(()=>{
     return admin.database().ref('PERRINNTeamMessageChain/'+context.params.team+'/lock').remove();
-  }).then(result=>{
+  }).then(()=>{
     if(writeError) return data.ref.child('/PERRINN').update({dataWrite:writeError});
   });
 });
 
 exports.userCreation = functions.database.ref('/PERRINNUsers/{user}/createdTimestamp').onCreate((data,context)=>{
-  return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",context.params.user);
+  return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",context.params.user,'none','none');
 });
 
 exports.teamCreation = functions.database.ref('/PERRINNTeams/{team}/createdTimestamp').onCreate((data,context)=>{
-  return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",context.params.team,"");
+  return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",context.params.team,"",'none','none');
 });
 
 exports.returnCOINS = functions.database.ref('tot').onCreate((data,context)=>{
