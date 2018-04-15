@@ -46,7 +46,28 @@ import { databaseService } from './database.service';
             <img [src]="message?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
             <div style="font-size:11px;padding:5px;">{{message?.linkUserFirstName}} {{message?.linkUserLastName}}</div>
           </div>
-          <div *ngIf="message.process!==undefined" style="float:left;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
+          <div *ngIf="message?.PERRINN?.transactionOut?.processed" style="clear:both;margin:5px">
+            <img src="./../assets/App icons/out.png" style="display:inline;float:left;height:30px">
+            <div style="float:left;background-color:#c7edcd;padding:5px">
+              <span style="font-size:11px">{{message?.PERRINN?.transactionOut?.amount|number:'1.2-20'}} COINS</span>
+              <span style="font-size:11px">have been sent to</span>
+              <span style="font-size:11px">{{message?.PERRINN?.transactionOut?.receiverName}}</span>
+              <span style="font-size:11px">reference: {{message?.PERRINN?.transactionOut?.reference}}</span>
+            </div>
+            <img [src]="message?.PERRINN?.transactionOut?.receiverImageUrlThumb" style="object-fit:cover;height:30px;width:50px" (click)="router.navigate(['chat',message?.PERRINN?.transactionOut?.receiver])">
+          </div>
+          <div *ngIf="message?.PERRINN?.transactionIn?.processed" style="clear:both;margin:5px">
+            <img src="./../assets/App icons/in.png" style="display:inline;float:left;height:30px">
+            <div style="float:left;background-color:#c7edcd;padding:5px">
+              <span style="font-size:11px">{{message?.PERRINN?.transactionIn?.amount|number:'1.2-20'}} COINS</span>
+              <span style="font-size:11px">have been received from</span>
+              <span style="font-size:11px">{{message?.PERRINN?.transactionIn?.donorName}}</span>
+              <span style="font-size:11px">reference: {{message?.PERRINN?.transactionIn?.reference}}</span>
+            </div>
+            <img [src]="message?.PERRINN?.transactionIn?.donorImageUrlThumb" style="object-fit:cover;height:30px;width:50px" (click)="router.navigate(['chat',message?.PERRINN?.transactionIn?.donor])">
+          </div>
+          <div style="clear:both"></div>
+          <div *ngIf="message.process!==undefined" style="display:inline-block;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
             <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{message.process.result}}</div>
           </div>
           <div style="clear:both;text-align:center">
@@ -117,12 +138,19 @@ import { databaseService } from './database.service';
   </div>
   </div>
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none;background-color:#ededed">
-    <ul style="list-style:none;float:left;">
-      <li *ngFor="let user of draftMessageUsers | async">
-      <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.firstName}}...</div>
-      </li>
-    </ul>
+    <div *ngIf="!isCurrentUserLeader&&!isCurrentUserMember">
+      <ul style="list-style:none;float:left;">
+        <li *ngFor="let user of draftMessageUsers | async">
+        <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.firstName}}...</div>
+        </li>
+      </ul>
+    </div>
     <div *ngIf="isCurrentUserLeader||isCurrentUserMember">
+      <ul style="list-style:none;float:left;">
+        <li *ngFor="let user of draftMessageUsers | async">
+        <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.firstName}}...</div>
+        </li>
+      </ul>
       <img *ngIf="!UI.serviceMessage" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
       <div *ngIf="UI.serviceMessage" style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-radius:7px 7px 0 7px;background-color:white;float:right;color:#192368;padding:3px;margin:5px"(click)="UI.clearProcessData();UI.refreshServiceMessage()">{{UI.serviceMessage}}</div>
       <div style="clear:both;float:left;width:90%">

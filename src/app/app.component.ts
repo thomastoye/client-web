@@ -13,6 +13,7 @@ import { userInterfaceService } from './userInterface.service';
     <progress value='0' max='100' id='uploader'>0%</progress>
     <div class='menu'>
     <div style="width:320px;display:block;margin: 0 auto">
+    <div style="float:left;text-align:center;line-height:40px;width:20px;font-size:20px;cursor:pointer" (click)="goBack()">&#9001;</div>
     <div class='iconSmall' (click)="clickUserIcon()">
     <img src="./../assets/App icons/Perrinn_02.png" style="width:30px;margin-top:5px;border-radius:3px;">
     <div class='activity' [hidden]="!globalChatActivity"></div>
@@ -26,6 +27,7 @@ import { userInterfaceService } from './userInterface.service';
     <div class='iconSmall' (click)="router.navigate(['search'])">
     <img src="./../assets/App icons/search.png" style="width:30px;margin-top:5px;border-radius:3px;-webkit-filter:brightness(100);filter:brightness(100);">
     </div>
+    <div style="float:left;text-align:center;line-height:40px;width:20px;font-size:20px;cursor:pointer" (click)="goForward()">&#9002;</div>
     </div>
     </div>
     <div id='main_container'>
@@ -47,6 +49,14 @@ export class AppComponent {
         });
       });
     });
+  }
+
+  goBack() {
+      window.history.back();
+  }
+
+  goForward() {
+      window.history.forward();
   }
 
   ngOnInit () {

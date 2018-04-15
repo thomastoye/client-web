@@ -507,6 +507,20 @@ function checkTransactionInputs(team,inputs){
   return false;
 }
 
+function getTeamName(team){
+  return admin.database().ref('PERRINNTeams/'+team+'/name').once('value').then(name=>{
+    if(name.val()==undefined||name.val()==null)return '';
+    else return name.val();
+  });
+}
+
+function getTeamImageUrlThumb(team){
+  return admin.database().ref('PERRINNTeams/'+team+'/imageUrlThumb').once('value').then(imageUrlThumb=>{
+    if(imageUrlThumb.val()==undefined||imageUrlThumb.val()==null)return '';
+    else return imageUrlThumb.val();
+  });
+}
+
 function writeTransactionOutData(team,message,process){
   let updateObj={};
   let amount=0;
@@ -524,14 +538,20 @@ function writeTransactionOutData(team,message,process){
       }
     }
   }
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/amount']=amount;
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiver']=receiver;
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiverMessage']=receiverMessage;
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/reference']=reference;
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/timestamp']=admin.database.ServerValue.TIMESTAMP;
-  updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/inputCheck']=inputCheck;
-  return admin.database().ref().update(updateObj).then(()=>{
-    return 'done';
+  return getTeamName(receiver).then(receiverName=>{
+    return getTeamImageUrlThumb(receiver).then(receiverImageUrlThumb=>{
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/amount']=amount;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiver']=receiver;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiverName']=receiverName;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiverImageUrlThumb']=receiverImageUrlThumb;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiverMessage']=receiverMessage;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/reference']=reference;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/timestamp']=admin.database.ServerValue.TIMESTAMP;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/inputCheck']=inputCheck;
+      return admin.database().ref().update(updateObj).then(()=>{
+        return 'done';
+      });
+    });
   }).catch(error=>{
     console.log(error);
   });
@@ -559,14 +579,20 @@ function writeTransactionInData(team,message){
         reference=donorTransactionOutObj.val().reference;
         donorCheck=true;
       }
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/amount']=amount;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donor']=donor;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorMessage']=donorMessage;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/reference']=reference;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/timestamp']=admin.database.ServerValue.TIMESTAMP;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorCheck']=donorCheck;
-      return admin.database().ref().update(updateObj).then(()=>{
-        return 'done';
+      return getTeamName(donor).then(donorName=>{
+        return getTeamImageUrlThumb(donor).then(donorImageUrlThumb=>{
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/amount']=amount;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donor']=donor;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorName']=donorName;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorImageUrlThumb']=donorImageUrlThumb;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorMessage']=donorMessage;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/reference']=reference;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/timestamp']=admin.database.ServerValue.TIMESTAMP;
+          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorCheck']=donorCheck;
+          return admin.database().ref().update(updateObj).then(()=>{
+            return 'done';
+          });
+        });
       });
     });
   }).catch(error=>{
@@ -651,7 +677,7 @@ function writeLockData(team,message){
 function writeTransactionReceiverData(team,message){
   return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/transactionOut').once('value').then(transactionOutObj=>{
     if(transactionOutObj.val().processed){
-      return createMessage(transactionOutObj.val().receiver,"PERRINN","COINS for you.","","","","",team,message).then(()=>{
+      return createMessage(transactionOutObj.val().receiver,"PERRINN","","","","","",team,message).then(()=>{
         return 'done';
       });
     }

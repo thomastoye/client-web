@@ -48,6 +48,7 @@ export class UserProfileComponent {
   scrollTeam:string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
+    this.UI.currentTeam="";
     this.now = Date.now();
     this.scrollTeam='';
     this.route.params.subscribe(params => {
