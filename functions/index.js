@@ -649,7 +649,7 @@ function writeWalletData(team,message){
   });
 }
 
-function writeLockData(team,message){
+function writeAtomicData(team,message){
   return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
     let updateObj={};
     let previousMessage=messageObj.val().PERRINN.chain.previousMessage;
@@ -689,6 +689,7 @@ function writeTransactionReceiverData(team,message){
 exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').onCreate((data,context)=>{
   const message=data.val();
   let writeError=null;
+  let lockedTeamChain=false;
   if (message.user!="PERRINN") {
     createTransaction (0.01,context.params.team,"-L6XIigvAphrJr5w2jbf","PERRINN","Message");
   }
@@ -705,12 +706,6 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not increment count';
-      return null;
-    }
-    return writeChainData(context.params.team,context.params.message);
-  }).then(result=>{
-    if(result!='done'){
-      if(!writeError)writeError='did not write chain';
       return null;
     }
     return writeMessagingCostData(message.user,context.params.team,context.params.message);
@@ -731,21 +726,29 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
       if(!writeError)writeError='did not write transaction in';
       return null;
     }
+    return writeChainData(context.params.team,context.params.message);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write chain';
+      return null;
+    }
+    lockedTeamChain=true;
     return writeWalletData(context.params.team,context.params.message);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write wallet';
       return null;
     }
-    return writeLockData(context.params.team,context.params.message);
+    return writeAtomicData(context.params.team,context.params.message);
   }).then(result=>{
     if(result!='done'){
-      if(!writeError)writeError='did not write lock';
+      if(!writeError)writeError='did not write atomic data';
       return null;
     }
     return writeTransactionReceiverData(context.params.team,context.params.message);
   }).then(()=>{
-    return admin.database().ref('PERRINNTeamMessageChain/'+context.params.team+'/lock').remove();
+    if(lockedTeamChain)return admin.database().ref('PERRINNTeamMessageChain/'+context.params.team+'/lock').remove();
+    return null;
   }).then(()=>{
     if(writeError) return data.ref.child('/PERRINN').update({dataWrite:writeError});
   });

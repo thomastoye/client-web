@@ -24,7 +24,7 @@ import { databaseService } from './database.service';
       <img [src]="user.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{user.firstName}} {{user.lastName}}</div>
       </div>
-      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(user.$key,'','','','','',user.$key,user.firstName,user.lastName,user.imageUrlThumb)">Send to chat</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="UI.createMessage(user.$key,'','',{},{key:user.$key,firstName:user.firstName,lastName:user.lastName,imageUrlThumb:user.imageUrlThumb});router.navigate(['chat',this.UI.currentTeam])">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -36,7 +36,7 @@ import { databaseService } from './database.service';
       <img [src]="team?.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <div>{{team.name}}</div>
       </div>
-      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="addMessage(team.$key,'','',team.$key,team.name,team.imageUrlThumb,'','','','')">Send to chat</div>
+      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="UI.createMessage(team.$key,'','',{key:team.$key,name:team.name,imageUrlThumb:team.imageUrlThumb},{});router.navigate(['chat',this.UI.currentTeam])">Send to chat</div>
     </li>
   </ul>
   </div>
@@ -60,7 +60,7 @@ import { databaseService } from './database.service';
       <img [src]="image?.imageUrlThumb" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
       <div style="line-height:normal">{{image.name}}</div>
       <div style="height:30px">
-      <div class="buttonDiv" *ngIf="image.$key===selectedImageID" (click)="addMessage(image.image,image.image,image.imageUrlThumb,'','','','','','','')">Send to chat</div>
+      <div class="buttonDiv" *ngIf="image.$key===selectedImageID" (click)="UI.createMessage(image.image,image.image,image.imageUrlThumb,{},{});router.navigate(['chat',this.UI.currentTeam])">Send to chat</div>
       </div>
     </li>
   </ul>
@@ -123,38 +123,6 @@ export class SearchComponent  {
       this.teams = null;
       this.projects = null;
     }
-  }
-
-  addMessage(text,image,imageDownloadURL,linkTeam,linkTeamName,linkTeamImageUrlThumb,linkUser,linkUserFirstName,linkUserLastName,linkUserImageUrlThumb) {
-    var isProcessReady=this.UI.processNewMessage(text);
-    var processObject=isProcessReady?this.UI.serviceProcess[this.UI.currentTeam]:null;
-    const now = Date.now();
-    var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
-      timestamp:now,
-      text:text,
-      image:image,
-      imageDownloadURL:imageDownloadURL?imageDownloadURL:'',
-      user:this.UI.currentUser,
-      firstName:this.UI.currentUserObj.firstName,
-      imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb?this.UI.currentUserObj.imageUrlThumb:'',
-      linkTeam:linkTeam,
-      linkTeamName:linkTeamName?linkTeamName:'',
-      linkTeamImageUrlThumb:linkTeamImageUrlThumb?linkTeamImageUrlThumb:'',
-      linkUser:linkUser,
-      linkUserFirstName:linkUserFirstName?linkUserFirstName:'',
-      linkUserLastName:linkUserLastName?linkUserLastName:'',
-      linkUserImageUrlThumb:linkUserImageUrlThumb?linkUserImageUrlThumb:'',
-      process:processObject,
-    }).key;
-    if (isProcessReady) {
-      this.UI.serviceProcess[this.UI.currentTeam].messageID=messageID;
-      this.UI.refreshServiceMessage();
-    }
-    this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
-      lastChatVisitTimestamp:now,
-      lastChatVisitTimestampNegative:-1*now,
-    });
-    this.router.navigate(['chat',this.UI.currentTeam])
   }
 
 }

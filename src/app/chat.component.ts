@@ -23,7 +23,7 @@ import { databaseService } from './database.service';
         <div style="box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:10px">{{message.timestamp|date:'yMMMMEEEEd'}}</div>
       </div>
       <div style="box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);cursor:pointer;border-width:0 0 0 3px;border-style:solid;border-radius:7px;background-color:white" [style.margin]="isMessageNewUserGroup(message.user,message.timestamp)||first?'15px 10px 5px 10px':'2px 10px 5px 70px'"
-      [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" (click)="timestampChatVisit()">
+      [style.border-color]="lastChatVisitTimestamp<message.timestamp?'red':'white'" (click)="UI.timestampChatVisit()">
         <div *ngIf="isMessageNewUserGroup(message.user,message.timestamp)||first" style="float:left;width:60px;min-height:10px">
           <img [src]="message?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin: 5px 10px 10px 10px; border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.user])">
           {{image?.imageUrlThumbUser}}
@@ -74,15 +74,6 @@ import { databaseService } from './database.service';
             <img class="imageWithZoom" *ngIf="message.image" [src]="message.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.imageDownloadURL)">
           </div>
           <div *ngIf="showDetails[message.$key]">
-            <div style="clear:both;float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:150px">
-              <img src="./../assets/App icons/chain.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Index: #{{message?.PERRINN?.chain?.index}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.chain?.previousMessage!=undefined?'#c7edcd':''">Previous: {{message?.PERRINN?.chain?.previousMessage}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Current: {{message?.$key}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message?.PERRINN?.chain?.nextMessage}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.chain?.timestamp}}</div>
-            </div>
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:150px">
               <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
@@ -112,6 +103,15 @@ import { databaseService } from './database.service';
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message?.PERRINN?.transactionIn?.reference}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.transactionIn?.processed?'#c7edcd':''">Processed: {{message?.PERRINN?.transactionIn?.processed}}</div>
               <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.transactionIn?.timestamp}}</div>
+            </div>
+            <div style="clear:both;float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:150px">
+              <img src="./../assets/App icons/chain.png" style="display:inline;float:right;height:25px;border-radius:25%">
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Index: #{{message?.PERRINN?.chain?.index}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.chain?.previousMessage!=undefined?'#c7edcd':''">Previous: {{message?.PERRINN?.chain?.previousMessage}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Current: {{message?.$key}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message?.PERRINN?.chain?.nextMessage}}</div>
+              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.chain?.timestamp}}</div>
             </div>
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:150px">
               <img src="./../assets/App icons/wallet.png" style="display:inline;float:right;height:25px;border-radius:25%">
@@ -151,8 +151,17 @@ import { databaseService } from './database.service';
         <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.firstName}}...</div>
         </li>
       </ul>
-      <img *ngIf="!UI.serviceMessage" src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
-      <div *ngIf="UI.serviceMessage" style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-radius:7px 7px 0 7px;background-color:white;float:right;color:#192368;padding:3px;margin:5px"(click)="UI.clearProcessData();UI.refreshServiceMessage()">{{UI.serviceMessage}}</div>
+      <div *ngIf="UI.process[UI.currentTeam]?.service" style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-radius:7px;background-color:white;float:left;padding:5px;margin:10px;width:70%"(click)="UI.clearProcessData()">
+        <div style="float:left">{{UI.process[UI.currentTeam]?.regex}}:</div>
+        <img src="./../assets/App icons/remove.png" style="float:right;height:20px;">
+        <ul style="clear:both;list-style:none;color:green;margin:10px 0 10px 0">
+          <li *ngFor="let input of UI.process[UI.currentTeam]?.inputsArray">
+            <div style="float:left;font-size:11px;line-height:11px">{{input[0]}}: {{input[1]}}</div>
+          </li>
+        </ul>
+        <div style="color:blue">{{UI.process[UI.currentTeam]?.message}}</div>
+      </div>
+      <img src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
       <div style="clear:both;float:left;width:90%">
         <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
       </div>
@@ -200,7 +209,6 @@ export class ChatComponent {
           }
         }
       });
-      this.UI.refreshServiceMessage();
       this.previousMessageTimestamp=0;
       this.previousMessageUser="";
       this.draftMessageDB=false;
@@ -262,44 +270,10 @@ export class ChatComponent {
     }
   }
 
-  timestampChatVisit(){
-    const now = Date.now();
-    this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
-      lastChatVisitTimestamp:now,
-      lastChatVisitTimestampNegative:-1*now,
-      name:this.UI.currentTeamObj.name,
-      imageUrlThumb:this.UI.currentTeamObj.imageUrlThumb?this.UI.currentTeamObj.imageUrlThumb:'',
-    });
-    this.db.object('subscribeTeamUsers/'+this.UI.currentTeam).update({
-      [this.UI.currentUser]:true,
-    });
-  }
-
   addMessage() {
-    this.draftMessage = this.draftMessage.replace(/(\r\n|\n|\r)/gm,"");
-    if (this.draftMessage!=""||this.draftImage!="") {
-      var isProcessReady=this.UI.processNewMessage(this.draftMessage);
-      var processObject=isProcessReady?this.UI.serviceProcess[this.UI.currentTeam]:null;
-      const now = Date.now();
-      var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
-        timestamp:now,
-        text:this.draftMessage,
-        image:this.draftImage,
-        imageDownloadURL:this.draftImageDownloadURL,
-        user:this.UI.currentUser,
-        firstName:this.UI.currentUserObj.firstName,
-        imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb?this.UI.currentUserObj.imageUrlThumb:'',
-        action:"chat",
-        process:processObject,
-      }).key;
-      if (isProcessReady) {
-        this.UI.serviceProcess[this.UI.currentTeam].messageID=messageID;
-        this.UI.refreshServiceMessage();
-      }
-      this.timestampChatVisit();
-      this.draftMessage = "";
-      this.draftImage = "";
-    }
+    this.UI.createMessage(this.draftMessage,this.draftImage,this.draftImageDownloadURL,'','');
+    this.draftMessage="";
+    this.draftImage="";
   }
 
   updateDraftMessageDB () {

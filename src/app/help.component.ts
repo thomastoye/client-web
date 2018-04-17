@@ -16,7 +16,7 @@ import { databaseService } from './database.service';
   <ul class="listLight">
     <li style="cursor:default" *ngFor="let service of services | async">
       <div style="padding:5px 10px 5px 10px">
-        <div style="float:left;width:250px;font-size:11px;font-weight:bold;color:blue;cursor:pointer" (click)="addMessage(service.regex )">{{service.regex}}</div>
+        <div style="float:left;width:250px;font-size:11px;font-weight:bold;color:blue;cursor:pointer" (click)="UI.createMessage(service.regex,'','','','');router.navigate(['chat',this.UI.currentTeam])">{{service.regex}}</div>
       </div>
       <div class="seperator"></div>
     </li>
@@ -34,29 +34,6 @@ export class HelpComponent {
         orderByChild:'regex',
       }
     });
-  }
-
-  addMessage(text) {
-    var isProcessReady=this.UI.processNewMessage(text);
-    var processObject=isProcessReady?this.UI.serviceProcess[this.UI.currentTeam]:null;
-    const now = Date.now();
-    var messageID=firebase.database().ref('teamMessages/'+this.UI.currentTeam).push({
-      timestamp:now,
-      text:text,
-      user:this.UI.currentUser,
-      firstName:this.UI.currentUserObj.firstName,
-      imageUrlThumbUser:this.UI.currentUserObj.imageUrlThumb?this.UI.currentUserObj.imageUrlThumb:'',
-      process:processObject,
-    }).key;
-    if (isProcessReady) {
-      this.UI.serviceProcess[this.UI.currentTeam].messageID=messageID;
-      this.UI.refreshServiceMessage();
-    }
-    this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).update({
-      lastChatVisitTimestamp:now,
-      lastChatVisitTimestampNegative:-1*now,
-    });
-    this.router.navigate(['chat',this.UI.currentTeam])
   }
 
 }
