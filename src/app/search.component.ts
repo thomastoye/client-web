@@ -46,21 +46,6 @@ import { databaseService } from './database.service';
     </li>
   </ul>
   </div>
-  <div class='sheet' style="margin-top:10px">
-  <div class="title">Image library</div>
-  <ul class="listLight">
-    <li *ngFor="let image of images | async"
-    [class.selected]="image.$key === selectedImageID"
-    (click)="selectedImageID=image.$key"
-    style="text-align:center;padding:10px;float:left">
-      <img [src]="image?.imageUrlThumb" style="display: inline;opacity: 1;object-fit:cover;height:100px;width:140px;border-radius:3px">
-      <div style="line-height:normal">{{image.name}}</div>
-      <div style="height:30px">
-      <div class="buttonDiv" *ngIf="image.$key===selectedImageID" (click)="UI.createMessage(image.image,image.image,image.imageUrlThumb,{},{});router.navigate(['chat',this.UI.currentTeam])">Send to chat</div>
-      </div>
-    </li>
-  </ul>
-  </div>
   `,
 })
 
@@ -69,15 +54,9 @@ export class SearchComponent  {
   users: FirebaseListObservable<any>;
   teams: FirebaseListObservable<any>;
   projects: FirebaseListObservable<any>;
-  images: FirebaseListObservable<any>;
   searchFilter: string;
 
   constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService) {
-    this.images = this.db.list('appSettings/photoLibrary', {
-      query:{
-        orderByChild:'name',
-      }
-    });
   }
 
   ngOnInit () {
