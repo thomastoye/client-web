@@ -73,7 +73,9 @@ export class userInterfaceService {
       linkUserLastName:linkUserObj.lastName?linkUserObj.lastName:null,
       linkUserImageUrlThumb:linkUserObj.imageUrlThumb?linkUserObj.imageUrlThumb:null,
     };
-    updateObj['teamMessages/'+this.currentTeam+'/'+messageID+'/process']=this.process[this.currentTeam]?this.process[this.currentTeam]:null;
+    if(this.processInputsComplete()){
+      updateObj['teamMessages/'+this.currentTeam+'/'+messageID+'/process']=this.process[this.currentTeam];
+    }
     firebase.database().ref().update(updateObj);
     this.timestampChatVisit();
     this.clearProcessData();
