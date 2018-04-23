@@ -11,8 +11,7 @@ import { databaseService } from './database.service';
   selector: 'help',
   template: `
   <div class="sheet" style="background-color:#f5f5f5">
-  <div style="position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:left;background-color:#eff5ff;padding:5px" (click)="router.navigate(['chat',UI.currentTeam])">< Chat</div>
-  <div class="title" style="margin-top:30px">What do you want to do?</div>
+  <div class="title">What do you want to do?</div>
   <ul class="listLight">
     <li style="cursor:default" *ngFor="let service of services | async">
       <div style="padding:5px 10px 5px 10px">

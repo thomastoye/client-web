@@ -11,8 +11,7 @@ import { databaseService } from './database.service';
   template: `
   <div [hidden]='!enteringAmount'>
     <div class="sheet">
-      <div style="position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:left;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">< Wallet</div>
-      <div class='title' style='float:left;margin-top:30px'>How many COINS would you like to buy?</div>
+      <div class='title' style='float:left'>How many COINS would you like to buy?</div>
       <input maxlength="50" type="number" onkeypress="return event.charCode>=48" (keyup)="refreshAmountCharge()" style='width:100px;' [(ngModel)]="amountCOINSPurchased">
       <div class="title">What currency would you like to pay in?</div>
       <ul class="listLight" style='margin-top:20px'>

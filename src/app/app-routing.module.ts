@@ -10,7 +10,6 @@ import { SearchComponent } from './search.component';
 import { HelpComponent } from './help.component';
 import { AddTeamComponent } from './addTeam.component';
 import { FollowProjectComponent } from './followProject.component';
-import { WalletComponent } from './wallet.component';
 import { CreateProjectComponent } from './createProject.component';
 import { BuyCoinsComponent } from './buyCoins.component';
 
@@ -25,7 +24,6 @@ const appRoutes: Routes = [
   { path: 'help', component: HelpComponent },
   { path: 'addTeam', component: AddTeamComponent },
   { path: 'followProject', component: FollowProjectComponent },
-  { path: 'wallet/:id', component: WalletComponent },
   { path: 'createProject', component: CreateProjectComponent },
   { path: 'buyCoins', component: BuyCoinsComponent },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
