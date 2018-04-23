@@ -43,11 +43,18 @@
       "$teamid": {
         ".indexOn": ["timestamp"],
         "$messageid": {
-          ".write": "!data.exists() && (root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).val() === true || root.child('PERRINNTeams').child($teamid).child('members').child(auth.uid).val() === true)",
-          "user": {
-            ".validate": "newData.val()==auth.uid"
+          "payload":{
+            ".write": "!data.exists() && (root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).val() === true || root.child('PERRINNTeams').child($teamid).child('members').child(auth.uid).val() === true)",
+            "user": {
+              ".validate": "newData.val()==auth.uid"
+            }
           },
-          "PERRINN": {".validate":false}
+          "process":{
+            ".write":"!data.exists() && root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).val() === true",
+            "user":{
+              ".validate": "newData.val()==auth.uid"
+            }
+          }
         }
       }
     },

@@ -133,20 +133,22 @@ function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,dono
     return admin.database().ref('PERRINNUsers/'+linkUser).once('value').then(linkUserData=>{
       return admin.database().ref('PERRINNTeams/'+linkTeam).once('value').then(linkTeamData=>{
         return admin.database().ref('teamMessages/'+team).push({
-          timestamp:now,
-          text:text,
-          user:user,
-          firstName:userData.val().firstName,
-          imageUrlThumbUser:userData.val().imageUrlThumb,
-          image:image,
-          action:action,
-          linkTeam:linkTeam,
-          linkTeamName:linkTeamData.val().name?linkTeamData.val().name:'',
-          linkTeamImageUrlThumb:linkTeamData.val().imageUrlThumb?linkTeamData.val().imageUrlThumb:'',
-          linkUser:linkUser,
-          linkUserFirstName:linkUserData.val().firstName?linkUserData.val().firstName:'',
-          linkUserLastName:linkUserData.val().lastName?linkUserData.val().lastName:'',
-          linkUserImageUrlThumb:linkUserData.val().imageUrlThumb?linkUserData.val().imageUrlThumb:'',
+          payload:{
+            timestamp:now,
+            text:text,
+            user:user,
+            firstName:userData.val().firstName,
+            imageUrlThumbUser:userData.val().imageUrlThumb,
+            image:image,
+            action:action,
+            linkTeam:linkTeam,
+            linkTeamName:linkTeamData.val().name?linkTeamData.val().name:'',
+            linkTeamImageUrlThumb:linkTeamData.val().imageUrlThumb?linkTeamData.val().imageUrlThumb:'',
+            linkUser:linkUser,
+            linkUserFirstName:linkUserData.val().firstName?linkUserData.val().firstName:'',
+            linkUserLastName:linkUserData.val().lastName?linkUserData.val().lastName:'',
+            linkUserImageUrlThumb:linkUserData.val().imageUrlThumb?linkUserData.val().imageUrlThumb:'',
+          },
           PERRINN:{transactionIn:{donor:donor,donorMessage:donorMessage}},
         });
       });
@@ -630,25 +632,25 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
   return data.ref.child('/PERRINN').update({
     timestampStart:admin.database.ServerValue.TIMESTAMP,
   }).then(()=>{
-    return writeMessageTeamData(context.params.team,message.timestamp,message.firstName,message.text);
+    return writeMessageTeamData(context.params.team,message.payload.timestamp,message.payload.firstName,message.payload.text);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write message data';
       return null;
     }
-    return incrementUserMessageCounter(message.user);
+    return incrementUserMessageCounter(message.payload.user);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not increment count';
       return null;
     }
-    return writeMessagingCostData(message.user,context.params.team,context.params.message);
+    return writeMessagingCostData(message.payload.user,context.params.team,context.params.message);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write message cost';
       return null;
     }
-    return writeProcessData(message.user,context.params.team,context.params.message,message.process);
+    return writeProcessData(message.payload.user,context.params.team,context.params.message,message.process);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write process';

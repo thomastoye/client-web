@@ -55,7 +55,9 @@ export class userInterfaceService {
       linkUserObj={};
     }
     const now = Date.now();
-    firebase.database().ref('teamMessages/'+this.currentTeam).push({
+    var messageID = this.db.list('ids/').push(true).key;
+    var updateObj={};
+    updateObj['teamMessages/'+this.currentTeam+'/'+messageID+'/payload']={
       timestamp:now,
       text:text,
       user:this.currentUser,
@@ -70,8 +72,9 @@ export class userInterfaceService {
       linkUserFirstName:linkUserObj.firstName?linkUserObj.firstName:null,
       linkUserLastName:linkUserObj.lastName?linkUserObj.lastName:null,
       linkUserImageUrlThumb:linkUserObj.imageUrlThumb?linkUserObj.imageUrlThumb:null,
-      process:this.process[this.currentTeam]?this.process[this.currentTeam]:null,
-    });
+    };
+    updateObj['teamMessages/'+this.currentTeam+'/'+messageID+'/process']=this.process[this.currentTeam]?this.process[this.currentTeam]:null;
+    firebase.database().ref().update(updateObj);
     this.timestampChatVisit();
     this.clearProcessData();
   }
