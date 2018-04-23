@@ -34,7 +34,7 @@ import { databaseService } from './database.service';
           <img *ngIf="message.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <img *ngIf="message.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <img *ngIf="message.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
-          <img *ngIf="message.action=='process'" src="./../assets/App icons/process.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
+          <img *ngIf="message.action=='process'" src="./../assets/App icons/repeat.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <img *ngIf="message.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <img *ngIf="message.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin: 0 5px 0 5px;height:20px;">
           <div *ngIf="!message.image" style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.text | linky"></div>
@@ -46,10 +46,18 @@ import { databaseService } from './database.service';
             <img [src]="message?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
             <div style="font-size:11px;padding:5px;">{{message?.linkUserFirstName}} {{message?.linkUserLastName}}</div>
           </div>
+          <div *ngIf="message?.PERRINN?.process?.inputsComplete" style="clear:both;margin:5px">
+            <img src="./../assets/App icons/repeat.png" style="display:inline;float:left;height:30px">
+            <div style="float:left;background-color:#c7edcd;padding:5px">
+              <span style="font-size:11px">{{message?.PERRINN?.process?.regex}}</span>
+              <span style="font-size:11px">{{message?.PERRINN?.process?.inputs|json}}:</span>
+              <span style="font-size:11px">{{message?.PERRINN?.process?.result}}</span>
+            </div>
+          </div>
           <div *ngIf="message?.PERRINN?.transactionOut?.processed" style="clear:both;margin:5px">
             <img src="./../assets/App icons/out.png" style="display:inline;float:left;height:30px">
             <div style="float:left;background-color:#c7edcd;padding:5px">
-              <span style="font-size:11px">{{message?.PERRINN?.transactionOut?.amount|number:'1.2-20'}} COINS</span>
+              <span style="font-size:11px">C{{message?.PERRINN?.transactionOut?.amount|number:'1.2-20'}}</span>
               <span style="font-size:11px">have been sent to</span>
               <span style="font-size:11px">{{message?.PERRINN?.transactionOut?.receiverName}}</span>
               <span style="font-size:11px">reference: {{message?.PERRINN?.transactionOut?.reference}}</span>
@@ -59,75 +67,81 @@ import { databaseService } from './database.service';
           <div *ngIf="message?.PERRINN?.transactionIn?.processed" style="clear:both;margin:5px">
             <img src="./../assets/App icons/in.png" style="display:inline;float:left;height:30px">
             <div style="float:left;background-color:#c7edcd;padding:5px">
-              <span style="font-size:11px">{{message?.PERRINN?.transactionIn?.amount|number:'1.2-20'}} COINS</span>
+              <span style="font-size:11px">C{{message?.PERRINN?.transactionIn?.amount|number:'1.2-20'}}</span>
               <span style="font-size:11px">have been received from</span>
               <span style="font-size:11px">{{message?.PERRINN?.transactionIn?.donorName}}</span>
               <span style="font-size:11px">reference: {{message?.PERRINN?.transactionIn?.reference}}</span>
             </div>
             <img [src]="message?.PERRINN?.transactionIn?.donorImageUrlThumb" style="object-fit:cover;height:30px;width:50px" (click)="router.navigate(['chat',message?.PERRINN?.transactionIn?.donor])">
           </div>
-          <div style="clear:both"></div>
-          <div *ngIf="message.process!==undefined" style="display:inline-block;background-color:#c7edcd;border-radius:5px;padding:3px;margin:5px">
-            <div *ngIf="message.process.result!==undefined" style="font-size:11px;line-height:normal">{{message.process.result}}</div>
-          </div>
           <div style="clear:both;text-align:center">
             <img class="imageWithZoom" *ngIf="message.image" [src]="message.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.imageDownloadURL)">
           </div>
           <div *ngIf="showDetails[message.$key]">
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:150px">
+            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message?.PERRINN?.messagingCost?.amount|number:'1.2-20'}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message?.PERRINN?.messagingCost?.receiver}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.messagingCost?.status=='rejected balance low'?'#fcebb8':''">Status: {{message?.PERRINN?.messagingCost?.status}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.messagingCost?.processed?'#c7edcd':''">Processed: {{message?.PERRINN?.messagingCost?.processed}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.messagingCost?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message?.PERRINN?.messagingCost?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message?.PERRINN?.messagingCost?.receiver}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.messagingCost?.status=='rejected balance low'?'#fcebb8':''">Status: {{message?.PERRINN?.messagingCost?.status}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.messagingCost?.processed?'#c7edcd':''">Processed: {{message?.PERRINN?.messagingCost?.processed}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.messagingCost?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:150px">
+            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
+              <img src="./../assets/App icons/repeat.png" style="display:inline;float:right;height:25px;border-radius:25%">
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">PROCESS</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Regex: {{message?.PERRINN?.process?.regex}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Function: {{message?.PERRINN?.process?.function|json}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs complete: {{message?.PERRINN?.process?.inputsComplete}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs: {{message?.PERRINN?.process?.inputs|json}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Result: {{message?.PERRINN?.process?.result}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.process?.timestamp}}</div>
+            </div>
+            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/out.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION OUT</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message?.PERRINN?.transactionOut?.amount|number:'1.2-20'}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message?.PERRINN?.transactionOut?.receiver}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Message: {{message?.PERRINN?.transactionOut?.receiverMessage}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message?.PERRINN?.transactionOut?.reference}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.transactionOut?.status=='rejected balance low'?'#fcebb8':''">Status: {{message?.PERRINN?.transactionOut?.status}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.transactionOut?.processed?'#c7edcd':''">Processed: {{message?.PERRINN?.transactionOut?.processed}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.transactionOut?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION OUT</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message?.PERRINN?.transactionOut?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message?.PERRINN?.transactionOut?.receiver}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Message: {{message?.PERRINN?.transactionOut?.receiverMessage}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message?.PERRINN?.transactionOut?.reference}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.transactionOut?.status=='rejected balance low'?'#fcebb8':''">Status: {{message?.PERRINN?.transactionOut?.status}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.transactionOut?.processed?'#c7edcd':''">Processed: {{message?.PERRINN?.transactionOut?.processed}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.transactionOut?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:150px">
+            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/in.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION IN</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message?.PERRINN?.transactionIn?.amount|number:'1.2-20'}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Donor: {{message?.PERRINN?.transactionIn?.donor}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Message: {{message?.PERRINN?.transactionIn?.donorMessage}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message?.PERRINN?.transactionIn?.reference}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.transactionIn?.processed?'#c7edcd':''">Processed: {{message?.PERRINN?.transactionIn?.processed}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.transactionIn?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION IN</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message?.PERRINN?.transactionIn?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Donor: {{message?.PERRINN?.transactionIn?.donor}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Message: {{message?.PERRINN?.transactionIn?.donorMessage}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message?.PERRINN?.transactionIn?.reference}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.transactionIn?.processed?'#c7edcd':''">Processed: {{message?.PERRINN?.transactionIn?.processed}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.transactionIn?.timestamp}}</div>
             </div>
-            <div style="clear:both;float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:150px">
+            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/chain.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Index: #{{message?.PERRINN?.chain?.index}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.chain?.previousMessage!=undefined?'#c7edcd':''">Previous: {{message?.PERRINN?.chain?.previousMessage}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Current: {{message?.$key}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message?.PERRINN?.chain?.nextMessage}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.chain?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Index: #{{message?.PERRINN?.chain?.index}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.chain?.previousMessage!=undefined?'#c7edcd':''">Previous: {{message?.PERRINN?.chain?.previousMessage}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Current: {{message?.$key}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message?.PERRINN?.chain?.nextMessage}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.chain?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:150px">
+            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/wallet.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040">WALLET</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Previous balance: C{{message?.PERRINN?.wallet?.previousBalance|number:'1.2-20'}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message?.PERRINN?.wallet?.amount|number:'1.2-20'}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.wallet?.balance!=undefined?'#c7edcd':''">Balance: C{{message?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
-              <div style="font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.wallet?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">WALLET</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Previous balance: C{{message?.PERRINN?.wallet?.previousBalance|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message?.PERRINN?.wallet?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message?.PERRINN?.wallet?.balance!=undefined?'#c7edcd':''">Balance: C{{message?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message?.PERRINN?.wallet?.timestamp}}</div>
             </div>
           </div>
         </div>
         <div class='messageFooter' style="clear:both;height:15px" (click)="switchShowDetails(message.$key)">
-          <div style="float:left;width:50%;text-align:right;line-height:10px">...</div>
+          <div style="float:left;text-align:right;line-height:10px">...</div>
           <img *ngIf="message?.PERRINN?.dataWrite=='complete'" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
-          <div style="float:right;font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">{{message?.PERRINN?.dataWrite!='complete'?message?.PERRINN?.dataWrite:''}}</div>
-          <div *ngIf="message?.PERRINN?.chain?.nextMessage=='none'&&message?.PERRINN?.wallet?.balance!=undefined" style="float:right;font-size:10px;height:15px;margin:0 5px 2px 0;line-height:15px;color:#999">Balance: C{{message?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
+          <div style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">{{message?.PERRINN?.dataWrite!='complete'?message?.PERRINN?.dataWrite:''}}</div>
+          <div *ngIf="message?.PERRINN?.chain?.nextMessage=='none'&&message?.PERRINN?.wallet?.balance!=undefined" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">C{{message?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
         </div>
       </div>
       {{storeMessageValues(message.user,message.timestamp)}}
@@ -135,7 +149,6 @@ import { databaseService } from './database.service';
     </li>
   </ul>
   <div style="height:125px;width:100%"></div>
-  </div>
   </div>
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none;background-color:#ededed">
     <div *ngIf="!isCurrentUserLeader&&!isCurrentUserMember">
@@ -151,8 +164,8 @@ import { databaseService } from './database.service';
         <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.firstName}}...</div>
         </li>
       </ul>
-      <div *ngIf="UI.process[UI.currentTeam]?.service" style="box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);cursor:pointer;border-radius:7px;background-color:white;float:left;padding:5px;margin:10px;width:70%"(click)="UI.clearProcessData()">
-        <div style="float:left">{{UI.process[UI.currentTeam]?.regex}}:</div>
+      <div *ngIf="UI.process[UI.currentTeam]?.service" style="box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);cursor:pointer;border-radius:7px;background-color:white;float:left;padding:5px;margin:10px;width:70%"(click)="UI.clearProcessData()">
+        <div style="float:left;font-size:11px;font-weight:bold">{{UI.process[UI.currentTeam]?.regex}}:</div>
         <img src="./../assets/App icons/remove.png" style="float:right;height:20px;">
         <ul style="clear:both;list-style:none;color:green;margin:10px 0 10px 0">
           <li *ngFor="let input of UI.process[UI.currentTeam]?.inputsArray">
@@ -161,7 +174,7 @@ import { databaseService } from './database.service';
         </ul>
         <div style="color:blue">{{UI.process[UI.currentTeam]?.message}}</div>
       </div>
-      <img src="./../assets/App icons/process.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
+      <img src="./../assets/App icons/repeat.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
       <div style="clear:both;float:left;width:90%">
         <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
       </div>

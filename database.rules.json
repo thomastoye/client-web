@@ -7,9 +7,6 @@
     "ids": {
       ".write": "newData.exists() && auth != null"
     },
-    "PERRINNTeamBalance": {
-      ".indexOn": ["balanceNegative"]
-    },
     "PERRINNTeams": {
       ".indexOn": ["name"]
     },

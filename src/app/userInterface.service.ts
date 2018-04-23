@@ -88,10 +88,10 @@ export class userInterfaceService {
             regex:service.val().regex,
             message:service.val().process[1].message.text,
             step:1,
-            messageID:"",
             inputsComplete:false,
             inputs:{},
             inputsArray:[],
+            function:service.val().process.function,
           };
         newProcess=true;
         }
@@ -120,7 +120,7 @@ export class userInterfaceService {
                   this.process[this.currentTeam].inputs[variable]=valueString;
                   this.process[this.currentTeam].inputsArray.push([variable,valueString]);
                 }
-                if (!service.child('process').child(this.process[this.currentTeam].step+1).child('input').val()){
+                if (!service.child('process').child(this.process[this.currentTeam].step+1).val()){
                   this.process[this.currentTeam].inputsComplete=true;
                 }
                 this.process[this.currentTeam].step+=1;

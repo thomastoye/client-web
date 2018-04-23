@@ -28,14 +28,13 @@ import { userInterfaceService } from './userInterface.service';
       </div>
       <div>
         <div *ngIf="UI.focusUserObj?.personalTeam==team.$key" style="float:left;margin:15px 5px 0 0;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>
-        <img [hidden]="!(team.balance>0)" src="./../assets/App icons/icon_share_03.svg" style="float:left;height:17px;margin:5px;margin-top:17px">
         <div style="float:left;margin-top:15px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{team.name}}</div>
         <div style="float:left;margin:5px;margin-top:19px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.lastMessageTimestamp>team.lastChatVisitTimestamp"></div>
         <div *ngIf="(now-team.lastMessageTimestamp)>43200000" style="float:right;margin-top:10px;color:#999;font-size:11px;margin-right:10px">{{team.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
         <div *ngIf="(now-team.lastMessageTimestamp)<=43200000" style="float:right;margin-top:10px;color:#999;font-size:11px;margin-right:10px">{{team.lastMessageTimestamp|date:'HH:mm'}}</div>
         <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team?.lastMessageFirstName}}: {{team?.lastMessageText}}</div>
       </div>
-      <div class="seperator"></div>
+      <div class="seperator" style="margin-left:120px"></div>
       {{last?scrollToTop(team.key):''}}
     </li>
   </ul>

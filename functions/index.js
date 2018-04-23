@@ -32,6 +32,7 @@ function updateKeyValue (user,team,ref,key,value) {
       });
     });
   }).catch(error=>{
+    console.log(error);
     return error;
   });
 }
@@ -68,6 +69,7 @@ function addListKeyValue (user,team,ref,list,key,value,maxCount) {
       });
     });
   }).catch(error=>{
+    console.log(error);
     return error;
   });
 }
@@ -87,6 +89,7 @@ function subscribeList (user,team,ref,list) {
   }).then(()=>{
     return "done";
   }).catch(error=>{
+    console.log(error);
     return error;
   });
 }
@@ -119,6 +122,7 @@ function removeListKey (user,team,ref,list,key) {
       });
     });
   }).catch(error=>{
+    console.log(error);
     return error;
   });
 }
@@ -150,84 +154,6 @@ function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,dono
   });
 }
 
-function createTransaction (amount, sender, receiver, user, reference) {
-  return admin.database().ref('PERRINNTeams/'+sender+'/leaders/'+user).once('value').then((leader)=>{
-    return admin.database().ref('PERRINNTeams/'+receiver).child('name').once('value').then((receiverName)=>{
-      if (receiverName.val()==null) {
-        return "team doesn't exist";
-      }
-      if (!leader.val()&&user!="PERRINN") {
-        return "you need to be leader";
-      }
-      if (amount<=0||amount>10) {
-        return "amount has to be between 0 and 10";
-      }
-      if (sender==receiver) {
-        return "you cannot do that";
-      }
-      const now = Date.now();
-      return createTransactionHalf (-amount,sender,receiver,user,reference,now).then((result)=>{
-        if (result.committed&&result.snapshot.val()>=0){
-          createTransactionHalf (amount,receiver,sender,user,reference,now);
-          if (user!="PERRINN") {
-            createMessage (receiver,"PERRINN","You have received "+amount+" COINS from:","","confirmation",sender,"",'none','none');
-            admin.database().ref('PERRINNUsers/'+user).child('transactionCount').transaction(transactionCount=>{
-              if (transactionCount==null) {
-                return 1;
-              } else {
-                return transactionCount+1;
-              }
-            });
-          }
-          return "done";
-        } else {
-          if (result.committed&&result.snapshot.val()<0){
-            createTransactionHalf (amount,sender,receiver,user,reference+" (rejected)",now).then(()=>{
-              return "rejected";
-            });
-          } else {
-            return "rejected";
-          }
-        }
-      });
-    }).catch(()=>{
-      return "cancelled";
-    });
-  }).catch(()=>{
-    return "cancelled";
-  });
-}
-
-function createTransactionHalf (amount, team, otherTeam, user, reference, timestamp) {
-  return admin.database().ref('PERRINNTeamBalance/'+team).child('balance').once('value').then((balanceNullCheck)=> {
-    if (balanceNullCheck.val()===null) {
-      admin.database().ref('PERRINNTeamBalance/'+team).update({
-        balance:0,
-      });
-    }
-    return admin.database().ref('PERRINNTeamBalance/'+team).child('balance').transaction(function(balance) {
-      return Number(balance)+Number(amount);
-    }, function(error, committed, balance) {
-      if (error) {
-        createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Transaction error reference:","","warning",team,user,'none','none');
-      } else if (!committed) {
-      } else {
-        admin.database().ref('PERRINNTeamBalance/'+team).update({balanceNegative:-balance.val()});
-        admin.database().ref('PERRINNTeamTransactions/'+team).push({
-          amount: amount,
-          balance: balance.val(),
-          otherTeam: otherTeam,
-          reference: reference,
-          requestTimestamp: timestamp,
-          timestamp:admin.database.ServerValue.TIMESTAMP,
-          timestampNegative:-timestamp,
-          user: user,
-        });
-      }
-    });
-  });
-}
-
 function createTeam(user,team,name) {
   const now = Date.now();
   let updateObj={};
@@ -255,75 +181,66 @@ function createUser(user,team,firstName,lastName) {
   });
 }
 
-function executeProcess(team,process){
-  return admin.database().ref('appSettings/PERRINNServices/'+process.service+'/process/'+process.step).once('value').then(processStep=>{
-    if (processStep.val().transaction) {
-      return createTransaction (
-        process.inputs.amount,
-        team,
-        process.inputs.receiver,
-        process.user,
-        process.inputs.reference
-      ).then(result=>{
-        return result;
-      });
-    }
-    if (processStep.val().updateKeyValue) {
+function executeProcess(user,team,functionObj,inputs){
+  return admin.database().ref('undefined').once('value').then(()=>{
+    if (functionObj.name=='updateKeyValue') {
       return updateKeyValue (
-        process.user,
+        user,
         team,
-        processStep.child('updateKeyValue').val().ref,
-        processStep.child('updateKeyValue').val().key,
-        process.inputs[processStep.child('updateKeyValue').val().value]
+        functionObj.ref,
+        functionObj.key,
+        inputs.value
       ).then(result=>{
         return result;
       });
     }
-    if (processStep.val().addListKeyValue) {
+    if (functionObj.name=='addListKeyValue') {
       return addListKeyValue (
-        process.user,
+        user,
         team,
-        processStep.child('addListKeyValue').val().ref,
-        processStep.child('addListKeyValue').val().list,
-        process.inputs[processStep.child('addListKeyValue').val().key],
+        functionObj.ref,
+        functionObj.list,
+        inputs.key,
         true,
-        processStep.child('addListKeyValue').val().maxCount
+        functionObj.maxCount
       ).then(result=>{
         return result;
       });
     }
-    if (processStep.val().subscribeList) {
+    if (functionObj.name=='subscribeList') {
       return subscribeList (
-        process.user,
+        user,
         team,
-        processStep.child('subscribeList').val().ref,
-        process.inputs[processStep.child('subscribeList').val().list]
+        functionObj.ref,
+        inputs.list
       ).then(result=>{
         return result;
       });
     }
-    if (processStep.val().removeListKey) {
+    if (functionObj.name=='removeListKey') {
       return removeListKey (
-        process.user,
+        user,
         team,
-        processStep.child('removeListKey').val().ref,
-        processStep.child('removeListKey').val().list,
-        process.inputs[processStep.child('removeListKey').val().key]
+        functionObj.ref,
+        functionObj.list,
+        inputs.key
       ).then(result=>{
         return result;
       });
     }
-    if (processStep.val().createTeam) {
+    if (functionObj.name=='createTeam') {
       var newTeam = admin.database().ref('ids/').push(true).key;
       return createTeam (
-        process.user,
+        user,
         newTeam,
-        process.inputs.name
+        inputs.name
       ).then(result=>{
         return result;
       });
     }
+    return 'none';
   }).catch(error=>{
+    console.log(error);
     return error;
   }).then(result=>{
     return result;
@@ -407,17 +324,6 @@ exports.newTeamProfile = functions.database.ref('teams/{team}/{editID}').onCreat
   });
 });
 
-exports.newProcess = functions.database.ref('/teamMessages/{team}/{message}/process').onCreate((data,context)=>{
-  return executeProcess(context.params.team,data.val()).then(result=>{
-    if (result===undefined) {
-      result="undefined";
-    }
-    data.ref.update({
-      result:result,
-    });
-  });
-});
-
 function writeChainData(team,message){
   return admin.database().ref('PERRINNTeamMessageChain/'+team).child('lock').transaction(function(lock){
     if(lock===null)return true;
@@ -497,7 +403,7 @@ function incrementUserMessageCounter(user){
 }
 
 function checkTransactionInputs(team,inputs){
-  if(inputs.amount>0&&inputs.amount<=10){
+  if(inputs.amount>0&&inputs.amount<=100000){
     if(inputs.receiver!=team){
       if(inputs.reference!=''){
         return true;
@@ -518,6 +424,37 @@ function getTeamImageUrlThumb(team){
   return admin.database().ref('PERRINNTeams/'+team+'/imageUrlThumb').once('value').then(imageUrlThumb=>{
     if(imageUrlThumb.val()==undefined||imageUrlThumb.val()==null)return '';
     else return imageUrlThumb.val();
+  });
+}
+
+function writeProcessData(user,team,message){
+  return admin.database().ref('teamMessages/'+team+'/'+message+'/process').once('value').then(process=>{
+    let updateObj={};
+    let regex='none';
+    let functionObj={none:'none'};
+    let inputs={none:'none'};
+    let inputsComplete=false;
+    if(process.val()!=undefined&&process.val()!=null){
+      if(process.val().inputsComplete){
+        regex=process.val().regex;
+        functionObj=process.val().function;
+        inputs=process.val().inputs;
+        inputsComplete=process.val().inputsComplete;
+      }
+    }
+    return executeProcess(user,team,functionObj,inputs).then(result=>{
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/regex']=regex;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/function']=functionObj;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/inputs']=inputs;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/inputsComplete']=inputsComplete;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/result']=result;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/timestamp']=admin.database.ServerValue.TIMESTAMP;
+      return admin.database().ref().update(updateObj).then(()=>{
+        return 'done';
+      });
+    });
+  }).catch(error=>{
+    console.log(error);
   });
 }
 
@@ -690,9 +627,6 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
   const message=data.val();
   let writeError=null;
   let lockedTeamChain=false;
-  if (message.user!="PERRINN") {
-    createTransaction (0.01,context.params.team,"-L6XIigvAphrJr5w2jbf","PERRINN","Message");
-  }
   return data.ref.child('/PERRINN').update({
     timestampStart:admin.database.ServerValue.TIMESTAMP,
   }).then(()=>{
@@ -712,6 +646,12 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write message cost';
+      return null;
+    }
+    return writeProcessData(message.user,context.params.team,context.params.message,message.process);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write process';
       return null;
     }
     return writeTransactionOutData(context.params.team,context.params.message,message.process);
@@ -760,18 +700,6 @@ exports.userCreation = functions.database.ref('/PERRINNUsers/{user}/createdTimes
 
 exports.teamCreation = functions.database.ref('/PERRINNTeams/{team}/createdTimestamp').onCreate((data,context)=>{
   return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",context.params.team,"",'none','none');
-});
-
-exports.returnCOINS = functions.database.ref('tot').onCreate((data,context)=>{
-  return admin.database().ref('PERRINNTeamBalance/').once('value').then(teams=>{
-    var totalAmount = teams.child('-L6XIigvAphrJr5w2jbf').val().balance;
-    teams.forEach(function(team){
-      var amount = totalAmount/1000000*team.val().balance;
-      if (team.key!="-KptHjRmuHZGsubRJTWJ") {
-        createTransaction (amount,"-L6XIigvAphrJr5w2jbf",team.key,"PERRINN","return");
-      }
-    });
-  });
 });
 
 function fanoutImage(image,imageUrlThumb,imageUrlMedium,imageUrlOriginal){
@@ -949,6 +877,7 @@ function copyPhotoURL(photo){
       return object.copy(bucket.file(filePathCopy)).then(()=>{
         return 1;
       }).catch(error=>{
+        console.log(error);
         return error;
       });
     }
@@ -1052,5 +981,25 @@ exports.newTeam=functions.database.ref('PERRINNTeams/{team}').onCreate((data,con
     return admin.database().ref('subscribeImageTeams/'+image.val()).update({
       [context.params.team]:true,
     });
+  });
+});
+
+exports.createTransactionMessages=functions.database.ref('toto').onCreate((data,context)=>{
+  return admin.database().ref('PERRINNTransactionHistory/').once('value').then(transactions=>{
+    transactions.forEach(transaction=>{
+      if(transaction.val().done==undefined){
+        const now = Date.now();
+        return admin.database().ref('teamMessages/'+transaction.val().donor).push({
+          timestamp:now,
+          text:'COIN transfer from old wallet to message wallet.',
+          user:'PERRINN',
+          firstName:'helper',
+          imageUrlThumbUser:'https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1521212751678Screen%20Shot%202018-03-16%20at%2015copy.05?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=qRLArIoxyVKtSYT6xllTEkHVVv3vNpcdZZ2ovfXKwnSf52McOMCy5c%2FrmSmunGmm722HbaqblK4ipgxIql8fR9sI6KVUD5Kkp5f9UPTiZJNWJU5amIhuqNWAtN4k9yrpL3HXia46wmF2Eb%2FtpGBW7SuAom1e4lboTt7knEm72IHgKMbYB%2FpbZbpbdUMNlEhgtT7TUZCJeT6PHX%2B2TXDRNCkTgAp2nDEneoWa0ffxcr6Gu1INM87opDrqh%2FWS1szgfTB%2FXQj2rL%2BdzjdJ6vi1a1CVMrzk3lz%2BBSq4RHbczWSb%2FWkBFcHq%2FOymNFqkfckBp5%2BaURS1w0wCBibyAhIJGg%3D%3D',
+          process:{inputsComplete:true,regex:'send some coins',service:'transactionStart',user:'PERRINN',function:{name:'transaction'},inputs:{amount:-transaction.val().amount,receiver:transaction.val().receiver,reference:transaction.val().reference}},
+        }).then(()=>{
+          return admin.database().ref('PERRINNTransactionHistory/'+transaction.key).update({done:true});
+        });
+      }
+    })
   });
 });

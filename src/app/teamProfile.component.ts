@@ -10,10 +10,6 @@ import { databaseService } from './database.service';
   selector: 'team',
   template: `
   <div class='sheet'>
-  <div style="z-index:9999;position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:left;background-color:#eff5ff;padding:5px" (click)="router.navigate(['chat',UI.currentTeam])">< Chat</div>
-  <div style="float:right;width:100px;text-align:center">
-    <div style="z-index:9999;position:fixed;width:100px;font-size:12px;cursor:pointer;color:blue;text-align:center;float:right;background-color:#eff5ff;padding:5px" (click)="router.navigate(['wallet',UI.currentTeam])">Wallet ></div>
-  </div>
   <div style="position:relative;margin-bottom:-115px">
   <img class="imageWithZoom" [src]="UI.currentTeamObj?.imageUrlMedium?UI.currentTeamObj?.imageUrlMedium:UI.currentTeamObj?.imageUrlThumb" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(UI.currentTeamObj?.imageUrlOriginal)">
   <div class="sheetBadge" style="position:relative;top:-115px">
