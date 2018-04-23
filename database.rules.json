@@ -10,11 +10,6 @@
     "PERRINNTeams": {
       ".indexOn": ["name"]
     },
-    "PERRINNTeamTransactions": {
-      "$teamid": {
-        ".indexOn": ["timestampNegative"]
-      }
-    },
     "PERRINNUsers": {
       ".indexOn": ["firstName"]
     },

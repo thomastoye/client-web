@@ -15,7 +15,7 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let team of teams | async"
       [class.selected]="team.$key === selectedTeamID"
       (click)="selectedTeamID = team.$key">
-      <img [src]="DB.getTeamImageUrlThumb(team.image)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img [src]="team.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{team.name}}
     </li>
   </ul>

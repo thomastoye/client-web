@@ -57,11 +57,6 @@ export class databaseService {
     this.db.object('PERRINNTeams/'+teamID+'/leaders/'+userID).subscribe(snapshot=>{output=snapshot.$value});
     return output;
   }
-  getTeamBalance(ID:string):string{
-    var output;
-    this.db.object('PERRINNTeamBalance/'+ID).subscribe(snapshot=>{output=snapshot.balance?snapshot.balance:0});
-    return output;
-  }
   getProjectTeamLeader(projectID,teamID):string{
     var output;
     this.db.object('projectTeams/'+projectID+'/'+teamID).subscribe(snapshot=>{output=snapshot.leader});

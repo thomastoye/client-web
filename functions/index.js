@@ -719,7 +719,11 @@ function fanoutImage(image,imageUrlThumb,imageUrlMedium,imageUrlOriginal){
         updateObj['PERRINNTeams/'+team.key+'/imageUrlMedium']=imageUrlMedium;
         updateObj['PERRINNTeams/'+team.key+'/imageUrlOriginal']=imageUrlOriginal;
       });
-      return admin.database().ref().update(updateObj);
+      return admin.database().ref().update(updateObj).then(()=>{
+        return admin.database().ref('/subscribeImageUsers/'+image).remove().then(()=>{
+          return admin.database().ref('/subscribeImageTeams/'+image).remove();
+        });
+      });
     });
   });
 }
@@ -981,25 +985,5 @@ exports.newTeam=functions.database.ref('PERRINNTeams/{team}').onCreate((data,con
     return admin.database().ref('subscribeImageTeams/'+image.val()).update({
       [context.params.team]:true,
     });
-  });
-});
-
-exports.createTransactionMessages=functions.database.ref('toto').onCreate((data,context)=>{
-  return admin.database().ref('PERRINNTransactionHistory/').once('value').then(transactions=>{
-    transactions.forEach(transaction=>{
-      if(transaction.val().done==undefined){
-        const now = Date.now();
-        return admin.database().ref('teamMessages/'+transaction.val().donor).push({
-          timestamp:now,
-          text:'COIN transfer from old wallet to message wallet.',
-          user:'PERRINN',
-          firstName:'helper',
-          imageUrlThumbUser:'https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1521212751678Screen%20Shot%202018-03-16%20at%2015copy.05?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=qRLArIoxyVKtSYT6xllTEkHVVv3vNpcdZZ2ovfXKwnSf52McOMCy5c%2FrmSmunGmm722HbaqblK4ipgxIql8fR9sI6KVUD5Kkp5f9UPTiZJNWJU5amIhuqNWAtN4k9yrpL3HXia46wmF2Eb%2FtpGBW7SuAom1e4lboTt7knEm72IHgKMbYB%2FpbZbpbdUMNlEhgtT7TUZCJeT6PHX%2B2TXDRNCkTgAp2nDEneoWa0ffxcr6Gu1INM87opDrqh%2FWS1szgfTB%2FXQj2rL%2BdzjdJ6vi1a1CVMrzk3lz%2BBSq4RHbczWSb%2FWkBFcHq%2FOymNFqkfckBp5%2BaURS1w0wCBibyAhIJGg%3D%3D',
-          process:{inputsComplete:true,regex:'send some coins',service:'transactionStart',user:'PERRINN',function:{name:'transaction'},inputs:{amount:-transaction.val().amount,receiver:transaction.val().receiver,reference:transaction.val().reference}},
-        }).then(()=>{
-          return admin.database().ref('PERRINNTransactionHistory/'+transaction.key).update({done:true});
-        });
-      }
-    })
   });
 });
