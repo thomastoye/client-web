@@ -149,6 +149,7 @@ import { databaseService } from './database.service';
   </div>
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none;background-color:#ededed">
     <div *ngIf="!isCurrentUserLeader&&!isCurrentUserMember">
+    <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="margin-bottom:25px" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
       <ul style="list-style:none;float:left;">
         <li *ngFor="let user of draftMessageUsers | async">
         <div [hidden]="!user.draftMessage||user.$key==UI.currentUser" *ngIf="isDraftMessageRecent(user.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.firstName}}...</div>
@@ -285,6 +286,19 @@ export class ChatComponent {
     this.draftImage="";
   }
 
+  followTeam (teamID: string, userID: string) {
+    const now = Date.now();
+    this.db.object('viewUserTeams/'+userID+'/'+teamID).update({
+      lastChatVisitTimestamp:now,
+      lastChatVisitTimestampNegative:-1*now,
+      name:this.UI.currentTeamObj.name,
+      imageUrlThumb:this.UI.currentTeamObj.imageUrlThumb?this.UI.currentTeamObj.imageUrlThumb:'',
+    });
+    this.db.object('subscribeTeamUsers/'+teamID).update({
+      [userID]:true,
+    });
+  }
+
   updateDraftMessageDB () {
     if ((this.draftMessage!="")!=this.draftMessageDB) {
       this.db.object('teamActivities/'+this.UI.currentTeam+'/draftMessages/'+this.UI.currentUser).update({
@@ -294,6 +308,12 @@ export class ChatComponent {
       });
     }
     this.draftMessageDB=(this.draftMessage!="");
+  }
+
+  isCurrentUserFollowing(team){
+    if(this.UI.currentUserTeamsObj==undefined)return false;
+    if(this.UI.currentUserTeamsObj[team]==undefined)return false;
+    return true;
   }
 
   onImageChange(event) {

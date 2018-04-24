@@ -12,6 +12,7 @@ export class userInterfaceService {
   currentTeamObj:any;
   currentUser:string;
   currentUserObj:any;
+  currentUserTeamsObj:any;
   currentUserFirstName:string;
   currentUserLastName:string;
   currentUserImageUrlThumb:string;
@@ -25,6 +26,9 @@ export class userInterfaceService {
         this.currentUser=auth.uid;
         this.db.object('PERRINNUsers/'+this.currentUser).subscribe(snapshot=>{
           this.currentUserObj=snapshot;
+        });
+        this.db.object('viewUserTeams/'+this.currentUser).subscribe(snapshot=>{
+          this.currentUserTeamsObj=snapshot;
         });
         if (this.focusUser==null) this.focusUser=auth.uid;
         firebase.database().ref('appSettings/PERRINNServices/').once('value').then(services=>{

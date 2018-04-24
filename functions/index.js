@@ -125,7 +125,7 @@ function removeListKey (user,team,ref,list,key) {
 }
 
 function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,donorMessage,process) {
-  const now = Date.now();
+  const now=Date.now();
   return admin.database().ref('PERRINNUsers/'+user).once('value').then(userData=>{
     return admin.database().ref('PERRINNUsers/'+linkUser).once('value').then(linkUserData=>{
       return admin.database().ref('PERRINNTeams/'+linkTeam).once('value').then(linkTeamData=>{
@@ -285,16 +285,16 @@ exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID
 });
 
 exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCreate((data,context)=>{
-  const profile = data.val();
-  return admin.database().ref('PERRINNUsers/'+context.params.user).once('value').then((currentProfile)=>{
-    if (currentProfile.val()==null) {
-      admin.database().ref('PERRINNUsers/'+context.params.user).update({
-        createdTimestamp:admin.database.ServerValue.TIMESTAMP,
-      });
-    }
-    if (profile.firstName) updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"firstName",profile.firstName);
-    if (profile.lastName) updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"lastName",profile.lastName);
-    createTeam(context.params.user,profile.firstName+' '+profile.lastName);
+  const now=Date.now();
+  return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"createdTimestamp",now
+  ).then(()=>{
+    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"firstName",data.val().firstName);
+  }).then(()=>{
+    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"lastName",data.val().lastName);
+  }).then(()=>{
+    return createTeam(context.params.user,data.val().firstName+' '+data.val().lastName);
+  }).then(()=>{
+    return 'done';
   });
 });
 
