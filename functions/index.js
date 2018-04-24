@@ -349,14 +349,17 @@ function writeMessagingCostData(user,team,message){
   });
 }
 
-function writeMessageTeamData(team,timestamp,firstName,text){
-  return admin.database().ref('PERRINNTeams/'+team).update({
-    lastMessageTimestamp:timestamp,
-    lastMessageTimestampNegative:-timestamp,
-    lastMessageFirstName:firstName,
-    lastMessageText:text,
-  }).then(()=>{
-    return 'done';
+function writeMessageTeamData(team,message){
+  return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
+    return admin.database().ref('PERRINNTeams/'+team).update({
+      lastMessageTimestamp:messageObj.val().payload.timestamp,
+      lastMessageTimestampNegative:-messageObj.val().payload.timestamp,
+      lastMessageFirstName:messageObj.val().payload.firstName,
+      lastMessageText:messageObj.val().payload.text,
+      lastMessageBalance:messageObj.val().PERRINN.wallet.balance,
+    }).then(()=>{
+      return 'done';
+    });
   }).catch(error=>{
     console.log(error);
   });
@@ -606,12 +609,6 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
   return data.ref.child('/PERRINN').update({
     timestampStart:admin.database.ServerValue.TIMESTAMP,
   }).then(()=>{
-    return writeMessageTeamData(context.params.team,message.payload.timestamp,message.payload.firstName,message.payload.text);
-  }).then(result=>{
-    if(result!='done'){
-      if(!writeError)writeError='did not write message data';
-      return null;
-    }
     return incrementUserMessageCounter(message.payload.user);
   }).then(result=>{
     if(result!='done'){
@@ -659,6 +656,12 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write atomic data';
+      return null;
+    }
+    return writeMessageTeamData(context.params.team,context.params.message);
+  }).then(result=>{
+    if(result!='done'){
+      if(!writeError)writeError='did not write message data';
       return null;
     }
     return writeMessageTransactionReceiverData(context.params.team,context.params.message);
@@ -904,7 +907,7 @@ function newValidData(key,beforeData,afterData){
 exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,context)=>{
   const beforeData = data.before.val();
   const afterData = data.after.val();
-  var keys=['lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','name','imageUrlThumb'];
+  var keys=['lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','lastMessageBalance','name','imageUrlThumb'];
   var updateKeys=[];
   keys.forEach(key=>{
     if(newValidData(key,beforeData,afterData))updateKeys.push(key);

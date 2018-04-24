@@ -24,14 +24,15 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let team of viewUserTeams|async;let last=last"
       (click)="router.navigate(['chat',team.$key])">
       <div style="float:left">
-        <img [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
+        <img [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
       </div>
       <div>
-        <div style="float:left;margin-top:15px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{team.name}}</div>
-        <div style="float:left;margin:5px;margin-top:19px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.lastMessageTimestamp>team.lastChatVisitTimestamp"></div>
-        <div *ngIf="(now-team.lastMessageTimestamp)>43200000" style="float:right;margin-top:10px;color:#999;font-size:11px;margin-right:10px">{{team.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
-        <div *ngIf="(now-team.lastMessageTimestamp)<=43200000" style="float:right;margin-top:10px;color:#999;font-size:11px;margin-right:10px">{{team.lastMessageTimestamp|date:'HH:mm'}}</div>
+        <div style="float:left;margin-top:5px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{team.name}}</div>
+        <div style="float:left;margin:5px;margin-top:9px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.lastMessageTimestamp>team.lastChatVisitTimestamp"></div>
+        <div *ngIf="(now-team.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
+        <div *ngIf="(now-team.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.lastMessageTimestamp|date:'HH:mm'}}</div>
         <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team?.lastMessageFirstName}}: {{team?.lastMessageText}}</div>
+        <div *ngIf="team?.lastMessageBalance" style="clear:both;font-size:10px;color:#999;width:100px">C{{team?.lastMessageBalance|number:'1.2-2'}}</div>
       </div>
       <div class="seperator" style="margin-left:120px"></div>
       {{last?scrollToTop(team.key):''}}
