@@ -27,9 +27,6 @@ export class userInterfaceService {
           this.currentUserObj=snapshot;
         });
         if (this.focusUser==null) this.focusUser=auth.uid;
-        this.db.object('PERRINNUsers/'+this.focusUser).subscribe(snapshot=>{
-          if (this.currentTeam==null) this.currentTeam=snapshot.personalTeam;
-        });
         firebase.database().ref('appSettings/PERRINNServices/').once('value').then(services=>{
           this.services=services;
         });

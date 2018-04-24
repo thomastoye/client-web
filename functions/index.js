@@ -13,9 +13,6 @@ function updateKeyValue (user,team,ref,key,value) {
       ref=ref+user;
     }
     if (ref=="PERRINNTeams/"){
-      if (PERRINNTeam.val().leadersCount>0&&!PERRINNTeam.child('leaders').child(user).val()) {
-        return "you need to be leader";
-      }
       ref=ref+team;
     }
     return admin.database().ref(ref).child(key).once('value').then((currentValue)=>{
@@ -127,7 +124,7 @@ function removeListKey (user,team,ref,list,key) {
   });
 }
 
-function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,donorMessage) {
+function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,donorMessage,process) {
   const now = Date.now();
   return admin.database().ref('PERRINNUsers/'+user).once('value').then(userData=>{
     return admin.database().ref('PERRINNUsers/'+linkUser).once('value').then(linkUserData=>{
@@ -150,14 +147,17 @@ function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,dono
             linkUserImageUrlThumb:linkUserData.val().imageUrlThumb?linkUserData.val().imageUrlThumb:'',
           },
           PERRINN:{transactionIn:{donor:donor,donorMessage:donorMessage}},
+          process:process,
         });
       });
     });
   });
 }
 
-function createTeam(user,team,name) {
-  const now = Date.now();
+function createTeam(user,name) {
+  name=name.toUpperCase();
+  var team=admin.database().ref('ids/').push(true).key;
+  const now=Date.now();
   let updateObj={};
   updateObj['PERRINNTeams/'+team+'/createdTimestamp']=now;
   updateObj['PERRINNTeams/'+team+'/name']=name;
@@ -171,15 +171,6 @@ function createTeam(user,team,name) {
   updateObj['subscribeTeamUsers/'+team+'/'+user]=true;
   return admin.database().ref().update(updateObj).then(()=>{
     return 'done';
-  });
-}
-
-function createUser(user,team,firstName,lastName) {
-  const now = Date.now();
-  return updateKeyValue (user,team,'PERRINNUsers/',"createdTimestamp",now).then(()=>{
-    updateKeyValue (user,team,'PERRINNUsers/',"firstName",firstName);
-    updateKeyValue (user,team,'PERRINNUsers/',"lastName",lastName);
-    return user;
   });
 }
 
@@ -231,10 +222,8 @@ function executeProcess(user,team,functionObj,inputs){
       });
     }
     if (functionObj.name=='createTeam') {
-      var newTeam = admin.database().ref('ids/').push(true).key;
       return createTeam (
         user,
-        newTeam,
         inputs.name
       ).then(result=>{
         return result;
@@ -305,28 +294,11 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
     }
     if (profile.firstName) updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"firstName",profile.firstName);
     if (profile.lastName) updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"lastName",profile.lastName);
-    if (profile.image) updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"image",profile.image);
-    if (profile.personalTeam) updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"personalTeam",profile.personalTeam);
+    createTeam(context.params.user,profile.firstName+' '+profile.lastName);
   });
 });
 
-exports.newTeamProfile = functions.database.ref('teams/{team}/{editID}').onCreate((data,context)=>{
-  const profile = data.val();
-  return admin.database().ref('PERRINNTeams/'+context.params.team).once('value').then((currentProfile)=>{
-    if (currentProfile.val()==null) {
-      admin.database().ref('PERRINNTeams/'+context.params.team).update({
-        createdTimestamp:admin.database.ServerValue.TIMESTAMP,
-      });
-    }
-    if(profile.name) updateKeyValue("",context.params.team,'PERRINNTeams/'+context.params.team,"name",profile.name);
-    if(profile.image) updateKeyValue("",context.params.team,'PERRINNTeams/'+context.params.team,"image",profile.image);
-    if(profile.addLeader) addListKeyValue("",context.params.team,'PERRINNTeams/'+context.params.team,"leaders",profile.addLeader,true,2);
-    if(profile.addMember) addListKeyValue("",context.params.team,'PERRINNTeams/'+context.params.team,"members",profile.addMember,true,6);
-    if(profile.removeMember) removeListKey("",context.params.team,'PERRINNTeams/'+context.params.team,"members",profile.removeMember);
-  });
-});
-
-function writeChainData(team,message){
+function writeMessageChainData(team,message){
   return admin.database().ref('PERRINNTeamMessageChain/'+team).child('lock').transaction(function(lock){
     if(lock===null)return true;
     else return;
@@ -429,16 +401,18 @@ function getTeamImageUrlThumb(team){
   });
 }
 
-function writeProcessData(user,team,message){
+function writeMessageProcessData(team,message){
   return admin.database().ref('teamMessages/'+team+'/'+message+'/process').once('value').then(process=>{
     let updateObj={};
     let regex='none';
+    let user='';
     let functionObj={none:'none'};
     let inputs={none:'none'};
     let inputsComplete=false;
     if(process.val()!=undefined&&process.val()!=null){
       if(process.val().inputsComplete){
         regex=process.val().regex;
+        user=process.val().user;
         functionObj=process.val().function;
         inputs=process.val().inputs;
         inputsComplete=process.val().inputsComplete;
@@ -460,7 +434,7 @@ function writeProcessData(user,team,message){
   });
 }
 
-function writeTransactionOutData(team,message,process){
+function writeMessageTransactionOutData(team,message,process){
   let updateObj={};
   let amount=0;
   let receiver='none';
@@ -496,7 +470,7 @@ function writeTransactionOutData(team,message,process){
   });
 }
 
-function writeTransactionInData(team,message){
+function writeMessageTransactionInData(team,message){
   return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/transactionIn').once('value').then(transactionInObj=>{
     let donor='none';
     let donorMessage='none';
@@ -539,7 +513,7 @@ function writeTransactionInData(team,message){
   });
 }
 
-function writeWalletData(team,message){
+function writeMessageWalletData(team,message){
   return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
     return admin.database().ref('teamMessages/'+team+'/'+messageObj.val().PERRINN.chain.previousMessage).once('value').then(previousMessageObj=>{
       let updateObj={};
@@ -588,7 +562,7 @@ function writeWalletData(team,message){
   });
 }
 
-function writeAtomicData(team,message){
+function writeMessageAtomicData(team,message){
   return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
     let updateObj={};
     let previousMessage=messageObj.val().PERRINN.chain.previousMessage;
@@ -613,10 +587,10 @@ function writeAtomicData(team,message){
   });
 }
 
-function writeTransactionReceiverData(team,message){
+function writeMessageTransactionReceiverData(team,message){
   return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/transactionOut').once('value').then(transactionOutObj=>{
     if(transactionOutObj.val().processed){
-      return createMessage(transactionOutObj.val().receiver,"PERRINN","","","","","",team,message).then(()=>{
+      return createMessage(transactionOutObj.val().receiver,"PERRINN","","","","","",team,message,{}).then(()=>{
         return 'done';
       });
     }
@@ -650,58 +624,50 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
       if(!writeError)writeError='did not write message cost';
       return null;
     }
-    return writeProcessData(message.payload.user,context.params.team,context.params.message,message.process);
+    return writeMessageProcessData(context.params.team,context.params.message);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write process';
       return null;
     }
-    return writeTransactionOutData(context.params.team,context.params.message,message.process);
+    return writeMessageTransactionOutData(context.params.team,context.params.message,message.process);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write transaction out';
       return null;
     }
-    return writeTransactionInData(context.params.team,context.params.message);
+    return writeMessageTransactionInData(context.params.team,context.params.message);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write transaction in';
       return null;
     }
-    return writeChainData(context.params.team,context.params.message);
+    return writeMessageChainData(context.params.team,context.params.message);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write chain';
       return null;
     }
     lockedTeamChain=true;
-    return writeWalletData(context.params.team,context.params.message);
+    return writeMessageWalletData(context.params.team,context.params.message);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write wallet';
       return null;
     }
-    return writeAtomicData(context.params.team,context.params.message);
+    return writeMessageAtomicData(context.params.team,context.params.message);
   }).then(result=>{
     if(result!='done'){
       if(!writeError)writeError='did not write atomic data';
       return null;
     }
-    return writeTransactionReceiverData(context.params.team,context.params.message);
+    return writeMessageTransactionReceiverData(context.params.team,context.params.message);
   }).then(()=>{
     if(lockedTeamChain)return admin.database().ref('PERRINNTeamMessageChain/'+context.params.team+'/lock').remove();
     return null;
   }).then(()=>{
     if(writeError) return data.ref.child('/PERRINN').update({dataWrite:writeError});
   });
-});
-
-exports.userCreation = functions.database.ref('/PERRINNUsers/{user}/createdTimestamp').onCreate((data,context)=>{
-  return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",context.params.user,'none','none');
-});
-
-exports.teamCreation = functions.database.ref('/PERRINNTeams/{team}/createdTimestamp').onCreate((data,context)=>{
-  return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",context.params.team,"",'none','none');
 });
 
 function fanoutImage(image,imageUrlThumb,imageUrlMedium,imageUrlOriginal){
@@ -988,4 +954,12 @@ exports.newTeam=functions.database.ref('PERRINNTeams/{team}').onCreate((data,con
       [context.params.team]:true,
     });
   });
+});
+
+exports.userCreation = functions.database.ref('/PERRINNUsers/{user}/createdTimestamp').onCreate((data,context)=>{
+  return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",context.params.user,'none','none',{});
+});
+
+exports.teamCreation = functions.database.ref('/PERRINNTeams/{team}/createdTimestamp').onCreate((data,context)=>{
+  return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",context.params.team,"",'none','none',{});
 });

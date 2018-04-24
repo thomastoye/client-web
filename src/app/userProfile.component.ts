@@ -27,7 +27,6 @@ import { userInterfaceService } from './userInterface.service';
         <img [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:55px;width:100px;border-radius:3px">
       </div>
       <div>
-        <div *ngIf="UI.focusUserObj?.personalTeam==team.$key" style="float:left;margin:15px 5px 0 0;color:green;font-size:11px;background-color:#eee;width:55px;text-align:center">Personal</div>
         <div style="float:left;margin-top:15px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{team.name}}</div>
         <div style="float:left;margin:5px;margin-top:19px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.lastMessageTimestamp>team.lastChatVisitTimestamp"></div>
         <div *ngIf="(now-team.lastMessageTimestamp)>43200000" style="float:right;margin-top:10px;color:#999;font-size:11px;margin-right:10px">{{team.lastMessageTimestamp|date:'d MMM yyyy'}}</div>

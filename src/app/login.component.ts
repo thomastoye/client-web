@@ -113,37 +113,11 @@ export class LoginComponent  {
               timestamp:firebase.database.ServerValue.TIMESTAMP,
               firstName:firstName,
               lastName:lastName,
-            }).then(_ => {
-              var teamName = firstName+" "+lastName;
-              this.createTeam(auth.uid, teamName);
             });
           });
         });
       }
     }
-  }
-
-  createTeam(userID: string, teamName: string) {
-    teamName = teamName.toUpperCase();
-    const now = Date.now();
-    var teamID = this.db.list('ids/').push(true).key;
-    this.db.list('teams/'+teamID).push({
-      user:userID,
-      name:teamName,
-      addLeader:userID,
-      timestamp:firebase.database.ServerValue.TIMESTAMP,
-    });
-    this.db.object('viewUserTeams/'+userID+'/'+teamID).update({
-      lastChatVisitTimestamp:now,
-      lastChatVisitTimestampNegative:-1*now,
-    });
-    this.db.object('subscribeTeamUsers/'+teamID).update({
-      [userID]:true,
-    });
-    this.db.list('users/'+userID).push({
-      timestamp:firebase.database.ServerValue.TIMESTAMP,
-      personalTeam:teamID,
-    });
   }
 
 }
