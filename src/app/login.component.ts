@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router'
-import * as firebase from 'firebase/app';
+import { firebase } from '@firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 import { userInterfaceService } from './userInterface.service';
-import { databaseService } from './database.service';
 
 @Component({
   selector: 'login',
@@ -51,7 +50,7 @@ export class LoginComponent  {
   messageUser: string;
   newUser: boolean;
 
-  constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase,  public UI: userInterfaceService, public DB: databaseService) {
+  constructor(public afAuth:AngularFireAuth,public router:Router,public db:AngularFireDatabase,public UI:userInterfaceService) {
     this.newUser=false;
     this.UI.currentTeam="";
     this.afAuth.authState.subscribe((auth) => {
@@ -62,7 +61,7 @@ export class LoginComponent  {
   }
 
   login(email: string, password: string) {
-    this.afAuth.auth.signInWithEmailAndPassword(email, password).catch((error:firebase.FirebaseError)=>{
+    this.afAuth.auth.signInWithEmailAndPassword(email, password).catch((error)=>{
       var errorCode = error.code;
       var errorMessage = error.message;
       if (errorCode === 'auth/wrong-password') {
@@ -76,7 +75,7 @@ export class LoginComponent  {
   resetPassword(email: string) {
     this.afAuth.auth.sendPasswordResetEmail(email)
     .then(_ => this.messageUser="An email has been sent to you")
-    .catch((error:firebase.FirebaseError)=>{
+    .catch((error)=>{
       var errorCode = error.code;
       var errorMessage = error.message;
       this.messageUser=errorMessage;
@@ -99,7 +98,7 @@ export class LoginComponent  {
       } else {
         firstName = firstName.toLowerCase();
         lastName = lastName.toLowerCase();
-        this.afAuth.auth.createUserWithEmailAndPassword(email, password).catch((error:firebase.FirebaseError)=>{
+        this.afAuth.auth.createUserWithEmailAndPassword(email, password).catch((error)=>{
           var errorCode = error.code;
           var errorMessage = error.message;
           if (errorCode == 'auth/weak-password') {

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
-import * as firebase from 'firebase/app';
+import { firebase } from '@firebase/app';
 import { Router, NavigationEnd } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 
@@ -40,10 +40,10 @@ export class AppComponent {
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     this.afAuth.authState.subscribe((auth) => {
-      db.list('viewUserTeams/'+this.UI.currentUser).subscribe(viewUserTeams=>{
+      db.list('viewUserTeams/'+this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams=>{
         this.globalChatActivity = false;
         viewUserTeams.forEach(userTeam=>{
-          var chatActivity = (userTeam.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
+          var chatActivity = (userTeam.payload.val().lastMessageTimestamp > userTeam.payload.val().lastChatVisitTimestamp);
           this.globalChatActivity = chatActivity?true:this.globalChatActivity;
           document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
         });

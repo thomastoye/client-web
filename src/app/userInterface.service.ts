@@ -1,7 +1,7 @@
 import { Injectable }    from '@angular/core';
-import * as firebase from 'firebase/app';
+import { firebase } from '@firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 
 @Injectable()
 export class userInterfaceService {
@@ -24,10 +24,10 @@ export class userInterfaceService {
     this.afAuth.authState.subscribe((auth) => {
       if (auth!=null) {
         this.currentUser=auth.uid;
-        this.db.object('PERRINNUsers/'+this.currentUser).subscribe(snapshot=>{
+        this.db.object('PERRINNUsers/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj=snapshot;
         });
-        this.db.object('viewUserTeams/'+this.currentUser).subscribe(snapshot=>{
+        this.db.object('viewUserTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserTeamsObj=snapshot;
         });
         if (this.focusUser==null) this.focusUser=auth.uid;

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
-import * as firebase from 'firebase/app';
+import { firebase } from '@firebase/app';
 import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 
@@ -22,17 +22,17 @@ import { userInterfaceService } from './userInterface.service';
   <div class='sheet' style="margin-top:5px">
   <ul class="listLight">
     <li *ngFor="let team of viewUserTeams|async;let last=last"
-      (click)="router.navigate(['chat',team.$key])">
+      (click)="router.navigate(['chat',team.key])">
       <div style="float:left">
-        <img [src]="team?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
+        <img [src]="team.values?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
       </div>
       <div>
-        <div style="float:left;margin-top:5px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{team.name}}</div>
-        <div style="float:left;margin:5px;margin-top:9px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.lastMessageTimestamp>team.lastChatVisitTimestamp"></div>
-        <div *ngIf="(now-team.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
-        <div *ngIf="(now-team.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.lastMessageTimestamp|date:'HH:mm'}}</div>
-        <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team?.lastMessageFirstName}}: {{team?.lastMessageText}}</div>
-        <div *ngIf="team?.lastMessageBalance" style="clear:both;font-size:10px;color:#999;width:100px">C{{team?.lastMessageBalance|number:'1.2-2'}}</div>
+        <div style="float:left;margin-top:5px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{team.values.name}}</div>
+        <div style="float:left;margin:5px;margin-top:9px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
+        <div *ngIf="(now-team.values.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
+        <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
+        <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team.values?.lastMessageFirstName}}: {{team.values?.lastMessageText}}</div>
+        <div *ngIf="team.values?.lastMessageBalance!=undefined" style="clear:both;font-size:10px;color:#999;width:100px">C{{team.values?.lastMessageBalance|number:'1.2-2'}}</div>
       </div>
       <div class="seperator" style="margin-left:120px"></div>
       {{last?scrollToTop(team.key):''}}
@@ -42,7 +42,7 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class UserProfileComponent {
-  viewUserTeams:FirebaseListObservable<any>;
+  viewUserTeams:Observable<any[]>;
   now:number;
   scrollTeam:string;
 
@@ -52,13 +52,11 @@ export class UserProfileComponent {
     this.scrollTeam='';
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
-      db.object('PERRINNUsers/'+this.UI.focusUser).subscribe(snapshot=>{
+      db.object('PERRINNUsers/'+this.UI.focusUser).valueChanges().subscribe(snapshot=>{
         this.UI.focusUserObj=snapshot;
       });
-      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser, {
-        query:{
-          orderByChild:'lastMessageTimestampNegative',
-        }
+      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().map(changes=>{
+        return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
       });
     });
   }

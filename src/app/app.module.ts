@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -14,14 +14,11 @@ import { UserSettingsComponent }  from './userSettings.component';
 import { ProjectProfileComponent }  from './projectProfile.component';
 import { SearchComponent }  from './search.component';
 import { HelpComponent }  from './help.component';
-import { AddTeamComponent }  from './addTeam.component';
-import { FollowProjectComponent }  from './followProject.component';
 import { CreateProjectComponent }  from './createProject.component';
 import { BuyCoinsComponent }  from './buyCoins.component';
 import { LinkyModule } from 'angular-linky';
 
 import { userInterfaceService } from './userInterface.service';
-import { databaseService } from './database.service';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -49,15 +46,13 @@ export const firebaseConfig = {
     ProjectProfileComponent,
     SearchComponent,
     HelpComponent,
-    AddTeamComponent,
-    FollowProjectComponent,
     CreateProjectComponent,
     BuyCoinsComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
@@ -67,7 +62,6 @@ export const firebaseConfig = {
   ],
   providers: [
     userInterfaceService,
-    databaseService,
   ],
   bootstrap: [AppComponent]
 })

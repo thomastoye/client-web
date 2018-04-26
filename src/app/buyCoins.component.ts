@@ -1,10 +1,9 @@
 import { Component, NgZone } from '@angular/core';
-import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
-import * as firebase from 'firebase/app';
+import { firebase } from '@firebase/app';
 import { Router } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
-import { databaseService } from './database.service';
 
 @Component({
   selector: 'buyCoins',
@@ -16,10 +15,10 @@ import { databaseService } from './database.service';
       <div class="title">What currency would you like to pay in?</div>
       <ul class="listLight" style='margin-top:20px'>
         <li *ngFor="let currency of currencyList | async"
-          [class.selected]="currency.$key === currentCurrencyID"
-          (click)="currentCurrencyID = currency.$key;refreshAmountCharge();">
-          <div style="width:200px;height:20px;float:left;">{{currency.designation}}</div>
-          <div style="width:200px;height:20px;float:left;">1 COIN costs {{1/currency.toCOIN|number:'1.2-2'}} {{currency.code}}</div>
+          [class.selected]="currency.key === currentCurrencyID"
+          (click)="currentCurrencyID = currency.key;refreshAmountCharge();">
+          <div style="width:200px;height:20px;float:left;">{{currency.values.designation}}</div>
+          <div style="width:200px;height:20px;float:left;">1 COIN costs {{1/currency.values.toCOIN|number:'1.2-2'}} {{currency.values.code}}</div>
         </li>
       </ul>
       <div class="content" style="text-align:center; padding-top:20px">{{amountCharge/100 | number:'1.2-2'}} {{currentCurrencyID | uppercase}} to be paid.</div>
@@ -74,13 +73,13 @@ export class BuyCoinsComponent {
   currentCurrencyID: string;
   messagePayment: string;
   messagePERRINNTransaction: string;
-  currencyList: FirebaseListObservable<any>;
+  currencyList: Observable<any[]>;
   newPaymentID: string;
   enteringAmount: boolean;
   enteringCardDetails: boolean;
   processingPayment: boolean;
 
-  constructor(public db: AngularFireDatabase, public router: Router, private _zone: NgZone, public UI: userInterfaceService, public DB: databaseService) {
+  constructor(public db:AngularFireDatabase,public router:Router,private _zone:NgZone,public UI:userInterfaceService) {
     this.enteringAmount = true;
     this.enteringCardDetails = false;
     this.processingPayment = false;
@@ -89,7 +88,9 @@ export class BuyCoinsComponent {
     this.messagePERRINNTransaction = "";
     this.amountCOINSPurchased=100;
     this.currentCurrencyID='gbp';
-    this.currencyList = db.list('appSettings/currencyList');
+    this.currencyList = db.list('appSettings/currencyList').snapshotChanges().map(changes=>{
+      return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+    });
     this.refreshAmountCharge();
   }
 
@@ -118,15 +119,15 @@ export class BuyCoinsComponent {
             team: this.UI.currentTeam,
           })
           .then(()=>{
-            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/response/outcome`).subscribe(paymentSnapshot=>{
-              if (paymentSnapshot.seller_message!=null) this.messagePayment = paymentSnapshot.seller_message;
+            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/response/outcome`).snapshotChanges().subscribe(paymentSnapshot=>{
+              if (paymentSnapshot.payload.val().seller_message!=null) this.messagePayment = paymentSnapshot.payload.val().seller_message;
               if (this.messagePayment == "Payment complete.") this.messagePERRINNTransaction = "We are now sending COINS to your team...";
             });
-            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/error`).subscribe(paymentSnapshot=>{
-              if (paymentSnapshot.message!=null) this.messagePayment = paymentSnapshot.message;
+            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/error`).snapshotChanges().subscribe(paymentSnapshot=>{
+              if (paymentSnapshot.payload.val().message!=null) this.messagePayment = paymentSnapshot.payload.val().message;
             });
-            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/PERRINNTransaction`).subscribe(transactionSnapshot=>{
-              if (transactionSnapshot.message!=null) this.messagePERRINNTransaction = transactionSnapshot.message;
+            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/PERRINNTransaction`).snapshotChanges().subscribe(transactionSnapshot=>{
+              if (transactionSnapshot.payload.val().message!=null) this.messagePERRINNTransaction = transactionSnapshot.payload.val().message;
             });
           });
         }

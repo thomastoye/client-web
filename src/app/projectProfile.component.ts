@@ -1,33 +1,31 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
-import * as firebase from 'firebase/app';
+import { firebase } from '@firebase/app';
 import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
-import { databaseService } from './database.service';
 
 @Component({
   selector: 'projecProfile',
   template: `
   <div class="sheet">
   <div style="float: left; width: 60%;">
-  <div class='title' style="float:left">{{this.DB.getProjectName(UI.focusProject)}}</div>
+  <div class='title' style="float:left">{{(projectObj|async)?.name}}</div>
   <div style="clear:both"></div>
-  <div style="padding:10px;font-size:12px" [innerHTML]="DB.getProjectGoal(UI.focusProject) | linky"></div>
+  <div style="padding:10px;font-size:12px" [innerHTML]="((projectObj|async)?.goal)|linky"></div>
   </div>
   <div style="float: right; width: 40%;position:relative">
-  <img class="imageWithZoom" [src]="DB.getProjectImageUrlThumb(UI.focusProject)" style="object-fit:contain; height:200px; width:100%" (click)="showFullScreenImage(DB.getProjectImageUrlOriginal(UI.focusProject))">
+  <img class="imageWithZoom" [src]="projectImageUrlThumb" style="object-fit:contain; height:200px; width:100%" (click)="showFullScreenImage(projectImageUrlOriginal)">
   </div>
   </div>
   <div class='sheet' style="margin-top:10px">
   <div class="title">Teams</div>
   <ul class="listLight">
     <li *ngFor="let team of projectTeams | async"
-      [class.selected]="team.$key === UI.currentTeam"
-      (click)="router.navigate(['team',team.$key])">
-      <img [src]="DB.getTeamImageUrlThumb(team.$key)" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      <div style="width:15px;height:25px;float:left;">{{DB.getTeamLeader(team.$key,UI.currentUser)?"*":""}}</div>
-      <div style="width:300px;height:25px;float:left;">{{DB.getTeamName(team.$key)}}{{(DB.getProjectTeamLeader(UI.focusProject,team.$key)? " **" : "")}}</div>
+      [class.selected]="team.key === UI.currentTeam"
+      (click)="router.navigate(['chat',team.key])">
+      <img [src]="team?.imageUrlThumb|async" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <div style="width:300px;height:25px;float:left;">{{team?.name|async}}</div>
     </li>
   </ul>
   </div>
@@ -41,29 +39,40 @@ export class ProjectProfileComponent {
   memberStatus: string;
   leaderStatus: boolean;
   messageCancelMembership: string;
-  leaderTeam: string;
-  projectTeams: FirebaseListObservable<any>;
+  projectTeams:Observable<any[]>;
+  projectObj:{};
+  projectImageUrlThumb:string;
+  projectImageUrlOriginal:string;
 
-  constructor(public db: AngularFireDatabase, public router: Router,  public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
+  constructor(public db:AngularFireDatabase,public router:Router,public UI:userInterfaceService,private route:ActivatedRoute) {
     document.getElementById("main_container").scrollTop = 0;
     this.route.params.subscribe(params => {
       this.UI.focusProject=params['id'];
       this.messageCancelMembership = ""
-      db.object('projects/' + this.UI.focusProject).subscribe(focusProject => {
-        this.leaderTeam = focusProject.leader;
+      this.projectObj=db.object('projects/'+this.UI.focusProject).valueChanges();
+      db.object('projects/'+this.UI.focusProject+'/image').snapshotChanges().subscribe(image=>{
+        db.object('PERRINNImages/'+image.payload.val()).snapshotChanges().subscribe(image=>{
+          if(image.payload.val()!=null)this.projectImageUrlThumb=image.payload.val().imageUrlThumb;
+          if(image.payload.val()!=null)this.projectImageUrlOriginal=image.payload.val().imageUrlOriginal;
+        });
       });
-      this.projectTeams = db.list('projectTeams/' + this.UI.focusProject, {
-        query:{
-          orderByChild:'member',
-          equalTo: true,
-        }
+      this.projectTeams=db.list('projectTeams/'+this.UI.focusProject,ref=>ref.orderByChild('member').equalTo(true)).snapshotChanges().map(changes=>{
+        return changes.map(c=>({
+          key:c.payload.key,
+          values:c.payload.val(),
+          name:this.db.object('PERRINNTeams/'+c.payload.key+'/name').valueChanges(),
+          imageUrlThumb:this.db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
+        }));
       });
     });
   }
 
-  ngAfterViewChecked () {
-    var iframeDocument = <HTMLImageElement>document.getElementById('iframeDocument');
-    if (this.DB.getProjectDocument(this.UI.focusProject)!=null && this.DB.getProjectDocument(this.UI.focusProject)!='') iframeDocument.src = this.DB.getProjectDocument(this.UI.focusProject);
+  ngOnInit() {
+    var iframeDocument=<HTMLImageElement>document.getElementById('iframeDocument');
+    this.db.object('projects/'+this.UI.focusProject+'/document').snapshotChanges().subscribe(document=>{
+      console.log(document.payload.val());
+      if(document.payload.val()!=null)iframeDocument.src=document.payload.val();
+    });
   }
 
   showFullScreenImage(src){

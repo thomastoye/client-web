@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
-import * as firebase from 'firebase/app';
+import { firebase } from '@firebase/app';
 import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
-import { databaseService } from './database.service';
 
 @Component({
   selector: 'help',
@@ -25,14 +24,10 @@ import { databaseService } from './database.service';
   `,
 })
 export class HelpComponent {
-  services: FirebaseListObservable<any>;
+  services: Observable<any[]>;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, public DB: databaseService, private route: ActivatedRoute) {
-    this.services=db.list('appSettings/PERRINNServices', {
-      query:{
-        orderByChild:'regex',
-      }
-    });
+  constructor(public afAuth:AngularFireAuth,public db:AngularFireDatabase,public router:Router,public UI:userInterfaceService,private route:ActivatedRoute) {
+    this.services=db.list('appSettings/PERRINNServices',ref=>ref.orderByChild('regex')).valueChanges();
   }
 
 }
