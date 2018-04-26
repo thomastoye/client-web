@@ -39,6 +39,7 @@ export class AppComponent {
   globalChatActivity:boolean;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+    localStorage.clear();
     this.afAuth.authState.subscribe((auth) => {
       db.list('viewUserTeams/'+this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams=>{
         this.globalChatActivity = false;
