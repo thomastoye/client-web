@@ -12,6 +12,11 @@ import { userInterfaceService } from './userInterface.service';
   template: `
   <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
   <div class="sheet" style="background-color:#f5f5f5">
+  <div class="spinner" *ngIf="UI.loading">
+    <div class="bounce1"></div>
+    <div class="bounce2"></div>
+    <div class="bounce3"></div>
+  </div>
   <div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages|async;let first=first;let last=last">
@@ -204,6 +209,7 @@ export class ChatComponent {
   showDetails:{};
 
   constructor(public sanitizer:DomSanitizer,public db:AngularFireDatabase,public router:Router,public UI:userInterfaceService,private route:ActivatedRoute) {
+    this.UI.loading=true;
     this.route.params.subscribe(params => {
       this.UI.currentTeam=params['id'];
       this.isCurrentUserLeader=false;
@@ -228,6 +234,7 @@ export class ChatComponent {
       this.draftMessage="";
       this.messageNumberDisplay = 15;
       this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().map(changes=>{
+        this.UI.loading=false;
         return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
       });
       this.draftMessageUsers = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/').snapshotChanges().map(changes=>{
@@ -241,8 +248,10 @@ export class ChatComponent {
 
   scrollHandler(e) {
     if(e==='top'){
+      this.UI.loading=true;
       this.messageNumberDisplay+=15;
-      this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().map(changes=>{
+      return this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().map(changes=>{
+        this.UI.loading=false;
         return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
       });
     }

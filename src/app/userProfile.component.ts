@@ -21,6 +21,11 @@ import { userInterfaceService } from './userInterface.service';
   </div>
   </div>
   <div class='sheet' style="margin-top:5px">
+  <div class="spinner" *ngIf="UI.loading">
+    <div class="bounce1"></div>
+    <div class="bounce2"></div>
+    <div class="bounce3"></div>
+  </div>
   <ul class="listLight">
     <li *ngFor="let team of viewUserTeams|async;let last=last"
       (click)="router.navigate(['chat',team.key])">
@@ -49,6 +54,7 @@ export class UserProfileComponent {
   scrollTeam:string;
 
   constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
+    this.UI.loading=true;
     this.UI.currentTeam="";
     this.now = Date.now();
     this.scrollTeam='';
@@ -58,6 +64,7 @@ export class UserProfileComponent {
         this.UI.focusUserObj=snapshot;
       });
       this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().map(changes=>{
+        this.UI.loading=false;
         return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
       });
     });

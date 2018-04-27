@@ -5,6 +5,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 
 @Injectable()
 export class userInterfaceService {
+  loading:boolean;
   focusUser:string;
   focusUserObj:any;
   focusProject:string;
