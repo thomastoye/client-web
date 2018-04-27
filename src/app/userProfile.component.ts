@@ -9,6 +9,7 @@ import { userInterfaceService } from './userInterface.service';
 @Component({
   selector: 'user',
   template: `
+  <div id='main_container'>
   <div class="sheet">
   <div style="float:left;width:80%">
   <div class='title' style="float:left;font-size:16px">{{UI.focusUserObj?.firstName}} {{UI.focusUserObj?.lastName}}</div>
@@ -38,6 +39,7 @@ import { userInterfaceService } from './userInterface.service';
       {{last?scrollToTop(team.key):''}}
     </li>
   </ul>
+  </div>
   </div>
   `,
 })

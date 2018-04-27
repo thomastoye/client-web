@@ -14,11 +14,11 @@ import { UserSettingsComponent }  from './userSettings.component';
 import { ProjectProfileComponent }  from './projectProfile.component';
 import { SearchComponent }  from './search.component';
 import { HelpComponent }  from './help.component';
-import { CreateProjectComponent }  from './createProject.component';
 import { BuyCoinsComponent }  from './buyCoins.component';
 import { LinkyModule } from 'angular-linky';
 
 import { userInterfaceService } from './userInterface.service';
+import { ScrollableDirective } from './scrollable.directive';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -46,8 +46,8 @@ export const firebaseConfig = {
     ProjectProfileComponent,
     SearchComponent,
     HelpComponent,
-    CreateProjectComponent,
     BuyCoinsComponent,
+    ScrollableDirective,
   ],
   imports: [
     BrowserModule,

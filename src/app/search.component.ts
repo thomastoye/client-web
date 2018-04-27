@@ -8,6 +8,7 @@ import { userInterfaceService } from './userInterface.service';
 @Component({
   selector: 'search',
   template: `
+  <div id='main_container'>
   <div class="sheet">
   <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Search">
   </div>
@@ -44,6 +45,7 @@ import { userInterfaceService } from './userInterface.service';
       {{project.values.name}}
     </li>
   </ul>
+  </div>
   </div>
   `,
 })

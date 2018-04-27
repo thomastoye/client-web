@@ -9,6 +9,7 @@ import { userInterfaceService } from './userInterface.service';
 @Component({
   selector: 'userSettings',
   template: `
+  <div id='main_container'>
   <div class="sheet" style="background-color:#f5f5f5">
   <div class="buttonDiv" style="color:red" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div class="title">Teams</div>
@@ -26,6 +27,7 @@ import { userInterfaceService } from './userInterface.service';
     </li>
   </ul>
   </div>
+  </div>
   `,
 })
 export class UserSettingsComponent {
@@ -36,7 +38,11 @@ export class UserSettingsComponent {
       this.UI.focusUser = params['id'];
       this.UI.currentTeam="";
       this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastChatVisitTimestampNegative')).snapshotChanges().map(changes=>{
-        return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+        return changes.map(c=>({
+          key:c.payload.key,
+          values:c.payload.val(),
+          isFocusUserLeader:this.db.object('PERRINNTeams/'+c.payload.key+'/leaders/'+this.UI.focusUser).valueChanges(),
+        }));
       });
     });
   }

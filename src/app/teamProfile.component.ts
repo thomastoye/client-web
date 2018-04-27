@@ -8,6 +8,7 @@ import { userInterfaceService } from './userInterface.service';
 @Component({
   selector: 'team',
   template: `
+  <div id='main_container'>
   <div class='sheet'>
   <div style="position:relative;margin-bottom:-115px">
   <img class="imageWithZoom" [src]="UI.currentTeamObj?.imageUrlMedium?UI.currentTeamObj?.imageUrlMedium:UI.currentTeamObj?.imageUrlThumb" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(UI.currentTeamObj?.imageUrlOriginal)">
@@ -45,6 +46,7 @@ import { userInterfaceService } from './userInterface.service';
       <div style="height:25px;font-size:10px;line-height:10px">{{project?.name|async}}</div>
     </li>
   </ul>
+  </div>
   </div>
 `,
 })

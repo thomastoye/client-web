@@ -10,8 +10,8 @@ import { userInterfaceService } from './userInterface.service';
 @Component({
   selector: 'chat',
   template: `
+  <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
   <div class="sheet" style="background-color:#f5f5f5">
-  <div class="chat" id="chat-scroll">
   <div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages|async;let first=first;let last=last">
@@ -184,6 +184,7 @@ import { userInterfaceService } from './userInterface.service';
     </div>
   </div>
   </div>
+  </div>
     `,
 })
 export class ChatComponent {
@@ -236,6 +237,15 @@ export class ChatComponent {
         if(userTeam.payload.val()!=null)this.lastChatVisitTimestamp = Number(userTeam.payload.val().lastChatVisitTimestamp);
       });
     });
+  }
+
+  scrollHandler(e) {
+    if(e==='top'){
+      this.messageNumberDisplay+=15;
+      this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().map(changes=>{
+        return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+      });
+    }
   }
 
   switchShowDetails(message){

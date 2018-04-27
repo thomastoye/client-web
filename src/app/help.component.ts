@@ -9,6 +9,7 @@ import { userInterfaceService } from './userInterface.service';
 @Component({
   selector: 'help',
   template: `
+  <div id='main_container'>
   <div class="sheet" style="background-color:#f5f5f5">
   <div class="title">What do you want to do?</div>
   <ul class="listLight">
@@ -20,6 +21,7 @@ import { userInterfaceService } from './userInterface.service';
     </li>
   </ul>
   <div style="text-align:center;padding:10px"><a style="font-size:10px" href='mailto:perrinnlimited@gmail.com'>Stuck? no problem, email PERRINN now</a></div>
+  </div>
   </div>
   `,
 })

@@ -8,6 +8,7 @@ import { userInterfaceService } from './userInterface.service';
 @Component({
   selector: 'buyCoins',
   template: `
+  <div id='main_container'>
   <div [hidden]='!enteringAmount'>
     <div class="sheet">
       <div class='title' style='float:left'>How many COINS would you like to buy?</div>
@@ -60,6 +61,7 @@ import { userInterfaceService } from './userInterface.service';
       <div class='content' style="text-align:center">{{messagePayment}}</div>
       <div class='content' style="padding-top:30px; text-align:center">{{messagePERRINNTransaction}}</div>
     </div>
+  </div>
   </div>
   `,
 })

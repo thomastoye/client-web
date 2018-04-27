@@ -8,7 +8,6 @@ import { UserSettingsComponent } from './userSettings.component';
 import { ProjectProfileComponent } from './projectProfile.component';
 import { SearchComponent } from './search.component';
 import { HelpComponent } from './help.component';
-import { CreateProjectComponent } from './createProject.component';
 import { BuyCoinsComponent } from './buyCoins.component';
 
 const appRoutes: Routes = [
@@ -20,7 +19,6 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'search', component: SearchComponent },
   { path: 'help', component: HelpComponent },
-  { path: 'createProject', component: CreateProjectComponent },
   { path: 'buyCoins', component: BuyCoinsComponent },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
   { path: '**', component: LoginComponent }

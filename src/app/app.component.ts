@@ -30,9 +30,7 @@ import { userInterfaceService } from './userInterface.service';
     <div style="float:left;text-align:center;line-height:40px;width:20px;font-size:20px;cursor:pointer" (click)="goForward()">&#9002;</div>
     </div>
     </div>
-    <div id='main_container'>
     <router-outlet></router-outlet>
-    </div>
   `,
 })
 export class AppComponent {

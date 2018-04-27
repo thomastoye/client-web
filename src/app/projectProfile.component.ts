@@ -8,6 +8,7 @@ import { userInterfaceService } from './userInterface.service';
 @Component({
   selector: 'projecProfile',
   template: `
+  <div id='main_container'>
   <div class="sheet">
   <div style="float: left; width: 60%;">
   <div class='title' style="float:left">{{(projectObj|async)?.name}}</div>
@@ -33,6 +34,7 @@ import { userInterfaceService } from './userInterface.service';
     <div class="title">Document</div>
     <iframe id='iframeDocument' width='100%' height='10000'></iframe>
   </div>
+  </div>
   `,
 })
 export class ProjectProfileComponent {
@@ -45,7 +47,6 @@ export class ProjectProfileComponent {
   projectImageUrlOriginal:string;
 
   constructor(public db:AngularFireDatabase,public router:Router,public UI:userInterfaceService,private route:ActivatedRoute) {
-    document.getElementById("main_container").scrollTop = 0;
     this.route.params.subscribe(params => {
       this.UI.focusProject=params['id'];
       this.messageCancelMembership = ""
