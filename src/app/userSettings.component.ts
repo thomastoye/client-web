@@ -54,6 +54,7 @@ export class UserSettingsComponent {
 
   logout() {
     this.afAuth.auth.signOut()
+    this.UI.currentUser=null;
   }
 
 }
