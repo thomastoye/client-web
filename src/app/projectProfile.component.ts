@@ -9,7 +9,7 @@ import { userInterfaceService } from './userInterface.service';
   selector: 'projecProfile',
   template: `
   <div id='main_container'>
-  <div class="sheet">
+  <div style="max-width:800px;margin:0 auto">
   <div style="float: left; width: 60%;">
   <div class='title' style="float:left">{{(projectObj|async)?.name}}</div>
   <div style="clear:both"></div>
@@ -61,8 +61,8 @@ export class ProjectProfileComponent {
         return changes.map(c=>({
           key:c.payload.key,
           values:c.payload.val(),
-          name:this.db.object('PERRINNTeams/'+c.payload.key+'/name').valueChanges(),
-          imageUrlThumb:this.db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
+          name:db.object('PERRINNTeams/'+c.payload.key+'/name').valueChanges(),
+          imageUrlThumb:db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
         }));
       });
     });

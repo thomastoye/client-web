@@ -9,12 +9,13 @@ import { userInterfaceService } from './userInterface.service';
   selector: 'team',
   template: `
   <div id='main_container'>
-  <div class='sheet'>
-  <div style="position:relative;margin-bottom:-115px">
+  <div style="max-width:800px;margin:0 auto">
+  <div style="position:relative;margin-bottom:-25px">
   <img class="imageWithZoom" [src]="UI.currentTeamObj?.imageUrlMedium?UI.currentTeamObj?.imageUrlMedium:UI.currentTeamObj?.imageUrlThumb" style="object-fit:cover;max-height:250px; width:100%" (click)="showFullScreenImage(UI.currentTeamObj?.imageUrlOriginal)">
-  <div class="sheetBadge" style="position:relative;top:-115px">
+  <div class="sheetBadge" style="position:relative;top:-25px">
   <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{UI.currentTeamObj?.name}}</div>
   <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
+  <div *ngIf="isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="color:green;cursor:default">Following</div>
   <div style="width:50%;float:left">
   <ul class='listLight' style="display:inline-block;float:left">
     <li *ngFor="let user of teamLeaders|async;let first=first" (click)="router.navigate(['user',user.key])">

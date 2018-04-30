@@ -10,7 +10,7 @@ import { userInterfaceService } from './userInterface.service';
   selector: 'user',
   template: `
   <div id='main_container'>
-  <div class="sheet">
+  <div style="max-width:800px;margin:0 auto">
   <div style="float:left;width:80%">
   <div class='title' style="float:left;font-size:16px">{{UI.focusUserObj?.firstName}} {{UI.focusUserObj?.lastName}}</div>
   <img class='editButton' style="width:20px" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="this.router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
@@ -19,8 +19,15 @@ import { userInterfaceService } from './userInterface.service';
   <div style="float:right;width:20%;position:relative">
   <img class="imageWithZoom" [src]="UI.focusUserObj?.imageUrlThumb" style="float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(UI.focusUserObj?.imageUrlOriginal)">
   </div>
+  <ul class="listProject" style="clear:both">
+    <li class="project" *ngFor="let project of projects"
+    [class.selected]="project==selectedProject"
+    (click)="selectedProject=project">
+      <div style="line-height:40px">{{project}}</div>
+    </li>
+  </ul>
   </div>
-  <div class='sheet' style="margin-top:5px">
+  <div class='sheet'>
   <div class="spinner" *ngIf="UI.loading">
     <div class="bounce1"></div>
     <div class="bounce2"></div>
@@ -29,6 +36,7 @@ import { userInterfaceService } from './userInterface.service';
   <ul class="listLight">
     <li *ngFor="let team of viewUserTeams|async;let last=last"
       (click)="router.navigate(['chat',team.key])">
+      <div *ngIf="team.values?.project==selectedProject||team.values?.project==undefined&&selectedProject==noProject">
       <div style="float:left">
         <img [src]="team.values?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
       </div>
@@ -42,6 +50,7 @@ import { userInterfaceService } from './userInterface.service';
       </div>
       <div class="seperator" style="margin-left:120px"></div>
       {{last?scrollToTop(team.key):''}}
+      </div>
     </li>
   </ul>
   </div>
@@ -49,7 +58,10 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class UserProfileComponent {
+  projects:any;
+  noProject:string;
   viewUserTeams:Observable<any[]>;
+  selectedProject:string;
   now:number;
   scrollTeam:string;
 
@@ -58,14 +70,31 @@ export class UserProfileComponent {
     this.UI.currentTeam="";
     this.now = Date.now();
     this.scrollTeam='';
+    this.projects=['Home'];
+    this.noProject='Home';
+    this.selectedProject=this.noProject;
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       db.object('PERRINNUsers/'+this.UI.focusUser).valueChanges().subscribe(snapshot=>{
         this.UI.focusUserObj=snapshot;
       });
       this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().map(changes=>{
+        changes.forEach(c=>{
+          var project;
+          if(c.payload.val().project!=undefined){
+            project=c.payload.val().project;
+          } else {
+            project=this.noProject;
+          }
+          if(!this.projects.includes(project)){
+            this.projects.push(project);
+          }
+        });
         this.UI.loading=false;
-        return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+        return changes.map(c=>({
+          key:c.payload.key,
+          values:c.payload.val(),
+        }));
       });
     });
   }

@@ -41,7 +41,7 @@ import { userInterfaceService } from './userInterface.service';
   <ul class="listLight">
     <li *ngFor="let project of projects | async"
       (click)="router.navigate(['project',project.key])">
-      <img [src]="project?.values.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
+      <img [src]="project?.imageUrlThumb|async" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       {{project.values.name}}
     </li>
   </ul>
@@ -74,7 +74,10 @@ export class SearchComponent  {
         .endAt(this.searchFilter.toLowerCase()+"\uf8ff")
         .limitToFirst(10))
         .snapshotChanges().map(changes=>{
-          return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+          return changes.map(c=>({
+            key:c.payload.key,
+            values:c.payload.val(),
+          }));
         });
         this.teams = this.db.list('PERRINNTeams/',ref=>ref
         .orderByChild('name')
@@ -82,7 +85,10 @@ export class SearchComponent  {
         .endAt(this.searchFilter.toUpperCase()+"\uf8ff")
         .limitToFirst(10))
         .snapshotChanges().map(changes=>{
-          return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+          return changes.map(c=>({
+            key:c.payload.key,
+            values:c.payload.val(),
+          }));
         });
         this.projects = this.db.list('projects/',ref=>ref
         .orderByChild('name')
@@ -90,7 +96,11 @@ export class SearchComponent  {
         .endAt(this.searchFilter.toUpperCase()+"\uf8ff")
         .limitToFirst(10))
         .snapshotChanges().map(changes=>{
-          return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+          return changes.map(c=>({
+            key:c.payload.key,
+            values:c.payload.val(),
+            imageUrlThumb:this.db.object('PERRINNImages/'+c.payload.val().image+'/imageUrlThumb').valueChanges(),
+          }));
         });
       }
     }

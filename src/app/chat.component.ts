@@ -154,7 +154,8 @@ import { userInterfaceService } from './userInterface.service';
   </div>
   <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none;background-color:#ededed">
     <div *ngIf="!isCurrentUserLeader&&!isCurrentUserMember">
-    <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="margin-bottom:25px" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
+      <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="margin-bottom:25px" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
+      <div *ngIf="isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="margin-bottom:25px;color:green;cursor:default">Following</div>
       <ul style="list-style:none;float:left;">
         <li *ngFor="let user of draftMessageUsers | async">
         <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.firstName}}...</div>
