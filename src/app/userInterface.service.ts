@@ -19,6 +19,7 @@ export class userInterfaceService {
   currentUserImageUrlThumb:string;
   services:any;
   process:any;
+  selectedProject:string;
 
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.process={};

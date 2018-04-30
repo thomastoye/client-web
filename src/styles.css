@@ -87,7 +87,8 @@ body {
 }
 .project {
   height:40px;
-  width:100px;
+  width:90px;
+  margin:0 5px 0 5px;
   text-align:center;
   color:#666;
   cursor:pointer;

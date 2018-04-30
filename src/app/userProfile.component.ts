@@ -21,9 +21,9 @@ import { userInterfaceService } from './userInterface.service';
   </div>
   <ul class="listProject" style="clear:both">
     <li class="project" *ngFor="let project of projects"
-    [class.selected]="project==selectedProject"
-    (click)="selectedProject=project">
-      <div style="line-height:40px">{{project}}</div>
+    [class.selected]="project==UI.selectedProject"
+    (click)="UI.selectedProject=project">
+      <div style="line-height:40px;font-size:11px">{{project}}</div>
     </li>
   </ul>
   </div>
@@ -36,7 +36,7 @@ import { userInterfaceService } from './userInterface.service';
   <ul class="listLight">
     <li *ngFor="let team of viewUserTeams|async;let last=last"
       (click)="router.navigate(['chat',team.key])">
-      <div *ngIf="team.values?.project==selectedProject||team.values?.project==undefined&&selectedProject==noProject">
+      <div *ngIf="team.values?.projectName==UI.selectedProject||team.values?.projectName==undefined&&UI.selectedProject==noProject">
       <div style="float:left">
         <img [src]="team.values?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
       </div>
@@ -61,7 +61,6 @@ export class UserProfileComponent {
   projects:any;
   noProject:string;
   viewUserTeams:Observable<any[]>;
-  selectedProject:string;
   now:number;
   scrollTeam:string;
 
@@ -70,9 +69,9 @@ export class UserProfileComponent {
     this.UI.currentTeam="";
     this.now = Date.now();
     this.scrollTeam='';
-    this.projects=['Home'];
-    this.noProject='Home';
-    this.selectedProject=this.noProject;
+    this.noProject='HOME';
+    this.projects=[this.noProject];
+    if(this.UI.selectedProject==undefined)this.UI.selectedProject=this.noProject;
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       db.object('PERRINNUsers/'+this.UI.focusUser).valueChanges().subscribe(snapshot=>{
@@ -81,8 +80,8 @@ export class UserProfileComponent {
       this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().map(changes=>{
         changes.forEach(c=>{
           var project;
-          if(c.payload.val().project!=undefined){
-            project=c.payload.val().project;
+          if(c.payload.val().projectName!=undefined){
+            project=c.payload.val().projectName;
           } else {
             project=this.noProject;
           }

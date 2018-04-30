@@ -907,7 +907,7 @@ function newValidData(key,beforeData,afterData){
 exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,context)=>{
   const beforeData = data.before.val();
   const afterData = data.after.val();
-  var keys=['lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','lastMessageBalance','name','imageUrlThumb'];
+  var keys=['lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','lastMessageBalance','name','imageUrlThumb','project','projectName'];
   var updateKeys=[];
   keys.forEach(key=>{
     if(newValidData(key,beforeData,afterData))updateKeys.push(key);
@@ -959,10 +959,36 @@ exports.newTeam=functions.database.ref('PERRINNTeams/{team}').onCreate((data,con
   });
 });
 
-exports.userCreation = functions.database.ref('/PERRINNUsers/{user}/createdTimestamp').onCreate((data,context)=>{
+exports.userCreation=functions.database.ref('/PERRINNUsers/{user}/createdTimestamp').onCreate((data,context)=>{
   return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",context.params.user,'none','none',{});
 });
 
-exports.teamCreation = functions.database.ref('/PERRINNTeams/{team}/createdTimestamp').onCreate((data,context)=>{
+exports.teamCreation=functions.database.ref('/PERRINNTeams/{team}/createdTimestamp').onCreate((data,context)=>{
   return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",context.params.team,"",'none','none',{});
+});
+
+exports.writeProjectInfoInTeams=functions.database.ref('toto').onCreate((data,context)=>{
+  var keys=[];
+  let names=[];
+  return admin.database().ref('projectTeams').once('value').then(projects=>{
+    projects.forEach(project=>{
+      keys.push(project.key);
+      names.push(admin.database().ref('projects/'+project.key+'/name').once('value'));
+    });
+    return Promise.all(names);
+  }).then(names=>{
+    return admin.database().ref('projectTeams').once('value').then(projects=>{
+      var updateObj={};
+      projects.forEach(project=>{
+        var teams=project;
+        teams.forEach(team=>{
+          if(team.val().member){
+            updateObj['PERRINNTeams/'+team.key+'/project']=project.key;
+            updateObj['PERRINNTeams/'+team.key+'/projectName']=names[keys.indexOf(project.key)].val();
+          }
+        });
+      });
+      return admin.database().ref().update(updateObj);
+    });
+  });
 });
