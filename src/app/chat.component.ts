@@ -11,7 +11,7 @@ import { userInterfaceService } from './userInterface.service';
   selector: 'chat',
   template: `
   <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
-  <div class="sheet" style="background-color:#f5f5f5">
+  <div class="sheet" style="background-color:#eae1e1">
   <div class="spinner" *ngIf="UI.loading">
     <div class="bounce1"></div>
     <div class="bounce2"></div>
@@ -152,7 +152,7 @@ import { userInterfaceService } from './userInterface.service';
   </ul>
   <div style="height:125px;width:100%"></div>
   </div>
-  <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none;background-color:#ededed">
+  <div class="sheet" style="position: fixed;bottom: 0;width:100%;box-shadow:none;background-color:#f2f2f2">
     <div *ngIf="!isCurrentUserLeader&&!isCurrentUserMember">
       <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="margin-bottom:25px" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
       <div *ngIf="isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="margin-bottom:25px;color:green;cursor:default">Following</div>
