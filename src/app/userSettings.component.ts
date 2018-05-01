@@ -37,7 +37,7 @@ export class UserSettingsComponent {
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       this.UI.currentTeam="";
-      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastChatVisitTimestampNegative')).snapshotChanges().map(changes=>{
+      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().map(changes=>{
         return changes.map(c=>({
           key:c.payload.key,
           values:c.payload.val(),

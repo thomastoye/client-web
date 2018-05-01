@@ -20,7 +20,7 @@ import { userInterfaceService } from './userInterface.service';
   <div>
   <ul style="list-style: none;">
     <li *ngFor="let message of teamMessages|async;let first=first;let last=last">
-      <div [style.background-color]="lastChatVisitTimestamp<message.values?.payload?.timestamp?'#ffefd1':''">
+      <div style="cursor:pointer" [style.background-color]="lastChatVisitTimestamp<message.values?.payload?.timestamp?'#ffefd1':''" (click)="UI.timestampChatVisit()">
       <div *ngIf="isMessageNewTimeGroup(message.values?.payload?.timestamp)||first" style="padding:25px 15px 15px 15px">
         <div style="box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:10px">{{message.values?.payload?.timestamp|date:'fullDate'}}</div>
       </div>
@@ -28,7 +28,7 @@ import { userInterfaceService } from './userInterface.service';
       <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
         <img [src]="message.values?.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit: cover; height:35px; width:35px" (click)="router.navigate(['user',message.values?.payload?.user])">
       </div>
-      <div style="box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);cursor:pointer;border-radius:7px;background-color:white;margin:2px 10px 5px 60px" (click)="UI.timestampChatVisit()">
+      <div style="box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);cursor:text;border-radius:7px;background-color:white;margin:2px 10px 5px 60px">
         <div>
           <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.values?.payload?.firstName}}</div>
           <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="color:#AAA;font-size:11px">{{message.values?.payload?.timestamp | date:'HH:mm'}}</div>
@@ -138,7 +138,7 @@ import { userInterfaceService } from './userInterface.service';
             </div>
           </div>
         </div>
-        <div class='messageFooter' style="clear:both;height:15px" (click)="switchShowDetails(message.key)">
+        <div class='messageFooter' style="cursor:pointer;clear:both;height:15px" (click)="switchShowDetails(message.key)">
           <div style="float:left;width:100px;text-align:right;line-height:10px">...</div>
           <img *ngIf="message.values?.PERRINN?.dataWrite=='complete'" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
           <div style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">{{message.values?.PERRINN?.dataWrite!='complete'?message.values?.PERRINN?.dataWrite:''}}</div>

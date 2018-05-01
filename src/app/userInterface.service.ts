@@ -20,9 +20,12 @@ export class userInterfaceService {
   services:any;
   process:any;
   selectedProject:string;
+  projectActivity:any;
+  noProject:string;
 
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.process={};
+    this.noProject='HOME';
     this.afAuth.authState.subscribe((auth) => {
       if (auth!=null) {
         this.currentUser=auth.uid;
