@@ -16,7 +16,7 @@ function updateKeyValue (user,team,ref,key,value) {
       ref=ref+team;
     }
     return admin.database().ref(ref).child(key).once('value').then((currentValue)=>{
-      if (!ref||!key||!value) {
+      if (ref==null||key==null||value==null) {
         return "not enough information";
       }
       if (currentValue.val()==value) {
@@ -177,12 +177,15 @@ function createTeam(user,name) {
 function executeProcess(user,team,functionObj,inputs){
   return admin.database().ref('undefined').once('value').then(()=>{
     if (functionObj.name=='updateKeyValue') {
+      var value;
+      if(functionObj.value!=undefined)value=functionObj.value;
+      else value=inputs.value;
       return updateKeyValue (
         user,
         team,
         functionObj.ref,
         functionObj.key,
-        inputs.value
+        value
       ).then(result=>{
         return result;
       });
@@ -907,7 +910,7 @@ function newValidData(key,beforeData,afterData){
 exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,context)=>{
   const beforeData = data.before.val();
   const afterData = data.after.val();
-  var keys=['lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','lastMessageBalance','name','imageUrlThumb','project','projectName'];
+  var keys=['chatReplayMode','lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','lastMessageBalance','name','imageUrlThumb','project','projectName'];
   var updateKeys=[];
   keys.forEach(key=>{
     if(newValidData(key,beforeData,afterData))updateKeys.push(key);

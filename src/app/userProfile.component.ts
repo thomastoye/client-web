@@ -46,7 +46,8 @@ import { userInterfaceService } from './userInterface.service';
         <div *ngIf="(now-team.values.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
         <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
         <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team.values?.lastMessageFirstName}}: {{team.values?.lastMessageText}}</div>
-        <div *ngIf="team.values?.lastMessageBalance!=undefined" style="clear:both;font-size:10px;color:#999;width:100px">C{{team.values?.lastMessageBalance|number:'1.2-2'}}</div>
+        <div *ngIf="team.values?.lastMessageBalance!=undefined" style="clear:both;float:left;font-size:10px;color:#999;width:100px">C{{team.values?.lastMessageBalance|number:'1.2-2'}}</div>
+        <div *ngIf="team.values?.chatReplayMode" style="float:left;color:green;font-size:10px">chat replay</div>
       </div>
       <div class="seperator" style="margin-left:120px"></div>
       {{last?scrollToTop(team.key):''}}
