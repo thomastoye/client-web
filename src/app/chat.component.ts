@@ -154,10 +154,10 @@ import { userInterfaceService } from './userInterface.service';
   </div>
   <div class="sheet" style="position:fixed;bottom:0;width:100%;box-shadow:none;background-color:#f2f2f2">
     <div *ngIf="!isCurrentUserLeader&&!isCurrentUserMember">
-      <div *ngIf="chatReplayMode" style="float:left;color:green;margin:10px">chat replay</div>
+      <div *ngIf="chatReplayMode" style="float:left;color:green;margin:5px">chat replay</div>
       <div *ngIf="chatReplayDraftMessageUser" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{chatReplayDraftMessageUser}}...</div>
-      <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="margin-bottom:25px" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
-      <div *ngIf="isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="margin-bottom:25px;color:green;cursor:default">Following</div>
+      <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="clear:both;margin-bottom:25px" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
+      <div *ngIf="isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="clear:both;margin-bottom:25px;color:green;cursor:default">Following</div>
       <ul style="list-style:none;float:left;">
         <li *ngFor="let user of draftMessageUsers | async">
         <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.firstName}}...</div>
@@ -165,7 +165,7 @@ import { userInterfaceService } from './userInterface.service';
       </ul>
     </div>
     <div *ngIf="isCurrentUserLeader||isCurrentUserMember">
-      <div *ngIf="chatReplayMode" style="float:left;color:green;margin:10px">chat replay</div>
+      <div *ngIf="chatReplayMode" style="float:left;color:green;margin:5px">chat replay</div>
       <div *ngIf="chatReplayDraftMessageUser" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{chatReplayDraftMessageUser}}...</div>
       <ul style="list-style:none;float:left;">
         <li *ngFor="let user of draftMessageUsers | async">
@@ -277,7 +277,7 @@ export class ChatComponent {
       setTimeout(function () {
         ++that.messageNumberDisplay
         that.teamMessages.subscribe(snapshot=>{
-          if(snapshot[that.messageNumberDisplay]==undefined)that.messageNumberDisplay=0;
+          if(snapshot[that.messageNumberDisplay]==undefined)that.chatReplayMode=false;
           textLength=snapshot[that.messageNumberDisplay].values.payload.text.length;
           if(snapshot[that.messageNumberDisplay].values.payload.image)image=1;
           else image=0;
