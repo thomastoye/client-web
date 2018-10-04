@@ -13,20 +13,6 @@
     "PERRINNUsers": {
       ".indexOn": ["firstName"]
     },
-    "projectTeams": {
-      "$projectid": {
-        ".indexOn": ["member"],
-        "$teamid": {
-          ".write": "(!data.exists() || newData.exists() && root.child('PERRINNTeams').child(root.child('projects').child($projectid).child('leader').val()).child('leaders').child(auth.uid).val() === true && data.child('leader').val() != true) && auth != null"
-        }
-      }
-    },
-    "projects": {
-      ".indexOn": ["name"],
-      "$projectid": {
-        ".write": "(!data.exists() || newData.exists() && root.child('PERRINNTeams').child(root.child('projects').child($projectid).child('leader').val()).child('leaders').child(auth.uid).val() === true) && auth != null"
-      }
-    },
     "subscribeTeamUsers": {
       "$teamid": {
         "$uid": {
@@ -62,13 +48,6 @@
       "$teamid": {
         "$chargeid": {
           ".write": "!data.exists() && newData.exists() && root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).val() === true"
-        }
-      }
-    },
-    "teamProjects": {
-      "$teamid": {
-        "$projectid": {
-          ".write": "newData.exists() && root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).val() === true"
         }
       }
     },

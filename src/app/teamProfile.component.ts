@@ -39,15 +39,6 @@ import { userInterfaceService } from './userInterface.service';
   </div>
   </div>
   </div>
-  <div class='sheet' style="margin-top:10px">
-  <div class="title" style="float:left">Following</div>
-  <ul class='listLight'>
-    <li class='projectIcon' *ngFor="let project of teamProjects | async" (click)="router.navigate(['project',project.key])">
-      <img [src]="project?.imageUrlThumb|async" style="object-fit: cover; height:125px; width:125px;position:relative">
-      <div style="height:25px;font-size:10px;line-height:10px">{{project?.name|async}}</div>
-    </li>
-  </ul>
-  </div>
   </div>
 `,
 })
@@ -55,7 +46,6 @@ export class TeamProfileComponent  {
 
   teamLeaders: Observable<any[]>;
   teamMembers: Observable<any[]>;
-  teamProjects: Observable<any[]>;
 
   constructor(public db: AngularFireDatabase,public router:Router,public UI:userInterfaceService,private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
@@ -75,22 +65,6 @@ export class TeamProfileComponent  {
           firstName:this.db.object('PERRINNUsers/'+c.payload.key+'/firstName').valueChanges(),
           imageUrlThumb:this.db.object('PERRINNUsers/'+c.payload.key+'/imageUrlThumb').valueChanges(),
         }));
-      });
-      this.teamProjects=this.db.list('teamProjects/'+this.UI.currentTeam).snapshotChanges().map(changes=>{
-        return changes.map(c=>({
-          key:c.payload.key,
-          values:c.payload.val(),
-          name:this.db.object('projects/'+c.payload.key+'/name').valueChanges(),
-          imageUrlThumb:this.getProjectImageUrlThumb(c.payload.key),
-        }));
-      });
-    });
-  }
-
-  getProjectImageUrlThumb(project){
-    return firebase.database().ref('projects/'+project+'/image').once('value').then(snapshot=>{
-      return firebase.database().ref('PERRINNImages/'+snapshot.val()+'/imageUrlThumb').once('value').then(snapshot=>{
-        return snapshot.val()
       });
     });
   }

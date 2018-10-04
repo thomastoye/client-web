@@ -37,14 +37,6 @@ import { userInterfaceService } from './userInterface.service';
   </ul>
   </div>
   <div class='sheet' style="margin-top:10px">
-  <div class="title">Projects</div>
-  <ul class="listLight">
-    <li *ngFor="let project of projects | async"
-      (click)="router.navigate(['project',project.key])">
-      <img [src]="project?.imageUrlThumb|async" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      {{project.values.name}}
-    </li>
-  </ul>
   </div>
   </div>
   `,
@@ -54,7 +46,6 @@ export class SearchComponent  {
 
   users: Observable<any[]>;
   teams: Observable<any[]>;
-  projects: Observable<any[]>;
   searchFilter: string;
 
   constructor(public db:AngularFireDatabase,public router:Router,public UI:userInterfaceService) {
@@ -90,24 +81,11 @@ export class SearchComponent  {
             values:c.payload.val(),
           }));
         });
-        this.projects = this.db.list('projects/',ref=>ref
-        .orderByChild('name')
-        .startAt(this.searchFilter.toUpperCase())
-        .endAt(this.searchFilter.toUpperCase()+"\uf8ff")
-        .limitToFirst(10))
-        .snapshotChanges().map(changes=>{
-          return changes.map(c=>({
-            key:c.payload.key,
-            values:c.payload.val(),
-            imageUrlThumb:this.db.object('PERRINNImages/'+c.payload.val().image+'/imageUrlThumb').valueChanges(),
-          }));
-        });
       }
     }
     else {
       this.users = null;
       this.teams = null;
-      this.projects = null;
     }
   }
 

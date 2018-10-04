@@ -19,13 +19,6 @@ import { userInterfaceService } from './userInterface.service';
   <div style="float:right;width:20%;position:relative">
   <img class="imageWithZoom" [src]="UI.focusUserObj?.imageUrlThumb" style="float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(UI.focusUserObj?.imageUrlOriginal)">
   </div>
-  <ul class="listProject" style="clear:both">
-    <li class="project" *ngFor="let project of projects"
-    [class.selected]="project==UI.selectedProject"
-    (click)="UI.selectedProject=project">
-      <div style="line-height:40px;font-size:11px" [style.color]="UI.projectActivity==undefined?'':(UI.projectActivity[project]?'red':'')">{{project}}</div>
-    </li>
-  </ul>
   </div>
   <div class='sheet'>
   <div class="spinner" *ngIf="UI.loading">
@@ -36,7 +29,6 @@ import { userInterfaceService } from './userInterface.service';
   <ul class="listLight">
     <li *ngFor="let team of viewUserTeams|async;let last=last"
       (click)="router.navigate(['chat',team.key])">
-      <div *ngIf="team.values?.projectName==UI.selectedProject||team.values?.projectName==undefined&&UI.selectedProject==UI.noProject">
       <div style="float:left">
         <img [src]="team.values?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
       </div>
@@ -51,7 +43,6 @@ import { userInterfaceService } from './userInterface.service';
       </div>
       <div class="seperator" style="margin-left:120px"></div>
       {{last?scrollToTop(team.key):''}}
-      </div>
     </li>
   </ul>
   </div>
@@ -59,7 +50,6 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class UserProfileComponent {
-  projects:any;
   viewUserTeams:Observable<any[]>;
   now:number;
   scrollTeam:string;
@@ -69,25 +59,12 @@ export class UserProfileComponent {
     this.UI.currentTeam="";
     this.now = Date.now();
     this.scrollTeam='';
-    this.projects=[this.UI.noProject];
-    if(this.UI.selectedProject==undefined)this.UI.selectedProject=this.UI.noProject;
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
       db.object('PERRINNUsers/'+this.UI.focusUser).valueChanges().subscribe(snapshot=>{
         this.UI.focusUserObj=snapshot;
       });
       this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().map(changes=>{
-        changes.forEach(c=>{
-          var project;
-          if(c.payload.val().projectName!=undefined){
-            project=c.payload.val().projectName;
-          } else {
-            project=this.UI.noProject;
-          }
-          if(!this.projects.includes(project)){
-            this.projects.push(project);
-          }
-        });
         this.UI.loading=false;
         return changes.map(c=>({
           key:c.payload.key,

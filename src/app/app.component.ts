@@ -41,16 +41,10 @@ export class AppComponent {
     this.afAuth.authState.subscribe((auth) => {
       db.list('viewUserTeams/'+this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams=>{
         this.globalChatActivity=false;
-        this.UI.projectActivity={};
         viewUserTeams.forEach(userTeam=>{
           var chatActivity = (userTeam.payload.val().lastMessageTimestamp > userTeam.payload.val().lastChatVisitTimestamp);
           if(chatActivity){
             this.globalChatActivity=true;
-            if(userTeam.payload.val().projectName!=undefined){
-              this.UI.projectActivity[userTeam.payload.val().projectName]=true;
-            } else {
-              this.UI.projectActivity[this.UI.noProject]=true;
-            }
           }
           document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
         });

@@ -8,7 +8,6 @@ export class userInterfaceService {
   loading:boolean;
   focusUser:string;
   focusUserObj:any;
-  focusProject:string;
   currentTeam:string;
   currentTeamObj:any;
   currentUser:string;
@@ -19,13 +18,9 @@ export class userInterfaceService {
   currentUserImageUrlThumb:string;
   services:any;
   process:any;
-  selectedProject:string;
-  projectActivity:any;
-  noProject:string;
 
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.process={};
-    this.noProject='HOME';
     this.afAuth.authState.subscribe((auth) => {
       if (auth!=null) {
         this.currentUser=auth.uid;

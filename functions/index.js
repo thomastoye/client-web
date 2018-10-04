@@ -256,20 +256,6 @@ exports.createPERRINNTransactionOnPaymentComplete = functions.database.ref('/tea
   }
 });
 
-exports.updateProjectLeader = functions.database.ref('/projectTeams').onWrite((data,context)=>{
-  return admin.database().ref('projectTeams/').once('value').then(projects=>{
-    projects.forEach(function(project){
-      admin.database().ref('projectTeams/'+project.key).once('value').then(projectTeams=>{
-        projectTeams.forEach(function(projectTeam){
-          if (projectTeam.val().leader) {
-            admin.database().ref('projects/'+project.key).update({leader:projectTeam.key});
-          }
-        });
-      });
-    });
-  });
-});
-
 exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID}').onCreate((data,context)=>{
   const val = data.val();
   if (val === null || val.id || val.error) return null;
@@ -827,41 +813,6 @@ function makeKeyFirebaseCompatible(key) {
   return key.replace(/\./g, '*');
 }
 
-exports.loopProjects = functions.database.ref('tot').onCreate((data,context)=>{
-  return admin.database().ref('appSettings/photoLibrary/').once('value').then(photos=>{
-    photos.forEach(photo=>{
-      copyPhotoURL(photo);
-    });
-  });
-});
-
-function copyPhotoURL(photo){
-  const photoURL=photo.val().photoURL;
-  if (photoURL!==undefined) {
-    const image=photoURL.split('/').pop().substring(9,22);
-    if (image.match(/\d{13}/g)===null){
-    } else {
-      console.log("processing: "+image);
-      admin.database().ref('appSettings/photoLibrary/'+photo.key).update({
-        image:image,
-      });
-      const fileName=photoURL.split('/').pop().substring(9).split('?')[0].replace(/[%]20/g,' ');
-      const fileNameCopy=fileName.split('.')[0]+'copy'+'.'+fileName.split('.')[1]
-      const filePath='images/'+fileName;
-      const filePathCopy='images/'+fileNameCopy;
-      const fileBucket=process.env.FIREBASE_CONFIG.storageBucket;
-      const bucket=gcs.bucket(fileBucket);
-      const object=bucket.file(filePath);
-      return object.copy(bucket.file(filePathCopy)).then(()=>{
-        return 1;
-      }).catch(error=>{
-        console.log(error);
-        return error;
-      });
-    }
-  }
-}
-
 exports.updateUsersMissingData = functions.database.ref('tot').onCreate((data,context)=>{
   let userKeys=[];
   let keys=[];
@@ -910,7 +861,7 @@ function newValidData(key,beforeData,afterData){
 exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,context)=>{
   const beforeData = data.before.val();
   const afterData = data.after.val();
-  var keys=['chatReplayMode','lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','lastMessageBalance','name','imageUrlThumb','project','projectName'];
+  var keys=['chatReplayMode','lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','lastMessageBalance','name','imageUrlThumb'];
   var updateKeys=[];
   keys.forEach(key=>{
     if(newValidData(key,beforeData,afterData))updateKeys.push(key);
@@ -968,30 +919,4 @@ exports.userCreation=functions.database.ref('/PERRINNUsers/{user}/createdTimesta
 
 exports.teamCreation=functions.database.ref('/PERRINNTeams/{team}/createdTimestamp').onCreate((data,context)=>{
   return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",context.params.team,"",'none','none',{});
-});
-
-exports.writeProjectInfoInTeams=functions.database.ref('toto').onCreate((data,context)=>{
-  var keys=[];
-  let names=[];
-  return admin.database().ref('projectTeams').once('value').then(projects=>{
-    projects.forEach(project=>{
-      keys.push(project.key);
-      names.push(admin.database().ref('projects/'+project.key+'/name').once('value'));
-    });
-    return Promise.all(names);
-  }).then(names=>{
-    return admin.database().ref('projectTeams').once('value').then(projects=>{
-      var updateObj={};
-      projects.forEach(project=>{
-        var teams=project;
-        teams.forEach(team=>{
-          if(team.val().member){
-            updateObj['PERRINNTeams/'+team.key+'/project']=project.key;
-            updateObj['PERRINNTeams/'+team.key+'/projectName']=names[keys.indexOf(project.key)].val();
-          }
-        });
-      });
-      return admin.database().ref().update(updateObj);
-    });
-  });
 });
