@@ -182,7 +182,7 @@ import { userInterfaceService } from './userInterface.service';
         </ul>
         <div style="color:blue">{{UI.process[UI.currentTeam]?.message}}</div>
       </div>
-      <img src="./../assets/App icons/repeat.png" style="cursor:pointer;width:25px;float:right;margin:5px 20px 5px 10px" (click)="this.router.navigate(['help'])">
+      <div class="chatButton" style="float:right" (click)="this.router.navigate(['help'])">Action</div>
       <div style="clear:both;float:left;width:90%">
         <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
       </div>

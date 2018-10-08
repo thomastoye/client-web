@@ -364,6 +364,15 @@ img:hover {
   margin:5px 10px 5px 10px;
   cursor:pointer;
 }
+.chatButton{
+  cursor:pointer;
+  font-size:10px;
+  color:blue;
+  text-align:center;
+  font-weight:bold;
+  width:70px;
+  margin:2px;
+}
 .note {
   white-space: pre-wrap;
   overflow-y: scroll;
