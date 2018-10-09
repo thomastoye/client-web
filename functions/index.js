@@ -154,7 +154,7 @@ function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,dono
   });
 }
 
-function createTeam(user,name) {
+function createTeam(user,name,parent) {
   name=name.toUpperCase();
   var team=admin.database().ref('ids/').push(true).key;
   const now=Date.now();
@@ -165,6 +165,9 @@ function createTeam(user,name) {
   updateObj['PERRINNTeams/'+team+'/leadersCount']=1;
   updateObj['PERRINNTeams/'+team+'/lastMessageTimestamp']=now;
   updateObj['PERRINNTeams/'+team+'/lastMessageTimestampNegative']=-1*now;
+  updateObj['PERRINNTeams/'+team+'/parent']=parent;
+  updateObj['PERRINNTeams/'+parent+'/children/'+team]=true;
+  updateObj['PERRINNTeams/'+parent+'/childrenCount']=1;
   updateObj['viewUserTeams/'+user+'/'+team+'/lastChatVisitTimestamp']=now;
   updateObj['viewUserTeams/'+user+'/'+team+'/lastChatVisitTimestampNegative']=-1*now;
   updateObj['viewUserTeams/'+user+'/'+team+'/name']=name;
@@ -227,7 +230,8 @@ function executeProcess(user,team,functionObj,inputs){
     if (functionObj.name=='createTeam') {
       return createTeam (
         user,
-        inputs.name
+        inputs.name,
+        team
       ).then(result=>{
         return result;
       });
@@ -281,7 +285,7 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
   }).then(()=>{
     return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"lastName",data.val().lastName);
   }).then(()=>{
-    return createTeam(context.params.user,data.val().firstName+' '+data.val().lastName);
+    return createTeam(context.params.user,data.val().firstName+' '+data.val().lastName,"");
   }).then(()=>{
     return 'done';
   });
