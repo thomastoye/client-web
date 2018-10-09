@@ -11,7 +11,7 @@ import { userInterfaceService } from './userInterface.service';
   selector:'chat',
   template:`
   <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
-  <div class="sheet" style="background-color:#eae1e1">
+  <div class="sheet" style="box-shadow:none;background-color:#eaeaea">
   <div class="spinner" *ngIf="UI.loading">
     <div class="bounce1"></div>
     <div class="bounce2"></div>
@@ -22,13 +22,13 @@ import { userInterfaceService } from './userInterface.service';
     <li *ngFor="let message of teamMessages|async;let first=first;let last=last;let i=index">
       <div *ngIf="i<messageNumberDisplay" style="cursor:pointer" [style.background-color]="lastChatVisitTimestamp<message.values?.payload?.timestamp?'#ffefd1':''" (click)="UI.timestampChatVisit()">
       <div *ngIf="isMessageNewTimeGroup(message.values?.payload?.timestamp)||first" style="padding:25px 15px 15px 15px">
-        <div style="box-shadow:0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:10px">{{message.values?.payload?.timestamp|date:'fullDate'}}</div>
+        <div style="box-shadow:0 0 2px 0 rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.08);color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:10px">{{message.values?.payload?.timestamp|date:'fullDate'}}</div>
       </div>
       <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
       <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
         <img [src]="message.values?.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['user',message.values?.payload?.user])">
       </div>
-      <div style="box-shadow:0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);cursor:text;border-radius:7px;background-color:white;margin:2px 10px 5px 60px">
+      <div style="box-shadow:0 0 2px 0 rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.08);cursor:text;border-radius:7px;background-color:white;margin:2px 10px 5px 60px">
         <div>
           <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.values?.payload?.firstName}}</div>
           <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="color:#AAA;font-size:11px">{{message.values?.payload?.timestamp | date:'HH:mm'}}</div>
@@ -172,7 +172,7 @@ import { userInterfaceService } from './userInterface.service';
         <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.firstName}}...</div>
         </li>
       </ul>
-      <div *ngIf="UI.process[UI.currentTeam]?.service" style="box-shadow:0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);cursor:pointer;border-radius:7px;background-color:white;float:left;padding:5px;margin:10px;width:70%"(click)="UI.clearProcessData()">
+      <div *ngIf="UI.process[UI.currentTeam]?.service" style="box-shadow:0 0 2px 0 rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.08);cursor:pointer;border-radius:7px;background-color:white;float:left;padding:5px;margin:10px;width:70%"(click)="UI.clearProcessData()">
         <div style="float:left;font-size:11px;font-weight:bold">{{UI.process[UI.currentTeam]?.regex}}:</div>
         <img src="./../assets/App icons/remove.png" style="float:right;height:20px;">
         <ul style="clear:both;list-style:none;color:green;margin:10px 0 10px 0">
@@ -182,7 +182,7 @@ import { userInterfaceService } from './userInterface.service';
         </ul>
         <div style="color:blue">{{UI.process[UI.currentTeam]?.message}}</div>
       </div>
-      <div class="chatButton" style="float:right" (click)="this.router.navigate(['help'])">Action</div>
+      <img class='editButton' style="width:20px;float:right" (click)="this.router.navigate(['help'])" src="./../assets/App icons/settings.png">
       <div style="clear:both;float:left;width:90%">
         <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
       </div>

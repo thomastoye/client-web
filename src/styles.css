@@ -366,10 +366,9 @@ img:hover {
 }
 .chatButton{
   cursor:pointer;
-  font-size:10px;
+  font-size:14px;
   color:blue;
   text-align:center;
-  font-weight:bold;
   width:70px;
   margin:2px;
 }
