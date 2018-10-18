@@ -14,7 +14,7 @@ import { userInterfaceService } from './userInterface.service';
   <div style="float:left;width:80%">
   <div class='title' style="float:left;font-size:16px">{{UI.focusUserObj?.firstName}} {{UI.focusUserObj?.lastName}}</div>
   <img class='editButton' style="width:20px" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="this.router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
-  <div style="color:#888;font-size:11px;padding:0 5px 5px 10px;clear:both">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages</div>
+  <div style="color:#888;font-size:11px;padding:0 5px 0px 10px;clear:both">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages, C{{(UI.focusUserObj?.lastMessageBalance?UI.focusUserObj.lastMessageBalance:0)|number:'1.2-2'}}</div>
   </div>
   <div style="float:right;width:20%;position:relative">
   <img class="imageWithZoom" [src]="UI.focusUserObj?.imageUrlThumb" style="float:right;object-fit:cover;height:60px;width:60px" (click)="showFullScreenImage(UI.focusUserObj?.imageUrlOriginal)">
@@ -33,6 +33,7 @@ import { userInterfaceService } from './userInterface.service';
         <img [src]="team.values?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
       </div>
       <div>
+        <div *ngIf="team.key==UI.focusUser" style="float:left;margin:5px 5px 0 0;color:#51ba32;border-color:#51ba32;border-width:1px;border-style:solid;border-radius:3px;padding:0 3px 0 3px">User</div>
         <div style="float:left;margin-top:5px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">{{team.values.name}}</div>
         <div style="float:left;margin:5px;margin-top:9px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
         <div *ngIf="(now-team.values.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'d MMM yyyy'}}</div>

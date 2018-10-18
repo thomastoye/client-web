@@ -154,9 +154,8 @@ function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,dono
   });
 }
 
-function createTeam(user,name,parent) {
+function createTeam(team,user,name,parent) {
   name=name.toUpperCase();
-  var team=admin.database().ref('ids/').push(true).key;
   const now=Date.now();
   let updateObj={};
   updateObj['PERRINNTeams/'+team+'/createdTimestamp']=now;
@@ -228,7 +227,9 @@ function executeProcess(user,team,functionObj,inputs){
       });
     }
     if (functionObj.name=='createTeam') {
+      var newID=admin.database().ref('ids/').push(true).key;
       return createTeam (
+        newID,
         user,
         inputs.name,
         team
@@ -285,7 +286,7 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
   }).then(()=>{
     return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"lastName",data.val().lastName);
   }).then(()=>{
-    return createTeam(context.params.user,data.val().firstName+' '+data.val().lastName,"");
+    return createTeam(context.params.user,context.params.user,data.val().firstName+' '+data.val().lastName,"");
   }).then(()=>{
     return 'done';
   });
