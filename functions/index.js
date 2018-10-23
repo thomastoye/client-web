@@ -524,22 +524,14 @@ function writeMessageWalletData(team,message){
       }
       var balance=previousBalance;
       if(messageObj.val().PERRINN.messagingCost.amount>0){
-        if((Math.round((Number(balance)-Number(messageObj.val().PERRINN.messagingCost.amount))*100000)/100000)>=0){
-          balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.messagingCost.amount))*100000)/100000;
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='complete';
-        } else {
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='rejected balance low';
-        }
+        balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.messagingCost.amount))*100000)/100000;
+        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='complete';
       } else {
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='none';
       }
       if(messageObj.val().PERRINN.transactionOut.inputCheck){
-        if((Math.round((Number(balance)-Number(messageObj.val().PERRINN.transactionOut.amount))*100000)/100000)>=0){
-          balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.transactionOut.amount))*100000)/100000;
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='complete';
-        } else {
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='rejected balance low';
-        }
+        balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.transactionOut.amount))*100000)/100000;
+        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='complete';
       } else {
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='none';
       }
