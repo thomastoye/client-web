@@ -69,16 +69,16 @@ export class TeamProfileComponent  {
         return changes.map(c=>({
           key:c.payload.key,
           values:c.payload.val(),
-          firstName:this.db.object('PERRINNUsers/'+c.payload.key+'/firstName').valueChanges(),
-          imageUrlThumb:this.db.object('PERRINNUsers/'+c.payload.key+'/imageUrlThumb').valueChanges(),
+          firstName:this.db.object('PERRINNTeams/'+c.payload.key+'/firstName').valueChanges(),
+          imageUrlThumb:this.db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
         }));
       });
       this.teamMembers=this.db.list('PERRINNTeams/'+this.UI.currentTeam+'/members').snapshotChanges().map(changes=>{
         return changes.map(c=>({
           key:c.payload.key,
           values:c.payload.val(),
-          firstName:this.db.object('PERRINNUsers/'+c.payload.key+'/firstName').valueChanges(),
-          imageUrlThumb:this.db.object('PERRINNUsers/'+c.payload.key+'/imageUrlThumb').valueChanges(),
+          firstName:this.db.object('PERRINNTeams/'+c.payload.key+'/firstName').valueChanges(),
+          imageUrlThumb:this.db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
         }));
       });
       this.db.object('PERRINNTeams/'+this.UI.currentTeam+'/parent').snapshotChanges().subscribe(changes=>{

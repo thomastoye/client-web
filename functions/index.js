@@ -9,9 +9,6 @@ const stripe = require('stripe')(functions.config().stripe.token);
 
 function updateKeyValue (user,team,ref,key,value) {
   return admin.database().ref('PERRINNTeams/'+team).once('value').then((PERRINNTeam)=>{
-    if (ref=="PERRINNUsers/"){
-      ref=ref+user;
-    }
     if (ref=="PERRINNTeams/"){
       ref=ref+team;
     }
@@ -36,9 +33,6 @@ function updateKeyValue (user,team,ref,key,value) {
 
 function addListKeyValue (user,team,ref,list,key,value,maxCount) {
   return admin.database().ref('PERRINNTeams/'+team).once('value').then((PERRINNTeam)=>{
-    if (ref=="PERRINNUsers/"){
-      ref=ref+user;
-    }
     if (ref=="PERRINNTeams/"){
       if (PERRINNTeam.val().leadersCount>0&&!PERRINNTeam.child('leaders').child(user).val()) {
         return "you need to be leader";
@@ -75,9 +69,6 @@ function subscribeList (user,team,ref,list) {
   if (ref=="subscribeImageTeams/"){
     key=team;
   }
-  if (ref=="subscribeImageUsers/"){
-    key=user;
-  }
   if (!ref||!list) {
     return "not enough information";
   }
@@ -93,9 +84,6 @@ function subscribeList (user,team,ref,list) {
 
 function removeListKey (user,team,ref,list,key) {
   return admin.database().ref('PERRINNTeams/'+team).once('value').then((PERRINNTeam)=>{
-    if (ref=="PERRINNUsers/"){
-      ref=ref+user;
-    }
     if (ref=="PERRINNTeams/"){
       if (PERRINNTeam.val().leadersCount>0&&!PERRINNTeam.child('leaders').child(user).val()) {
         return "you need to be leader";
@@ -126,8 +114,8 @@ function removeListKey (user,team,ref,list,key) {
 
 function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,donorMessage,process) {
   const now=Date.now();
-  return admin.database().ref('PERRINNUsers/'+user).once('value').then(userData=>{
-    return admin.database().ref('PERRINNUsers/'+linkUser).once('value').then(linkUserData=>{
+  return admin.database().ref('PERRINNTeams/'+user).once('value').then(userData=>{
+    return admin.database().ref('PERRINNTeams/'+linkUser).once('value').then(linkUserData=>{
       return admin.database().ref('PERRINNTeams/'+linkTeam).once('value').then(linkTeamData=>{
         return admin.database().ref('teamMessages/'+team).push({
           payload:{
@@ -280,11 +268,11 @@ exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID
 
 exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCreate((data,context)=>{
   const now=Date.now();
-  return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"createdTimestamp",now
+  return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"createdTimestamp",now
   ).then(()=>{
-    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"firstName",data.val().firstName);
+    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"firstName",data.val().firstName);
   }).then(()=>{
-    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNUsers/'+context.params.user,"lastName",data.val().lastName);
+    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"lastName",data.val().lastName);
   }).then(()=>{
     return createTeam(context.params.user,context.params.user,data.val().firstName+' '+data.val().lastName,"");
   }).then(()=>{
@@ -360,7 +348,7 @@ function writeMessageTeamData(team,message){
 }
 
 function incrementUserMessageCounter(user){
-  return admin.database().ref('PERRINNUsers/'+user).child('messageCount').transaction(messageCount=>{
+  return admin.database().ref('PERRINNTeams/'+user).child('messageCount').transaction(messageCount=>{
     if (messageCount==null) {
       return 1;
     } else {
@@ -660,27 +648,18 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
 });
 
 function fanoutImage(image,imageUrlThumb,imageUrlMedium,imageUrlOriginal){
-  return admin.database().ref('/subscribeImageUsers/'+image).once('value').then(users=>{
-    return admin.database().ref('/subscribeImageTeams/'+image).once('value').then(teams=>{
-      let updateObj={};
-      updateObj['PERRINNImages/'+image+'/imageUrlThumb']=imageUrlThumb;
-      updateObj['PERRINNImages/'+image+'/imageUrlMedium']=imageUrlMedium;
-      updateObj['PERRINNImages/'+image+'/imageUrlOriginal']=imageUrlOriginal;
-      users.forEach(user=>{
-        updateObj['PERRINNUsers/'+user.key+'/imageUrlThumb']=imageUrlThumb;
-        updateObj['PERRINNUsers/'+user.key+'/imageUrlMedium']=imageUrlMedium;
-        updateObj['PERRINNUsers/'+user.key+'/imageUrlOriginal']=imageUrlOriginal;
-      });
-      teams.forEach(team=>{
-        updateObj['PERRINNTeams/'+team.key+'/imageUrlThumb']=imageUrlThumb;
-        updateObj['PERRINNTeams/'+team.key+'/imageUrlMedium']=imageUrlMedium;
-        updateObj['PERRINNTeams/'+team.key+'/imageUrlOriginal']=imageUrlOriginal;
-      });
-      return admin.database().ref().update(updateObj).then(()=>{
-        return admin.database().ref('/subscribeImageUsers/'+image).remove().then(()=>{
-          return admin.database().ref('/subscribeImageTeams/'+image).remove();
-        });
-      });
+  return admin.database().ref('/subscribeImageTeams/'+image).once('value').then(teams=>{
+    let updateObj={};
+    updateObj['PERRINNImages/'+image+'/imageUrlThumb']=imageUrlThumb;
+    updateObj['PERRINNImages/'+image+'/imageUrlMedium']=imageUrlMedium;
+    updateObj['PERRINNImages/'+image+'/imageUrlOriginal']=imageUrlOriginal;
+    teams.forEach(team=>{
+      updateObj['PERRINNTeams/'+team.key+'/imageUrlThumb']=imageUrlThumb;
+      updateObj['PERRINNTeams/'+team.key+'/imageUrlMedium']=imageUrlMedium;
+      updateObj['PERRINNTeams/'+team.key+'/imageUrlOriginal']=imageUrlOriginal;
+    });
+    return admin.database().ref().update(updateObj).then(()=>{
+      return admin.database().ref('/subscribeImageTeams/'+image).remove();
     });
   });
 }
@@ -810,43 +789,6 @@ function makeKeyFirebaseCompatible(key) {
   return key.replace(/\./g, '*');
 }
 
-exports.updateUsersMissingData = functions.database.ref('tot').onCreate((data,context)=>{
-  let userKeys=[];
-  let keys=[];
-  const maxIter=1000;
-  let iter=0;
-  return admin.database().ref('PERRINNUsers/').once('value').then(users=>{
-    let values=[];
-    users.forEach(user=>{
-      if (user.val().imageUrlThumb==undefined&&user.val().image!=undefined) {
-        userKeys.push(user.key);
-        keys.push('imageUrlThumb');
-        values.push(admin.database().ref('PERRINNImages/'+user.val().image.replace(/[\\/:"*?<>|\.#=]/g,'')).child('imageUrlThumb').once('value'));
-      }
-    });
-    return Promise.all(values);
-  }).then(values=>{
-    let updateObj={};
-    console.log('number of items:'+values.length);
-    for(i=0;i<values.length;i++) {
-      if (values[i]!=undefined&&i<maxIter) {
-        if (values[i].val()!=null) {
-          updateObj[`PERRINNUsers/${userKeys[i]}/${keys[i]}`]=values[i].val();
-          iter+=1;
-        }
-      }
-    }
-    console.log('number of updates:'+iter);
-    console.log(updateObj);
-    return admin.database().ref().update(updateObj);
-  }).then(()=>{
-    console.log('all done.');
-    return iter;
-  }).catch(error=>{
-    console.log(error);
-  });
-});
-
 function newValidData(key,beforeData,afterData){
   if(afterData[key]==undefined)return false;
   if(beforeData==null||beforeData==undefined)return true;
@@ -884,24 +826,6 @@ exports.newImageTeamSubscription=functions.database.ref('subscribeImageTeams/{im
   });
 });
 
-exports.newImageUserSubscription=functions.database.ref('subscribeImageUsers/{image}/{user}').onCreate((data,context)=>{
-  return admin.database().ref('PERRINNImages/'+context.params.image).once('value').then(imageData=>{
-    if(imageData!=null||imageData!=undefined){
-      if(imageData.val().imageUrlThumb!=undefined&&imageData.val().imageUrlMedium!=undefined&&imageData.val().imageUrlOriginal!=undefined){
-        return fanoutImage(context.params.image,imageData.val().imageUrlThumb,imageData.val().imageUrlMedium,imageData.val().imageUrlOriginal);
-      }
-    }
-  });
-});
-
-exports.newUserRegistration=functions.auth.user().onCreate((data,context) => {
-  return admin.database().ref('appSettings/specialImages/newUser').once('value').then(image=>{
-    return admin.database().ref('subscribeImageUsers/'+image.val()).update({
-      [data.uid]:true,
-    });
-  });
-});
-
 exports.newTeam=functions.database.ref('PERRINNTeams/{team}').onCreate((data,context)=>{
   return admin.database().ref('appSettings/specialImages/newTeam').once('value').then(image=>{
     return admin.database().ref('subscribeImageTeams/'+image.val()).update({
@@ -910,10 +834,9 @@ exports.newTeam=functions.database.ref('PERRINNTeams/{team}').onCreate((data,con
   });
 });
 
-exports.userCreation=functions.database.ref('/PERRINNUsers/{user}/createdTimestamp').onCreate((data,context)=>{
-  return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New user:","","","",context.params.user,'none','none',{});
-});
-
 exports.teamCreation=functions.database.ref('/PERRINNTeams/{team}/createdTimestamp').onCreate((data,context)=>{
   return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",context.params.team,"",'none','none',{});
+});
+
+exports.toto=functions.database.ref('/toto').onCreate((data,context)=>{
 });

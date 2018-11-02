@@ -24,7 +24,7 @@ export class userInterfaceService {
     this.afAuth.authState.subscribe((auth) => {
       if (auth!=null) {
         this.currentUser=auth.uid;
-        this.db.object('PERRINNUsers/'+this.currentUser).valueChanges().subscribe(snapshot=>{
+        this.db.object('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj=snapshot;
         });
         this.db.object('viewUserTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{

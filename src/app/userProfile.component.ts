@@ -76,7 +76,7 @@ export class UserProfileComponent {
     this.scrollTeam='';
     this.route.params.subscribe(params => {
       this.UI.focusUser = params['id'];
-      db.object('PERRINNUsers/'+this.UI.focusUser).valueChanges().subscribe(snapshot=>{
+      db.object('PERRINNTeams/'+this.UI.focusUser).valueChanges().subscribe(snapshot=>{
         this.UI.focusUserObj=snapshot;
       });
       this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().map(changes=>{

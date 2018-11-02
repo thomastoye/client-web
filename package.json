@@ -29,7 +29,7 @@
     "core-js": "^2.4.1",
     "firebase": "^4.13.1",
     "firebase-admin": "5.4.0",
-    "firebase-functions": "0.7.0",
+    "firebase-functions": "^2.1.0",
     "har-validator": "^5.0.3",
     "install": "0.11.0",
     "ng2-img-max": "^2.1.5",
