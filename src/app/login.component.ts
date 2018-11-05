@@ -23,9 +23,9 @@ import { userInterfaceService } from './userInterface.service';
           <div [hidden]="newUser" style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password?</div>
           <div [hidden]="!newUser">
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *" (keyup)="messageUser=''"/>
-          <input maxlength="500" [(ngModel)]="firstName" style="text-transform: lowercase;"  name="firstName" type="text" placeholder="First name *" (keyup)="messageUser=''"/>
-          <input maxlength="500" [(ngModel)]="lastName" style="text-transform: lowercase;" name="lastName" type="text" placeholder="Last name *" (keyup)="messageUser=''"/>
-          <button type="button" (click)="register(email,password,passwordConfirm,firstName,lastName)">Register</button>
+          <input maxlength="500" [(ngModel)]="name" name="name" type="text" placeholder="First name *" (keyup)="messageUser=''"/>
+          <input maxlength="500" [(ngModel)]="familyName" name="familyName" type="text" placeholder="Last name *" (keyup)="messageUser=''"/>
+          <button type="button" (click)="register(email,password,passwordConfirm,name,familyName)">Register</button>
           </div>
           </div>
           <div [hidden]="UI.currentUser==null">
@@ -46,8 +46,8 @@ export class LoginComponent  {
   email: string;
   password: string;
   passwordConfirm: string;
-  firstName: string;
-  lastName: string;
+  name: string;
+  familyName: string;
   message: string;
   messageUser: string;
   newUser: boolean;
@@ -90,16 +90,14 @@ export class LoginComponent  {
     .catch(err => this.messageUser="You were not logged in");
   }
 
-  register(email: string, password: string, passwordConfirm: string, firstName: string, lastName: string) {
-    if (email==null||password==null||passwordConfirm==null||firstName==null||lastName==null) {
+  register(email: string, password: string, passwordConfirm: string, name: string, familyName: string) {
+    if (email==null||password==null||passwordConfirm==null||name==null||familyName==null) {
         this.messageUser="You need to fill all the fields";
     }
     else {
       if (password!=passwordConfirm) {
         this.messageUser="Verification password doesn't match";
       } else {
-        firstName = firstName.toLowerCase();
-        lastName = lastName.toLowerCase();
         this.afAuth.auth.createUserWithEmailAndPassword(email, password).catch((error)=>{
           var errorCode = error.code;
           var errorMessage = error.message;
@@ -112,8 +110,8 @@ export class LoginComponent  {
           this.afAuth.authState.subscribe((auth) => {
             this.db.list('users/'+auth.uid).push({
               timestamp:firebase.database.ServerValue.TIMESTAMP,
-              firstName:firstName,
-              lastName:lastName,
+              name:name,
+              familyName:familyName,
             });
           });
         });

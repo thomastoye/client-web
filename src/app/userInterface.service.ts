@@ -13,9 +13,6 @@ export class userInterfaceService {
   currentUser:string;
   currentUserObj:any;
   currentUserTeamsObj:any;
-  currentUserFirstName:string;
-  currentUserLastName:string;
-  currentUserImageUrlThumb:string;
   services:any;
   process:any;
 
@@ -62,7 +59,7 @@ export class userInterfaceService {
       timestamp:now,
       text:text,
       user:this.currentUser,
-      firstName:this.currentUserObj.firstName,
+      name:this.currentUserObj.name,
       imageUrlThumbUser:this.currentUserObj.imageUrlThumb,
       image:image,
       imageDownloadURL:imageDownloadURL,
@@ -70,8 +67,8 @@ export class userInterfaceService {
       linkTeamName:linkTeamObj.name?linkTeamObj.name:null,
       linkTeamImageUrlThumb:linkTeamObj.imageUrlThumb?linkTeamObj.imageUrlThumb:null,
       linkUser:linkUserObj.key?linkUserObj.key:null,
-      linkUserFirstName:linkUserObj.firstName?linkUserObj.firstName:null,
-      linkUserLastName:linkUserObj.lastName?linkUserObj.lastName:null,
+      linkUserName:linkUserObj.name?linkUserObj.name:null,
+      linkuserFamilyName:linkUserObj.familyName?linkUserObj.familyName:null,
       linkUserImageUrlThumb:linkUserObj.imageUrlThumb?linkUserObj.imageUrlThumb:null,
     };
     if(this.processInputsComplete()){
@@ -117,12 +114,6 @@ export class userInterfaceService {
                 var variable=service.child('process').child(this.process[this.currentTeam].step).child('input').val().variable;
                 if (variable) {
                   var valueString=value[0];
-                  if (service.child('process').child(this.process[this.currentTeam].step).child('input').val().toLowerCase) {
-                    valueString=valueString.toLowerCase();
-                  }
-                  if (service.child('process').child(this.process[this.currentTeam].step).child('input').val().toUpperCase) {
-                    valueString=valueString.toUpperCase();
-                  }
                   this.process[this.currentTeam].inputs[variable]=valueString;
                   this.process[this.currentTeam].inputsArray.push([variable,valueString]);
                 }

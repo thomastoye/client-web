@@ -30,7 +30,7 @@ import { userInterfaceService } from './userInterface.service';
       </div>
       <div style="box-shadow:0 0 2px 0 rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.08);cursor:text;border-radius:7px;background-color:white;margin:2px 10px 5px 60px">
         <div>
-          <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.values?.payload?.firstName}}</div>
+          <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.values?.payload?.name}}{{message.values?.payload?.firstName}}</div>
           <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="color:#AAA;font-size:11px">{{message.values?.payload?.timestamp | date:'HH:mm'}}</div>
           <img *ngIf="message.values?.payload?.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
           <img *ngIf="message.values?.payload?.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
@@ -45,7 +45,7 @@ import { userInterfaceService } from './userInterface.service';
           </div>
           <div *ngIf="message.values?.payload?.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.values?.payload?.linkUser])">
             <img [src]="message.values?.payload?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
-            <div style="font-size:11px;padding:5px;">{{message.values?.payload?.linkUserFirstName}} {{message.values?.payload?.linkUserLastName}}</div>
+            <div style="font-size:11px;padding:5px;">{{message.values?.payload?.linkUserName}} {{message.values?.payload?.linkuserFamilyName}}</div>
           </div>
           <div *ngIf="message.values?.PERRINN?.process?.inputsComplete" style="clear:both;margin:5px">
             <img src="./../assets/App icons/repeat.png" style="display:inline;float:left;height:30px">
@@ -160,7 +160,7 @@ import { userInterfaceService } from './userInterface.service';
       <div *ngIf="isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="clear:both;margin-bottom:25px;color:green;cursor:default">Following</div>
       <ul style="list-style:none;float:left;">
         <li *ngFor="let user of draftMessageUsers | async">
-        <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.firstName}}...</div>
+        <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.name}}...</div>
         </li>
       </ul>
     </div>
@@ -169,7 +169,7 @@ import { userInterfaceService } from './userInterface.service';
       <div *ngIf="chatReplayDraftMessageUser" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{chatReplayDraftMessageUser}}...</div>
       <ul style="list-style:none;float:left;">
         <li *ngFor="let user of draftMessageUsers | async">
-        <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.firstName}}...</div>
+        <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.name}}...</div>
         </li>
       </ul>
       <div *ngIf="UI.process[UI.currentTeam]?.service" style="box-shadow:0 0 2px 0 rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.08);cursor:pointer;border-radius:7px;background-color:white;float:left;padding:5px;margin:10px;width:70%"(click)="UI.clearProcessData()">
@@ -286,7 +286,7 @@ export class ChatComponent {
       },2000+textLength*100+image*4000);
       setTimeout(function () {
         that.teamMessages.subscribe(snapshot=>{
-          that.chatReplayDraftMessageUser=snapshot[that.messageNumberDisplay].values.payload.firstName;
+          that.chatReplayDraftMessageUser=snapshot[that.messageNumberDisplay].values.payload.name;
         });
       },textLength*100+image*4000);
     })();
@@ -368,7 +368,7 @@ export class ChatComponent {
   updateDraftMessageDB () {
     if ((this.draftMessage!="")!=this.draftMessageDB) {
       this.db.object('teamActivities/'+this.UI.currentTeam+'/draftMessages/'+this.UI.currentUser).update({
-        firstName:this.UI.currentUserObj.firstName,
+        name:this.UI.currentUserObj.name,
         draftMessage:this.draftMessage!="",
         draftMessageTimestamp:firebase.database.ServerValue.TIMESTAMP,
       });

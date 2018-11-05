@@ -15,9 +15,10 @@ import { userInterfaceService } from './userInterface.service';
   <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
     <li *ngFor="let team of teams | async">
-      <div style="float:left;width:150px" (click)="router.navigate(['chat',team.key])">
+      <div style="float:left" (click)="router.navigate(['chat',team.key])">
       <img [src]="team?.values.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      <div>{{team.values.name}}</div>
+      <span>{{team.values.name}}</span>
+      <span style="font-size:10px">{{team.values.familyName}}</span>
       </div>
       <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="UI.createMessage(team.key,'','',{key:team.key,name:team.values.name,imageUrlThumb:team.values.imageUrlThumb},{});router.navigate(['chat',this.UI.currentTeam])">Send to chat</div>
     </li>
@@ -47,8 +48,8 @@ export class SearchComponent  {
       if (this.searchFilter.length>1) {
         this.teams = this.db.list('PERRINNTeams/',ref=>ref
         .orderByChild('name')
-        .startAt(this.searchFilter.toUpperCase())
-        .endAt(this.searchFilter.toUpperCase()+"\uf8ff")
+        .startAt(this.searchFilter)
+        .endAt(this.searchFilter+"\uf8ff")
         .limitToFirst(10))
         .snapshotChanges().map(changes=>{
           return changes.map(c=>({

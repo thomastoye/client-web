@@ -11,7 +11,7 @@ import { userInterfaceService } from './userInterface.service';
   <div id='main_container'>
   <div style="max-width:800px;margin:0 auto">
   <img class="imageWithZoom" [src]="UI.currentTeamObj?.imageUrlMedium?UI.currentTeamObj?.imageUrlMedium:UI.currentTeamObj?.imageUrlThumb" style="object-fit:cover;max-height:150px;width:100%" (click)="showFullScreenImage(UI.currentTeamObj?.imageUrlOriginal)">
-  <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{UI.currentTeamObj?.name}}</div>
+  <div style="text-align:center;font-size:18px;line-height:30px;font-family:sans-serif;">{{UI.currentTeamObj?.name}} {{UI.currentTeamObj?.familyName}}</div>
   <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
   <div *ngIf="isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="color:green;cursor:default">Following</div>
   <div class='sheet' style="margin-top:5px">
@@ -19,7 +19,7 @@ import { userInterfaceService } from './userInterface.service';
   <ul class='listLight' style="display:inline-block;float:left">
     <li *ngFor="let user of teamLeaders|async" (click)="router.navigate(['user',user.key])">
       <img [src]="user?.imageUrlThumb|async" style="float:left;object-fit:cover;height:50px;width:50px;border-radius:3px;margin:5px 5px 5px 10px">
-      <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{(user?.firstName|async)}}</div>
+      <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{(user?.name|async)}}</div>
     </li>
   </ul>
   </div>
@@ -28,7 +28,7 @@ import { userInterfaceService } from './userInterface.service';
   <ul class='listLight' style="display:inline-block">
     <li *ngFor="let user of teamMembers|async" (click)="router.navigate(['user',user.key])">
       <img [src]="user?.imageUrlThumb|async" style="float:left;object-fit:cover;height:50px;width:50px;border-radius:3px;margin:5px 5px 5px 10px">
-      <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{user?.firstName|async}}</div>
+      <div style="float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{user?.name|async}}</div>
     </li>
   </ul>
   </div>
@@ -69,7 +69,7 @@ export class TeamProfileComponent  {
         return changes.map(c=>({
           key:c.payload.key,
           values:c.payload.val(),
-          firstName:this.db.object('PERRINNTeams/'+c.payload.key+'/firstName').valueChanges(),
+          name:this.db.object('PERRINNTeams/'+c.payload.key+'/name').valueChanges(),
           imageUrlThumb:this.db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
         }));
       });
@@ -77,7 +77,7 @@ export class TeamProfileComponent  {
         return changes.map(c=>({
           key:c.payload.key,
           values:c.payload.val(),
-          firstName:this.db.object('PERRINNTeams/'+c.payload.key+'/firstName').valueChanges(),
+          name:this.db.object('PERRINNTeams/'+c.payload.key+'/name').valueChanges(),
           imageUrlThumb:this.db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
         }));
       });

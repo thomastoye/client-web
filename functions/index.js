@@ -122,7 +122,7 @@ function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,dono
             timestamp:now,
             text:text,
             user:user,
-            firstName:userData.val().firstName,
+            name:userData.val().name,
             imageUrlThumbUser:userData.val().imageUrlThumb,
             image:image,
             action:action,
@@ -130,8 +130,8 @@ function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,dono
             linkTeamName:linkTeamData.val().name?linkTeamData.val().name:'',
             linkTeamImageUrlThumb:linkTeamData.val().imageUrlThumb?linkTeamData.val().imageUrlThumb:'',
             linkUser:linkUser,
-            linkUserFirstName:linkUserData.val().firstName?linkUserData.val().firstName:'',
-            linkUserLastName:linkUserData.val().lastName?linkUserData.val().lastName:'',
+            linkUserName:linkUserData.val().name?linkUserData.val().name:'',
+            linkuserFamilyName:linkUserData.val().familyName?linkUserData.val().familyName:'',
             linkUserImageUrlThumb:linkUserData.val().imageUrlThumb?linkUserData.val().imageUrlThumb:'',
           },
           PERRINN:{transactionIn:{donor:donor,donorMessage:donorMessage}},
@@ -143,7 +143,6 @@ function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,dono
 }
 
 function createTeam(team,user,name,parent) {
-  name=name.toUpperCase();
   const now=Date.now();
   let updateObj={};
   updateObj['PERRINNTeams/'+team+'/createdTimestamp']=now;
@@ -270,11 +269,11 @@ exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCrea
   const now=Date.now();
   return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"createdTimestamp",now
   ).then(()=>{
-    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"firstName",data.val().firstName);
+    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"name",data.val().name);
   }).then(()=>{
-    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"lastName",data.val().lastName);
+    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"familyName",data.val().familyName);
   }).then(()=>{
-    return createTeam(context.params.user,context.params.user,data.val().firstName+' '+data.val().lastName,"");
+    return createTeam(context.params.user,context.params.user,data.val().name+' '+data.val().familyName,"");
   }).then(()=>{
     return 'done';
   });
@@ -336,7 +335,7 @@ function writeMessageTeamData(team,message){
     return admin.database().ref('PERRINNTeams/'+team).update({
       lastMessageTimestamp:messageObj.val().payload.timestamp,
       lastMessageTimestampNegative:-messageObj.val().payload.timestamp,
-      lastMessageFirstName:messageObj.val().payload.firstName,
+      lastMessageName:messageObj.val().payload.name,
       lastMessageText:messageObj.val().payload.text,
       lastMessageBalance:messageObj.val().PERRINN.wallet.balance,
     }).then(()=>{
@@ -800,7 +799,7 @@ function newValidData(key,beforeData,afterData){
 exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,context)=>{
   const beforeData = data.before.val();
   const afterData = data.after.val();
-  var keys=['chatReplayMode','lastMessageTimestamp','lastMessageTimestampNegative','lastMessageFirstName','lastMessageText','lastMessageBalance','name','imageUrlThumb'];
+  var keys=['chatReplayMode','lastMessageTimestamp','lastMessageTimestampNegative','lastMessageName','lastMessageText','lastMessageBalance','name','imageUrlThumb'];
   var updateKeys=[];
   keys.forEach(key=>{
     if(newValidData(key,beforeData,afterData))updateKeys.push(key);
@@ -839,4 +838,17 @@ exports.teamCreation=functions.database.ref('/PERRINNTeams/{team}/createdTimesta
 });
 
 exports.toto=functions.database.ref('/toto').onCreate((data,context)=>{
+  return admin.database().ref('teamMessages/').once('value').then(teams=>{
+    let updateObj={};
+    teams.forEach(team=>{
+      admin.database().ref('teamMessages/'+team.key).once('value').then(messages=>{
+        messages.forEach(message=>{
+          if(message.val().payload!=undefined) {
+            if(message.val().payload.firstName!=undefined) updateObj['teamMessages/'+team.key+'/'+message.key+'/payload/name']=message.val().payload.firstName;
+          }
+        });
+      });
+    });
+    return admin.database().ref().update(updateObj);
+  });
 });
