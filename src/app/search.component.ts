@@ -46,10 +46,10 @@ export class SearchComponent  {
   refreshSearchLists () {
     if (this.searchFilter) {
       if (this.searchFilter.length>1) {
-        this.teams = this.db.list('PERRINNTeams/',ref=>ref
-        .orderByChild('name')
-        .startAt(this.searchFilter)
-        .endAt(this.searchFilter+"\uf8ff")
+        this.teams = this.db.list('PERRINNSearch/teams',ref=>ref
+        .orderByChild('nameLowerCase')
+        .startAt(this.searchFilter.toLowerCase())
+        .endAt(this.searchFilter.toLowerCase()+"\uf8ff")
         .limitToFirst(10))
         .snapshotChanges().map(changes=>{
           return changes.map(c=>({
