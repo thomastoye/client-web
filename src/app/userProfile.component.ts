@@ -35,7 +35,7 @@ import { userInterfaceService } from './userInterface.service';
           <div *ngIf="(now-team.values.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
           <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
           <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team.values?.lastMessageName}}: {{team.values?.lastMessageText}}</div>
-          <div style="clear:both;float:left;font-size:10px;color:#999">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Message, C{{team.values?.lastMessageBalance?team.values?.lastMessageBalance:0|number:'1.2-2'}}</div>
+          <div style="clear:both;float:left;font-size:10px;color:#999">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages, C{{team.values?.lastMessageBalance?team.values?.lastMessageBalance:0|number:'1.2-2'}}</div>
           <div *ngIf="team.values?.chatReplayMode" style="float:left;color:green;font-size:10px">chat replay</div>
         </div>
         <div class="seperator" style="margin-left:120px"></div>
