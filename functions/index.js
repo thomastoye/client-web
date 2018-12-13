@@ -799,26 +799,26 @@ function newValidData(key,beforeData,afterData){
 exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,context)=>{
   const beforeData = data.before.val();
   const afterData = data.after.val();
-  var keys=['chatReplayMode','lastMessageTimestamp','lastMessageTimestampNegative','lastMessageName','lastMessageText','lastMessageBalance','name','familyName','imageUrlThumb'];
+  var keys=['chatReplayMode','lastMessageTimestamp','lastMessageTimestampNegative','lastMessageName','lastMessageText','lastMessageBalance','name','familyName','imageUrlThumb','leaders','members'];
   var updateKeys=[];
   keys.forEach(key=>{
     if(newValidData(key,beforeData,afterData))updateKeys.push(key);
   });
   return admin.database().ref('/subscribeTeamUsers/'+context.params.team).once('value').then(users=>{
     let updateObj={};
-    users.forEach(user=>{
-      updateKeys.forEach(updateKey=>{
+    updateKeys.forEach(updateKey=>{
+      users.forEach(user=>{
         updateObj['viewUserTeams/'+user.key+'/'+context.params.team+'/'+updateKey]=afterData[updateKey];
-        if(updateKey=='name') updateObj['PERRINNSearch/teams/'+context.params.team+'/name']=afterData[updateKey];
-        if(updateKey=='familyName') updateObj['PERRINNSearch/teams/'+context.params.team+'/familyName']=afterData[updateKey];
-        if(updateKey=='imageUrlThumb') updateObj['PERRINNSearch/teams/'+context.params.team+'/imageUrlThumb']=afterData[updateKey];
-        if(updateKey=='name'||updateKey=='familyName') {
-          var nameLowerCase="";
-          if(afterData['name']!=undefined) nameLowerCase=afterData['name'].toLowerCase();
-          if(afterData['familyName']!=undefined) nameLowerCase=nameLowerCase+' '+afterData['familyName'].toLowerCase();
-          updateObj['PERRINNSearch/teams/'+context.params.team+'/nameLowerCase']=nameLowerCase;          
-        }
       });
+      if(updateKey=='name') updateObj['PERRINNSearch/teams/'+context.params.team+'/name']=afterData[updateKey];
+      if(updateKey=='familyName') updateObj['PERRINNSearch/teams/'+context.params.team+'/familyName']=afterData[updateKey];
+      if(updateKey=='imageUrlThumb') updateObj['PERRINNSearch/teams/'+context.params.team+'/imageUrlThumb']=afterData[updateKey];
+      if(updateKey=='name'||updateKey=='familyName') {
+        var nameLowerCase="";
+        if(afterData['name']!=undefined) nameLowerCase=afterData['name'].toLowerCase();
+        if(afterData['familyName']!=undefined) nameLowerCase=nameLowerCase+' '+afterData['familyName'].toLowerCase();
+        updateObj['PERRINNSearch/teams/'+context.params.team+'/nameLowerCase']=nameLowerCase;
+      }
     });
     return admin.database().ref().update(updateObj);
   });
