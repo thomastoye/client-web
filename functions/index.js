@@ -847,37 +847,50 @@ exports.teamCreation=functions.database.ref('/PERRINNTeams/{team}/createdTimesta
 });
 
 exports.toto=functions.database.ref('/toto').onCreate((data,context)=>{
-  return admin.database().ref('teamMessages/').once('value').then(teams=>{
-    let updateObj={};
-    teams.forEach(team=>{
-      admin.database().ref('teamMessages/'+team.key).once('value').then(messages=>{
-        messages.forEach(message=>{
-          if(message.val().payload!=undefined) {
-            if(message.val().payload.firstName!=undefined) updateObj['teamMessages/'+team.key+'/'+message.key+'/payload/name']=message.val().payload.firstName;
-          }
-        });
-      });
-    });
-    return admin.database().ref().update(updateObj);
-  });
-});
-
-exports.toto2=functions.database.ref('/toto').onCreate((data,context)=>{
+  var maxUpdatesCount=100;
   return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
-    let updateObj={};
+    let nameArray=[];
     teams.forEach(team=>{
-      var searchName="";
-      if(team.val().name!=undefined) {
-        searchName=team.val().name.toLowerCase();
-        updateObj['PERRINNSearch/teams/'+team.key+'/name']=team.val().name;
+      if(team.child('leaders')!=undefined){
+        team.child('leaders').forEach(leader=>{
+          nameArray.push(admin.database().ref('PERRINNTeams/'+leader.key+'/name').once('value'));
+        });
       }
-      if(team.val().familyName!=undefined) {
-        searchName=searchName+' '+team.val().familyName.toLowerCase();
-        updateObj['PERRINNSearch/teams/'+team.key+'/familyName']=team.val().familyName;
+      if(team.child('members')!=undefined){
+        team.child('members').forEach(member=>{
+          nameArray.push(admin.database().ref('PERRINNTeams/'+member.key+'/name').once('value'));
+        });
       }
-      updateObj['PERRINNSearch/teams/'+team.key+'/nameLowerCase']=searchName;
-      if(team.val().imageUrlThumb!=undefined) updateObj['PERRINNSearch/teams/'+team.key+'/imageUrlThumb']=team.val().imageUrlThumb;
     });
-    return admin.database().ref().update(updateObj);
+    return Promise.all(nameArray);
+  }).then(names=>{
+    return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
+      let updateObj={};
+      var nameIndex=0;
+      var updatesCount=0;
+      teams.forEach(team=>{
+        if(team.child('leaders')!=undefined){
+          team.child('leaders').forEach(leader=>{
+            var name=names[nameIndex].val();
+            updateObj['PERRINNTeams/'+team.key+'/leaders/'+leader.key]={'name':name};
+            updatesCount+=1;
+            nameIndex+=1;
+          });
+        }
+        if(team.child('members')!=undefined){
+          team.child('members').forEach(member=>{
+            var name=names[nameIndex].val();
+            updateObj['PERRINNTeams/'+team.key+'/members/'+member.key]={'name':name};
+            updatesCount+=1;
+            nameIndex+=1;
+          });
+        }
+        if(updatesCount>maxUpdatesCount){
+          console.log('too many updates');
+          return admin.database().ref().update(updateObj);
+        }
+      });
+      return admin.database().ref().update(updateObj);
+    });
   });
 });
