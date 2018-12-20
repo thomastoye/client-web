@@ -50,17 +50,22 @@ function addListKeyValue (user,team,ref,list,key,value,maxCount) {
       if (currentList.numChildren()>=maxCount) {
         return "max number reached";
       }
-      return admin.database().ref(ref).child(list).update({
-        [key]:value,
-      }).then(()=>{
-        admin.database().ref(ref).update({
-          [counter]:currentList.numChildren()+1,
+      return getTeamName(key).then(teamName=>{
+        if(list=="leaders"||list=="members"){
+            value={name:teamName};
+        }
+        return admin.database().ref(ref).child(list).update({
+          [key]:value,
+        }).then(()=>{
+          admin.database().ref(ref).update({
+            [counter]:currentList.numChildren()+1,
+          });
+          return "added";
         });
-        return "added";
       });
     });
   }).catch(error=>{
-    console.log(error);
+    console.log('addListKeyValue: '+error);
     return error;
   });
 }
@@ -226,7 +231,7 @@ function executeProcess(user,team,functionObj,inputs){
     }
     return 'none';
   }).catch(error=>{
-    console.log(error);
+    console.log('executeProcess: '+error);
     return error;
   }).then(result=>{
     return result;
@@ -414,7 +419,7 @@ function writeMessageProcessData(team,message){
       });
     });
   }).catch(error=>{
-    console.log(error);
+    console.log('writeMessageProcessData: '+error);
   });
 }
 
@@ -789,7 +794,7 @@ function makeKeyFirebaseCompatible(key) {
 }
 
 function newValidData(key,beforeData,afterData){
-  if(afterData[key]==undefined)return false;
+  if(afterData[key]==undefined&&beforeData[key]!=undefined)return false;
   if(beforeData==null||beforeData==undefined)return true;
   if(beforeData[key]==undefined)return true;
   if(beforeData[key]==afterData[key])return false;
@@ -808,7 +813,10 @@ exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,
     let updateObj={};
     updateKeys.forEach(updateKey=>{
       users.forEach(user=>{
-        updateObj['viewUserTeams/'+user.key+'/'+context.params.team+'/'+updateKey]=afterData[updateKey];
+        var updateValue;
+        if (afterData[updateKey]==undefined) updateValue=null;
+        else updateValue=afterData[updateKey];
+        updateObj['viewUserTeams/'+user.key+'/'+context.params.team+'/'+updateKey]=updateValue;
       });
       if(updateKey=='name') updateObj['PERRINNSearch/teams/'+context.params.team+'/name']=afterData[updateKey];
       if(updateKey=='familyName') updateObj['PERRINNSearch/teams/'+context.params.team+'/familyName']=afterData[updateKey];
@@ -847,7 +855,7 @@ exports.teamCreation=functions.database.ref('/PERRINNTeams/{team}/createdTimesta
 });
 
 exports.toto=functions.database.ref('/toto').onCreate((data,context)=>{
-  var maxUpdatesCount=100;
+  var maxUpdatesCount=5000;
   return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
     let nameArray=[];
     teams.forEach(team=>{

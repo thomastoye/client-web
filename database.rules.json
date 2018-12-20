@@ -10,6 +10,11 @@
     "PERRINNTeams": {
       ".indexOn": ["name"]
     },
+    "PERRINNSearch": {
+      "$teams": {
+        ".indexOn": ["nameLowerCase"]
+      }
+    },
     "subscribeTeamUsers": {
       "$teamid": {
         "$uid": {
