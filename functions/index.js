@@ -147,11 +147,12 @@ function createMessage (team,user,text,image,action,linkTeam,linkUser,donor,dono
   });
 }
 
-function createTeam(team,user,name,parent) {
+function createTeam(team,user,name,familyName,parent) {
   const now=Date.now();
   let updateObj={};
   updateObj['PERRINNTeams/'+team+'/createdTimestamp']=now;
   updateObj['PERRINNTeams/'+team+'/name']=name;
+  updateObj['PERRINNTeams/'+team+'/familyName']=familyName;
   updateObj['PERRINNTeams/'+team+'/leaders/'+user]=true;
   updateObj['PERRINNTeams/'+team+'/leadersCount']=1;
   updateObj['PERRINNTeams/'+team+'/lastMessageTimestamp']=now;
@@ -272,14 +273,7 @@ exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID
 
 exports.newUserProfile = functions.database.ref('/users/{user}/{editID}').onCreate((data,context)=>{
   const now=Date.now();
-  return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"createdTimestamp",now
-  ).then(()=>{
-    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"name",data.val().name);
-  }).then(()=>{
-    return updateKeyValue(context.params.user,'-L7jqFf8OuGlZrfEK6dT','PERRINNTeams/'+context.params.user,"familyName",data.val().familyName);
-  }).then(()=>{
-    return createTeam(context.params.user,context.params.user,data.val().name+' '+data.val().familyName,"");
-  }).then(()=>{
+  return createTeam(context.params.user,context.params.user,data.val().name,data.val().familyName,"").then(()=>{
     return 'done';
   });
 });
@@ -812,15 +806,15 @@ exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,
   return admin.database().ref('/subscribeTeamUsers/'+context.params.team).once('value').then(users=>{
     let updateObj={};
     updateKeys.forEach(updateKey=>{
+      var updateValue;
+      if (afterData[updateKey]==undefined) updateValue=null;
+      else updateValue=afterData[updateKey];
       users.forEach(user=>{
-        var updateValue;
-        if (afterData[updateKey]==undefined) updateValue=null;
-        else updateValue=afterData[updateKey];
         updateObj['viewUserTeams/'+user.key+'/'+context.params.team+'/'+updateKey]=updateValue;
       });
-      if(updateKey=='name') updateObj['PERRINNSearch/teams/'+context.params.team+'/name']=afterData[updateKey];
-      if(updateKey=='familyName') updateObj['PERRINNSearch/teams/'+context.params.team+'/familyName']=afterData[updateKey];
-      if(updateKey=='imageUrlThumb') updateObj['PERRINNSearch/teams/'+context.params.team+'/imageUrlThumb']=afterData[updateKey];
+      if(updateKey=='name') updateObj['PERRINNSearch/teams/'+context.params.team+'/name']=updateValue;
+      if(updateKey=='familyName') updateObj['PERRINNSearch/teams/'+context.params.team+'/familyName']=updateValue;
+      if(updateKey=='imageUrlThumb') updateObj['PERRINNSearch/teams/'+context.params.team+'/imageUrlThumb']=updateValue;
       if(updateKey=='name'||updateKey=='familyName') {
         var nameLowerCase="";
         if(afterData['name']!=undefined) nameLowerCase=afterData['name'].toLowerCase();
