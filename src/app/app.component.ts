@@ -21,7 +21,7 @@ import { userInterfaceService } from './userInterface.service';
     <div style="text-align:center;width:170px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
         <div *ngIf="UI.currentTeam" style="height:40px">
         <img *ngIf="UI.currentTeamObj?.imageUrlThumb" [src]="UI.currentTeamObj?.imageUrlThumb" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:170px;border-radius:3px">
-        <div style="position:absolute;width:170px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{UI.currentTeamObj?.name}}</div>
+        <div style="position:absolute;width:170px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{UI.currentTeamObj?.name}} {{UI.currentTeamObj?.familyName}}</div>
         </div>
     </div>
     <div class='iconSmall' (click)="router.navigate(['search'])">
