@@ -10,6 +10,7 @@ export class userInterfaceService {
   focusUserObj:any;
   currentTeam:string;
   currentTeamObj:any;
+  currentTeamObjKey:string;
   currentUser:string;
   currentUserObj:any;
   currentUserTeamsObj:any;
@@ -154,6 +155,7 @@ export class userInterfaceService {
   }
 
   timestampChatVisit(){
+    if(this.currentTeamObjKey!=this.currentTeam)return;
     const now = Date.now();
     this.db.object('viewUserTeams/'+this.currentUser+'/'+this.currentTeam).update({
       lastChatVisitTimestamp:now,

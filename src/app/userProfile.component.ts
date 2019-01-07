@@ -27,16 +27,18 @@ import { userInterfaceService } from './userInterface.service';
           <img [src]="UI.focusUserObj?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
         </div>
         <div>
-          <div style="float:left;margin-top:5px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">
-            <span >{{UI.focusUserObj?.name}}</span>
-            <span style="font-size:10px">{{UI.focusUserObj?.familyName}}</span>
+          <div style="float:left;margin-top:5px">
+            <span style="color:#222;font-size:16px" *ngFor="let leader of objectToArray(team.values?.leaders);let last=last">{{leader[1]?.name}}{{last?"":", "}}</span>
           </div>
-          <div style="float:left;margin:5px;margin-top:9px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
           <div *ngIf="(now-team.values.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
           <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
+          <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
+            <span >{{team.values?.name}}</span>
+            <span style="font-size:10px">{{team.values?.familyName}}</span>
+          </div>
+          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
           <div style="clear:both">
-            <span style="color:#222" *ngFor="let leader of objectToArray(team.values?.leaders);let first=first">{{first?"":", "}}{{leader[1]?.name}}</span>
-            <span style="color:#999" *ngFor="let member of objectToArray(team.values?.members);let first=first">{{first?" - ":", "}}{{member[1]?.name}}</span>
+            <span style="color:#999" *ngFor="let member of objectToArray(team.values?.members);let last=last">{{member[1]?.name}}{{last?"":", "}}</span>
           </div>
           <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team.values?.lastMessageName}}: {{team.values?.lastMessageText}}</div>
           <div style="clear:both;float:left;font-size:10px;color:#999">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages, C{{team.values?.lastMessageBalance?team.values?.lastMessageBalance:0|number:'1.2-2'}}</div>
@@ -54,16 +56,18 @@ import { userInterfaceService } from './userInterface.service';
           <img [src]="team.values?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
         </div>
         <div>
-          <div style="float:left;margin-top:5px;color:#222;white-space:nowrap;width:30%;text-overflow:ellipsis">
+          <div style="float:left;margin-top:5px">
+            <span style="color:#222;font-size:16px" *ngFor="let leader of objectToArray(team.values?.leaders);let last=last">{{leader[1]?.name}}{{last?"":", "}}</span>
+          </div>
+          <div *ngIf="(now-team.values.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
+          <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
+          <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
             <span >{{team.values?.name}}</span>
             <span style="font-size:10px">{{team.values?.familyName}}</span>
           </div>
-          <div style="float:left;margin:5px;margin-top:9px;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
-          <div *ngIf="(now-team.values.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
-          <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
+          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
           <div style="clear:both">
-            <span style="color:#222" *ngFor="let leader of objectToArray(team.values?.leaders);let first=first">{{first?"":", "}}{{leader[1]?.name}}</span>
-            <span style="color:#999" *ngFor="let member of objectToArray(team.values?.members);let first=first">{{first?" - ":", "}}{{member[1]?.name}}</span>
+            <span style="color:#999" *ngFor="let member of objectToArray(team.values?.members);let last=last">{{member[1]?.name}}{{last?"":", "}}</span>
           </div>
           <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team.values?.lastMessageName}}: {{team.values?.lastMessageText}}</div>
           <div style="clear:both;float:left;font-size:10px;width:100px" [style.color]="team.values?.lastMessageBalance<0?'red':'#999'">C{{team.values?.lastMessageBalance?team.values?.lastMessageBalance:0|number:'1.2-2'}}</div>

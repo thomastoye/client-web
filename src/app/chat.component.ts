@@ -226,6 +226,7 @@ export class ChatComponent {
       this.showDetails={};
       db.object('PERRINNTeams/'+this.UI.currentTeam).valueChanges().subscribe(snapshot=>{
         this.UI.currentTeamObj=snapshot;
+        this.UI.currentTeamObjKey=this.UI.currentTeam;
         if(this.UI.currentUser){
           if(this.UI.currentTeamObj.leaders!=undefined){
             this.isCurrentUserLeader=this.UI.currentTeamObj.leaders[UI.currentUser]?true:false;
