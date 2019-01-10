@@ -53,6 +53,11 @@
         }
       }
     },
+    "teamReads": {
+      "$teamid": {
+        ".write": "newData.exists() && auth.uid === $teamid"
+      }
+    },
     "teams": {
       "$teamid": {
         "$entry": {

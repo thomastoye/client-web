@@ -309,20 +309,35 @@ function writeMessageChainData(team,message){
 function writeMessagingCostData(user,team,message){
   let updateObj={};
   let amount=0;
+  let amountRead=0;
+  let amountWrite=0;
   let receiver='none';
   let reference='none';
-  return admin.database().ref('appSettings/messageTemplate/messagingCost').once('value').then(messagingCost=>{
-    if(user!='PERRINN'){
-      amount=messagingCost.val().amount;
-      receiver=messagingCost.val().receiver;
-      reference=messagingCost.val().reference;
-    }
-    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/amount']=amount;
-    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/receiver']=receiver;
-    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/reference']=reference;
-    updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/timestamp']=admin.database.ServerValue.TIMESTAMP;
-    return admin.database().ref().update(updateObj).then(()=>{
-      return 'done';
+  return admin.database().ref('PERRINNTeamMessageReads/'+team).once('value').then(PERRINNTeamMessageReads=>{
+    return admin.database().ref('appSettings/messageTemplate/messagingCost').once('value').then(messagingCost=>{
+      if(user!='PERRINN'){
+        amountWrite=messagingCost.val().amount;
+        receiver=messagingCost.val().receiver;
+        reference=messagingCost.val().reference;
+      }
+      if(PERRINNTeamMessageReads!=undefined){
+        if(PERRINNTeamMessageReads.val().amountOutstanding!=undefined)amountRead=PERRINNTeamMessageReads.val().amountOutstanding;
+      }
+      amount=Math.round((Number(amountRead)+Number(amountWrite))*100000)/100000;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/amount']=amount;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/amountRead']=amountRead;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/amountWrite']=amountWrite;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/receiver']=receiver;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/reference']=reference;
+      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/timestamp']=admin.database.ServerValue.TIMESTAMP;
+      return admin.database().ref().update(updateObj).then(()=>{
+        return admin.database().ref('PERRINNTeamMessageReads/'+team).child('amountOutstanding').transaction(function(amountOutstanding){
+          if(amountOutstanding===null)return 0;
+          else return Math.round((Number(amountOutstanding)-Number(amountRead))*100000)/100000;
+        }).then(()=>{
+          return 'done';
+        });
+      });
     });
   }).catch(error=>{
     console.log(error);
@@ -644,6 +659,32 @@ exports.newMessage = functions.database.ref('/teamMessages/{team}/{message}').on
     if(writeError) return data.ref.child('/PERRINN').update({dataWrite:writeError});
   });
 });
+
+exports.newMessageRead=functions.database.ref('teamReads/{reader}/{team}/{message}').onCreate((data,context)=>{
+  let updateObj={};
+  let amount=0;
+  let debtor='';
+  return isMemberOrLeader(context.params.reader,context.params.team).then(result=>{
+    if(result)debtor=context.params.team;
+    else debtor=context.params.reader;
+    return admin.database().ref('appSettings/messageReadCost').once('value').then(messageReadCost=>{
+      amount=messageReadCost.val().amount;
+      return admin.database().ref('PERRINNTeamMessageReads/'+debtor).child('amountOutstanding').transaction(function(amountOutstanding){
+        if(amountOutstanding===null)return amount;
+        else return Math.round((Number(amountOutstanding)+Number(amount))*100000)/100000;
+      });
+    });
+  }).catch(error=>{
+    console.log(error);
+  });
+});
+
+function isMemberOrLeader(user,team){
+  return admin.database().ref('PERRINNTeams/'+team).once('value').then(teamObj=>{
+    if(teamObj.child('leaders').child(user)||teamObj.child('members').child(user))return true;
+    else return false;
+  });
+}
 
 function fanoutImage(image,imageUrlThumb,imageUrlMedium,imageUrlOriginal){
   return admin.database().ref('/subscribeImageTeams/'+image).once('value').then(teams=>{

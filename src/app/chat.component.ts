@@ -83,6 +83,8 @@ import { userInterfaceService } from './userInterface.service';
               <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount:C{{message.values?.PERRINN?.messagingCost?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Read:C{{message.values?.PERRINN?.messagingCost?.amountRead|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Write:C{{message.values?.PERRINN?.messagingCost?.amountWrite|number:'1.2-20'}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver:{{message.values?.PERRINN?.messagingCost?.receiver}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message.values?.PERRINN?.messagingCost?.status=='rejected balance low'?'#fcebb8':''">Status:{{message.values?.PERRINN?.messagingCost?.status}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040;border-radius:5px" [style.background-color]="message.values?.PERRINN?.messagingCost?.processed?'#c7edcd':''">Processed:{{message.values?.PERRINN?.messagingCost?.processed}}</div>
@@ -249,6 +251,11 @@ export class ChatComponent {
         this.messageNumberDisplay = 15;
         this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().map(changes=>{
           this.UI.loading=false;
+          let updateObj={};
+          changes.forEach(c=>{
+            updateObj['teamReads/'+this.UI.currentUser+'/'+this.UI.currentTeam+'/'+c.payload.key]=true;
+          });
+          firebase.database().ref().update(updateObj);
           return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
         });
         if(this.chatReplayMode){
@@ -299,6 +306,11 @@ export class ChatComponent {
       this.messageNumberDisplay+=15;
       return this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().map(changes=>{
         this.UI.loading=false;
+        let updateObj={};
+        changes.forEach(c=>{
+          updateObj['teamReads/'+this.UI.currentUser+'/'+this.UI.currentTeam+'/'+c.payload.key]=true;
+        });
+        firebase.database().ref().update(updateObj);
         return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
       });
     }
