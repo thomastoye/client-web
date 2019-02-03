@@ -320,7 +320,7 @@ function writeMessagingCostData(user,team,message){
         receiver=messagingCost.val().receiver;
         reference=messagingCost.val().reference;
       }
-      if(PERRINNTeamMessageReads!=undefined){
+      if(PERRINNTeamMessageReads!=undefined&&PERRINNTeamMessageReads!=null){
         if(PERRINNTeamMessageReads.val().amountOutstanding!=undefined)amountRead=PERRINNTeamMessageReads.val().amountOutstanding;
       }
       amount=Math.round((Number(amountRead)+Number(amountWrite))*100000)/100000;
@@ -889,7 +889,7 @@ exports.teamCreation=functions.database.ref('/PERRINNTeams/{team}/createdTimesta
   return createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",context.params.team,"",'none','none',{});
 });
 
-exports.toto=functions.database.ref('/toto').onCreate((data,context)=>{
+exports.populateLeadersMembersNames=functions.database.ref('/toto').onCreate((data,context)=>{
   var maxUpdatesCount=5000;
   return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
     let nameArray=[];
@@ -935,5 +935,93 @@ exports.toto=functions.database.ref('/toto').onCreate((data,context)=>{
       });
       return admin.database().ref().update(updateObj);
     });
+  });
+});
+
+exports.copyPERRINNTeamsToFIRESTORE=functions.database.ref('/toto').onCreate((data,context)=>{
+  var maxUpdatesCount=500;
+  return admin.database().ref('PERRINNTeams/').once('value').then(teams=>{
+    var batch = admin.firestore().batch();
+    var updatesCount=0;
+    teams.forEach(team=>{
+      if(team.val().createdTimestamp!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{createdTimestamp:team.val().createdTimestamp},{create:true});
+      updatesCount+=1;
+      if(team.val().familyName!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{familyName:team.val().familyName},{create:true});
+      updatesCount+=1;
+      if(team.val().imageUrlMedium!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{imageUrlMedium:team.val().imageUrlMedium},{create:true});
+      updatesCount+=1;
+      if(team.val().imageUrlOriginal!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{imageUrlOriginal:team.val().imageUrlOriginal},{create:true});
+      updatesCount+=1;
+      if(team.val().imageUrlThumb!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{imageUrlThumb:team.val().imageUrlThumb},{create:true});
+      updatesCount+=1;
+      if(team.val().lastMessageBalance!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{lastMessageBalance:team.val().lastMessageBalance},{create:true});
+      updatesCount+=1;
+      if(team.val().lastMessageName!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{lastMessageName:team.val().lastMessageName},{create:true});
+      updatesCount+=1;
+      if(team.val().lastMessageText!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{lastMessageText:team.val().lastMessageText},{create:true});
+      updatesCount+=1;
+      if(team.val().lastMessageTimestamp!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{lastMessageTimestamp:team.val().lastMessageTimestamp},{create:true});
+      updatesCount+=1;
+      if(team.val().leaders!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{leaders:team.val().leaders},{create:true});
+      updatesCount+=1;
+      if(team.val().leadersCount!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{leadersCount:team.val().leadersCount},{create:true});
+      updatesCount+=1;
+      if(team.val().members!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{members:team.val().members},{create:true});
+      updatesCount+=1;
+      if(team.val().membersCount!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{membersCount:team.val().membersCount},{create:true});
+      updatesCount+=1;
+      if(team.val().messageCount!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{messageCount:team.val().messageCount},{create:true});
+      updatesCount+=1;
+      if(team.val().name!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{name:team.val().name},{create:true});
+      updatesCount+=1;
+      if(team.val().parent!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key),{parent:team.val().parent},{create:true});
+      updatesCount+=1;
+      if(updatesCount>maxUpdatesCount-50){
+        batch.commit();
+        batch = admin.firestore().batch();
+        updatesCount=0;
+        console.log('next batch');
+      }
+    });
+    console.log('last batch');
+    return batch.commit();
+  });
+});
+
+exports.copyViewUserTeamsToFIRESTORE=functions.database.ref('/toto').onCreate((data,context)=>{
+  var maxUpdatesCount=500;
+  return admin.database().ref('viewUserTeams/').once('value').then(teams=>{
+    var batch = admin.firestore().batch();
+    var updatesCount=0;
+    teams.forEach(team=>{
+      team.forEach(viewTeam=>{
+        if(viewTeam.val().imageUrlThumb!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{imageUrlThumb:viewTeam.val().imageUrlThumb},{create:true});
+        updatesCount+=1;
+        if(viewTeam.val().leaders!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{leaders:viewTeam.val().leaders},{create:true});
+        updatesCount+=1;
+        if(viewTeam.val().members!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{members:viewTeam.val().members},{create:true});
+        updatesCount+=1;
+        if(viewTeam.val().familyName!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{familyName:viewTeam.val().familyName},{create:true});
+        updatesCount+=1;
+        if(viewTeam.val().lastMessageName!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{lastMessageName:viewTeam.val().lastMessageName},{create:true});
+        updatesCount+=1;
+        if(viewTeam.val().lastMessageText!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{lastMessageText:viewTeam.val().lastMessageText},{create:true});
+        updatesCount+=1;
+        if(viewTeam.val().lastMessageBalance!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{lastMessageBalance:viewTeam.val().lastMessageBalance},{create:true});
+        updatesCount+=1;
+        if(viewTeam.val().chatReplayMode!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{chatReplayMode:viewTeam.val().chatReplayMode},{create:true});
+        updatesCount+=1;
+        if(viewTeam.val().name!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{name:viewTeam.val().name},{create:true});
+        updatesCount+=1;
+        if(updatesCount>maxUpdatesCount-50){
+          batch.commit();
+          batch = admin.firestore().batch();
+          updatesCount=0;
+          console.log('next batch');
+        }
+      });
+    });
+    console.log('last batch');
+    return batch.commit();
   });
 });

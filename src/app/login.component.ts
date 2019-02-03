@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router'
-import { firebase } from '@firebase/app';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase } from 'angularfire2/database';
+import * as firebase from 'firebase/app';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { auth } from 'firebase/app';
+import { AngularFireDatabase } from '@angular/fire/database';
 import { userInterfaceService } from './userInterface.service';
 
 @Component({
@@ -55,7 +56,7 @@ export class LoginComponent  {
   constructor(public afAuth:AngularFireAuth,public router:Router,public db:AngularFireDatabase,public UI:userInterfaceService) {
     this.newUser=false;
     this.UI.currentTeam="";
-    this.afAuth.authState.subscribe((auth) => {
+    this.afAuth.user.subscribe((auth) => {
       if (auth!=null) {
         this.router.navigate(['user',auth.uid]);
       }
@@ -107,7 +108,7 @@ export class LoginComponent  {
             this.messageUser=errorMessage;
           }
         }).then(_=> {
-          this.afAuth.authState.subscribe((auth) => {
+          this.afAuth.user.subscribe((auth) => {
             this.db.list('users/'+auth.uid).push({
               timestamp:firebase.database.ServerValue.TIMESTAMP,
               name:name,

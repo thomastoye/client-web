@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { Observable } from 'rxjs/Observable';
-import { firebase } from '@firebase/app';
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import * as firebase from 'firebase/app';
 import { Router, NavigationEnd } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 
@@ -36,18 +36,16 @@ import { userInterfaceService } from './userInterface.service';
 export class AppComponent {
   globalChatActivity:boolean;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     localStorage.clear();
-    this.afAuth.authState.subscribe((auth) => {
-      db.list('viewUserTeams/'+this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams=>{
-        this.globalChatActivity=false;
-        viewUserTeams.forEach(userTeam=>{
-          var chatActivity = (userTeam.payload.val().lastMessageTimestamp > userTeam.payload.val().lastChatVisitTimestamp);
-          if(chatActivity){
-            this.globalChatActivity=true;
-          }
-          document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
-        });
+    db.list('viewUserTeams/'+this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams=>{
+      this.globalChatActivity=false;
+      viewUserTeams.forEach(userTeam=>{
+        var chatActivity = (userTeam.payload.val().lastMessageTimestamp > userTeam.payload.val().lastChatVisitTimestamp);
+        if(chatActivity){
+          this.globalChatActivity=true;
+        }
+        document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
       });
     });
   }

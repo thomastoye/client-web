@@ -1,7 +1,8 @@
 import { Injectable }    from '@angular/core';
-import { firebase } from '@firebase/app';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase } from 'angularfire2/database';
+import * as firebase from 'firebase/app';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { auth } from 'firebase/app';
 
 @Injectable()
 export class userInterfaceService {
@@ -19,7 +20,7 @@ export class userInterfaceService {
 
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase) {
     this.process={};
-    this.afAuth.authState.subscribe((auth) => {
+    this.afAuth.user.subscribe((auth) => {
       if (auth!=null) {
         this.currentUser=auth.uid;
         this.db.object('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{

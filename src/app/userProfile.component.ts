@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { Observable } from 'rxjs/Observable';
-import { firebase } from '@firebase/app';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import * as firebase from 'firebase/app';
 import { Router, ActivatedRoute } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 
@@ -87,7 +88,7 @@ export class UserProfileComponent {
   now:number;
   scrollTeam:string;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
+  constructor(public db: AngularFireDatabase, public afs: AngularFirestore, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
     this.UI.loading=true;
     this.UI.currentTeam="";
     this.now = Date.now();
@@ -97,13 +98,13 @@ export class UserProfileComponent {
       db.object('PERRINNTeams/'+this.UI.focusUser).valueChanges().subscribe(snapshot=>{
         this.UI.focusUserObj=snapshot;
       });
-      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().map(changes=>{
+      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().pipe(map(changes=>{
         this.UI.loading=false;
         return changes.map(c=>({
           key:c.payload.key,
           values:c.payload.val(),
         }));
-      });
+      }));
     });
   }
 

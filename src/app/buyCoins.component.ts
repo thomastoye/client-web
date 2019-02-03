@@ -1,7 +1,8 @@
 import { Component, NgZone } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
-import { Observable } from 'rxjs/Observable';
-import { firebase } from '@firebase/app';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import * as firebase from 'firebase/app';
 import { Router } from '@angular/router'
 import { userInterfaceService } from './userInterface.service';
 
@@ -90,9 +91,9 @@ export class BuyCoinsComponent {
     this.messagePERRINNTransaction = "";
     this.amountCOINSPurchased=100;
     this.currentCurrencyID='gbp';
-    this.currencyList = db.list('appSettings/currencyList').snapshotChanges().map(changes=>{
+    this.currencyList = db.list('appSettings/currencyList').snapshotChanges().pipe(map(changes=>{
       return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
-    });
+    }));
     this.refreshAmountCharge();
   }
 

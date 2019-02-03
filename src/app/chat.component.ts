@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
-import { Observable } from 'rxjs/Observable';
-import { firebase } from '@firebase/app';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import * as firebase from 'firebase/app';
 import '@firebase/storage';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router'
@@ -249,7 +250,7 @@ export class ChatComponent {
         this.draftImageDownloadURL="";
         this.draftMessage="";
         this.messageNumberDisplay = 15;
-        this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().map(changes=>{
+        this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes=>{
           this.UI.loading=false;
           let updateObj={};
           changes.forEach(c=>{
@@ -257,13 +258,13 @@ export class ChatComponent {
           });
           firebase.database().ref().update(updateObj);
           return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
-        });
+        }));
         if(this.chatReplayMode){
           this.chatReplayLoop();
         }
-        this.draftMessageUsers = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/').snapshotChanges().map(changes=>{
+        this.draftMessageUsers = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/').snapshotChanges().pipe(map(changes=>{
           return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
-        });
+        }));
         this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).snapshotChanges().subscribe(userTeam=>{
           if(userTeam.payload.val()!=null)this.lastChatVisitTimestamp = Number(userTeam.payload.val().lastChatVisitTimestamp);
         });
@@ -304,7 +305,7 @@ export class ChatComponent {
     if(e==='top'){
       this.UI.loading=true;
       this.messageNumberDisplay+=15;
-      return this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().map(changes=>{
+      return this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes=>{
         this.UI.loading=false;
         let updateObj={};
         changes.forEach(c=>{
@@ -312,7 +313,7 @@ export class ChatComponent {
         });
         firebase.database().ref().update(updateObj);
         return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
-      });
+      }));
     }
   }
 
@@ -418,9 +419,11 @@ export class ChatComponent {
         document.getElementById('uploader').style.visibility = "hidden";
         this.draftMessage=task.snapshot.ref.name.substring(0,13);
         this.draftImage=task.snapshot.ref.name.substring(0,13);
-        this.draftImageDownloadURL=task.snapshot.downloadURL;
-        this.addMessage();
-        event.target.value = '';
+        storageRef.getDownloadURL().then(url=>{
+          this.draftImageDownloadURL=url;
+          this.addMessage();
+          event.target.value = '';
+        });
       }
     );
   }

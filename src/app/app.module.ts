@@ -19,9 +19,11 @@ import { LinkyModule } from 'angular-linky';
 import { userInterfaceService } from './userInterface.service';
 import { ScrollableDirective } from './scrollable.directive';
 
-import { AngularFireModule } from 'angularfire2';
-import { AngularFireDatabaseModule } from 'angularfire2/database';
-import { AngularFireAuthModule } from 'angularfire2/auth';
+import { AngularFireModule } from '@angular/fire';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { AngularFireStorageModule } from '@angular/fire/storage';
+import { AngularFireAuthModule } from '@angular/fire/auth';
 
 import { Ng2ImgMaxModule } from 'ng2-img-max';
 
@@ -31,6 +33,7 @@ export const firebaseConfig = {
   authDodash: "perrinn-d5fc1.firebaseapp.com",
   databaseURL: "https://perrinn-d5fc1.firebaseio.com",
   storageBucket: "perrinn-d5fc1.appspot.com",
+  projectId: "perrinn-d5fc1",
   messagingSenderId: "44958643568"
 };
 
@@ -52,6 +55,7 @@ export const firebaseConfig = {
     FormsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig),
+    AngularFirestoreModule.enablePersistence(),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
     AppRoutingModule,
