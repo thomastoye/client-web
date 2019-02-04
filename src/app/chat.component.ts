@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
-import { AngularFireStorage } from "@angular/fire/storage";
+import { AngularFireStorage } from '@angular/fire/storage';
 import * as firebase from 'firebase/app';
 
 @Component({

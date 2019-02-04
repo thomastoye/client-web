@@ -34,7 +34,7 @@ import { userInterfaceService } from './userInterface.service';
           <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
           <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
             <span >{{team.values?.name}}</span>
-            <span style="font-size:10px">{{team.values?.familyName}}</span>
+            <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
           <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
           <div style="clear:both">
@@ -63,7 +63,7 @@ import { userInterfaceService } from './userInterface.service';
           <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
           <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
             <span >{{team.values?.name}}</span>
-            <span style="font-size:10px">{{team.values?.familyName}}</span>
+            <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
           <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
           <div style="clear:both">
