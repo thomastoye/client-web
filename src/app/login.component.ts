@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { auth } from 'firebase/app';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { userInterfaceService } from './userInterface.service';
 
@@ -65,8 +64,8 @@ export class LoginComponent  {
 
   login(email: string, password: string) {
     this.afAuth.auth.signInWithEmailAndPassword(email, password).catch((error) => {
-      let errorCode = error.code;
-      let errorMessage = error.message;
+      const errorCode = error.code;
+      const errorMessage = error.message;
       if (errorCode === 'auth/wrong-password') {
         this.messageUser = 'Wrong password.';
       } else {
@@ -79,8 +78,8 @@ export class LoginComponent  {
     this.afAuth.auth.sendPasswordResetEmail(email)
     .then(_ => this.messageUser = 'An email has been sent to you')
     .catch((error) => {
-      let errorCode = error.code;
-      let errorMessage = error.message;
+      const errorCode = error.code;
+      const errorMessage = error.message;
       this.messageUser = errorMessage;
     });
   }
@@ -99,8 +98,8 @@ export class LoginComponent  {
         this.messageUser = 'Verification password doesn\'t match';
       } else {
         this.afAuth.auth.createUserWithEmailAndPassword(email, password).catch((error) => {
-          let errorCode = error.code;
-          let errorMessage = error.message;
+          const errorCode = error.code;
+          const errorMessage = error.message;
           if (errorCode == 'auth/weak-password') {
             this.messageUser = 'The password is too weak.';
           } else {

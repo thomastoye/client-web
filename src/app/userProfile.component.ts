@@ -3,7 +3,6 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
 import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
@@ -110,14 +109,14 @@ export class UserProfileComponent {
 
   scrollToTop(team: string) {
     if (team != this.scrollTeam) {
-      let element = document.getElementById('main_container');
+      const element = document.getElementById('main_container');
       element.scrollTop = 0;
       this.scrollTeam = team;
     }
   }
 
   showFullScreenImage(src) {
-    let fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
+    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
     fullScreenImage.src = src;
     fullScreenImage.style.visibility = 'visible';
   }

@@ -1,8 +1,6 @@
 import { Injectable }    from '@angular/core';
-import * as firebase from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { auth } from 'firebase/app';
 
 @Injectable()
 export class userInterfaceService {
@@ -30,7 +28,7 @@ export class userInterfaceService {
           this.currentUserTeamsObj = snapshot;
         });
         if (this.focusUser == null) { this.focusUser = auth.uid; }
-        firebase.database().ref('appSettings/PERRINNServices/').once('value').then(services => {
+        this.db.database.ref('appSettings/PERRINNServices/').once('value').then(services => {
           this.services = services;
         });
       } else {
@@ -54,8 +52,8 @@ export class userInterfaceService {
       linkUserObj = {};
     }
     const now = Date.now();
-    let messageID = this.db.list('ids/').push(true).key;
-    let updateObj = {};
+    const messageID = this.db.list('ids/').push(true).key;
+    const updateObj = {};
     updateObj['teamMessages/' + this.currentTeam + '/' + messageID + '/payload'] = {
       timestamp: now,
       text,
@@ -75,7 +73,7 @@ export class userInterfaceService {
     if (this.processInputsComplete()) {
       updateObj['teamMessages/' + this.currentTeam + '/' + messageID + '/process'] = this.process[this.currentTeam];
     }
-    firebase.database().ref().update(updateObj);
+    this.db.database.ref().update(updateObj);
     this.timestampChatVisit();
     this.clearProcessData();
   }
@@ -83,7 +81,7 @@ export class userInterfaceService {
   analyseMessageText(text) {
     let newProcess = false;
     this.services.forEach((service) => {
-      let serviceRegex = new RegExp(service.val().regex, 'i');
+      const serviceRegex = new RegExp(service.val().regex, 'i');
       if (text.match(serviceRegex)) {
         if (service.val().process) {
           this.process[this.currentTeam] = {
@@ -109,12 +107,12 @@ export class userInterfaceService {
         if (this.process[this.currentTeam] !== undefined) {
           if (service.key == this.process[this.currentTeam].service) {
             if (service.child('process').child(this.process[this.currentTeam].step).val().input) {
-              let inputRegex = new RegExp(service.child('process').child(this.process[this.currentTeam].step).child('input').val().regex, 'i');
-              let value = text.match(inputRegex);
+              const inputRegex = new RegExp(service.child('process').child(this.process[this.currentTeam].step).child('input').val().regex, 'i');
+              const value = text.match(inputRegex);
               if (value) {
-                let variable = service.child('process').child(this.process[this.currentTeam].step).child('input').val().variable;
+                const variable = service.child('process').child(this.process[this.currentTeam].step).child('input').val().variable;
                 if (variable) {
-                  let valueString = value[0];
+                  const valueString = value[0];
                   this.process[this.currentTeam].inputs[variable] = valueString;
                   this.process[this.currentTeam].inputsArray.push([variable, valueString]);
                 }

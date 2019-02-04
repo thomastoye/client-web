@@ -2,11 +2,10 @@ import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
-import '@firebase/storage';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
+import { AngularFireStorage } from "@angular/fire/storage";
+import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'chat',
@@ -219,7 +218,13 @@ export class ChatComponent {
   chatReplayMode: boolean;
   chatReplayDraftMessageUser: string;
 
-  constructor(public sanitizer: DomSanitizer, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
+  constructor(
+    public db: AngularFireDatabase,
+    public router: Router,
+    public UI: userInterfaceService,
+    private route: ActivatedRoute,
+    private storage: AngularFireStorage,
+  ) {
     this.UI.loading = true;
     this.chatReplayMode = false;
     this.route.params.subscribe(params => {
@@ -256,7 +261,7 @@ export class ChatComponent {
           changes.forEach(c => {
             updateObj['teamReads/' + this.UI.currentUser + '/' + this.UI.currentTeam + '/' + c.payload.key] = true;
           });
-          firebase.database().ref().update(updateObj);
+          this.db.database.ref().update(updateObj);
           return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
         }));
         if (this.chatReplayMode) {
@@ -265,7 +270,12 @@ export class ChatComponent {
         this.draftMessageUsers = this.db.list('teamActivities/' + this.UI.currentTeam + '/draftMessages/').snapshotChanges().pipe(map(changes => {
           return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
         }));
-        this.db.object('viewUserTeams/' + this.UI.currentUser + '/' + this.UI.currentTeam).snapshotChanges().subscribe(userTeam => {
+
+        interface UserTeam {
+          lastChatVisitTimestamp: number;
+        }
+
+        this.db.object<UserTeam>('viewUserTeams/' + this.UI.currentUser + '/' + this.UI.currentTeam).snapshotChanges().subscribe(userTeam => {
           if (userTeam.payload.val() != null) {this.lastChatVisitTimestamp = Number(userTeam.payload.val().lastChatVisitTimestamp); }
         });
       });
@@ -310,7 +320,7 @@ export class ChatComponent {
         changes.forEach(c => {
           updateObj['teamReads/' + this.UI.currentUser + '/' + this.UI.currentTeam + '/' + c.payload.key] = true;
         });
-        firebase.database().ref().update(updateObj);
+        this.db.database.ref().update(updateObj);
         return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
       }));
     }
@@ -398,16 +408,17 @@ export class ChatComponent {
   onImageChange(event) {
     const image = event.target.files[0];
     const uploader = document.getElementById('uploader') as HTMLInputElement;
-    const storageRef = firebase.storage().ref('images/' + Date.now() + image.name);
+    const storageRef = this.storage.ref('images/' + Date.now() + image.name);
     const task = storageRef.put(image);
-    task.on('state_changed',
-      function progress(snapshot) {
+
+    task.snapshotChanges().subscribe((snapshot) => {
         document.getElementById('buttonFile').style.visibility = 'hidden';
         document.getElementById('uploader').style.visibility = 'visible';
+
         const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         uploader.value = percentage.toString();
       },
-      function error() {
+      (err) => {
         document.getElementById('buttonFile').style.visibility = 'visible';
         document.getElementById('uploader').style.visibility = 'hidden';
         uploader.value = '0';
@@ -416,15 +427,14 @@ export class ChatComponent {
         uploader.value = '0';
         document.getElementById('buttonFile').style.visibility = 'visible';
         document.getElementById('uploader').style.visibility = 'hidden';
-        this.draftMessage = task.snapshot.ref.name.substring(0, 13);
-        this.draftImage = task.snapshot.ref.name.substring(0, 13);
-        storageRef.getDownloadURL().then(url => {
+        this.draftMessage = task.task.snapshot.ref.name.substring(0, 13);
+        this.draftImage = task.task.snapshot.ref.name.substring(0, 13);
+        storageRef.getDownloadURL().subscribe(url => {
           this.draftImageDownloadURL = url;
           this.addMessage();
           event.target.value = '';
         });
-      }
-    );
+      });
   }
 
 }

@@ -2,7 +2,6 @@ import { Component, NgZone } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
 import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
@@ -111,8 +110,8 @@ export class BuyCoinsComponent {
           this.enteringCardDetails = false;
           this.processingPayment = true;
           this.messagePayment = `Processing card...`;
-          this.newPaymentID = firebase.database().ref(`/teamPayments/${this.UI.currentTeam}`).push().key;
-          firebase.database().ref(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}`)
+          this.newPaymentID = this.db.database.ref(`/teamPayments/${this.UI.currentTeam}`).push().key;
+          this.db.database.ref(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}`)
           .update({
             source: response.id,
             amountCOINSPurchased: this.amountCOINSPurchased,
@@ -121,14 +120,14 @@ export class BuyCoinsComponent {
             team: this.UI.currentTeam,
           })
           .then(() => {
-            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/response/outcome`).snapshotChanges().subscribe(paymentSnapshot => {
+            this.db.object<any>(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/response/outcome`).snapshotChanges().subscribe(paymentSnapshot => {
               if (paymentSnapshot.payload.val().seller_message != null) { this.messagePayment = paymentSnapshot.payload.val().seller_message; }
               if (this.messagePayment == 'Payment complete.') { this.messagePERRINNTransaction = 'We are now sending COINS to your team...'; }
             });
-            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/error`).snapshotChanges().subscribe(paymentSnapshot => {
+            this.db.object<any>(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/error`).snapshotChanges().subscribe(paymentSnapshot => {
               if (paymentSnapshot.payload.val().message != null) { this.messagePayment = paymentSnapshot.payload.val().message; }
             });
-            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/PERRINNTransaction`).snapshotChanges().subscribe(transactionSnapshot => {
+            this.db.object<any>(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/PERRINNTransaction`).snapshotChanges().subscribe(transactionSnapshot => {
               if (transactionSnapshot.payload.val().message != null) { this.messagePERRINNTransaction = transactionSnapshot.payload.val().message; }
             });
           });
@@ -138,7 +137,7 @@ export class BuyCoinsComponent {
   }
 
   refreshAmountCharge() {
-    firebase.database().ref('appSettings/currencyList/' + this.currentCurrencyID).once('value').then(currency => {
+    this.db.database.ref('appSettings/currencyList/' + this.currentCurrencyID).once('value').then(currency => {
       this.amountCharge = Number((this.amountCOINSPurchased / currency.val().toCOIN * 100).toFixed(0));
     });
   }

@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
-import { Router, NavigationEnd } from '@angular/router';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
 @Component({
@@ -38,10 +35,10 @@ export class AppComponent {
 
   constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     localStorage.clear();
-    db.list('viewUserTeams/' + this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams => {
+    db.list<any>('viewUserTeams/' + this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams => {
       this.globalChatActivity = false;
       viewUserTeams.forEach(userTeam => {
-        let chatActivity = (userTeam.payload.val().lastMessageTimestamp > userTeam.payload.val().lastChatVisitTimestamp);
+        const chatActivity = (userTeam.payload.val().lastMessageTimestamp > userTeam.payload.val().lastChatVisitTimestamp);
         if (chatActivity) {
           this.globalChatActivity = true;
         }
@@ -64,7 +61,7 @@ export class AppComponent {
   }
 
   hideFullScreenImage() {
-    let fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
+    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
     fullScreenImage.style.visibility = 'hidden';
     fullScreenImage.src = '';
   }

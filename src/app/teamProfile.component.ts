@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
-import * as firebase from 'firebase/app';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -90,7 +89,7 @@ export class TeamProfileComponent  {
   }
 
   showFullScreenImage(src) {
-    let fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
+    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
     fullScreenImage.src = src;
     fullScreenImage.style.visibility = 'visible';
   }

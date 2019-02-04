@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
-import * as firebase from 'firebase/app';
 import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
