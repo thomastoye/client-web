@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
 import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
@@ -36,31 +35,30 @@ export class SearchComponent  {
   teams: Observable<any[]>;
   searchFilter: string;
 
-  constructor(public db:AngularFireDatabase,public router:Router,public UI:userInterfaceService) {
+  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
   }
 
-  ngOnInit () {
-    document.getElementById("searchInput").focus();
+  ngOnInit() {
+    document.getElementById('searchInput').focus();
     this.refreshSearchLists();
   }
 
-  refreshSearchLists () {
+  refreshSearchLists() {
     if (this.searchFilter) {
-      if (this.searchFilter.length>1) {
-        this.teams = this.db.list('PERRINNSearch/teams',ref=>ref
+      if (this.searchFilter.length > 1) {
+        this.teams = this.db.list('PERRINNSearch/teams', ref => ref
         .orderByChild('nameLowerCase')
         .startAt(this.searchFilter.toLowerCase())
-        .endAt(this.searchFilter.toLowerCase()+"\uf8ff")
+        .endAt(this.searchFilter.toLowerCase() + '\uf8ff')
         .limitToFirst(10))
-        .snapshotChanges().pipe(map(changes=>{
-          return changes.map(c=>({
-            key:c.payload.key,
-            values:c.payload.val(),
+        .snapshotChanges().pipe(map(changes => {
+          return changes.map(c => ({
+            key: c.payload.key,
+            values: c.payload.val(),
           }));
         }));
       }
-    }
-    else {
+    } else {
       this.teams = null;
     }
   }

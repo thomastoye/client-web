@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router'
+import { Router } from '@angular/router';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { auth } from 'firebase/app';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { userInterfaceService } from './userInterface.service';
 
@@ -53,66 +52,65 @@ export class LoginComponent  {
   messageUser: string;
   newUser: boolean;
 
-  constructor(public afAuth:AngularFireAuth,public router:Router,public db:AngularFireDatabase,public UI:userInterfaceService) {
-    this.newUser=false;
-    this.UI.currentTeam="";
+  constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase, public UI: userInterfaceService) {
+    this.newUser = false;
+    this.UI.currentTeam = '';
     this.afAuth.user.subscribe((auth) => {
-      if (auth!=null) {
-        this.router.navigate(['user',auth.uid]);
+      if (auth != null) {
+        this.router.navigate(['user', auth.uid]);
       }
     });
   }
 
   login(email: string, password: string) {
-    this.afAuth.auth.signInWithEmailAndPassword(email, password).catch((error)=>{
-      var errorCode = error.code;
-      var errorMessage = error.message;
+    this.afAuth.auth.signInWithEmailAndPassword(email, password).catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
       if (errorCode === 'auth/wrong-password') {
-        this.messageUser='Wrong password.';
+        this.messageUser = 'Wrong password.';
       } else {
-        this.messageUser=errorMessage;
+        this.messageUser = errorMessage;
       }
     });
   }
 
   resetPassword(email: string) {
     this.afAuth.auth.sendPasswordResetEmail(email)
-    .then(_ => this.messageUser="An email has been sent to you")
-    .catch((error)=>{
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      this.messageUser=errorMessage;
+    .then(_ => this.messageUser = 'An email has been sent to you')
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      this.messageUser = errorMessage;
     });
   }
 
   logout() {
     this.afAuth.auth.signOut()
-    .then(_ => this.messageUser="Successfully logged out")
-    .catch(err => this.messageUser="You were not logged in");
+    .then(_ => this.messageUser = 'Successfully logged out')
+    .catch(err => this.messageUser = 'You were not logged in');
   }
 
   register(email: string, password: string, passwordConfirm: string, name: string, familyName: string) {
-    if (email==null||password==null||passwordConfirm==null||name==null||familyName==null) {
-        this.messageUser="You need to fill all the fields";
-    }
-    else {
-      if (password!=passwordConfirm) {
-        this.messageUser="Verification password doesn't match";
+    if (email == null || password == null || passwordConfirm == null || name == null || familyName == null) {
+        this.messageUser = 'You need to fill all the fields';
+    } else {
+      if (password != passwordConfirm) {
+        this.messageUser = 'Verification password doesn\'t match';
       } else {
-        this.afAuth.auth.createUserWithEmailAndPassword(email, password).catch((error)=>{
-          var errorCode = error.code;
-          var errorMessage = error.message;
+        this.afAuth.auth.createUserWithEmailAndPassword(email, password).catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
           if (errorCode == 'auth/weak-password') {
-            this.messageUser='The password is too weak.';
+            this.messageUser = 'The password is too weak.';
           } else {
-            this.messageUser=errorMessage;
+            this.messageUser = errorMessage;
           }
-        }).then(_=> {
+        }).then(_ => {
           this.afAuth.user.subscribe((auth) => {
-            this.db.list('users/'+auth.uid).push({
-              timestamp:firebase.database.ServerValue.TIMESTAMP,
-              name:name,
-              familyName:familyName,
+            this.db.list('users/' + auth.uid).push({
+              timestamp: firebase.database.ServerValue.TIMESTAMP,
+              name,
+              familyName,
             });
           });
         });

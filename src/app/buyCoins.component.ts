@@ -2,8 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
-import { Router } from '@angular/router'
+import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
 @Component({
@@ -82,23 +81,23 @@ export class BuyCoinsComponent {
   enteringCardDetails: boolean;
   processingPayment: boolean;
 
-  constructor(public db:AngularFireDatabase,public router:Router,private _zone:NgZone,public UI:userInterfaceService) {
+  constructor(public db: AngularFireDatabase, public router: Router, private _zone: NgZone, public UI: userInterfaceService) {
     this.enteringAmount = true;
     this.enteringCardDetails = false;
     this.processingPayment = false;
-    this.newPaymentID = "";
-    this.messagePayment = "";
-    this.messagePERRINNTransaction = "";
-    this.amountCOINSPurchased=100;
-    this.currentCurrencyID='gbp';
-    this.currencyList = db.list('appSettings/currencyList').snapshotChanges().pipe(map(changes=>{
-      return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+    this.newPaymentID = '';
+    this.messagePayment = '';
+    this.messagePERRINNTransaction = '';
+    this.amountCOINSPurchased = 100;
+    this.currentCurrencyID = 'gbp';
+    this.currencyList = db.list('appSettings/currencyList').snapshotChanges().pipe(map(changes => {
+      return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
     }));
     this.refreshAmountCharge();
   }
 
   processPayment() {
-    (<any>window).Stripe.card.createToken({
+    (window as any).Stripe.card.createToken({
       number: this.cardNumber,
       exp_month: this.expiryMonth,
       exp_year: this.expiryYear,
@@ -107,13 +106,12 @@ export class BuyCoinsComponent {
       this._zone.run(() => {
         if (response.error) {
           this.messagePayment = response.error.message;
-        }
-        else {
+        } else {
           this.enteringCardDetails = false;
           this.processingPayment = true;
           this.messagePayment = `Processing card...`;
-          this.newPaymentID = firebase.database().ref(`/teamPayments/${this.UI.currentTeam}`).push().key;
-          firebase.database().ref(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}`)
+          this.newPaymentID = this.db.database.ref(`/teamPayments/${this.UI.currentTeam}`).push().key;
+          this.db.database.ref(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}`)
           .update({
             source: response.id,
             amountCOINSPurchased: this.amountCOINSPurchased,
@@ -121,16 +119,16 @@ export class BuyCoinsComponent {
             currency: this.currentCurrencyID,
             team: this.UI.currentTeam,
           })
-          .then(()=>{
-            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/response/outcome`).snapshotChanges().subscribe(paymentSnapshot=>{
-              if (paymentSnapshot.payload.val().seller_message!=null) this.messagePayment = paymentSnapshot.payload.val().seller_message;
-              if (this.messagePayment == "Payment complete.") this.messagePERRINNTransaction = "We are now sending COINS to your team...";
+          .then(() => {
+            this.db.object<any>(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/response/outcome`).snapshotChanges().subscribe(paymentSnapshot => {
+              if (paymentSnapshot.payload.val().seller_message != null) { this.messagePayment = paymentSnapshot.payload.val().seller_message; }
+              if (this.messagePayment == 'Payment complete.') { this.messagePERRINNTransaction = 'We are now sending COINS to your team...'; }
             });
-            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/error`).snapshotChanges().subscribe(paymentSnapshot=>{
-              if (paymentSnapshot.payload.val().message!=null) this.messagePayment = paymentSnapshot.payload.val().message;
+            this.db.object<any>(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/error`).snapshotChanges().subscribe(paymentSnapshot => {
+              if (paymentSnapshot.payload.val().message != null) { this.messagePayment = paymentSnapshot.payload.val().message; }
             });
-            this.db.object(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/PERRINNTransaction`).snapshotChanges().subscribe(transactionSnapshot=>{
-              if (transactionSnapshot.payload.val().message!=null) this.messagePERRINNTransaction = transactionSnapshot.payload.val().message;
+            this.db.object<any>(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/PERRINNTransaction`).snapshotChanges().subscribe(transactionSnapshot => {
+              if (transactionSnapshot.payload.val().message != null) { this.messagePERRINNTransaction = transactionSnapshot.payload.val().message; }
             });
           });
         }
@@ -138,8 +136,8 @@ export class BuyCoinsComponent {
     });
   }
 
-  refreshAmountCharge () {
-    firebase.database().ref('appSettings/currencyList/'+this.currentCurrencyID).once('value').then(currency=>{
+  refreshAmountCharge() {
+    this.db.database.ref('appSettings/currencyList/' + this.currentCurrencyID).once('value').then(currency => {
       this.amountCharge = Number((this.amountCOINSPurchased / currency.val().toCOIN * 100).toFixed(0));
     });
   }

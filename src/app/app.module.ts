@@ -29,12 +29,12 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
 
 // Must export the config
 export const firebaseConfig = {
-  apiKey: "AIzaSyAoG3PvimV926EgWlGvpzXrZAkOi1uWdcs",
-  authDodash: "perrinn-d5fc1.firebaseapp.com",
-  databaseURL: "https://perrinn-d5fc1.firebaseio.com",
-  storageBucket: "perrinn-d5fc1.appspot.com",
-  projectId: "perrinn-d5fc1",
-  messagingSenderId: "44958643568"
+  apiKey: 'AIzaSyAoG3PvimV926EgWlGvpzXrZAkOi1uWdcs',
+  authDodash: 'perrinn-d5fc1.firebaseapp.com',
+  databaseURL: 'https://perrinn-d5fc1.firebaseio.com',
+  storageBucket: 'perrinn-d5fc1.appspot.com',
+  projectId: 'perrinn-d5fc1',
+  messagingSenderId: '44958643568'
 };
 
 @NgModule({

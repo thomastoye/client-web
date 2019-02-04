@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
-import * as firebase from 'firebase/app';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Router, ActivatedRoute } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
 @Component({
@@ -47,52 +46,52 @@ import { userInterfaceService } from './userInterface.service';
 })
 export class TeamProfileComponent  {
 
-  teamLeaders:Observable<any[]>;
-  teamMembers:Observable<any[]>;
-  teamChildren:Observable<any[]>;
-  parent:string;
-  parentName:Observable<{}>;
-  parentImageUrlThumb:Observable<{}>;
+  teamLeaders: Observable<any[]>;
+  teamMembers: Observable<any[]>;
+  teamChildren: Observable<any[]>;
+  parent: string;
+  parentName: Observable<{}>;
+  parentImageUrlThumb: Observable<{}>;
 
-  constructor(public db: AngularFireDatabase,public router:Router,public UI:userInterfaceService,private route: ActivatedRoute) {
+  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
-      this.UI.currentTeam=params['id'];
-      this.teamLeaders=this.db.list('PERRINNTeams/'+this.UI.currentTeam+'/leaders').snapshotChanges().pipe(map(changes=>{
-        return changes.map(c=>({
-          key:c.payload.key,
-          values:c.payload.val(),
-          name:this.db.object('PERRINNTeams/'+c.payload.key+'/name').valueChanges(),
-          imageUrlThumb:this.db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
+      this.UI.currentTeam = params.id;
+      this.teamLeaders = this.db.list('PERRINNTeams/' + this.UI.currentTeam + '/leaders').snapshotChanges().pipe(map(changes => {
+        return changes.map(c => ({
+          key: c.payload.key,
+          values: c.payload.val(),
+          name: this.db.object('PERRINNTeams/' + c.payload.key + '/name').valueChanges(),
+          imageUrlThumb: this.db.object('PERRINNTeams/' + c.payload.key + '/imageUrlThumb').valueChanges(),
         }));
       }));
-      this.teamMembers=this.db.list('PERRINNTeams/'+this.UI.currentTeam+'/members').snapshotChanges().pipe(map(changes=>{
-        return changes.map(c=>({
-          key:c.payload.key,
-          values:c.payload.val(),
-          name:this.db.object('PERRINNTeams/'+c.payload.key+'/name').valueChanges(),
-          imageUrlThumb:this.db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
+      this.teamMembers = this.db.list('PERRINNTeams/' + this.UI.currentTeam + '/members').snapshotChanges().pipe(map(changes => {
+        return changes.map(c => ({
+          key: c.payload.key,
+          values: c.payload.val(),
+          name: this.db.object('PERRINNTeams/' + c.payload.key + '/name').valueChanges(),
+          imageUrlThumb: this.db.object('PERRINNTeams/' + c.payload.key + '/imageUrlThumb').valueChanges(),
         }));
       }));
-      this.db.object('PERRINNTeams/'+this.UI.currentTeam+'/parent').snapshotChanges().subscribe(changes=>{
-        this.parent=changes.payload.val().toString();
-        this.parentName=this.db.object('PERRINNTeams/'+this.parent+'/name').valueChanges();
-        this.parentImageUrlThumb=this.db.object('PERRINNTeams/'+this.parent+'/imageUrlThumb').valueChanges();
+      this.db.object('PERRINNTeams/' + this.UI.currentTeam + '/parent').snapshotChanges().subscribe(changes => {
+        this.parent = changes.payload.val().toString();
+        this.parentName = this.db.object('PERRINNTeams/' + this.parent + '/name').valueChanges();
+        this.parentImageUrlThumb = this.db.object('PERRINNTeams/' + this.parent + '/imageUrlThumb').valueChanges();
       });
-      this.teamChildren=this.db.list('PERRINNTeams/'+this.UI.currentTeam+'/children').snapshotChanges().pipe(map(changes=>{
-        return changes.map(c=>({
-          key:c.payload.key,
-          values:c.payload.val(),
-          name:this.db.object('PERRINNTeams/'+c.payload.key+'/name').valueChanges(),
-          imageUrlThumb:this.db.object('PERRINNTeams/'+c.payload.key+'/imageUrlThumb').valueChanges(),
+      this.teamChildren = this.db.list('PERRINNTeams/' + this.UI.currentTeam + '/children').snapshotChanges().pipe(map(changes => {
+        return changes.map(c => ({
+          key: c.payload.key,
+          values: c.payload.val(),
+          name: this.db.object('PERRINNTeams/' + c.payload.key + '/name').valueChanges(),
+          imageUrlThumb: this.db.object('PERRINNTeams/' + c.payload.key + '/imageUrlThumb').valueChanges(),
         }));
       }));
     });
   }
 
-  showFullScreenImage(src){
-    var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
-    fullScreenImage.src=src;
-    fullScreenImage.style.visibility='visible';
+  showFullScreenImage(src) {
+    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
+    fullScreenImage.src = src;
+    fullScreenImage.style.visibility = 'visible';
   }
 
 }

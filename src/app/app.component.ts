@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
-import { Router, NavigationEnd } from '@angular/router'
+import { AngularFireDatabase } from '@angular/fire/database';
+import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
 @Component({
@@ -34,18 +31,18 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class AppComponent {
-  globalChatActivity:boolean;
+  globalChatActivity: boolean;
 
   constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     localStorage.clear();
-    db.list('viewUserTeams/'+this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams=>{
-      this.globalChatActivity=false;
-      viewUserTeams.forEach(userTeam=>{
-        var chatActivity = (userTeam.payload.val().lastMessageTimestamp > userTeam.payload.val().lastChatVisitTimestamp);
-        if(chatActivity){
-          this.globalChatActivity=true;
+    db.list<any>('viewUserTeams/' + this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams => {
+      this.globalChatActivity = false;
+      viewUserTeams.forEach(userTeam => {
+        const chatActivity = (userTeam.payload.val().lastMessageTimestamp > userTeam.payload.val().lastChatVisitTimestamp);
+        if (chatActivity) {
+          this.globalChatActivity = true;
         }
-        document.title=this.globalChatActivity?"(!) PERRINN":"PERRINN";
+        document.title = this.globalChatActivity ? '(!) PERRINN' : 'PERRINN';
       });
     });
   }
@@ -58,22 +55,21 @@ export class AppComponent {
       window.history.forward();
   }
 
-  ngOnInit () {
-    document.getElementById('uploader').style.visibility = "hidden";
-    document.getElementById("fullScreenImage").style.visibility='hidden';
+  ngOnInit() {
+    document.getElementById('uploader').style.visibility = 'hidden';
+    document.getElementById('fullScreenImage').style.visibility = 'hidden';
   }
 
-  hideFullScreenImage(){
-    var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
-    fullScreenImage.style.visibility='hidden';
-    fullScreenImage.src="";
+  hideFullScreenImage() {
+    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
+    fullScreenImage.style.visibility = 'hidden';
+    fullScreenImage.src = '';
   }
 
-  clickUserIcon () {
+  clickUserIcon() {
     if (this.UI.currentUser) {
-      this.router.navigate(['user',this.UI.currentUser]);
-    }
-    else {
+      this.router.navigate(['user', this.UI.currentUser]);
+    } else {
       this.router.navigate(['login']);
     }
   }

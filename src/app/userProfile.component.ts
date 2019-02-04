@@ -3,8 +3,7 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
-import { Router, ActivatedRoute } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
 @Component({
@@ -84,46 +83,46 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class UserProfileComponent {
-  viewUserTeams:Observable<any[]>;
-  now:number;
-  scrollTeam:string;
+  viewUserTeams: Observable<any[]>;
+  now: number;
+  scrollTeam: string;
 
   constructor(public db: AngularFireDatabase, public afs: AngularFirestore, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
-    this.UI.loading=true;
-    this.UI.currentTeam="";
+    this.UI.loading = true;
+    this.UI.currentTeam = '';
     this.now = Date.now();
-    this.scrollTeam='';
+    this.scrollTeam = '';
     this.route.params.subscribe(params => {
-      this.UI.focusUser = params['id'];
-      db.object('PERRINNTeams/'+this.UI.focusUser).valueChanges().subscribe(snapshot=>{
-        this.UI.focusUserObj=snapshot;
+      this.UI.focusUser = params.id;
+      db.object('PERRINNTeams/' + this.UI.focusUser).valueChanges().subscribe(snapshot => {
+        this.UI.focusUserObj = snapshot;
       });
-      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().pipe(map(changes=>{
-        this.UI.loading=false;
-        return changes.map(c=>({
-          key:c.payload.key,
-          values:c.payload.val(),
+      this.viewUserTeams = db.list('viewUserTeams/' + this.UI.focusUser, ref => ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().pipe(map(changes => {
+        this.UI.loading = false;
+        return changes.map(c => ({
+          key: c.payload.key,
+          values: c.payload.val(),
         }));
       }));
     });
   }
 
-  scrollToTop(team:string) {
-    if (team!=this.scrollTeam) {
-      var element=document.getElementById("main_container");
-      element.scrollTop=0;
-      this.scrollTeam=team;
+  scrollToTop(team: string) {
+    if (team != this.scrollTeam) {
+      const element = document.getElementById('main_container');
+      element.scrollTop = 0;
+      this.scrollTeam = team;
     }
   }
 
-  showFullScreenImage(src){
-    var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
-    fullScreenImage.src=src;
-    fullScreenImage.style.visibility='visible';
+  showFullScreenImage(src) {
+    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
+    fullScreenImage.src = src;
+    fullScreenImage.style.visibility = 'visible';
   }
 
-  objectToArray(obj){
-    if (obj==null) return null;
+  objectToArray(obj) {
+    if (obj == null) { return null; }
     return Object.keys(obj).map(function(key) {
       return [key, obj[key]];
     });

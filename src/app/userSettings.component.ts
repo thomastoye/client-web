@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { auth } from 'firebase/app';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
-import { Router, ActivatedRoute } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
 @Component({
@@ -35,28 +33,28 @@ import { userInterfaceService } from './userInterface.service';
 export class UserSettingsComponent {
   viewUserTeams: Observable<any[]>;
 
-  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase,public router: Router,public UI: userInterfaceService,private route: ActivatedRoute) {
+  constructor(public afAuth: AngularFireAuth, public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
-      this.UI.focusUser = params['id'];
-      this.UI.currentTeam="";
-      this.viewUserTeams=db.list('viewUserTeams/'+this.UI.focusUser,ref=>ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().pipe(map(changes=>{
-        return changes.map(c=>({
-          key:c.payload.key,
-          values:c.payload.val(),
-          isFocusUserLeader:this.db.object('PERRINNTeams/'+c.payload.key+'/leaders/'+this.UI.focusUser).valueChanges(),
+      this.UI.focusUser = params.id;
+      this.UI.currentTeam = '';
+      this.viewUserTeams = db.list('viewUserTeams/' + this.UI.focusUser, ref => ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().pipe(map(changes => {
+        return changes.map(c => ({
+          key: c.payload.key,
+          values: c.payload.val(),
+          isFocusUserLeader: this.db.object('PERRINNTeams/' + c.payload.key + '/leaders/' + this.UI.focusUser).valueChanges(),
         }));
       }));
     });
   }
 
-  stopFollowing(team){
-    this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+team).remove();
-    this.db.object('subscribeTeamUsers/'+team+'/'+this.UI.currentUser).remove();
+  stopFollowing(team) {
+    this.db.object('viewUserTeams/' + this.UI.currentUser + '/' + team).remove();
+    this.db.object('subscribeTeamUsers/' + team + '/' + this.UI.currentUser).remove();
   }
 
   logout() {
-    this.afAuth.auth.signOut()
-    this.UI.currentUser=null;
+    this.afAuth.auth.signOut();
+    this.UI.currentUser = null;
   }
 
 }

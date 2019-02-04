@@ -2,15 +2,14 @@ import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as firebase from 'firebase/app';
-import '@firebase/storage';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Router, ActivatedRoute } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
+import { AngularFireStorage } from "@angular/fire/storage";
+import * as firebase from 'firebase/app';
 
 @Component({
-  selector:'chat',
-  template:`
+  selector: 'chat',
+  template: `
   <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
   <div class="sheet" style="box-shadow:none;background-color:#eaeaea">
   <div class="spinner" *ngIf="UI.loading">
@@ -202,230 +201,240 @@ import { userInterfaceService } from './userInterface.service';
     `,
 })
 export class ChatComponent {
-  draftMessage:string;
-  draftImage:string;
-  draftImageDownloadURL:string;
-  draftMessageDB:boolean;
-  draftMessageUsers:Observable<any[]>;
-  teamMessages:Observable<any[]>;
-  messageNumberDisplay:number;
-  lastChatVisitTimestamp:number;
-  scrollMessageTimestamp:number;
-  previousMessageTimestamp:number;
-  previousMessageUser:string;
-  isCurrentUserLeader:boolean;
-  isCurrentUserMember:boolean;
-  showDetails:{};
-  chatReplayMode:boolean;
-  chatReplayDraftMessageUser:string;
+  draftMessage: string;
+  draftImage: string;
+  draftImageDownloadURL: string;
+  draftMessageDB: boolean;
+  draftMessageUsers: Observable<any[]>;
+  teamMessages: Observable<any[]>;
+  messageNumberDisplay: number;
+  lastChatVisitTimestamp: number;
+  scrollMessageTimestamp: number;
+  previousMessageTimestamp: number;
+  previousMessageUser: string;
+  isCurrentUserLeader: boolean;
+  isCurrentUserMember: boolean;
+  showDetails: {};
+  chatReplayMode: boolean;
+  chatReplayDraftMessageUser: string;
 
-  constructor(public sanitizer:DomSanitizer,public db:AngularFireDatabase,public router:Router,public UI:userInterfaceService,private route:ActivatedRoute) {
-    this.UI.loading=true;
-    this.chatReplayMode=false;
+  constructor(
+    public db: AngularFireDatabase,
+    public router: Router,
+    public UI: userInterfaceService,
+    private route: ActivatedRoute,
+    private storage: AngularFireStorage,
+  ) {
+    this.UI.loading = true;
+    this.chatReplayMode = false;
     this.route.params.subscribe(params => {
-      this.UI.currentTeam=params['id'];
-      this.isCurrentUserLeader=false;
-      this.isCurrentUserMember=false;
-      this.showDetails={};
-      db.object('PERRINNTeams/'+this.UI.currentTeam).valueChanges().subscribe(snapshot=>{
-        this.UI.currentTeamObj=snapshot;
-        this.UI.currentTeamObjKey=this.UI.currentTeam;
-        if(this.UI.currentUser){
-          if(this.UI.currentTeamObj.leaders!=undefined){
-            this.isCurrentUserLeader=this.UI.currentTeamObj.leaders[UI.currentUser]?true:false;
+      this.UI.currentTeam = params.id;
+      this.isCurrentUserLeader = false;
+      this.isCurrentUserMember = false;
+      this.showDetails = {};
+      db.object('PERRINNTeams/' + this.UI.currentTeam).valueChanges().subscribe(snapshot => {
+        this.UI.currentTeamObj = snapshot;
+        this.UI.currentTeamObjKey = this.UI.currentTeam;
+        if (this.UI.currentUser) {
+          if (this.UI.currentTeamObj.leaders != undefined) {
+            this.isCurrentUserLeader = this.UI.currentTeamObj.leaders[UI.currentUser] ? true : false;
           }
-          if(this.UI.currentTeamObj.members!=undefined){
-            this.isCurrentUserMember=this.UI.currentTeamObj.members[UI.currentUser]?true:false;
+          if (this.UI.currentTeamObj.members != undefined) {
+            this.isCurrentUserMember = this.UI.currentTeamObj.members[UI.currentUser] ? true : false;
           }
         }
       });
-      db.object('PERRINNTeams/'+this.UI.currentTeam+'/chatReplayMode').valueChanges().subscribe(snapshot=>{
-        if(snapshot!=undefined){
-          this.chatReplayMode=snapshot?true:false;
+      db.object('PERRINNTeams/' + this.UI.currentTeam + '/chatReplayMode').valueChanges().subscribe(snapshot => {
+        if (snapshot != undefined) {
+          this.chatReplayMode = snapshot ? true : false;
         }
-        this.previousMessageTimestamp=0;
-        this.previousMessageUser="";
-        this.draftMessageDB=false;
-        this.draftImage="";
-        this.draftImageDownloadURL="";
-        this.draftMessage="";
+        this.previousMessageTimestamp = 0;
+        this.previousMessageUser = '';
+        this.draftMessageDB = false;
+        this.draftImage = '';
+        this.draftImageDownloadURL = '';
+        this.draftMessage = '';
         this.messageNumberDisplay = 15;
-        this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes=>{
-          this.UI.loading=false;
-          let updateObj={};
-          changes.forEach(c=>{
-            updateObj['teamReads/'+this.UI.currentUser+'/'+this.UI.currentTeam+'/'+c.payload.key]=true;
+        this.teamMessages = this.db.list('teamMessages/' + this.UI.currentTeam, ref => ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes => {
+          this.UI.loading = false;
+          const updateObj = {};
+          changes.forEach(c => {
+            updateObj['teamReads/' + this.UI.currentUser + '/' + this.UI.currentTeam + '/' + c.payload.key] = true;
           });
-          firebase.database().ref().update(updateObj);
-          return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+          this.db.database.ref().update(updateObj);
+          return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
         }));
-        if(this.chatReplayMode){
+        if (this.chatReplayMode) {
           this.chatReplayLoop();
         }
-        this.draftMessageUsers = this.db.list('teamActivities/'+this.UI.currentTeam+'/draftMessages/').snapshotChanges().pipe(map(changes=>{
-          return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+        this.draftMessageUsers = this.db.list('teamActivities/' + this.UI.currentTeam + '/draftMessages/').snapshotChanges().pipe(map(changes => {
+          return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
         }));
-        this.db.object('viewUserTeams/'+this.UI.currentUser+'/'+this.UI.currentTeam).snapshotChanges().subscribe(userTeam=>{
-          if(userTeam.payload.val()!=null)this.lastChatVisitTimestamp = Number(userTeam.payload.val().lastChatVisitTimestamp);
+
+        interface UserTeam {
+          lastChatVisitTimestamp: number;
+        }
+
+        this.db.object<UserTeam>('viewUserTeams/' + this.UI.currentUser + '/' + this.UI.currentTeam).snapshotChanges().subscribe(userTeam => {
+          if (userTeam.payload.val() != null) {this.lastChatVisitTimestamp = Number(userTeam.payload.val().lastChatVisitTimestamp); }
         });
       });
     });
   }
 
-  ngOnDestroy(){
-    this.chatReplayMode=false;
+  ngOnDestroy() {
+    this.chatReplayMode = false;
   }
 
-  chatReplayLoop(){
-    this.messageNumberDisplay=0;
-    var that=this;
-    var textLength=0;
-    var image=0;
-    (function theLoop () {
-      that.chatReplayDraftMessageUser='';
-      setTimeout(function () {
-        ++that.messageNumberDisplay
-        that.teamMessages.subscribe(snapshot=>{
-          if(snapshot[that.messageNumberDisplay]==undefined)that.chatReplayMode=false;
-          textLength=snapshot[that.messageNumberDisplay].values.payload.text.length;
-          if(snapshot[that.messageNumberDisplay].values.payload.image)image=1;
-          else image=0;
+  chatReplayLoop() {
+    this.messageNumberDisplay = 0;
+    const that = this;
+    let textLength = 0;
+    let image = 0;
+    (function theLoop() {
+      that.chatReplayDraftMessageUser = '';
+      setTimeout(function() {
+        ++that.messageNumberDisplay;
+        that.teamMessages.subscribe(snapshot => {
+          if (snapshot[that.messageNumberDisplay] == undefined) {that.chatReplayMode = false; }
+          textLength = snapshot[that.messageNumberDisplay].values.payload.text.length;
+          if (snapshot[that.messageNumberDisplay].values.payload.image) {image = 1; } else { image = 0; }
         });
-        if (that.chatReplayMode)theLoop();
-      },2000+textLength*100+image*4000);
-      setTimeout(function () {
-        that.teamMessages.subscribe(snapshot=>{
-          that.chatReplayDraftMessageUser=snapshot[that.messageNumberDisplay].values.payload.name;
+        if (that.chatReplayMode) {theLoop(); }
+      }, 2000 + textLength * 100 + image * 4000);
+      setTimeout(function() {
+        that.teamMessages.subscribe(snapshot => {
+          that.chatReplayDraftMessageUser = snapshot[that.messageNumberDisplay].values.payload.name;
         });
-      },textLength*100+image*4000);
+      }, textLength * 100 + image * 4000);
     })();
   }
 
-  scrollHandler(e){
-    if(e==='top'){
-      this.UI.loading=true;
-      this.messageNumberDisplay+=15;
-      return this.teamMessages=this.db.list('teamMessages/'+this.UI.currentTeam,ref=>ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes=>{
-        this.UI.loading=false;
-        let updateObj={};
-        changes.forEach(c=>{
-          updateObj['teamReads/'+this.UI.currentUser+'/'+this.UI.currentTeam+'/'+c.payload.key]=true;
+  scrollHandler(e) {
+    if (e === 'top') {
+      this.UI.loading = true;
+      this.messageNumberDisplay += 15;
+      return this.teamMessages = this.db.list('teamMessages/' + this.UI.currentTeam, ref => ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes => {
+        this.UI.loading = false;
+        const updateObj = {};
+        changes.forEach(c => {
+          updateObj['teamReads/' + this.UI.currentUser + '/' + this.UI.currentTeam + '/' + c.payload.key] = true;
         });
-        firebase.database().ref().update(updateObj);
-        return changes.map(c=>({key:c.payload.key,values:c.payload.val()}));
+        this.db.database.ref().update(updateObj);
+        return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
       }));
     }
   }
 
-  switchShowDetails(message){
-    if(this.showDetails[message]==undefined){
-      this.showDetails[message]=true;
+  switchShowDetails(message) {
+    if (this.showDetails[message] == undefined) {
+      this.showDetails[message] = true;
     } else {
-      this.showDetails[message]=!this.showDetails[message];
+      this.showDetails[message] = !this.showDetails[message];
     }
   }
 
-  showFullScreenImage(src){
-    var fullScreenImage = <HTMLImageElement>document.getElementById("fullScreenImage");
-    fullScreenImage.src=src;
-    fullScreenImage.style.visibility='visible';
+  showFullScreenImage(src) {
+    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
+    fullScreenImage.src = src;
+    fullScreenImage.style.visibility = 'visible';
   }
 
-  isMessageNewTimeGroup (messageTimestamp) {
-    var isMessageNewTimeGroup:boolean;
-    isMessageNewTimeGroup= Math.abs(messageTimestamp-this.previousMessageTimestamp)>1000*60*60*4;
+  isMessageNewTimeGroup(messageTimestamp) {
+    let isMessageNewTimeGroup: boolean;
+    isMessageNewTimeGroup = Math.abs(messageTimestamp - this.previousMessageTimestamp) > 1000 * 60 * 60 * 4;
     return isMessageNewTimeGroup;
   }
 
-  isMessageNewUserGroup (user,messageTimestamp) {
-    var isMessageNewUserGroup:boolean;
-    isMessageNewUserGroup= Math.abs(messageTimestamp-this.previousMessageTimestamp)>1000*60*5||(user!=this.previousMessageUser);
+  isMessageNewUserGroup(user, messageTimestamp) {
+    let isMessageNewUserGroup: boolean;
+    isMessageNewUserGroup = Math.abs(messageTimestamp - this.previousMessageTimestamp) > 1000 * 60 * 5 || (user != this.previousMessageUser);
     return isMessageNewUserGroup;
   }
 
-  storeMessageValues (user,timestamp) {
-    this.previousMessageUser=user;
-    this.previousMessageTimestamp=timestamp;
+  storeMessageValues(user, timestamp) {
+    this.previousMessageUser = user;
+    this.previousMessageTimestamp = timestamp;
   }
 
-  isDraftMessageRecent (draftMessageTimestamp) {
-    return (Date.now()-draftMessageTimestamp)<1000*60;
+  isDraftMessageRecent(draftMessageTimestamp) {
+    return (Date.now() - draftMessageTimestamp) < 1000 * 60;
   }
 
-  scrollToBottom(scrollMessageTimestamp:number) {
-    if (scrollMessageTimestamp!=this.scrollMessageTimestamp) {
-      var element = document.getElementById("main_container");
+  scrollToBottom(scrollMessageTimestamp: number) {
+    if (scrollMessageTimestamp != this.scrollMessageTimestamp) {
+      const element = document.getElementById('main_container');
       element.scrollTop = element.scrollHeight;
-      this.scrollMessageTimestamp=scrollMessageTimestamp;
+      this.scrollMessageTimestamp = scrollMessageTimestamp;
     }
   }
 
   addMessage() {
-    this.UI.createMessage(this.draftMessage,this.draftImage,this.draftImageDownloadURL,'','');
-    this.draftMessage="";
-    this.draftImage="";
+    this.UI.createMessage(this.draftMessage, this.draftImage, this.draftImageDownloadURL, '', '');
+    this.draftMessage = '';
+    this.draftImage = '';
   }
 
-  followTeam (teamID:string, userID:string) {
+  followTeam(teamID: string, userID: string) {
     const now = Date.now();
-    this.db.object('viewUserTeams/'+userID+'/'+teamID).update({
-      lastChatVisitTimestamp:now,
-      lastChatVisitTimestampNegative:-1*now,
-      name:this.UI.currentTeamObj.name,
-      imageUrlThumb:this.UI.currentTeamObj.imageUrlThumb?this.UI.currentTeamObj.imageUrlThumb:'',
+    this.db.object('viewUserTeams/' + userID + '/' + teamID).update({
+      lastChatVisitTimestamp: now,
+      lastChatVisitTimestampNegative: -1 * now,
+      name: this.UI.currentTeamObj.name,
+      imageUrlThumb: this.UI.currentTeamObj.imageUrlThumb ? this.UI.currentTeamObj.imageUrlThumb : '',
     });
-    this.db.object('subscribeTeamUsers/'+teamID).update({
-      [userID]:true,
+    this.db.object('subscribeTeamUsers/' + teamID).update({
+      [userID]: true,
     });
   }
 
-  updateDraftMessageDB () {
-    if ((this.draftMessage!="")!=this.draftMessageDB) {
-      this.db.object('teamActivities/'+this.UI.currentTeam+'/draftMessages/'+this.UI.currentUser).update({
-        name:this.UI.currentUserObj.name,
-        draftMessage:this.draftMessage!="",
-        draftMessageTimestamp:firebase.database.ServerValue.TIMESTAMP,
+  updateDraftMessageDB() {
+    if ((this.draftMessage != '') != this.draftMessageDB) {
+      this.db.object('teamActivities/' + this.UI.currentTeam + '/draftMessages/' + this.UI.currentUser).update({
+        name: this.UI.currentUserObj.name,
+        draftMessage: this.draftMessage != '',
+        draftMessageTimestamp: firebase.database.ServerValue.TIMESTAMP,
       });
     }
-    this.draftMessageDB=(this.draftMessage!="");
+    this.draftMessageDB = (this.draftMessage != '');
   }
 
-  isCurrentUserFollowing(team){
-    if(this.UI.currentUserTeamsObj==undefined)return false;
-    if(this.UI.currentUserTeamsObj[team]==undefined)return false;
+  isCurrentUserFollowing(team) {
+    if (this.UI.currentUserTeamsObj == undefined) {return false; }
+    if (this.UI.currentUserTeamsObj[team] == undefined) {return false; }
     return true;
   }
 
   onImageChange(event) {
-    let image = event.target.files[0];
-    var uploader = <HTMLInputElement>document.getElementById('uploader');
-    var storageRef = firebase.storage().ref('images/'+Date.now()+image.name);
-    var task = storageRef.put(image);
-    task.on('state_changed',
-      function progress(snapshot){
-        document.getElementById('buttonFile').style.visibility = "hidden";
-        document.getElementById('uploader').style.visibility = "visible";
-        var percentage=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
-        uploader.value=percentage.toString();
+    const image = event.target.files[0];
+    const uploader = document.getElementById('uploader') as HTMLInputElement;
+    const storageRef = this.storage.ref('images/' + Date.now() + image.name);
+    const task = storageRef.put(image);
+
+    task.snapshotChanges().subscribe((snapshot) => {
+        document.getElementById('buttonFile').style.visibility = 'hidden';
+        document.getElementById('uploader').style.visibility = 'visible';
+
+        const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        uploader.value = percentage.toString();
       },
-      function error(){
-        document.getElementById('buttonFile').style.visibility = "visible";
-        document.getElementById('uploader').style.visibility = "hidden";
-        uploader.value='0';
+      (err) => {
+        document.getElementById('buttonFile').style.visibility = 'visible';
+        document.getElementById('uploader').style.visibility = 'hidden';
+        uploader.value = '0';
       },
-      ()=>{
-        uploader.value='0';
-        document.getElementById('buttonFile').style.visibility = "visible";
-        document.getElementById('uploader').style.visibility = "hidden";
-        this.draftMessage=task.snapshot.ref.name.substring(0,13);
-        this.draftImage=task.snapshot.ref.name.substring(0,13);
-        storageRef.getDownloadURL().then(url=>{
-          this.draftImageDownloadURL=url;
+      () => {
+        uploader.value = '0';
+        document.getElementById('buttonFile').style.visibility = 'visible';
+        document.getElementById('uploader').style.visibility = 'hidden';
+        this.draftMessage = task.task.snapshot.ref.name.substring(0, 13);
+        this.draftImage = task.task.snapshot.ref.name.substring(0, 13);
+        storageRef.getDownloadURL().subscribe(url => {
+          this.draftImageDownloadURL = url;
           this.addMessage();
           event.target.value = '';
         });
-      }
-    );
+      });
   }
 
 }
