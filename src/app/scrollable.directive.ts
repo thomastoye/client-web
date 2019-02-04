@@ -5,7 +5,7 @@ import { Directive, HostListener, EventEmitter, Output, ElementRef } from '@angu
 })
 export class ScrollableDirective {
 
-  @Output() scrollPosition = new EventEmitter()
+  @Output() scrollPosition = new EventEmitter();
 
   constructor(public el: ElementRef) { }
 
@@ -13,18 +13,18 @@ export class ScrollableDirective {
   onScroll(event) {
     try {
 
-      const top = event.target.scrollTop
-      const height = this.el.nativeElement.scrollHeight
-      const offset = this.el.nativeElement.offsetHeight
+      const top = event.target.scrollTop;
+      const height = this.el.nativeElement.scrollHeight;
+      const offset = this.el.nativeElement.offsetHeight;
 
       // emit bottom event
       if (top > height - offset - 1) {
-        this.scrollPosition.emit('bottom')
+        this.scrollPosition.emit('bottom');
       }
 
       // emit top event
       if (top === 0) {
-        this.scrollPosition.emit('top')
+        this.scrollPosition.emit('top');
       }
 
     } catch (err) {}

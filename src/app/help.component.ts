@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import * as firebase from 'firebase/app';
-import { Router, ActivatedRoute } from '@angular/router'
+import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 
 @Component({
@@ -25,8 +25,8 @@ import { userInterfaceService } from './userInterface.service';
 export class HelpComponent {
   services: Observable<any[]>;
 
-  constructor(public db:AngularFireDatabase,public router:Router,public UI:userInterfaceService,private route:ActivatedRoute) {
-    this.services=db.list('appSettings/PERRINNServices',ref=>ref.orderByChild('regex')).valueChanges();
+  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute) {
+    this.services = db.list('appSettings/PERRINNServices', ref => ref.orderByChild('regex')).valueChanges();
   }
 
 }
