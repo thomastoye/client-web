@@ -11,7 +11,7 @@ import * as firebase from 'firebase/app';
   selector: 'chat',
   template: `
   <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
-  <div class="sheet" style="box-shadow:none;background-color:#eaeaea">
+  <div class="sheet" style="background-color:#eaeaea">
   <div class="spinner" *ngIf="UI.loading">
     <div class="bounce1"></div>
     <div class="bounce2"></div>
@@ -22,13 +22,13 @@ import * as firebase from 'firebase/app';
     <li *ngFor="let message of teamMessages|async;let first=first;let last=last;let i=index">
       <div *ngIf="i<messageNumberDisplay" style="cursor:pointer" [style.background-color]="lastChatVisitTimestamp<message.values?.payload?.timestamp?'#ffefd1':''" (click)="UI.timestampChatVisit()">
       <div *ngIf="isMessageNewTimeGroup(message.values?.payload?.timestamp)||first" style="padding:25px 15px 15px 15px">
-        <div style="box-shadow:0 0 2px 0 rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.08);color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:10px">{{message.values?.payload?.timestamp|date:'fullDate'}}</div>
+        <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:7px">{{message.values?.payload?.timestamp|date:'fullDate'}}</div>
       </div>
       <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
       <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
         <img [src]="message.values?.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['user',message.values?.payload?.user])">
       </div>
-      <div style="box-shadow:0 0 2px 0 rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.08);cursor:text;border-radius:7px;background-color:white;margin:2px 10px 5px 60px">
+      <div style="cursor:text;border-radius:7px;background-color:white;margin:2px 10px 5px 60px">
         <div>
           <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.values?.payload?.name}}{{message.values?.payload?.firstName}}</div>
           <div *ngIf="isMessageNewUserGroup(message.values?.payload?.user,message.values?.payload?.timestamp)||first" style="color:#AAA;font-size:11px">{{message.values?.payload?.timestamp | date:'HH:mm'}}</div>
@@ -154,7 +154,7 @@ import * as firebase from 'firebase/app';
   </ul>
   <div style="height:125px;width:100%"></div>
   </div>
-  <div class="sheet" style="position:fixed;bottom:0;width:100%;box-shadow:none;background-color:#f2f2f2">
+  <div class="sheet" style="position:fixed;bottom:0;width:100%;background-color:#f2f2f2">
     <div *ngIf="!isCurrentUserLeader&&!isCurrentUserMember">
       <div *ngIf="chatReplayMode" style="float:left;color:green;margin:5px">chat replay</div>
       <div *ngIf="chatReplayDraftMessageUser" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{chatReplayDraftMessageUser}}...</div>
@@ -174,7 +174,7 @@ import * as firebase from 'firebase/app';
         <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.name}}...</div>
         </li>
       </ul>
-      <div *ngIf="UI.process[UI.currentTeam]?.service" style="box-shadow:0 0 2px 0 rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.08);cursor:pointer;border-radius:7px;background-color:white;float:left;padding:5px;margin:10px;width:70%"(click)="UI.clearProcessData()">
+      <div *ngIf="UI.process[UI.currentTeam]?.service" style="cursor:pointer;border-radius:7px;background-color:white;float:left;padding:5px;margin:10px;width:70%"(click)="UI.clearProcessData()">
         <div style="float:left;font-size:11px;font-weight:bold">{{UI.process[UI.currentTeam]?.regex}}:</div>
         <img src="./../assets/App icons/remove.png" style="float:right;height:20px;">
         <ul style="clear:both;list-style:none;color:green;margin:10px 0 10px 0">

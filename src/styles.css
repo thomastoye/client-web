@@ -225,7 +225,6 @@ input {
 .form-module {
   background: #ffffff;
   max-width: 320px;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
 }
 .form-module .form {
@@ -263,7 +262,6 @@ hr {
   width: 100%;
   max-width: 800px;
   background-color: white;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
 }
 .title {
   padding:10px;
@@ -282,7 +280,6 @@ hr {
   margin: 10px auto;
   border-radius:10px;
   background-color: white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, .4);
 }
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
