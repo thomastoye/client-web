@@ -26,6 +26,7 @@
     "angular-linky": "^1.2.2",
     "blueimp-canvas-to-blob": "^3.14.0",
     "core-js": "^2.5.4",
+    "firebase": "^5.8.2",
     "ng2-img-max": "^2.1.5",
     "rxjs": "^6.4.0",
     "rxjs-compat": "^6.4.0",
