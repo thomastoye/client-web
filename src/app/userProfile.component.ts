@@ -20,7 +20,7 @@ import { userInterfaceService } from './userInterface.service';
     <div class="bounce3"></div>
   </div>
   <ul class="listLight" style="background-color:#f4f7fc">
-    <li *ngFor="let team of viewUserTeams|async;let last=last"
+    <li *ngFor="let team of viewTeams|async;let last=last"
       (click)="router.navigate(['chat',team.key])">
       <div *ngIf="team.key==UI.focusUser">
         <div style="float:left">
@@ -30,13 +30,13 @@ import { userInterfaceService } from './userInterface.service';
           <div style="float:left;margin-top:5px">
             <span style="color:#222;font-size:16px" *ngFor="let leader of objectToArray(team.values?.leaders);let last=last">{{leader[1]?.name}}{{last?"":", "}}</span>
           </div>
-          <div *ngIf="(now-team.values.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
-          <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
+          <div *ngIf="(now-team.values?.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values?.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
+          <div *ngIf="(now-team.values?.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values?.lastMessageTimestamp|date:'HH:mm'}}</div>
           <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
             <span >{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
-          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
+          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values?.lastMessageTimestamp>team.values?.lastChatVisitTimestamp"></div>
           <div style="clear:both">
             <span style="color:#999" *ngFor="let member of objectToArray(team.values?.members);let last=last">{{member[1]?.name}}{{last?"":", "}}</span>
           </div>
@@ -49,7 +49,7 @@ import { userInterfaceService } from './userInterface.service';
     </li>
   </ul>
   <ul class="listLight">
-    <li *ngFor="let team of viewUserTeams|async;let last=last"
+    <li *ngFor="let team of viewTeams|async;let last=last"
       (click)="router.navigate(['chat',team.key])">
       <div *ngIf="team.key!=UI.focusUser">
         <div style="float:left">
@@ -59,13 +59,13 @@ import { userInterfaceService } from './userInterface.service';
           <div style="float:left;margin-top:5px">
             <span style="color:#222;font-size:16px" *ngFor="let leader of objectToArray(team.values?.leaders);let last=last">{{leader[1]?.name}}{{last?"":", "}}</span>
           </div>
-          <div *ngIf="(now-team.values.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
-          <div *ngIf="(now-team.values.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values.lastMessageTimestamp|date:'HH:mm'}}</div>
+          <div *ngIf="(now-team.values?.lastMessageTimestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values?.lastMessageTimestamp|date:'d MMM yyyy'}}</div>
+          <div *ngIf="(now-team.values?.lastMessageTimestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{team.values?.lastMessageTimestamp|date:'HH:mm'}}</div>
           <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
             <span >{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
-          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values.lastMessageTimestamp>team.values.lastChatVisitTimestamp"></div>
+          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values?.lastMessageTimestamp>team.values?.lastChatVisitTimestamp"></div>
           <div style="clear:both">
             <span style="color:#999" *ngFor="let member of objectToArray(team.values?.members);let last=last">{{member[1]?.name}}{{last?"":", "}}</span>
           </div>
@@ -83,7 +83,7 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class UserProfileComponent {
-  viewUserTeams: Observable<any[]>;
+  viewTeams: Observable<any[]>;
   now: number;
   scrollTeam: string;
 
@@ -97,13 +97,14 @@ export class UserProfileComponent {
       db.object('PERRINNTeams/' + this.UI.focusUser).valueChanges().subscribe(snapshot => {
         this.UI.focusUserObj = snapshot;
       });
-      this.viewUserTeams = db.list('viewUserTeams/' + this.UI.focusUser, ref => ref.orderByChild('lastMessageTimestampNegative')).snapshotChanges().pipe(map(changes => {
-        this.UI.loading = false;
-        return changes.map(c => ({
-          key: c.payload.key,
-          values: c.payload.val(),
-        }));
-      }));
+      this.viewTeams=afs.collection('PERRINNTeams').doc(this.UI.focusUser).collection('viewTeams',ref=>ref.orderBy('lastMessageTimestamp','desc')).snapshotChanges().pipe(
+        map(actions=>actions.map(a=>{
+          const values=a.payload.doc.data();
+          const key=a.payload.doc.id;
+          this.UI.loading = false;
+          return {key,values};
+        }))
+      );
     });
   }
 

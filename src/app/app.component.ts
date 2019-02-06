@@ -13,7 +13,7 @@ import { userInterfaceService } from './userInterface.service';
     <div style="float:left;text-align:center;line-height:40px;width:20px;font-size:20px;cursor:pointer" (click)="goBack()">&#9001;</div>
     <div class='iconSmall' (click)="clickUserIcon()">
     <img src="./../assets/App icons/Perrinn_02.png" style="width:30px;margin-top:5px;border-radius:3px;">
-    <div class='activity' [hidden]="!globalChatActivity"></div>
+    <div class='activity' [hidden]="!UI.globalChatActivity"></div>
     </div>
     <div style="text-align:center;width:170px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
         <div *ngIf="UI.currentTeam" style="height:40px">
@@ -31,20 +31,9 @@ import { userInterfaceService } from './userInterface.service';
   `,
 })
 export class AppComponent {
-  globalChatActivity: boolean;
 
   constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
     localStorage.clear();
-    db.list<any>('viewUserTeams/' + this.UI.currentUser).snapshotChanges().subscribe(viewUserTeams => {
-      this.globalChatActivity = false;
-      viewUserTeams.forEach(userTeam => {
-        const chatActivity = (userTeam.payload.val().lastMessageTimestamp > userTeam.payload.val().lastChatVisitTimestamp);
-        if (chatActivity) {
-          this.globalChatActivity = true;
-        }
-        document.title = this.globalChatActivity ? '(!) PERRINN' : 'PERRINN';
-      });
-    });
   }
 
   goBack() {

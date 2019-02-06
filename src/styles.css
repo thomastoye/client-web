@@ -391,6 +391,7 @@ img:hover {
 .spinner > div {
   width: 10px;
   height: 10px;
+  margin:5px;
   background-color:#3e6ab2;
 
   border-radius: 100%;

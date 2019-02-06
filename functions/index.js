@@ -160,12 +160,14 @@ function createTeam(team,user,name,familyName,parent) {
   updateObj['PERRINNTeams/'+team+'/parent']=parent;
   updateObj['PERRINNTeams/'+parent+'/children/'+team]=true;
   updateObj['PERRINNTeams/'+parent+'/childrenCount']=1;
-  updateObj['viewUserTeams/'+user+'/'+team+'/lastChatVisitTimestamp']=now;
-  updateObj['viewUserTeams/'+user+'/'+team+'/lastChatVisitTimestampNegative']=-1*now;
-  updateObj['viewUserTeams/'+user+'/'+team+'/name']=name;
   updateObj['subscribeTeamUsers/'+team+'/'+user]=true;
   return admin.database().ref().update(updateObj).then(()=>{
-    return 'done';
+    var batch = admin.firestore().batch();
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{lastChatVisitTimestamp:now},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{name:name},{create:true});
+    return batch.commit().then(()=>{
+      return 'done';
+    });
   });
 }
 
@@ -846,12 +848,13 @@ exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,
   });
   return admin.database().ref('/subscribeTeamUsers/'+context.params.team).once('value').then(users=>{
     let updateObj={};
+    var batch = admin.firestore().batch();
     updateKeys.forEach(updateKey=>{
       var updateValue;
       if (afterData[updateKey]==undefined) updateValue=null;
       else updateValue=afterData[updateKey];
       users.forEach(user=>{
-        updateObj['viewUserTeams/'+user.key+'/'+context.params.team+'/'+updateKey]=updateValue;
+        batch.update(admin.firestore().doc('PERRINNTeams/'+user.key+'/viewTeams/'+context.params.team),{[updateKey]:updateValue},{create:true});
       });
       if(updateKey=='name') updateObj['PERRINNSearch/teams/'+context.params.team+'/name']=updateValue;
       if(updateKey=='familyName') updateObj['PERRINNSearch/teams/'+context.params.team+'/familyName']=updateValue;
@@ -863,7 +866,9 @@ exports.fanoutTeam=functions.database.ref('/PERRINNTeams/{team}').onWrite((data,
         updateObj['PERRINNSearch/teams/'+context.params.team+'/nameLowerCase']=nameLowerCase;
       }
     });
-    return admin.database().ref().update(updateObj);
+    return admin.database().ref().update(updateObj).then(()=>{
+      return batch.commit();
+    });
   });
 });
 
@@ -982,44 +987,6 @@ exports.copyPERRINNTeamsToFIRESTORE=functions.database.ref('/toto').onCreate((da
         updatesCount=0;
         console.log('next batch');
       }
-    });
-    console.log('last batch');
-    return batch.commit();
-  });
-});
-
-exports.copyViewUserTeamsToFIRESTORE=functions.database.ref('/toto').onCreate((data,context)=>{
-  var maxUpdatesCount=500;
-  return admin.database().ref('viewUserTeams/').once('value').then(teams=>{
-    var batch = admin.firestore().batch();
-    var updatesCount=0;
-    teams.forEach(team=>{
-      team.forEach(viewTeam=>{
-        if(viewTeam.val().imageUrlThumb!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{imageUrlThumb:viewTeam.val().imageUrlThumb},{create:true});
-        updatesCount+=1;
-        if(viewTeam.val().leaders!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{leaders:viewTeam.val().leaders},{create:true});
-        updatesCount+=1;
-        if(viewTeam.val().members!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{members:viewTeam.val().members},{create:true});
-        updatesCount+=1;
-        if(viewTeam.val().familyName!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{familyName:viewTeam.val().familyName},{create:true});
-        updatesCount+=1;
-        if(viewTeam.val().lastMessageName!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{lastMessageName:viewTeam.val().lastMessageName},{create:true});
-        updatesCount+=1;
-        if(viewTeam.val().lastMessageText!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{lastMessageText:viewTeam.val().lastMessageText},{create:true});
-        updatesCount+=1;
-        if(viewTeam.val().lastMessageBalance!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{lastMessageBalance:viewTeam.val().lastMessageBalance},{create:true});
-        updatesCount+=1;
-        if(viewTeam.val().chatReplayMode!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{chatReplayMode:viewTeam.val().chatReplayMode},{create:true});
-        updatesCount+=1;
-        if(viewTeam.val().name!=undefined)batch.update(admin.firestore().collection('PERRINNTeams').doc(team.key).collection('viewTeams').doc(viewTeam.key),{name:viewTeam.val().name},{create:true});
-        updatesCount+=1;
-        if(updatesCount>maxUpdatesCount-50){
-          batch.commit();
-          batch = admin.firestore().batch();
-          updatesCount=0;
-          console.log('next batch');
-        }
-      });
     });
     console.log('last batch');
     return batch.commit();

@@ -1,9 +1,11 @@
 import { Injectable }    from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 
 @Injectable()
 export class userInterfaceService {
+  globalChatActivity: boolean;
   loading: boolean;
   focusUser: string;
   focusUserObj: any;
@@ -16,7 +18,7 @@ export class userInterfaceService {
   services: any;
   process: any;
 
-  constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase) {
+  constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase, public afs: AngularFirestore,) {
     this.process = {};
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
@@ -24,8 +26,16 @@ export class userInterfaceService {
         this.db.object('PERRINNTeams/' + this.currentUser).valueChanges().subscribe(snapshot => {
           this.currentUserObj = snapshot;
         });
-        this.db.object('viewUserTeams/' + this.currentUser).valueChanges().subscribe(snapshot => {
+        this.afs.collection<any>('PERRINNTeams/'+this.currentUser+'/viewTeams/').valueChanges().subscribe(snapshot => {
           this.currentUserTeamsObj = snapshot;
+          this.globalChatActivity = false;
+          snapshot.forEach(userTeam => {
+            const chatActivity = (userTeam.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
+            if (chatActivity) {
+              this.globalChatActivity = true;
+            }
+            document.title = this.globalChatActivity ? '(!) PERRINN' : 'PERRINN';
+          });
         });
         if (this.focusUser == null) { this.focusUser = auth.uid; }
         this.db.database.ref('appSettings/PERRINNServices/').once('value').then(services => {
@@ -154,9 +164,8 @@ export class userInterfaceService {
   timestampChatVisit() {
     if (this.currentTeamObjKey != this.currentTeam) {return; }
     const now = Date.now();
-    this.db.object('viewUserTeams/' + this.currentUser + '/' + this.currentTeam).update({
+    this.afs.doc<any>('PERRINNTeams/'+this.currentUser+/viewTeams/+this.currentTeam).update({
       lastChatVisitTimestamp: now,
-      lastChatVisitTimestampNegative: -1 * now,
       name: this.currentTeamObj.name,
       imageUrlThumb: this.currentTeamObj.imageUrlThumb ? this.currentTeamObj.imageUrlThumb : '',
     });

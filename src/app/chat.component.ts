@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -220,6 +221,7 @@ export class ChatComponent {
 
   constructor(
     public db: AngularFireDatabase,
+    public afs: AngularFirestore,
     public router: Router,
     public UI: userInterfaceService,
     private route: ActivatedRoute,
@@ -271,12 +273,9 @@ export class ChatComponent {
           return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
         }));
 
-        interface UserTeam {
-          lastChatVisitTimestamp: number;
-        }
-
-        this.db.object<UserTeam>('viewUserTeams/' + this.UI.currentUser + '/' + this.UI.currentTeam).snapshotChanges().subscribe(userTeam => {
-          if (userTeam.payload.val() != null) {this.lastChatVisitTimestamp = Number(userTeam.payload.val().lastChatVisitTimestamp); }
+        this.afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/viewTeams/'+this.UI.currentTeam).valueChanges().subscribe(userTeam => {
+          if (userTeam != null) {this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp); }
+          console.log(this.lastChatVisitTimestamp);
         });
       });
     });
@@ -310,7 +309,7 @@ export class ChatComponent {
     })();
   }
 
-  scrollHandler(e) {
+  scrollHandler(e: string) {
     if (e === 'top') {
       this.UI.loading = true;
       this.messageNumberDisplay += 15;
@@ -340,24 +339,24 @@ export class ChatComponent {
     fullScreenImage.style.visibility = 'visible';
   }
 
-  isMessageNewTimeGroup(messageTimestamp) {
+  isMessageNewTimeGroup(messageTimestamp:any) {
     let isMessageNewTimeGroup: boolean;
     isMessageNewTimeGroup = Math.abs(messageTimestamp - this.previousMessageTimestamp) > 1000 * 60 * 60 * 4;
     return isMessageNewTimeGroup;
   }
 
-  isMessageNewUserGroup(user, messageTimestamp) {
+  isMessageNewUserGroup(user: any, messageTimestamp: any) {
     let isMessageNewUserGroup: boolean;
     isMessageNewUserGroup = Math.abs(messageTimestamp - this.previousMessageTimestamp) > 1000 * 60 * 5 || (user != this.previousMessageUser);
     return isMessageNewUserGroup;
   }
 
-  storeMessageValues(user, timestamp) {
+  storeMessageValues(user: any, timestamp: any) {
     this.previousMessageUser = user;
     this.previousMessageTimestamp = timestamp;
   }
 
-  isDraftMessageRecent(draftMessageTimestamp) {
+  isDraftMessageRecent(draftMessageTimestamp: any) {
     return (Date.now() - draftMessageTimestamp) < 1000 * 60;
   }
 
@@ -377,9 +376,8 @@ export class ChatComponent {
 
   followTeam(teamID: string, userID: string) {
     const now = Date.now();
-    this.db.object('viewUserTeams/' + userID + '/' + teamID).update({
+    this.afs.doc<any>('PERRINNTeams/'+userID+/viewTeams/+teamID).update({
       lastChatVisitTimestamp: now,
-      lastChatVisitTimestampNegative: -1 * now,
       name: this.UI.currentTeamObj.name,
       imageUrlThumb: this.UI.currentTeamObj.imageUrlThumb ? this.UI.currentTeamObj.imageUrlThumb : '',
     });
@@ -399,13 +397,13 @@ export class ChatComponent {
     this.draftMessageDB = (this.draftMessage != '');
   }
 
-  isCurrentUserFollowing(team) {
+  isCurrentUserFollowing(team:any) {
     if (this.UI.currentUserTeamsObj == undefined) {return false; }
     if (this.UI.currentUserTeamsObj[team] == undefined) {return false; }
     return true;
   }
 
-  onImageChange(event) {
+  onImageChange(event:any) {
     const image = event.target.files[0];
     const uploader = document.getElementById('uploader') as HTMLInputElement;
     const storageRef = this.storage.ref('images/' + Date.now() + image.name);
@@ -418,7 +416,7 @@ export class ChatComponent {
         const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         uploader.value = percentage.toString();
       },
-      (err) => {
+      (err:any) => {
         document.getElementById('buttonFile').style.visibility = 'visible';
         document.getElementById('uploader').style.visibility = 'hidden';
         uploader.value = '0';

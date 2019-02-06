@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -55,7 +54,7 @@ export const firebaseConfig = {
     FormsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFirestoreModule.enablePersistence(),
+    AngularFirestoreModule.enablePersistence({experimentalTabSynchronization:true}),
     AngularFireStorageModule,
     AngularFireDatabaseModule,
     AngularFireAuthModule,
