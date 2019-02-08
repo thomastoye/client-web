@@ -36,7 +36,7 @@ import { userInterfaceService } from './userInterface.service';
             <span >{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
-          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values?.lastMessageTimestamp>team.values?.lastChatVisitTimestamp"></div>
+          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="isActivity(team.values?.lastMessageTimestamp,team.values?.lastChatVisitTimestamp)"></div>
           <div style="clear:both">
             <span style="color:#999" *ngFor="let member of objectToArray(team.values?.members);let last=last">{{member[1]?.name}}{{last?"":", "}}</span>
           </div>
@@ -65,7 +65,7 @@ import { userInterfaceService } from './userInterface.service';
             <span >{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
-          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="team.values?.lastMessageTimestamp>team.values?.lastChatVisitTimestamp"></div>
+          <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="isActivity(team.values?.lastMessageTimestamp,team.values?.lastChatVisitTimestamp)"></div>
           <div style="clear:both">
             <span style="color:#999" *ngFor="let member of objectToArray(team.values?.members);let last=last">{{member[1]?.name}}{{last?"":", "}}</span>
           </div>
@@ -120,6 +120,12 @@ export class UserProfileComponent {
     const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
     fullScreenImage.src = src;
     fullScreenImage.style.visibility = 'visible';
+  }
+
+  isActivity(lastMessageTimestamp,lastChatVisitTimestamp){
+    if(lastMessageTimestamp==undefined)return false;
+    else if(lastChatVisitTimestamp==undefined)return true;
+    else return lastMessageTimestamp>lastChatVisitTimestamp;
   }
 
   objectToArray(obj) {

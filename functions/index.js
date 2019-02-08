@@ -153,16 +153,29 @@ function createTeam(team,user,name,familyName,parent) {
   updateObj['PERRINNTeams/'+team+'/createdTimestamp']=now;
   updateObj['PERRINNTeams/'+team+'/name']=name;
   updateObj['PERRINNTeams/'+team+'/familyName']=familyName;
-  updateObj['PERRINNTeams/'+team+'/leaders/'+user]=true;
+  updateObj['PERRINNTeams/'+team+'/leaders/'+user]={name:name};
   updateObj['PERRINNTeams/'+team+'/leadersCount']=1;
   updateObj['PERRINNTeams/'+team+'/lastMessageTimestamp']=now;
   updateObj['PERRINNTeams/'+team+'/lastMessageTimestampNegative']=-1*now;
-  updateObj['PERRINNTeams/'+team+'/parent']=parent;
-  updateObj['PERRINNTeams/'+parent+'/children/'+team]=true;
-  updateObj['PERRINNTeams/'+parent+'/childrenCount']=1;
+  if(parent!=''){
+    updateObj['PERRINNTeams/'+team+'/parent']=parent;
+    updateObj['PERRINNTeams/'+parent+'/children/'+team]=true;
+    updateObj['PERRINNTeams/'+parent+'/childrenCount']=1;
+  }
   updateObj['subscribeTeamUsers/'+team+'/'+user]=true;
   return admin.database().ref().update(updateObj).then(()=>{
     var batch = admin.firestore().batch();
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{createdTimestamp:now},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{name:name},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{familyName:familyName},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{leaders:{[user]:{name:name}}},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{leadersCount:1},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{lastMessageTimestamp:now},{create:true});
+    if(parent!=''){
+      batch.update(admin.firestore().doc('PERRINNTeams/'+team),{parent:parent},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+parent),{children:{[team]:{name:name}}},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+parent),{childrenCount:1},{create:true});
+    }
     batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{lastChatVisitTimestamp:now},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{name:name},{create:true});
     return batch.commit().then(()=>{
@@ -355,7 +368,14 @@ function writeMessageTeamData(team,message){
       lastMessageText:messageObj.val().payload.text,
       lastMessageBalance:messageObj.val().PERRINN.wallet.balance,
     }).then(()=>{
-      return 'done';
+      return admin.firestore().doc('PERRINNTeams/'+team).update({
+        lastMessageTimestamp:messageObj.val().payload.timestamp,
+        lastMessageName:messageObj.val().payload.name,
+        lastMessageText:messageObj.val().payload.text,
+        lastMessageBalance:messageObj.val().PERRINN.wallet.balance,
+      }).then(()=>{
+        return 'done';
+      });
     });
   }).catch(error=>{
     console.log(error);
@@ -363,12 +383,11 @@ function writeMessageTeamData(team,message){
 }
 
 function incrementUserMessageCounter(user){
-  return admin.database().ref('PERRINNTeams/'+user).child('messageCount').transaction(messageCount=>{
-    if (messageCount==null) {
-      return 1;
-    } else {
-      return messageCount+1;
-    }
+  var transactionDoc=admin.firestore().doc('PERRINNTeams/'+user);
+  return admin.firestore().runTransaction(transaction=>{
+    return transaction.get(transactionDoc).then(doc=>{
+      transaction.update(transactionDoc,{messageCount:doc.data().messageCount+1});
+    });
   }).then(()=>{
     return 'done';
   }).catch(error=>{
@@ -691,6 +710,7 @@ function isMemberOrLeader(user,team){
 function fanoutImage(image,imageUrlThumb,imageUrlMedium,imageUrlOriginal){
   return admin.database().ref('/subscribeImageTeams/'+image).once('value').then(teams=>{
     let updateObj={};
+    var batch = admin.firestore().batch();
     updateObj['PERRINNImages/'+image+'/imageUrlThumb']=imageUrlThumb;
     updateObj['PERRINNImages/'+image+'/imageUrlMedium']=imageUrlMedium;
     updateObj['PERRINNImages/'+image+'/imageUrlOriginal']=imageUrlOriginal;
@@ -698,9 +718,14 @@ function fanoutImage(image,imageUrlThumb,imageUrlMedium,imageUrlOriginal){
       updateObj['PERRINNTeams/'+team.key+'/imageUrlThumb']=imageUrlThumb;
       updateObj['PERRINNTeams/'+team.key+'/imageUrlMedium']=imageUrlMedium;
       updateObj['PERRINNTeams/'+team.key+'/imageUrlOriginal']=imageUrlOriginal;
+      batch.update(admin.firestore().doc('PERRINNTeams/'+team.key),{imageUrlThumb:imageUrlThumb},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+team.key),{imageUrlMedium:imageUrlMedium},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+team.key),{imageUrlOriginal:imageUrlOriginal},{create:true});
     });
     return admin.database().ref().update(updateObj).then(()=>{
-      return admin.database().ref('/subscribeImageTeams/'+image).remove();
+      return batch.commit().then(()=>{
+        return admin.database().ref('/subscribeImageTeams/'+image).remove();
+      });
     });
   });
 }
@@ -831,7 +856,7 @@ function makeKeyFirebaseCompatible(key) {
 }
 
 function newValidData(key,beforeData,afterData){
-  if(afterData[key]==undefined&&beforeData[key]!=undefined)return false;
+  if(afterData[key]==undefined)return false;
   if(beforeData==null||beforeData==undefined)return true;
   if(beforeData[key]==undefined)return true;
   if(beforeData[key]==afterData[key])return false;

@@ -26,11 +26,14 @@ export class userInterfaceService {
         this.db.object('PERRINNTeams/' + this.currentUser).valueChanges().subscribe(snapshot => {
           this.currentUserObj = snapshot;
         });
-        this.afs.collection<any>('PERRINNTeams/'+this.currentUser+'/viewTeams/').valueChanges().subscribe(snapshot => {
+        afs.collection<any>('PERRINNTeams/'+this.currentUser+'/viewTeams/').valueChanges().subscribe(snapshot => {
           this.currentUserTeamsObj = snapshot;
           this.globalChatActivity = false;
           snapshot.forEach(userTeam => {
-            const chatActivity = (userTeam.lastMessageTimestamp > userTeam.lastChatVisitTimestamp);
+            let chatActivity:boolean=false;
+            if(userTeam.lastChatVisitTimestamp!=undefined)chatActivity=(userTeam.lastMessageTimestamp>userTeam.lastChatVisitTimestamp);
+            else if(userTeam.lastMessageTimestamp!=undefined)chatActivity=true;
+            else chatActivity=false;
             if (chatActivity) {
               this.globalChatActivity = true;
             }

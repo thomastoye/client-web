@@ -273,9 +273,9 @@ export class ChatComponent {
           return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
         }));
 
-        this.afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/viewTeams/'+this.UI.currentTeam).valueChanges().subscribe(userTeam => {
-          if (userTeam != null) {this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp); }
-          console.log(this.lastChatVisitTimestamp);
+        afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/viewTeams/'+this.UI.currentTeam).valueChanges().subscribe(userTeam => {
+          if (userTeam!=null&&userTeam.lastChatVisitTimestamp!=undefined) {this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp); }
+          else this.lastChatVisitTimestamp=0;
         });
       });
     });
