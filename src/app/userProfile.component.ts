@@ -24,7 +24,7 @@ import { userInterfaceService } from './userInterface.service';
       (click)="router.navigate(['chat',team.key])">
       <div *ngIf="team.key==UI.focusUser">
         <div style="float:left">
-          <img [src]="UI.focusUserObj?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
+          <img [src]="UI.focusUserObj?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:75px;width:75px;border-radius:50px">
         </div>
         <div>
           <div style="float:left;margin-top:5px">
@@ -44,7 +44,7 @@ import { userInterfaceService } from './userInterface.service';
           <div style="clear:both;float:left;font-size:10px;color:#999">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages, C{{team.values?.lastMessageBalance?team.values?.lastMessageBalance:0|number:'1.2-2'}}</div>
           <div *ngIf="team.values?.chatReplayMode" style="float:left;color:green;font-size:10px">chat replay</div>
         </div>
-        <div class="seperator" style="margin-left:120px"></div>
+        <div class="seperator" style="margin-left:100px"></div>
       </div>
     </li>
   </ul>
@@ -53,7 +53,7 @@ import { userInterfaceService } from './userInterface.service';
       (click)="router.navigate(['chat',team.key])">
       <div *ngIf="team.key!=UI.focusUser">
         <div style="float:left">
-          <img [src]="team.values?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:60px;width:100px;border-radius:3px">
+          <img [src]="team.values?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:100px;width:75px;border-radius:3px">
         </div>
         <div>
           <div style="float:left;margin-top:5px">
@@ -73,7 +73,7 @@ import { userInterfaceService } from './userInterface.service';
           <div style="clear:both;float:left;font-size:10px;width:100px" [style.color]="team.values?.lastMessageBalance<0?'red':'#999'">C{{team.values?.lastMessageBalance?team.values?.lastMessageBalance:0|number:'1.2-2'}}</div>
           <div *ngIf="team.values?.chatReplayMode" style="float:left;color:green;font-size:10px">chat replay</div>
         </div>
-        <div class="seperator" style="margin-left:120px"></div>
+        <div class="seperator" style="margin-left:100px"></div>
       </div>
       {{last?scrollToTop(team.key):''}}
     </li>
@@ -94,8 +94,8 @@ export class UserProfileComponent {
     this.scrollTeam = '';
     this.route.params.subscribe(params => {
       this.UI.focusUser = params.id;
-      db.object('PERRINNTeams/' + this.UI.focusUser).valueChanges().subscribe(snapshot => {
-        this.UI.focusUserObj = snapshot;
+      afs.doc<any>('PERRINNTeams/'+this.UI.focusUser).valueChanges().subscribe(snapshot=>{
+        this.UI.focusUserObj=snapshot;
       });
       this.viewTeams=afs.collection('PERRINNTeams').doc(this.UI.focusUser).collection('viewTeams',ref=>ref.orderBy('lastMessageTimestamp','desc')).snapshotChanges().pipe(
         map(actions=>actions.map(a=>{

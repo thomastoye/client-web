@@ -5,7 +5,11 @@ const gcs = require('@google-cloud/storage')({
 const spawn = require('child-process-promise').spawn;
 const admin = require('firebase-admin');
 admin.initializeApp();
-const stripe = require('stripe')(functions.config().stripe.token);
+//const stripe = require('stripe')(functions.config().stripe.token);
+var u = require('url');
+var crypto = require('crypto');
+var request = require('request');
+var apikey = require('../privateKeys.js');
 
 function updateKeyValue (user,team,ref,key,value) {
   return admin.database().ref('PERRINNTeams/'+team).once('value').then((PERRINNTeam)=>{
@@ -240,6 +244,7 @@ function executeProcess(user,team,functionObj,inputs){
         newID,
         user,
         inputs.name,
+        "",
         team
       ).then(result=>{
         return result;
@@ -1016,4 +1021,41 @@ exports.copyPERRINNTeamsToFIRESTORE=functions.database.ref('/toto').onCreate((da
     console.log('last batch');
     return batch.commit();
   });
+});
+
+// creates random 25-character string
+var buildNonce = function () {
+  var chars = [
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+    'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+    'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0',
+    '1', '2', '3', '4', '5', '6', '7', '8', '9'
+  ];
+  var nonce = '';
+  for (var i = 0; i < 25; i++) {
+    nonce += chars[Math.floor(Math.random()*chars.length)];
+  }
+  return nonce;
+}
+
+function createSignature(method, url, accessKey, secretKey) {
+    var urlObj = u.parse(url);
+    var urlPath = urlObj.pathname;
+    var urlQuery = urlObj.query ? urlObj.query : ''; // if no query, use empty string
+    var authDate = (new Date()).toUTCString();
+    var nonce = buildNonce();
+    var contentType = 'application/json';
+    var str = (method + '\n' + nonce + '\n' + authDate + '\n' + contentType + '\n' +
+        urlPath + '\n' + urlQuery + '\n').toLowerCase();
+    var hmac = crypto.createHmac('sha256', secretKey)
+        .update(str)
+        .digest('base64');
+    var signature = 'On ' + accessKey + ':HmacSHA256:' + hmac;
+    return signature;
+}
+
+exports.onshapeAPI=functions.database.ref('/toto').onCreate((data,context)=>{
+  var signature=createSignature('POST',apikey.baseUrl,apikey.accessKey,apikey.secretKey);
+  console.log(signature);
+  return null;
 });

@@ -2,6 +2,7 @@
 
 # private keys
 perrinn-d5fc1-firebase-adminsdk-rh8x2-b26a8ffeef.json
+privateKeys.js
 
 # compiled output
 /dist
@@ -48,3 +49,5 @@ Thumbs.db
 # Firebase cache
 .firebase/
 
+#debug
+*.log

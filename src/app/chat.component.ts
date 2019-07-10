@@ -376,11 +376,11 @@ export class ChatComponent {
 
   followTeam(teamID: string, userID: string) {
     const now = Date.now();
-    this.afs.doc<any>('PERRINNTeams/'+userID+/viewTeams/+teamID).update({
+    this.afs.doc<any>('PERRINNTeams/'+userID+/viewTeams/+teamID).set({
       lastChatVisitTimestamp: now,
       name: this.UI.currentTeamObj.name,
       imageUrlThumb: this.UI.currentTeamObj.imageUrlThumb ? this.UI.currentTeamObj.imageUrlThumb : '',
-    });
+    },{merge:true});
     this.db.object('subscribeTeamUsers/' + teamID).update({
       [userID]: true,
     });
@@ -410,29 +410,29 @@ export class ChatComponent {
     const task = storageRef.put(image);
 
     task.snapshotChanges().subscribe((snapshot) => {
-        document.getElementById('buttonFile').style.visibility = 'hidden';
-        document.getElementById('uploader').style.visibility = 'visible';
+      document.getElementById('buttonFile').style.visibility = 'hidden';
+      document.getElementById('uploader').style.visibility = 'visible';
 
-        const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        uploader.value = percentage.toString();
-      },
-      (err:any) => {
-        document.getElementById('buttonFile').style.visibility = 'visible';
-        document.getElementById('uploader').style.visibility = 'hidden';
-        uploader.value = '0';
-      },
-      () => {
-        uploader.value = '0';
-        document.getElementById('buttonFile').style.visibility = 'visible';
-        document.getElementById('uploader').style.visibility = 'hidden';
-        this.draftMessage = task.task.snapshot.ref.name.substring(0, 13);
-        this.draftImage = task.task.snapshot.ref.name.substring(0, 13);
-        storageRef.getDownloadURL().subscribe(url => {
-          this.draftImageDownloadURL = url;
-          this.addMessage();
-          event.target.value = '';
-        });
+      const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      uploader.value = percentage.toString();
+    },
+    (err:any) => {
+      document.getElementById('buttonFile').style.visibility = 'visible';
+      document.getElementById('uploader').style.visibility = 'hidden';
+      uploader.value = '0';
+    },
+    () => {
+      uploader.value = '0';
+      document.getElementById('buttonFile').style.visibility = 'visible';
+      document.getElementById('uploader').style.visibility = 'hidden';
+      this.draftMessage = task.task.snapshot.ref.name.substring(0, 13);
+      this.draftImage = task.task.snapshot.ref.name.substring(0, 13);
+      storageRef.getDownloadURL().subscribe(url => {
+        this.draftImageDownloadURL = url;
+        this.addMessage();
+        event.target.value = '';
       });
+    });
   }
 
 }

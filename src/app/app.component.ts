@@ -15,10 +15,10 @@ import { userInterfaceService } from './userInterface.service';
     <img src="./../assets/App icons/Perrinn_02.png" style="width:30px;margin-top:5px;border-radius:3px;">
     <div class='activity' [hidden]="!UI.globalChatActivity"></div>
     </div>
-    <div style="text-align:center;width:170px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
+    <div style="width:170px;height:40px;cursor:pointer;float:left" (click)="router.navigate(['team',UI.currentTeam])">
         <div *ngIf="UI.currentTeam" style="height:40px">
-        <img *ngIf="UI.currentTeamObj?.imageUrlThumb" [src]="UI.currentTeamObj?.imageUrlThumb" style="opacity:.6;object-fit:cover;margin-top:5px;height:30px;width:170px;border-radius:3px">
-        <div style="position:absolute;width:170px;top:10px;text-align:center;color:#fff;font-size:10px;line-height:20px">{{UI.currentTeamObj?.name}} {{UI.currentTeamObj?.familyName}}</div>
+        <img *ngIf="UI.currentTeamObj?.imageUrlThumb" [src]="UI.currentTeamObj?.imageUrlThumb" style="float:left;object-fit:cover;margin-top:5px;height:30px;width:50px;border-radius:3px">
+        <div style="color:#fff;padding-left:5px;font-size:10px;line-height:20px">{{UI.currentTeamObj?.name}} {{UI.currentTeamObj?.familyName}}</div>
         </div>
     </div>
     <div class='iconSmall' (click)="router.navigate(['search'])">

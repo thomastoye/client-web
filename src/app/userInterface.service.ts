@@ -23,10 +23,10 @@ export class userInterfaceService {
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser = auth.uid;
-        this.db.object('PERRINNTeams/' + this.currentUser).valueChanges().subscribe(snapshot => {
+        afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj = snapshot;
         });
-        afs.collection<any>('PERRINNTeams/'+this.currentUser+'/viewTeams/').valueChanges().subscribe(snapshot => {
+        afs.collection<any>('PERRINNTeams/'+this.currentUser+'/viewTeams/').valueChanges().subscribe(snapshot=>{
           this.currentUserTeamsObj = snapshot;
           this.globalChatActivity = false;
           snapshot.forEach(userTeam => {
@@ -167,11 +167,11 @@ export class userInterfaceService {
   timestampChatVisit() {
     if (this.currentTeamObjKey != this.currentTeam) {return; }
     const now = Date.now();
-    this.afs.doc<any>('PERRINNTeams/'+this.currentUser+/viewTeams/+this.currentTeam).update({
+    this.afs.doc<any>('PERRINNTeams/'+this.currentUser+/viewTeams/+this.currentTeam).set({
       lastChatVisitTimestamp: now,
       name: this.currentTeamObj.name,
       imageUrlThumb: this.currentTeamObj.imageUrlThumb ? this.currentTeamObj.imageUrlThumb : '',
-    });
+    },{merge:true});
     this.db.object('subscribeTeamUsers/' + this.currentTeam).update({
       [this.currentUser]: true,
     });
