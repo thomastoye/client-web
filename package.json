@@ -29,6 +29,7 @@
     "firebase": "^5.8.2",
     "firebase-admin": "^8.2.0",
     "ng2-img-max": "^2.1.5",
+    "request": "^2.88.0",
     "rxjs": "^6.4.0",
     "rxjs-compat": "^6.4.0",
     "stripe": "^5.8.0",

@@ -5,7 +5,7 @@ const gcs = require('@google-cloud/storage')({
 const spawn = require('child-process-promise').spawn;
 const admin = require('firebase-admin');
 admin.initializeApp();
-//const stripe = require('stripe')(functions.config().stripe.token);
+const stripe = require('stripe')(functions.config().stripe.token);
 var u = require('url');
 var crypto = require('crypto');
 var request = require('request');
@@ -246,6 +246,13 @@ function executeProcess(user,team,functionObj,inputs){
         inputs.name,
         "",
         team
+      ).then(result=>{
+        return result;
+      });
+    }
+    if (functionObj.name=='joinOnshapePERRINNTeam') {
+      return joinOnshapePERRINNTeam (
+        user
       ).then(result=>{
         return result;
       });
@@ -1024,7 +1031,7 @@ exports.copyPERRINNTeamsToFIRESTORE=functions.database.ref('/toto').onCreate((da
 });
 
 // creates random 25-character string
-var buildNonce = function () {
+function buildNonce() {
   var chars = [
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
     'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
@@ -1038,7 +1045,15 @@ var buildNonce = function () {
   return nonce;
 }
 
-function createSignature(method, url, accessKey, secretKey) {
+function joinOnshapePERRINNTeam(user) {
+  return admin.auth().getUser(user).then(function(userRecord) {
+    console.log('Successfully fetched user data:', userRecord.toJSON());
+    var email=userRecord.toJSON().email;
+    var method='POST';
+    var url=apikey.baseUrl+'/api/teams/559f8b25e4b056aae06c1b1d/members';
+    var body={'email':email,'admin':false};
+    var accessKey=apikey.accessKey;
+    var secretKey=apikey.secretKey;
     var urlObj = u.parse(url);
     var urlPath = urlObj.pathname;
     var urlQuery = urlObj.query ? urlObj.query : ''; // if no query, use empty string
@@ -1051,11 +1066,31 @@ function createSignature(method, url, accessKey, secretKey) {
         .update(str)
         .digest('base64');
     var signature = 'On ' + accessKey + ':HmacSHA256:' + hmac;
-    return signature;
+    //require('request').debug = true;
+    return new Promise(function (resolve, reject) {
+      request({
+        uri: url,
+        method:method,
+        headers: {
+          'Method':method,
+          'Content-type':contentType,
+          'Accept':'application/vnd.onshape.v1+json',
+          'Authorization':signature,
+          'Date':authDate,
+          'On-Nonce':nonce
+        },
+        json: true,
+        body: body
+      }, function(error, response, body){
+        console.log('error:', error);
+        console.log('statusCode:', response && response.statusCode);
+        console.log('body:', JSON.stringify(body));
+      }).then(()=>{
+        return 'done';
+      });
+    });
+  }).catch(error=>{
+    console.log(error);
+    return error;
+  });
 }
-
-exports.onshapeAPI=functions.database.ref('/toto').onCreate((data,context)=>{
-  var signature=createSignature('POST',apikey.baseUrl,apikey.accessKey,apikey.secretKey);
-  console.log(signature);
-  return null;
-});

@@ -16,5 +16,8 @@
     "request": "^2.88.0",
     "stripe": "^4.15.0"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": "8"
+  }
 }

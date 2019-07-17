@@ -54,6 +54,7 @@ import * as firebase from 'firebase/app';
   </div>
   <div *ngIf="UI.currentTeamObj?.leaders[UI.currentUser]" style="color:blue;;cursor:pointer;margin:20px">Change team name</div>
   <div *ngIf="UI.currentTeamObj?.leaders[UI.currentUser]" style="color:blue;;cursor:pointer;margin:20px">Change team family name</div>
+  <div *ngIf="UI.currentTeam==UI.currentUser" style="color:blue;;cursor:pointer;margin:20px" (click)="joinOnshapePERRINNTeam();router.navigate(['chat',this.UI.currentTeam])">Join Onshape PERRINN team</div>
   </div>
   </div>
 `,
@@ -109,6 +110,10 @@ export class TeamProfileComponent  {
     return Object.keys(obj).map(function(key) {
       return [key, obj[key]];
     });
+  }
+
+  joinOnshapePERRINNTeam() {
+    this.UI.createMessage('join Onshape PERRINN Team','','',{},{});
   }
 
 }
