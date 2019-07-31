@@ -9,7 +9,6 @@ const stripe = require('stripe')(functions.config().stripe.token);
 var u = require('url');
 var crypto = require('crypto');
 var request = require('request');
-var apikey = require('../privateKeys.js');
 
 function updateKeyValue (user,team,ref,key,value) {
   return admin.database().ref('PERRINNTeams/'+team).once('value').then((PERRINNTeam)=>{
@@ -1050,10 +1049,10 @@ function joinOnshapePERRINNTeam(user) {
     console.log('Successfully fetched user data:', userRecord.toJSON());
     var email=userRecord.toJSON().email;
     var method='POST';
-    var url=apikey.baseUrl+'/api/teams/559f8b25e4b056aae06c1b1d/members';
+    var url='https://cad.onshape.com/api/teams/559f8b25e4b056aae06c1b1d/members';
     var body={'email':email,'admin':false};
-    var accessKey=apikey.accessKey;
-    var secretKey=apikey.secretKey;
+    var accessKey=functions.config().onshape.accesskey;
+    var secretKey=functions.config().onshape.secretkey;
     var urlObj = u.parse(url);
     var urlPath = urlObj.pathname;
     var urlQuery = urlObj.query ? urlObj.query : ''; // if no query, use empty string
