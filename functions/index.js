@@ -5,7 +5,6 @@ const gcs = require('@google-cloud/storage')({
 const spawn = require('child-process-promise').spawn;
 const admin = require('firebase-admin');
 admin.initializeApp();
-const stripe = require('stripe')(functions.config().stripe.token);
 var u = require('url');
 var crypto = require('crypto');
 var request = require('request');
@@ -281,6 +280,7 @@ exports.createPERRINNTransactionOnPaymentComplete = functions.database.ref('/tea
 });
 
 exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID}').onCreate((data,context)=>{
+  const stripe = require('stripe')(functions.config().stripe.token);
   const val = data.val();
   if (val === null || val.id || val.error) return null;
   const amount = val.amountCharge;
@@ -1093,3 +1093,15 @@ function joinOnshapePERRINNTeam(user) {
     return error;
   });
 }
+
+exports.googleTest=functions.database.ref('/toto').onCreate((data,context)=>{
+  var googleapis = require('googleapis');
+  var SERVICE_ACCOUNT_EMAIL = 'perrinn-service-account@perrinn.iam.gserviceaccount.com';
+  var SERVICE_ACCOUNT_KEY_FILE = 'perrinn-73e7f16c6042.json';
+  var jwt = new googleapis.auth.JWT(
+      SERVICE_ACCOUNT_EMAIL,
+      SERVICE_ACCOUNT_KEY_FILE,
+      null,
+      ['https://www.googleapis.com/auth/admin.directory.group']
+  );
+});
