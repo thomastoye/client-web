@@ -7,7 +7,9 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 var u = require('url');
 var crypto = require('crypto');
-var request = require('request');
+var request = require('request-promise');
+
+const {google} = require('googleapis');
 
 function updateKeyValue (user,team,ref,key,value) {
   return admin.database().ref('PERRINNTeams/'+team).once('value').then((PERRINNTeam)=>{
@@ -255,6 +257,13 @@ function executeProcess(user,team,functionObj,inputs){
         return result;
       });
     }
+    if (functionObj.name=='joinPERRINNGoogleGroup') {
+      return joinPERRINNGoogleGroup (
+        user
+      ).then(result=>{
+        return result;
+      });
+    }
     return 'none';
   }).catch(error=>{
     console.log('executeProcess: '+error);
@@ -280,7 +289,7 @@ exports.createPERRINNTransactionOnPaymentComplete = functions.database.ref('/tea
 });
 
 exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID}').onCreate((data,context)=>{
-  const stripe = require('stripe')(functions.config().stripe.token);
+  const stripeObj = require('stripe')(functions.config().stripe.token);
   const val = data.val();
   if (val === null || val.id || val.error) return null;
   const amount = val.amountCharge;
@@ -288,7 +297,7 @@ exports.newStripeCharge = functions.database.ref('/teamPayments/{user}/{chargeID
   const source = val.source;
   const idempotency_key = context.params.id;
   let charge = {amount, currency, source};
-  return stripe.charges.create(charge, {idempotency_key})
+  return stripeObj.charges.create(charge, {idempotency_key})
   .then(response=>{
     return data.ref.child('response').set(response);
   }, error=>{
@@ -449,6 +458,7 @@ function writeMessageProcessData(team,message){
       }
     }
     return executeProcess(user,team,functionObj,inputs).then(result=>{
+      if (result==undefined) result='undefined';
       updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/regex']=regex;
       updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/function']=functionObj;
       updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/inputs']=inputs;
@@ -1046,13 +1056,12 @@ function buildNonce() {
 
 function joinOnshapePERRINNTeam(user) {
   return admin.auth().getUser(user).then(function(userRecord) {
-    console.log('Successfully fetched user data:', userRecord.toJSON());
     var email=userRecord.toJSON().email;
     var method='POST';
     var url='https://cad.onshape.com/api/teams/559f8b25e4b056aae06c1b1d/members';
     var body={'email':email,'admin':false};
-    var accessKey=functions.config().onshape.accesskey;
-    var secretKey=functions.config().onshape.secretkey;
+    const accessKey=functions.config().onshape.accesskey;
+    const secretKey=functions.config().onshape.secretkey;
     var urlObj = u.parse(url);
     var urlPath = urlObj.pathname;
     var urlQuery = urlObj.query ? urlObj.query : ''; // if no query, use empty string
@@ -1066,26 +1075,60 @@ function joinOnshapePERRINNTeam(user) {
         .digest('base64');
     var signature = 'On ' + accessKey + ':HmacSHA256:' + hmac;
     //require('request').debug = true;
-    return new Promise(function (resolve, reject) {
-      request({
-        uri: url,
-        method:method,
-        headers: {
-          'Method':method,
-          'Content-type':contentType,
-          'Accept':'application/vnd.onshape.v1+json',
-          'Authorization':signature,
-          'Date':authDate,
-          'On-Nonce':nonce
-        },
-        json: true,
-        body: body
-      }, function(error, response, body){
-        console.log('error:', error);
-        console.log('statusCode:', response && response.statusCode);
-        console.log('body:', JSON.stringify(body));
-      }).then(()=>{
+    return request({
+      uri: url,
+      method:method,
+      headers: {
+        'Method':method,
+        'Content-type':contentType,
+        'Accept':'application/vnd.onshape.v1+json',
+        'Authorization':signature,
+        'Date':authDate,
+        'On-Nonce':nonce
+      },
+      json: true,
+      body: body
+    }).then(result=>{
+      createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",user,"",'none','none',{});
+      return 'done';
+    }).catch(error=>{
+      return error.error.message;
+    });
+  }).catch(error=>{
+    console.log(error);
+    return error;
+  });
+}
+
+function joinPERRINNGoogleGroup(user) {
+  return admin.auth().getUser(user).then(function(userRecord) {
+    var email=userRecord.toJSON().email;
+    var SERVICE_ACCOUNT_EMAIL = 'perrinn-service-account@perrinn.iam.gserviceaccount.com';
+    var SERVICE_ACCOUNT_KEY_FILE = './perrinn-73e7f16c6042.json';
+    const jwt = new google.auth.JWT(
+        SERVICE_ACCOUNT_EMAIL,
+        SERVICE_ACCOUNT_KEY_FILE,
+        null,
+        ['https://www.googleapis.com/auth/admin.directory.group'],
+        'nicolas@perrinn.com'
+    );
+    const admin = google.admin({
+      version: 'directory_v1',
+      jwt,
+    });
+    return jwt.authorize().then(() => {
+      return admin.members.insert({
+        auth: jwt,
+        groupKey: "perrinn-google-group@perrinn.com",
+        requestBody:{
+          email:email,
+          role:'MEMBER'
+        }
+      }).then(result=>{
+        createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Google:","","",user,"",'none','none',{});
         return 'done';
+      }).catch(error=>{
+        return error.message;
       });
     });
   }).catch(error=>{
@@ -1094,14 +1137,14 @@ function joinOnshapePERRINNTeam(user) {
   });
 }
 
+exports.onshapeTest=functions.database.ref('/toto').onCreate((data,context)=>{
+  return joinOnshapePERRINNTeam('QYm5NATKa6MGD87UpNZCTl6IolX2').then(result=>{
+    console.log(result);
+  });
+});
+
 exports.googleTest=functions.database.ref('/toto').onCreate((data,context)=>{
-  var googleapis = require('googleapis');
-  var SERVICE_ACCOUNT_EMAIL = 'perrinn-service-account@perrinn.iam.gserviceaccount.com';
-  var SERVICE_ACCOUNT_KEY_FILE = 'perrinn-73e7f16c6042.json';
-  var jwt = new googleapis.auth.JWT(
-      SERVICE_ACCOUNT_EMAIL,
-      SERVICE_ACCOUNT_KEY_FILE,
-      null,
-      ['https://www.googleapis.com/auth/admin.directory.group']
-  );
+  return joinPERRINNGoogleGroup('QYm5NATKa6MGD87UpNZCTl6IolX2').then(result=>{
+    console.log(result);
+  });
 });

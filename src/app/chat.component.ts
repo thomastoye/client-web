@@ -49,7 +49,6 @@ import * as firebase from 'firebase/app';
             <div style="font-size:11px;padding:5px;">{{message.values?.payload?.linkUserName}} {{message.values?.payload?.linkuserFamilyName}}</div>
           </div>
           <div *ngIf="message.values?.PERRINN?.process?.inputsComplete" style="clear:both;margin:5px">
-            <img src="./../assets/App icons/repeat.png" style="display:inline;float:left;height:30px">
             <div style="float:left;background-color:#c7edcd;padding:5px">
               <span style="font-size:11px">{{message.values?.PERRINN?.process?.regex}}</span>
               <span style="font-size:11px">{{message.values?.PERRINN?.process?.inputs|json}}:</span>
