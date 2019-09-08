@@ -1,21 +1,12 @@
 const admin = require('firebase-admin')
+const messageUtils = require('./message')
+const cryptoUtils = require('./crypto')
+var crypto = require('crypto');
+var request = require('request-promise');
+const functions = require('firebase-functions')
+var u = require('url');
 
 module.exports = {
-
-  // creates random 25-character string
-  buildNonce:()=>{
-    var chars = [
-      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-      'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-      'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0',
-      '1', '2', '3', '4', '5', '6', '7', '8', '9'
-    ];
-    var nonce = '';
-    for (var i = 0; i < 25; i++) {
-      nonce += chars[Math.floor(Math.random()*chars.length)];
-    }
-    return nonce;
-  },
 
   joinOnshapePERRINNTeam:(user)=>{
     return admin.auth().getUser(user).then(function(userRecord) {
@@ -29,7 +20,7 @@ module.exports = {
       var urlPath = urlObj.pathname;
       var urlQuery = urlObj.query ? urlObj.query : ''; // if no query, use empty string
       var authDate = (new Date()).toUTCString();
-      var nonce = buildNonce();
+      var nonce = cryptoUtils.buildNonce();
       var contentType = 'application/json';
       var str = (method + '\n' + nonce + '\n' + authDate + '\n' + contentType + '\n' +
           urlPath + '\n' + urlQuery + '\n').toLowerCase();
@@ -52,7 +43,7 @@ module.exports = {
         json: true,
         body: body
       }).then(result=>{
-        createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",user,"",'none','none',{});
+        messageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",user,"",'none','none',{});
         return 'done';
       }).catch(error=>{
         return error.error.message;

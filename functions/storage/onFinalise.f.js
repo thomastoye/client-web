@@ -1,6 +1,9 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
+const gcs = require('@google-cloud/storage')({
+  keyFilename:'perrinn-d5fc1-firebase-adminsdk-rh8x2-b26a8ffeef.json',
+});
 
 exports=module.exports=functions.storage.object().onFinalize((data,context)=>{
   const object=data;

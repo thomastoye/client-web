@@ -1,4 +1,5 @@
 const admin = require('firebase-admin')
+const dbUtils = require('./db')
 
 module.exports = {
 
@@ -13,10 +14,10 @@ module.exports = {
       const currentIdent = line.search(/\S/);
       line = line.trim();
       if (line.endsWith(':')) {
-        lines[index] = makeKeyFirebaseCompatible(`"${line.replace(':', '":{')}`);
+        lines[index] = dbUtils.makeKeyFirebaseCompatible(`"${line.replace(':', '":{')}`);
       } else {
         const split = line.replace('"', '\\"').split(': ');
-        split[0] = makeKeyFirebaseCompatible(split[0]);
+        split[0] = dbUtils.makeKeyFirebaseCompatible(split[0]);
         lines[index] = `"${split.join('":"')}",`;
       }
       if (currentIdent < previousLineIndent) {

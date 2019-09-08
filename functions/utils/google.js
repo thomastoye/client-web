@@ -1,4 +1,6 @@
 const admin = require('firebase-admin')
+const messageUtils = require('./message')
+const {google} = require('googleapis');
 
 module.exports = {
 
@@ -27,7 +29,7 @@ module.exports = {
             role:'MEMBER'
           }
         }).then(result=>{
-          createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Google:","","",user,"",'none','none',{});
+          messageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Google:","","",user,"",'none','none',{});
           return 'done';
         }).catch(error=>{
           return error.message;
