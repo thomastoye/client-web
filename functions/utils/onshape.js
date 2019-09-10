@@ -1,5 +1,5 @@
 const admin = require('firebase-admin')
-const messageUtils = require('./message')
+const createMessageUtils = require('./message')
 const cryptoUtils = require('./crypto')
 var crypto = require('crypto');
 var request = require('request-promise');
@@ -43,7 +43,7 @@ module.exports = {
         json: true,
         body: body
       }).then(result=>{
-        messageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",user,"",'none','none',{});
+        createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",user,"",'none','none',{});
         return 'done';
       }).catch(error=>{
         return error.error.message;

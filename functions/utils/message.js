@@ -1,38 +1,9 @@
 const admin = require('firebase-admin')
 const processUtils = require('./process')
 const teamUtils = require('./team')
+const createMessageUtils = require('./createMessage')
 
 module.exports = {
-
-  createMessage:(team,user,text,image,action,linkTeam,linkUser,donor,donorMessage,process)=> {
-    const now=Date.now();
-    return admin.database().ref('PERRINNTeams/'+user).once('value').then(userData=>{
-      return admin.database().ref('PERRINNTeams/'+linkUser).once('value').then(linkUserData=>{
-        return admin.database().ref('PERRINNTeams/'+linkTeam).once('value').then(linkTeamData=>{
-          return admin.database().ref('teamMessages/'+team).push({
-            payload:{
-              timestamp:now,
-              text:text,
-              user:user,
-              name:userData.val().name,
-              imageUrlThumbUser:userData.val().imageUrlThumb,
-              image:image,
-              action:action,
-              linkTeam:linkTeam,
-              linkTeamName:linkTeamData.val().name?linkTeamData.val().name:'',
-              linkTeamImageUrlThumb:linkTeamData.val().imageUrlThumb?linkTeamData.val().imageUrlThumb:'',
-              linkUser:linkUser,
-              linkUserName:linkUserData.val().name?linkUserData.val().name:'',
-              linkuserFamilyName:linkUserData.val().familyName?linkUserData.val().familyName:'',
-              linkUserImageUrlThumb:linkUserData.val().imageUrlThumb?linkUserData.val().imageUrlThumb:'',
-            },
-            PERRINN:{transactionIn:{donor:donor,donorMessage:donorMessage}},
-            process:process,
-          });
-        });
-      });
-    });
-  },
 
   writeMessageChainData:(team,message)=>{
     return admin.database().ref('PERRINNTeamMessageChain/'+team).child('lock').transaction(function(lock){
@@ -134,17 +105,6 @@ module.exports = {
     }).catch(error=>{
       console.log(error);
     });
-  },
-
-  checkTransactionInputs:(team,inputs)=>{
-    if(inputs.amount>0&&inputs.amount<=100000){
-      if(inputs.receiver!=team){
-        if(inputs.reference!=''){
-          return true;
-        }
-      }
-    }
-    return false;
   },
 
   writeMessageProcessData:(team,message)=>{
@@ -329,7 +289,7 @@ module.exports = {
   writeMessageTransactionReceiverData:(team,message)=>{
     return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/transactionOut').once('value').then(transactionOutObj=>{
       if(transactionOutObj.val().processed){
-        return createMessage(transactionOutObj.val().receiver,"PERRINN","","","","","",team,message,{}).then(()=>{
+        return createMessageUtils.createMessage(transactionOutObj.val().receiver,"PERRINN","","","","","",team,message,{}).then(()=>{
           return 'done';
         });
       }
@@ -338,4 +298,15 @@ module.exports = {
     });
   }
 
+}
+
+function checkTransactionInputs (team,inputs) {
+  if(inputs.amount>0&&inputs.amount<=100000){
+    if(inputs.receiver!=team){
+      if(inputs.reference!=''){
+        return true;
+      }
+    }
+  }
+  return false;
 }
