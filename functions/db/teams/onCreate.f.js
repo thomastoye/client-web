@@ -3,7 +3,7 @@ const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 const createMessageUtils = require('../../utils/createMessage')
 
-exports=module.exports=functions.database.ref('PERRINNTeams/{team}').onCreate((data,context)=>{
+exports=module.exports=functions.firestore.document('PERRINNTeams/{team}').onCreate((data,context)=>{
   return admin.database().ref('appSettings/specialImages/newTeam').once('value').then(image=>{
     return admin.database().ref('subscribeImageTeams/'+image.val()).update({
       [context.params.team]:true,
