@@ -73,21 +73,13 @@ module.exports = {
 
   writeMessageTeamData:(team,message)=>{
     return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
-      return admin.database().ref('PERRINNTeams/'+team).update({
+      return admin.firestore().doc('PERRINNTeams/'+team).update({
         lastMessageTimestamp:messageObj.val().payload.timestamp,
-        lastMessageTimestampNegative:-messageObj.val().payload.timestamp,
         lastMessageName:messageObj.val().payload.name,
         lastMessageText:messageObj.val().payload.text,
         lastMessageBalance:messageObj.val().PERRINN.wallet.balance,
       }).then(()=>{
-        return admin.firestore().doc('PERRINNTeams/'+team).update({
-          lastMessageTimestamp:messageObj.val().payload.timestamp,
-          lastMessageName:messageObj.val().payload.name,
-          lastMessageText:messageObj.val().payload.text,
-          lastMessageBalance:messageObj.val().PERRINN.wallet.balance,
-        }).then(()=>{
-          return 'done';
-        });
+        return 'done';
       });
     }).catch(error=>{
       console.log(error);

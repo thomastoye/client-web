@@ -226,7 +226,7 @@ export class ChatComponent {
       this.isCurrentUserLeader = false;
       this.isCurrentUserMember = false;
       this.showDetails = {};
-      db.object('PERRINNTeams/' + this.UI.currentTeam).valueChanges().subscribe(snapshot => {
+      afs.doc<any>('PERRINNTeams/'+this.UI.currentTeam).valueChanges().subscribe(snapshot=>{
         this.UI.currentTeamObj = snapshot;
         this.UI.currentTeamObjKey = this.UI.currentTeam;
         if (this.UI.currentUser) {

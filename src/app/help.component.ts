@@ -14,7 +14,6 @@ import { userInterfaceService } from './userInterface.service';
       <div style="padding:10px;cursor:pointer" (click)="UI.createMessage(service.regex,'','','','');router.navigate(['chat',this.UI.currentTeam])">
         <div style="float:left;font-size:14px;color:blue">{{service.regex}}</div>
       </div>
-      <div class="seperator"></div>
     </li>
   </ul>
   </div>

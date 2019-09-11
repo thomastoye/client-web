@@ -4,38 +4,22 @@ module.exports = {
 
   createTeam:(team,user,name,familyName,parent)=>{
     const now=Date.now();
-    let updateObj={};
-    updateObj['PERRINNTeams/'+team+'/createdTimestamp']=now;
-    updateObj['PERRINNTeams/'+team+'/name']=name;
-    updateObj['PERRINNTeams/'+team+'/familyName']=familyName;
-    updateObj['PERRINNTeams/'+team+'/leaders/'+user]={name:name};
-    updateObj['PERRINNTeams/'+team+'/leadersCount']=1;
-    updateObj['PERRINNTeams/'+team+'/lastMessageTimestamp']=now;
-    updateObj['PERRINNTeams/'+team+'/lastMessageTimestampNegative']=-1*now;
+    var batch = admin.firestore().batch();
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{createdTimestamp:now},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{name:name},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{familyName:familyName},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{leaders:{[user]:{name:name}}},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{leadersCount:1},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{lastMessageTimestamp:now},{create:true});
     if(parent!=''){
-      updateObj['PERRINNTeams/'+team+'/parent']=parent;
-      updateObj['PERRINNTeams/'+parent+'/children/'+team]=true;
-      updateObj['PERRINNTeams/'+parent+'/childrenCount']=1;
+      batch.update(admin.firestore().doc('PERRINNTeams/'+team),{parent:parent},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+parent),{children:{[team]:{name:name}}},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+parent),{childrenCount:1},{create:true});
     }
-    updateObj['subscribeTeamUsers/'+team+'/'+user]=true;
-    return admin.database().ref().update(updateObj).then(()=>{
-      var batch = admin.firestore().batch();
-      batch.update(admin.firestore().doc('PERRINNTeams/'+team),{createdTimestamp:now},{create:true});
-      batch.update(admin.firestore().doc('PERRINNTeams/'+team),{name:name},{create:true});
-      batch.update(admin.firestore().doc('PERRINNTeams/'+team),{familyName:familyName},{create:true});
-      batch.update(admin.firestore().doc('PERRINNTeams/'+team),{leaders:{[user]:{name:name}}},{create:true});
-      batch.update(admin.firestore().doc('PERRINNTeams/'+team),{leadersCount:1},{create:true});
-      batch.update(admin.firestore().doc('PERRINNTeams/'+team),{lastMessageTimestamp:now},{create:true});
-      if(parent!=''){
-        batch.update(admin.firestore().doc('PERRINNTeams/'+team),{parent:parent},{create:true});
-        batch.update(admin.firestore().doc('PERRINNTeams/'+parent),{children:{[team]:{name:name}}},{create:true});
-        batch.update(admin.firestore().doc('PERRINNTeams/'+parent),{childrenCount:1},{create:true});
-      }
-      batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{lastChatVisitTimestamp:now},{create:true});
-      batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{name:name},{create:true});
-      return batch.commit().then(()=>{
-        return 'done';
-      });
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{lastChatVisitTimestamp:now},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{name:name},{create:true});
+    return batch.commit().then(()=>{
+      return 'done';
     });
   },
 

@@ -40,9 +40,6 @@ module.exports = {
       updateObj['PERRINNImages/'+image+'/imageUrlMedium']=imageUrlMedium;
       updateObj['PERRINNImages/'+image+'/imageUrlOriginal']=imageUrlOriginal;
       teams.forEach(team=>{
-        updateObj['PERRINNTeams/'+team.key+'/imageUrlThumb']=imageUrlThumb;
-        updateObj['PERRINNTeams/'+team.key+'/imageUrlMedium']=imageUrlMedium;
-        updateObj['PERRINNTeams/'+team.key+'/imageUrlOriginal']=imageUrlOriginal;
         batch.update(admin.firestore().doc('PERRINNTeams/'+team.key),{imageUrlThumb:imageUrlThumb},{create:true});
         batch.update(admin.firestore().doc('PERRINNTeams/'+team.key),{imageUrlMedium:imageUrlMedium},{create:true});
         batch.update(admin.firestore().doc('PERRINNTeams/'+team.key),{imageUrlOriginal:imageUrlOriginal},{create:true});
