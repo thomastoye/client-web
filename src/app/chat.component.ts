@@ -156,8 +156,6 @@ import * as firebase from 'firebase/app';
   </div>
   <div class="sheet" style="position:fixed;bottom:0;width:100%;background-color:#f2f2f2">
     <div *ngIf="!isCurrentUserLeader&&!isCurrentUserMember">
-      <div *ngIf="chatReplayMode" style="float:left;color:green;margin:5px">chat replay</div>
-      <div *ngIf="chatReplayDraftMessageUser" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{chatReplayDraftMessageUser}}...</div>
       <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="clear:both;margin-bottom:25px" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
       <div *ngIf="isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="clear:both;margin-bottom:25px;color:green;cursor:default">Following</div>
       <ul style="list-style:none;float:left;">
@@ -167,8 +165,6 @@ import * as firebase from 'firebase/app';
       </ul>
     </div>
     <div *ngIf="isCurrentUserLeader||isCurrentUserMember">
-      <div *ngIf="chatReplayMode" style="float:left;color:green;margin:5px">chat replay</div>
-      <div *ngIf="chatReplayDraftMessageUser" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{chatReplayDraftMessageUser}}...</div>
       <ul style="list-style:none;float:left;">
         <li *ngFor="let user of draftMessageUsers | async">
         <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.name}}...</div>
@@ -215,8 +211,6 @@ export class ChatComponent {
   isCurrentUserLeader: boolean;
   isCurrentUserMember: boolean;
   showDetails: {};
-  chatReplayMode: boolean;
-  chatReplayDraftMessageUser: string;
 
   constructor(
     public db: AngularFireDatabase,
@@ -227,7 +221,6 @@ export class ChatComponent {
     private storage: AngularFireStorage,
   ) {
     this.UI.loading = true;
-    this.chatReplayMode = false;
     this.route.params.subscribe(params => {
       this.UI.currentTeam = params.id;
       this.isCurrentUserLeader = false;
@@ -245,67 +238,31 @@ export class ChatComponent {
           }
         }
       });
-      db.object('PERRINNTeams/' + this.UI.currentTeam + '/chatReplayMode').valueChanges().subscribe(snapshot => {
-        if (snapshot != undefined) {
-          this.chatReplayMode = snapshot ? true : false;
-        }
-        this.previousMessageTimestamp = 0;
-        this.previousMessageUser = '';
-        this.draftMessageDB = false;
-        this.draftImage = '';
-        this.draftImageDownloadURL = '';
-        this.draftMessage = '';
-        this.messageNumberDisplay = 15;
-        this.teamMessages = this.db.list('teamMessages/' + this.UI.currentTeam, ref => ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes => {
-          this.UI.loading = false;
-          const updateObj = {};
-          changes.forEach(c => {
-            updateObj['teamReads/' + this.UI.currentUser + '/' + this.UI.currentTeam + '/' + c.payload.key] = true;
-          });
-          this.db.database.ref().update(updateObj);
-          return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
-        }));
-        if (this.chatReplayMode) {
-          this.chatReplayLoop();
-        }
-        this.draftMessageUsers = this.db.list('teamActivities/' + this.UI.currentTeam + '/draftMessages/').snapshotChanges().pipe(map(changes => {
-          return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
-        }));
-
-        afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/viewTeams/'+this.UI.currentTeam).valueChanges().subscribe(userTeam => {
-          if (userTeam!=null&&userTeam.lastChatVisitTimestamp!=undefined) {this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp); }
-          else this.lastChatVisitTimestamp=0;
+      this.previousMessageTimestamp = 0;
+      this.previousMessageUser = '';
+      this.draftMessageDB = false;
+      this.draftImage = '';
+      this.draftImageDownloadURL = '';
+      this.draftMessage = '';
+      this.messageNumberDisplay = 15;
+      this.teamMessages = this.db.list('teamMessages/' + this.UI.currentTeam, ref => ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes => {
+        this.UI.loading = false;
+        const updateObj = {};
+        changes.forEach(c => {
+          updateObj['teamReads/' + this.UI.currentUser + '/' + this.UI.currentTeam + '/' + c.payload.key] = true;
         });
+        this.db.database.ref().update(updateObj);
+        return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
+      }));
+      this.draftMessageUsers = this.db.list('teamActivities/' + this.UI.currentTeam + '/draftMessages/').snapshotChanges().pipe(map(changes => {
+        return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
+      }));
+
+      afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/viewTeams/'+this.UI.currentTeam).valueChanges().subscribe(userTeam => {
+        if (userTeam!=null&&userTeam.lastChatVisitTimestamp!=undefined) {this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp); }
+        else this.lastChatVisitTimestamp=0;
       });
     });
-  }
-
-  ngOnDestroy() {
-    this.chatReplayMode = false;
-  }
-
-  chatReplayLoop() {
-    this.messageNumberDisplay = 0;
-    const that = this;
-    let textLength = 0;
-    let image = 0;
-    (function theLoop() {
-      that.chatReplayDraftMessageUser = '';
-      setTimeout(function() {
-        ++that.messageNumberDisplay;
-        that.teamMessages.subscribe(snapshot => {
-          if (snapshot[that.messageNumberDisplay] == undefined) {that.chatReplayMode = false; }
-          textLength = snapshot[that.messageNumberDisplay].values.payload.text.length;
-          if (snapshot[that.messageNumberDisplay].values.payload.image) {image = 1; } else { image = 0; }
-        });
-        if (that.chatReplayMode) {theLoop(); }
-      }, 2000 + textLength * 100 + image * 4000);
-      setTimeout(function() {
-        that.teamMessages.subscribe(snapshot => {
-          that.chatReplayDraftMessageUser = snapshot[that.messageNumberDisplay].values.payload.name;
-        });
-      }, textLength * 100 + image * 4000);
-    })();
   }
 
   scrollHandler(e: string) {

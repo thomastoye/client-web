@@ -6,7 +6,7 @@ const teamUtils = require('../../utils/team')
 exports=module.exports=functions.firestore.document('/PERRINNTeams/{team}').onWrite((change,context)=>{
   const beforeData = change.before.data();
   const afterData = change.after.data();
-  var keys=['chatReplayMode','lastMessageTimestamp','lastMessageTimestampNegative','lastMessageName','lastMessageText','lastMessageBalance','name','familyName','imageUrlThumb','leaders','members'];
+  var keys=['lastMessageTimestamp','lastMessageTimestampNegative','lastMessageName','lastMessageText','lastMessageBalance','name','familyName','imageUrlThumb','leaders','members'];
   var updateKeys=[];
   keys.forEach(key=>{
     if(teamUtils.isNewDataValid(key,beforeData,afterData))updateKeys.push(key);

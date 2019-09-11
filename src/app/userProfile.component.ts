@@ -42,7 +42,6 @@ import { userInterfaceService } from './userInterface.service';
           </div>
           <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team.values?.lastMessageName}}: {{team.values?.lastMessageText}}</div>
           <div style="clear:both;float:left;font-size:10px;color:#999">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages, C{{team.values?.lastMessageBalance?team.values?.lastMessageBalance:0|number:'1.2-2'}}</div>
-          <div *ngIf="team.values?.chatReplayMode" style="float:left;color:green;font-size:10px">chat replay</div>
         </div>
         <div class="seperator" style="margin-left:100px"></div>
       </div>
@@ -71,7 +70,6 @@ import { userInterfaceService } from './userInterface.service';
           </div>
           <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{team.values?.lastMessageName}}: {{team.values?.lastMessageText}}</div>
           <div style="clear:both;float:left;font-size:10px;width:100px" [style.color]="team.values?.lastMessageBalance<0?'red':'#999'">C{{team.values?.lastMessageBalance?team.values?.lastMessageBalance:0|number:'1.2-2'}}</div>
-          <div *ngIf="team.values?.chatReplayMode" style="float:left;color:green;font-size:10px">chat replay</div>
         </div>
         <div class="seperator" style="margin-left:100px"></div>
       </div>
