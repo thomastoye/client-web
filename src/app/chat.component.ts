@@ -180,7 +180,6 @@ import * as firebase from 'firebase/app';
         </ul>
         <div style="color:blue">{{UI.process[UI.currentTeam]?.message}}</div>
       </div>
-      <img class='editButton' style="width:20px;float:right" (click)="this.router.navigate(['help'])" src="./../assets/App icons/settings.png">
       <div style="clear:both;float:left;width:90%">
         <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
       </div>
