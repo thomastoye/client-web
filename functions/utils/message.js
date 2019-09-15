@@ -102,23 +102,20 @@ module.exports = {
   writeMessageProcessData:(team,message)=>{
     return admin.database().ref('teamMessages/'+team+'/'+message+'/process').once('value').then(process=>{
       let updateObj={};
-      let regex='none';
       let user='';
       let functionObj={none:'none'};
       let inputs={none:'none'};
       let inputsComplete=false;
       if(process.val()!=undefined&&process.val()!=null){
         if(process.val().inputsComplete){
-          regex=process.val().regex;
           user=process.val().user;
           functionObj=process.val().function;
-          inputs=process.val().inputs;
+          if(process.val().inputs!=undefined) inputs=process.val().inputs;
           inputsComplete=process.val().inputsComplete;
         }
       }
       return processUtils.executeProcess(user,team,functionObj,inputs).then(result=>{
         if (result==undefined) result='undefined';
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/regex']=regex;
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/function']=functionObj;
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/inputs']=inputs;
         updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/inputsComplete']=inputsComplete;

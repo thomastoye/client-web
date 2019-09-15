@@ -68,8 +68,8 @@ module.exports = {
           return result;
         });
       }
-      if (functionObj.name=='joinOnshapePERRINNTeam') {
-        return onshapeUtils.joinOnshapePERRINNTeam (
+      if (functionObj.name=='joinPERRINNOnshapeTeam') {
+        return onshapeUtils.joinPERRINNOnshapeTeam (
           user
         ).then(result=>{
           return result;

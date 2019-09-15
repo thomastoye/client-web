@@ -22,7 +22,7 @@ export class userInterfaceService {
     this.process = {};
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
-        this.currentUser = auth.uid;
+        this.currentUser=auth.uid;
         afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj = snapshot;
         });
@@ -45,16 +45,16 @@ export class userInterfaceService {
           this.services = services;
         });
       } else {
-        this.currentUser = null;
-        this.focusUser = null;
-        this.currentTeam = null;
+        this.currentUser=null;
+        this.focusUser=null;
+        this.currentTeam=null;
       }
     });
   }
 
   createMessage(text, image, imageDownloadURL, linkTeamObj, linkUserObj) {
     text = text.replace(/(\r\n|\n|\r)/gm, '');
-    if (text == '' && image == '' && !this.processInputsComplete()) return null;
+    if (text == '' && image == '' && !this.IsProcessInputsComplete()) return null;
     const now = Date.now();
     const messageID = this.db.list('ids/').push(true).key;
     const updateObj = {};
@@ -74,7 +74,7 @@ export class userInterfaceService {
       linkuserFamilyName: linkUserObj.familyName ? linkUserObj.familyName : null,
       linkUserImageUrlThumb: linkUserObj.imageUrlThumb ? linkUserObj.imageUrlThumb : null,
     };
-    if (this.processInputsComplete()) {
+    if (this.IsProcessInputsComplete()) {
       updateObj['teamMessages/' + this.currentTeam + '/' + messageID + '/process'] = this.process[this.currentTeam];
     }
     this.db.database.ref().update(updateObj);
@@ -82,7 +82,7 @@ export class userInterfaceService {
     this.clearProcessData();
   }
 
-  processInputsComplete() {
+  IsProcessInputsComplete() {
     if (this.process[this.currentTeam] == undefined) {return false; }
     if (this.process[this.currentTeam] == null) {return false; }
     if (this.process[this.currentTeam].inputsComplete == undefined) {return false; }

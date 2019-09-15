@@ -49,9 +49,7 @@ import * as firebase from 'firebase/app';
             <div style="font-size:11px;padding:5px;">{{message.values?.payload?.linkUserName}} {{message.values?.payload?.linkuserFamilyName}}</div>
           </div>
           <div *ngIf="message.values?.PERRINN?.process?.inputsComplete" style="clear:both;margin:5px">
-            <div style="float:left;background-color:#c7edcd;padding:5px">
-              <span style="font-size:11px">{{message.values?.PERRINN?.process?.regex}}</span>
-              <span style="font-size:11px">{{message.values?.PERRINN?.process?.inputs|json}}:</span>
+            <div style="float:left;background-color:#c7edcd;padding:3px">
               <span style="font-size:11px">{{message.values?.PERRINN?.process?.result}}</span>
             </div>
           </div>
@@ -93,7 +91,6 @@ import * as firebase from 'firebase/app';
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/repeat.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">PROCESS</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Regex:{{message.values?.PERRINN?.process?.regex}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Function:{{message.values?.PERRINN?.process?.function|json}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs complete:{{message.values?.PERRINN?.process?.inputsComplete}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs:{{message.values?.PERRINN?.process?.inputs|json}}</div>
@@ -170,16 +167,6 @@ import * as firebase from 'firebase/app';
         <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.name}}...</div>
         </li>
       </ul>
-      <div *ngIf="UI.process[UI.currentTeam]?.service" style="cursor:pointer;border-radius:7px;background-color:white;float:left;padding:5px;margin:10px;width:70%"(click)="UI.clearProcessData()">
-        <div style="float:left;font-size:11px;font-weight:bold">{{UI.process[UI.currentTeam]?.regex}}:</div>
-        <img src="./../assets/App icons/remove.png" style="float:right;height:20px;">
-        <ul style="clear:both;list-style:none;color:green;margin:10px 0 10px 0">
-          <li *ngFor="let input of UI.process[UI.currentTeam]?.inputsArray">
-            <div style="float:left;font-size:11px;line-height:11px">{{input[0]}}:{{input[1]}}</div>
-          </li>
-        </ul>
-        <div style="color:blue">{{UI.process[UI.currentTeam]?.message}}</div>
-      </div>
       <div style="clear:both;float:left;width:90%">
         <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
       </div>

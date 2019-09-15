@@ -8,7 +8,7 @@ var u = require('url');
 
 module.exports = {
 
-  joinOnshapePERRINNTeam:(user)=>{
+  joinPERRINNOnshapeTeam:(user)=>{
     return admin.auth().getUser(user).then(function(userRecord) {
       var email=userRecord.toJSON().email;
       var method='POST';
