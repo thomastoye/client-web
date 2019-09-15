@@ -54,16 +54,7 @@ export class userInterfaceService {
 
   createMessage(text, image, imageDownloadURL, linkTeamObj, linkUserObj) {
     text = text.replace(/(\r\n|\n|\r)/gm, '');
-    if (text == '' && image == '') {return null; }
-    this.analyseMessageText(text);
-    if (this.processInputsInProgress()) {return null; }
-    if (this.processInputsComplete()) {
-      text = '';
-      image = '';
-      imageDownloadURL = '';
-      linkTeamObj = {};
-      linkUserObj = {};
-    }
+    if (text == '' && image == '' && !this.processInputsComplete()) return null;
     const now = Date.now();
     const messageID = this.db.list('ids/').push(true).key;
     const updateObj = {};
@@ -89,66 +80,6 @@ export class userInterfaceService {
     this.db.database.ref().update(updateObj);
     this.timestampChatVisit();
     this.clearProcessData();
-  }
-
-  analyseMessageText(text) {
-    let newProcess = false;
-    this.services.forEach((service) => {
-      const serviceRegex = new RegExp(service.val().regex, 'i');
-      if (text.match(serviceRegex)) {
-        if (service.val().process) {
-          this.process[this.currentTeam] = {
-            user: this.currentUser,
-            service: service.key,
-            regex: service.val().regex,
-            message: service.val().process[1].message.text,
-            step: 1,
-            inputsComplete: false,
-            inputs: {},
-            inputsArray: [],
-            function: service.val().process.function,
-          };
-          newProcess = true;
-        }
-      }
-    });
-    if (newProcess) {
-      return null;
-    }
-    this.services.forEach((service) => {
-      if (this.process !== undefined) {
-        if (this.process[this.currentTeam] !== undefined) {
-          if (service.key == this.process[this.currentTeam].service) {
-            if (service.child('process').child(this.process[this.currentTeam].step).val().input) {
-              const inputRegex = new RegExp(service.child('process').child(this.process[this.currentTeam].step).child('input').val().regex, 'i');
-              const value = text.match(inputRegex);
-              if (value) {
-                const variable = service.child('process').child(this.process[this.currentTeam].step).child('input').val().variable;
-                if (variable) {
-                  const valueString = value[0];
-                  this.process[this.currentTeam].inputs[variable] = valueString;
-                  this.process[this.currentTeam].inputsArray.push([variable, valueString]);
-                }
-                if (!service.child('process').child(this.process[this.currentTeam].step + 1).val()) {
-                  this.process[this.currentTeam].inputsComplete = true;
-                }
-                this.process[this.currentTeam].step += 1;
-                if (!this.process[this.currentTeam].inputsComplete) {this.process[this.currentTeam].message = service.val().process[this.process[this.currentTeam].step].message.text; } else { this.process[this.currentTeam].message = ''; }
-              }
-            }
-          }
-        }
-      }
-    });
-  }
-
-  processInputsInProgress() {
-    if (this.process[this.currentTeam] == undefined) {return false; }
-    if (this.process[this.currentTeam] == null) {return false; }
-    if (this.process[this.currentTeam].inputsComplete == undefined) {return false; }
-    if (this.process[this.currentTeam].inputsComplete == null) {return false; }
-    if (!this.process[this.currentTeam].inputsComplete) {return true; }
-    return false;
   }
 
   processInputsComplete() {
