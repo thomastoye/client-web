@@ -3,8 +3,8 @@ const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 
 exports=module.exports=functions.database.ref('/toto').onCreate((data,context)=>{
-  return admin.firestore().doc('PERRINNTeams/QYm5NATKa6MGD87UpNZCTl6IolX2').get().then(result=>{
-    console.log(result.data().name);
+  return admin.firestore().doc('PERRINNTeams/-KptLVvLV9lRK1VS-nAj').get().then(result=>{
+    console.log(JSON.stringify(result.data().members['SSYanAoIexPdEih8M8NrJZrYnv2']));
     return null;
   }).catch(error=>{
     console.log(error);
