@@ -40,7 +40,7 @@ import * as firebase from 'firebase/app';
           <img *ngIf="message.values?.payload?.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
           <img *ngIf="message.values?.payload?.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
           <div *ngIf="!message.values?.payload?.image" style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.values?.payload?.text | linky"></div>
-          <div *ngIf="message.values?.payload?.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['chat',message.values?.payload?.linkTeam])">
+          <div *ngIf="message.values?.payload?.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.values?.payload?.linkTeam])">
             <img [src]="message.values?.payload?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
             <div style="font-size:11px;padding:5px;">{{message.values?.payload?.linkTeamName}}</div>
           </div>

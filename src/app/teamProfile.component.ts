@@ -17,14 +17,14 @@ import * as firebase from 'firebase/app';
   <div style="font-size:18px;line-height:30px;margin:10px;font-family:sans-serif;">{{UI.currentTeamObj?.name}} {{UI.currentTeamObj?.familyName}}</div>
   <div class='sheet' style="margin-top:5px">
   <ul class='listLight'>
-    <li *ngFor="let user of objectToArray(UI.currentTeamObj?.leaders)" (click)="router.navigate(['user',user.key])">
+    <li *ngFor="let user of objectToArray(UI.currentTeamObj?.leaders)" (click)="router.navigate(['user',user[0]])">
       <img [src]="user[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:50px;width:50px;border-radius:3px;margin:5px 5px 5px 10px">
       <div style="width:100px;float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{user[1]?.name}}</div>
       <div style="width:100px;float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">Leader</div>
     </li>
   </ul>
   <ul class='listLight'>
-    <li *ngFor="let user of objectToArray(UI.currentTeamObj?.members)" (click)="router.navigate(['user',user.key])">
+    <li *ngFor="let user of objectToArray(UI.currentTeamObj?.members)" (click)="router.navigate(['user',user[0]])">
       <img [src]="user[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:50px;width:50px;border-radius:3px;margin:5px 5px 5px 10px">
       <div style="width:100px;float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">{{user[1]?.name}}</div>
       <div style="width:100px;float:left;margin:10px 5px 5px 5px;font-size:12px;line-height:15px;font-family:sans-serif">Member</div>
