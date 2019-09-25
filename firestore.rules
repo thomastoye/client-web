@@ -7,6 +7,9 @@ service cloud.firestore {
     	match /viewTeams/{viewTeam} {
       	allow create,update: if request.auth.uid == team;
       }
+      match /messages/{messageID} {
+        allow create,update: if request.auth.uid == team;
+      }
     }
   }
 }

@@ -278,7 +278,7 @@ module.exports = {
   writeMessageTransactionReceiverData:(team,message)=>{
     return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/transactionOut').once('value').then(transactionOutObj=>{
       if(transactionOutObj.val().processed){
-        return createMessageUtils.createMessage(transactionOutObj.val().receiver,"PERRINN","","","","","",team,message,{}).then(()=>{
+        return createMessageUtils.createMessage(transactionOutObj.val().receiver,"PERRINN","","","",{},{},team,message,{}).then(()=>{
           return 'done';
         });
       }

@@ -12,7 +12,7 @@ import { userInterfaceService } from './userInterface.service';
   <div id='main_container'>
   <div style="max-width:800px;margin:0 auto">
     <img class='editButton' style="float:right;width:25px" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="this.router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
-    <div style="float:right;width:70px;height:26px;text-align:center;line-height:20px;font-size:20px;margin:5px;color:white;border-radius:13px;background-color:#c2c8ff;cursor:pointer;border-width:1px;border-style:solid;border-color:#4f5de0">+</div>
+    <div style="float:right;width:70px;height:24px;text-align:center;line-height:20px;font-size:20px;margin:5px;color:white;background-color:#267cb5;border-radius:5px;cursor:pointer">+</div>
   </div>
   <div class='sheet'>
   <div class="spinner" *ngIf="UI.loading">

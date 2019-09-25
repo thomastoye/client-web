@@ -4,32 +4,28 @@ const teamUtils = require('./team')
 
 module.exports = {
 
-  createMessage:(team,user,text,image,action,linkTeam,linkUser,donor,donorMessage,process)=> {
+  createMessage:(team,user,text,image,action,linkTeamObj,linkUserObj,donor,donorMessage,process)=> {
     const now=Date.now();
     return admin.firestore().doc('PERRINNTeams/'+user).get().then(userData=>{
-      return admin.firestore().doc('PERRINNTeams/'+linkUser).get().then(linkUserData=>{
-        return admin.firestore().doc('PERRINNTeams/'+linkTeam).get().then(linkTeamData=>{
-          return admin.database().ref('teamMessages/'+team).push({
-            payload:{
-              timestamp:now,
-              text:text,
-              user:user,
-              name:userData.data().name,
-              imageUrlThumbUser:userData.data().imageUrlThumb,
-              image:image,
-              action:action,
-              linkTeam:linkTeam,
-              linkTeamName:linkTeamData.data().name?linkTeamData.data().name:'',
-              linkTeamImageUrlThumb:linkTeamData.data().imageUrlThumb?linkTeamData.data().imageUrlThumb:'',
-              linkUser:linkUser,
-              linkUserName:linkUserData.data().name?linkUserData.data().name:'',
-              linkuserFamilyName:linkUserData.data().familyName?linkUserData.data().familyName:'',
-              linkUserImageUrlThumb:linkUserData.data().imageUrlThumb?linkUserData.data().imageUrlThumb:'',
-            },
-            PERRINN:{transactionIn:{donor:donor,donorMessage:donorMessage}},
-            process:process,
-          });
-        });
+      return admin.database().ref('teamMessages/'+team).push({
+        payload:{
+          timestamp:now,
+          text:text,
+          user:user,
+          name:userData.data().name,
+          imageUrlThumbUser:userData.data().imageUrlThumb,
+          image:image,
+          action:action,
+          linkTeam: linkTeamObj.key ? linkTeamObj.key : null,
+          linkTeamName: linkTeamObj.name ? linkTeamObj.name : null,
+          linkTeamImageUrlThumb: linkTeamObj.imageUrlThumb ? linkTeamObj.imageUrlThumb : null,
+          linkUser: linkUserObj.key ? linkUserObj.key : null,
+          linkUserName: linkUserObj.name ? linkUserObj.name : null,
+          linkuserFamilyName: linkUserObj.familyName ? linkUserObj.familyName : null,
+          linkUserImageUrlThumb: linkUserObj.imageUrlThumb ? linkUserObj.imageUrlThumb : null,
+        },
+        PERRINN:{transactionIn:{donor:donor,donorMessage:donorMessage}},
+        process:process,
       });
     });
   },

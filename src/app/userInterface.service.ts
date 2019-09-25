@@ -2,6 +2,7 @@ import { Injectable }    from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import * as firebase from 'firebase/app';
 
 @Injectable()
 export class userInterfaceService {
@@ -17,15 +18,18 @@ export class userInterfaceService {
   currentUserTeamsObj: any;
   services: any;
   process: any;
+  recipientList: any;
 
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase, public afs: AngularFirestore,) {
     this.process = {};
+    this.recipientList=[];
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
         afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj = snapshot;
         });
+        this.addRecipient(this.currentUser);
         afs.collection<any>('PERRINNTeams/'+this.currentUser+'/viewTeams/').valueChanges().subscribe(snapshot=>{
           this.currentUserTeamsObj = snapshot;
           this.globalChatActivity = false;
@@ -50,6 +54,19 @@ export class userInterfaceService {
         this.currentTeam=null;
       }
     });
+  }
+
+  addRecipient(user){
+    if (!this.recipientList.includes(user)) this.recipientList.push(user);
+  }
+
+  recipientIndex(){
+    let recipientIndex='';
+    this.recipientList=this.recipientList.sort();
+    this.recipientList.forEach(recipient=>{
+      recipientIndex=recipientIndex+recipient;
+    });
+    return recipientIndex;
   }
 
   createMessage(text, image, imageDownloadURL, linkTeamObj, linkUserObj) {
@@ -80,6 +97,23 @@ export class userInterfaceService {
     this.db.database.ref().update(updateObj);
     this.timestampChatVisit();
     this.clearProcessData();
+  }
+
+  createMessageAFS(user, text, image, imageDownloadURL){
+    const now = Date.now();
+    let recipientIndex=this.recipientIndex();
+    this.afs.collection('PERRINNTeams').doc(user).collection('messages').add({
+      timestamp: now,
+      recipientIndex:recipientIndex,
+      user: this.currentUser,
+      name: this.currentUserObj.name,
+      imageUrlThumbUser: this.currentUserObj.imageUrlThumb,
+      text:text,
+      image:image,
+      imageDownloadURL:imageDownloadURL
+    }).then(()=>{
+      return null;
+    })
   }
 
   IsProcessInputsComplete() {

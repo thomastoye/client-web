@@ -24,7 +24,7 @@
     },
     "teamActivities": {
       "$teamid": {
-        ".write": "newData.exists() && (root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).exists() || root.child('PERRINNTeams').child($teamid).child('members').child(auth.uid).exists())"
+        ".write": "newData.exists() && auth.uid === $teamid"
       }
     },
     "teamMessages": {
@@ -32,13 +32,13 @@
         ".indexOn": ["timestamp"],
         "$messageid": {
           "payload":{
-            ".write": "!data.exists() && (root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).exists() || root.child('PERRINNTeams').child($teamid).child('members').child(auth.uid).exists())",
+            ".write": "!data.exists() && auth.uid === $teamid",
             "user": {
               ".validate": "newData.val()==auth.uid"
             }
           },
           "process":{
-            ".write":"!data.exists() && root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).exists()",
+            ".write":"!data.exists() && auth.uid === $teamid",
             "user":{
               ".validate": "newData.val()==auth.uid"
             }
@@ -49,7 +49,7 @@
     "teamPayments": {
       "$teamid": {
         "$chargeid": {
-          ".write": "!data.exists() && newData.exists() && root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).exists()"
+          ".write": "!data.exists() && newData.exists() && auth.uid === $teamid"
         }
       }
     },
@@ -61,7 +61,7 @@
     "teams": {
       "$teamid": {
         "$entry": {
-          ".write": "!data.exists() && root.child('PERRINNTeams').child($teamid).child('leaders').child(auth.uid).exists() || !root.child('PERRINNTeams').child($teamid).exists() && auth != null",
+          ".write": "!data.exists() && auth.uid === $teamid",
           "user": {
             ".validate": "newData.val()==auth.uid"
           }

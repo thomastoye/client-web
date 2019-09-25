@@ -43,8 +43,11 @@ module.exports = {
         json: true,
         body: body
       }).then(result=>{
-        createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",user,"",'none','none',{});
-        return 'done';
+        return admin.firestore().doc('PERRINNTeams/'+user).get().then(userObj=>{
+          createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",{},userObj.data(),'none','none',{});
+        }).then(()=>{
+          return 'done';
+        });
       }).catch(error=>{
         return error.error.message;
       });

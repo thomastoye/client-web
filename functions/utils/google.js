@@ -5,6 +5,7 @@ const {google} = require('googleapis');
 module.exports = {
 
   joinPERRINNGoogleGroup:(user)=>{
+    console.log(user)
     return admin.auth().getUser(user).then(function(userRecord) {
       var email=userRecord.toJSON().email;
       var SERVICE_ACCOUNT_EMAIL = 'perrinn-service-account@perrinn.iam.gserviceaccount.com';
@@ -29,10 +30,11 @@ module.exports = {
             role:'MEMBER'
           }
         }).then(result=>{
-          createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Google:","","",user,"",'none','none',{});
-          return 'done';
-        }).catch(error=>{
-          return error.message;
+          return admin.firestore().doc('PERRINNTeams/'+user).get().then(userObj=>{
+            createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Google:","","",{},userObj.data(),'none','none',{});
+          }).then(()=>{
+            return 'done';
+          });
         });
       });
     }).catch(error=>{

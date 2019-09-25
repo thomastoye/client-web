@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { TeamProfileComponent }  from './teamProfile.component';
 import { ChatComponent }  from './chat.component';
+import { ChatFSComponent }  from './chatFS.component';
 import { LoginComponent }  from './login.component';
 import { UserProfileComponent }  from './userProfile.component';
 import { UserSettingsComponent }  from './userSettings.component';
@@ -40,6 +41,7 @@ export const firebaseConfig = {
     AppComponent,
     TeamProfileComponent,
     ChatComponent,
+    ChatFSComponent,
     LoginComponent,
     UserProfileComponent,
     UserSettingsComponent,
