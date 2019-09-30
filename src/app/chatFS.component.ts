@@ -258,7 +258,7 @@ export class ChatFSComponent {
       ).snapshotChanges().pipe(map(changes => {
         this.UI.loading = false;
         const updateObj = {};
-        return changes.map(c => ({key: c.payload.key, payload: c.payload.doc.data()}));
+        return changes.map(c => ({payload: c.payload.doc.data()}));
       }));
     });
   }
