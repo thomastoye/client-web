@@ -27,6 +27,9 @@ module.exports = {
         PERRINN:{transactionIn:{donor:donor,donorMessage:donorMessage}},
         process:process,
       });
+    }).catch(error=>{
+      console.log(error);
+      return error;
     });
   },
 

@@ -112,8 +112,10 @@ export class userInterfaceService {
       image:image,
       imageDownloadURL:imageDownloadURL
     }).then(()=>{
+      this.timestampChatVisit();
+      this.clearProcessData();
       return null;
-    })
+    });
   }
 
   IsProcessInputsComplete() {

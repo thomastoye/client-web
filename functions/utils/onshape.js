@@ -1,5 +1,5 @@
 const admin = require('firebase-admin')
-const createMessageUtils = require('./message')
+const createMessageUtils = require('./createMessage')
 const cryptoUtils = require('./crypto')
 var crypto = require('crypto');
 var request = require('request-promise');
@@ -43,10 +43,15 @@ module.exports = {
         json: true,
         body: body
       }).then(result=>{
-        return admin.firestore().doc('PERRINNTeams/'+user).get().then(userObj=>{
-          createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",{},userObj.data(),'none','none',{});
+        return admin.firestore().doc('PERRINNTeams/'+user).get().then(userObjSnapshot=>{
+          let userObj=userObjSnapshot.data();
+          userObj.key=user;
+          createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",{},userObj,'none','none',{});
         }).then(()=>{
           return 'done';
+        }).catch(error=>{
+          console.log(error);
+          return error;
         });
       }).catch(error=>{
         return error.error.message;

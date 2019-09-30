@@ -20,7 +20,7 @@ import { userInterfaceService } from './userInterface.service';
       <span>{{team.values?.name}}</span>
       <span style="font-size:10px"> {{team.values?.familyName}}</span>
       </div>
-      <div *ngIf="UI.currentTeam" class="buttonDiv" style="font-size:11px;color:blue" (click)="UI.createMessage(team.key,'','',{key:team.key,name:team.values.name,imageUrlThumb:team.values.imageUrlThumb},{});router.navigate(['chat',this.UI.currentTeam])">Send to chat</div>
+      <div class="buttonDiv" style="font-size:11px;color:blue" (click)="UI.addRecipient(team.key);router.navigate(['chatFS',this.UI.currentUser])">Chat</div>
     </li>
   </ul>
   </div>

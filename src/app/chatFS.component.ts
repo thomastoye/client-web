@@ -21,32 +21,32 @@ import * as firebase from 'firebase/app';
   <div>
   <ul style="list-style:none;">
     <li *ngFor="let message of teamMessagesFS|async;let first=first;let last=last;let i=index">
-      <div *ngIf="i<messageNumberDisplay" style="cursor:pointer" [style.background-color]="lastChatVisitTimestamp<message.payload?.doc?.data()?.timestamp?'#ffefd1':''" (click)="UI.timestampChatVisit()">
-      <div *ngIf="isMessageNewTimeGroup(message.payload?.doc?.data()?.timestamp)||first" style="padding:25px 15px 15px 15px">
-        <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:7px">{{message.payload?.doc?.data()?.timestamp|date:'fullDate'}}</div>
+      <div *ngIf="i<messageNumberDisplay" style="cursor:pointer" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''" (click)="UI.timestampChatVisit()">
+      <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:25px 15px 15px 15px">
+        <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:7px">{{message.payload?.timestamp|date:'fullDate'}}</div>
       </div>
-      <div *ngIf="isMessageNewUserGroup(message.payload?.doc?.data()?.user,message.payload?.doc?.data()?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
-      <div *ngIf="isMessageNewUserGroup(message.payload?.doc?.data()?.user,message.payload?.doc?.data()?.timestamp)||first" style="float:left;width:60px;min-height:10px">
-        <img [src]="message.payload?.doc?.data()?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['user',message.payload?.doc?.data()?.user])">
+      <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
+      <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
+        <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['user',message.payload?.user])">
       </div>
       <div style="cursor:text;border-radius:7px;background-color:white;margin:2px 10px 5px 60px">
         <div>
-          <div *ngIf="isMessageNewUserGroup(message.payload?.doc?.data()?.user,message.payload?.doc?.data()?.timestamp)||first" style="font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.doc?.data()?.name}}{{message.payload?.doc?.data()?.firstName}}</div>
-          <div *ngIf="isMessageNewUserGroup(message.payload?.doc?.data()?.user,message.payload?.doc?.data()?.timestamp)||first" style="color:#AAA;font-size:11px">{{message.payload?.doc?.data()?.timestamp | date:'HH:mm'}}</div>
-          <img *ngIf="message.payload?.doc?.data()?.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.doc?.data()?.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.doc?.data()?.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.doc?.data()?.action=='process'" src="./../assets/App icons/repeat.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.doc?.data()?.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.doc?.data()?.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <div *ngIf="!message.payload?.doc?.data()?.image" style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.doc?.data()?.text | linky"></div>
-          <div *ngIf="message.payload?.doc?.data()?.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.payload?.doc?.data()?.linkTeam])">
-            <img [src]="message.payload?.doc?.data()?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
-            <div style="font-size:11px;padding:5px;">{{message.payload?.doc?.data()?.linkTeamName}}</div>
+          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}{{message.payload?.firstName}}</div>
+          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#AAA;font-size:11px">{{message.payload?.timestamp | date:'HH:mm'}}</div>
+          <img *ngIf="message.payload?.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+          <img *ngIf="message.payload?.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+          <img *ngIf="message.payload?.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+          <img *ngIf="message.payload?.action=='process'" src="./../assets/App icons/repeat.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+          <img *ngIf="message.payload?.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+          <img *ngIf="message.payload?.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+          <div *ngIf="!message.payload?.image" style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
+          <div *ngIf="message.payload?.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.payload?.linkTeam])">
+            <img [src]="message.payload?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
+            <div style="font-size:11px;padding:5px;">{{message.payload?.linkTeamName}}</div>
           </div>
-          <div *ngIf="message.payload?.doc?.data()?.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.payload?.doc?.data()?.linkUser])">
-            <img [src]="message.payload?.doc?.data()?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
-            <div style="font-size:11px;padding:5px;">{{message.payload?.doc?.data()?.linkUserName}} {{message.payload?.doc?.data()?.linkuserFamilyName}}</div>
+          <div *ngIf="message.payload?.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.payload?.linkUser])">
+            <img [src]="message.payload?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
+            <div style="font-size:11px;padding:5px;">{{message.payload?.linkUserName}} {{message.payload?.linkuserFamilyName}}</div>
           </div>
           <div *ngIf="message.values?.PERRINN?.process?.inputsComplete" style="clear:both;margin:5px">
             <div style="float:left;background-color:#c7edcd;padding:3px">
@@ -74,7 +74,7 @@ import * as firebase from 'firebase/app';
             <img [src]="message.values?.PERRINN?.transactionIn?.donorImageUrlThumb" style="object-fit:cover;height:30px;width:50px" (click)="router.navigate(['chat',message.values?.PERRINN?.transactionIn?.donor])">
           </div>
           <div style="clear:both;text-align:center">
-            <img class="imageWithZoom" *ngIf="message.payload?.doc?.data()?.image" [src]="message.payload?.doc?.data()?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.doc?.data()?.imageDownloadURL)">
+            <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
           </div>
           <div *ngIf="showDetails[message.key]">
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
@@ -145,8 +145,8 @@ import * as firebase from 'firebase/app';
         </div>
       </div>
       </div>
-      {{storeMessageValues(message.payload?.doc?.data()?.user,message.payload?.doc?.data()?.timestamp)}}
-      {{(last||i==(messageNumberDisplay-1))?scrollToBottom(message.payload?.doc?.data()?.timestamp):''}}
+      {{storeMessageValues(message.payload?.user,message.payload?.timestamp)}}
+      {{(last||i==(messageNumberDisplay-1))?scrollToBottom(message.payload?.timestamp):''}}
     </li>
   </ul>
   <div style="height:125px;width:100%"></div>
@@ -255,8 +255,11 @@ export class ChatFSComponent {
         .where('recipientIndex','==',recipientIndex)
         .orderBy('timestamp','desc')
         .limit(this.messageNumberDisplay)
-      ).snapshotChanges();
-
+      ).snapshotChanges().pipe(map(changes => {
+        this.UI.loading = false;
+        const updateObj = {};
+        return changes.map(c => ({key: c.payload.key, payload: c.payload.doc.data()}));
+      }));
     });
   }
 

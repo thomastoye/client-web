@@ -128,7 +128,7 @@ export class TeamProfileComponent  {
     this.UI.process[this.UI.currentTeam]={
       user:this.UI.currentUser,
       function:{
-        name:'joinPERRINNGoogleTeam'
+        name:'joinPERRINNGoogleGroup'
       },
       inputsComplete:true
     };
