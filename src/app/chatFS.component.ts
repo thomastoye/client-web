@@ -188,7 +188,6 @@ export class ChatFSComponent {
   draftImageDownloadURL: string;
   draftMessageDB: boolean;
   draftMessageUsers: Observable<any[]>;
-  teamMessages: Observable<any[]>;
   messageNumberDisplay: number;
   lastChatVisitTimestamp: number;
   scrollMessageTimestamp: number;
@@ -198,6 +197,7 @@ export class ChatFSComponent {
   isCurrentUserMember: boolean;
   showDetails: {};
   teamMessagesFS: Observable<any[]>;
+  recipientIndex: string;
 
   constructor(
     public db: AngularFireDatabase,
@@ -232,33 +232,21 @@ export class ChatFSComponent {
       this.draftImageDownloadURL = '';
       this.draftMessage = '';
       this.messageNumberDisplay = 15;
-      this.teamMessages = this.db.list('teamMessages/' + this.UI.currentTeam, ref => ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes => {
-        this.UI.loading = false;
-        const updateObj = {};
-        changes.forEach(c => {
-          updateObj['teamReads/' + this.UI.currentUser + '/' + this.UI.currentTeam + '/' + c.payload.key] = true;
-        });
-        this.db.database.ref().update(updateObj);
-        return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
-      }));
-      this.draftMessageUsers = this.db.list('teamActivities/' + this.UI.currentTeam + '/draftMessages/').snapshotChanges().pipe(map(changes => {
-        return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
-      }));
 
       afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/viewTeams/'+this.UI.currentTeam).valueChanges().subscribe(userTeam => {
         if (userTeam!=null&&userTeam.lastChatVisitTimestamp!=undefined) {this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp); }
         else this.lastChatVisitTimestamp=0;
       });
-      let recipientIndex=this.UI.recipientIndex();
+
+      this.recipientIndex=this.UI.recipientIndex();
 
       this.teamMessagesFS=afs.collectionGroup('messages',ref=>ref
-        .where('recipientIndex','==',recipientIndex)
+        .where('recipientIndex','==',this.recipientIndex)
         .orderBy('timestamp','desc')
         .limit(this.messageNumberDisplay)
       ).snapshotChanges().pipe(map(changes => {
         this.UI.loading = false;
-        const updateObj = {};
-        return changes.map(c => ({payload: c.payload.doc.data()}));
+        return changes.reverse().map(c => ({payload: c.payload.doc.data()}));
       }));
     });
   }
@@ -267,14 +255,13 @@ export class ChatFSComponent {
     if (e === 'top') {
       this.UI.loading = true;
       this.messageNumberDisplay += 15;
-      return this.teamMessages = this.db.list('teamMessages/' + this.UI.currentTeam, ref => ref.limitToLast(this.messageNumberDisplay)).snapshotChanges().pipe(map(changes => {
+      return this.teamMessagesFS=this.afs.collectionGroup('messages',ref=>ref
+        .where('recipientIndex','==',this.recipientIndex)
+        .orderBy('timestamp','desc')
+        .limit(this.messageNumberDisplay)
+      ).snapshotChanges().pipe(map(changes => {
         this.UI.loading = false;
-        const updateObj = {};
-        changes.forEach(c => {
-          updateObj['teamReads/' + this.UI.currentUser + '/' + this.UI.currentTeam + '/' + c.payload.key] = true;
-        });
-        this.db.database.ref().update(updateObj);
-        return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
+        return changes.reverse().map(c => ({payload: c.payload.doc.data()}));
       }));
     }
   }

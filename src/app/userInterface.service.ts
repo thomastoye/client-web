@@ -19,10 +19,12 @@ export class userInterfaceService {
   services: any;
   process: any;
   recipientList: any;
+  recipientNameList: any;
 
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase, public afs: AngularFirestore,) {
     this.process = {};
     this.recipientList=[];
+    this.recipientNameList=[];
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
@@ -57,7 +59,13 @@ export class userInterfaceService {
   }
 
   addRecipient(user){
-    if (!this.recipientList.includes(user)) this.recipientList.push(user);
+    if (!this.recipientList.includes(user)){
+      this.recipientList.push(user);
+      return this.afs.doc('PERRINNTeams/'+user).ref.get().then(snapshot=>{
+        console.log(snapshot.data().name);
+        this.recipientNameList.push(snapshot.data().name);
+      });
+    }
   }
 
   recipientIndex(){
@@ -105,6 +113,8 @@ export class userInterfaceService {
     this.afs.collection('PERRINNTeams').doc(user).collection('messages').add({
       timestamp: now,
       recipientIndex:recipientIndex,
+      recipientList: this.recipientList,
+      recipientNameList: this.recipientNameList,
       user: this.currentUser,
       name: this.currentUserObj.name,
       imageUrlThumbUser: this.currentUserObj.imageUrlThumb,

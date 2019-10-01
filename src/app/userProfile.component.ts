@@ -49,6 +49,26 @@ import { userInterfaceService } from './userInterface.service';
     </li>
   </ul>
   <ul class="listLight">
+    <li *ngFor="let message of lastMessages|async;let last=last"
+      (click)="UI.recipientList=message.payload.doc.data()?.recipientList;UI.recipientNameList=message.payload.doc.data()?.recipientNameList;router.navigate(['chatFS',UI.focusUser])">
+      <div style="float:left;height:50px;width:95px">
+      </div>
+      <div>
+        <div style="float:left;margin-top:5px">
+          <span style="color:#222;font-size:16px" *ngFor="let recipient of message.payload.doc.data()?.recipientNameList;let last=last">{{recipient}}{{last?"":", "}}</span>
+        </div>
+        <div *ngIf="(now-message.payload.doc.data()?.timestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{message.payload.doc.data()?.timestamp|date:'d MMM yyyy'}}</div>
+        <div *ngIf="(now-message.payload.doc.data()?.timestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{message.payload.doc.data()?.timestamp|date:'HH:mm'}}</div>
+        <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="isActivity(message.payload.doc.data()?.timestamp,message.payload.doc.data()?.timestamp)"></div>
+        <div style="clear:both">
+          <span style="color:#999" *ngFor="let member of objectToArray(message.payload.doc.data()?.members);let last=last">{{member[1]?.name}}{{last?"":", "}}</span>
+        </div>
+        <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.name}}: {{message.payload.doc.data()?.text}}</div>
+      </div>
+      <div class="seperator" style="margin-left:100px"></div>
+    </li>
+  </ul>
+  <ul class="listLight">
     <li *ngFor="let team of viewTeams|async;let last=last"
       (click)="router.navigate(['chat',team.key])">
       <div *ngIf="team.key!=UI.focusUser">
@@ -83,6 +103,7 @@ import { userInterfaceService } from './userInterface.service';
 })
 export class UserProfileComponent {
   viewTeams: Observable<any[]>;
+  lastMessages: Observable<any[]>;
   now: number;
   scrollTeam: string;
 
@@ -104,6 +125,13 @@ export class UserProfileComponent {
           return {key,values};
         }))
       );
+
+      this.lastMessages=afs.collection('lastMessages',ref=>ref
+        .where('recipientList','array-contains',this.UI.focusUser)
+        .orderBy('timestamp','desc')
+        .limit(10)
+      ).snapshotChanges();
+
     });
   }
 
