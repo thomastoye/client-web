@@ -28,6 +28,11 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RegisterComponent } from './register/register.component';
 
+import {
+  MatInputModule,
+  MatFormFieldModule
+} from '@angular/material';
+
 // Must export the config
 export const firebaseConfig = {
   apiKey: 'AIzaSyAoG3PvimV926EgWlGvpzXrZAkOi1uWdcs',
@@ -65,6 +70,8 @@ export const firebaseConfig = {
     LinkyModule,
     Ng2ImgMaxModule,
     BrowserAnimationsModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [
     userInterfaceService,

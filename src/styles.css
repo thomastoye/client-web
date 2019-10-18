@@ -1,3 +1,5 @@
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+
 *, *:before, *:after {
   box-sizing: border-box;
   font-family: verdana;
@@ -142,7 +144,7 @@ body {
 .listLight .selected {
   background-color: #eee !important;
 }
-.buttonDiv {
+/* .buttonDiv {
   cursor: pointer;
   color: #4b5cd8;
   margin: 0 auto;
@@ -169,8 +171,8 @@ button {
   border-radius: 4px;
   text-align:center;
   user-select: none;
-}
-input {
+} */
+/* input {
   width: 90%;
   border-width: thin;
   padding: 10px;
@@ -191,7 +193,7 @@ input {
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
   border-radius: 4px;
-}
+} */
 .cornerButton {
   border-style:solid;
   border-width:thin;
