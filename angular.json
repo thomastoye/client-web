@@ -22,6 +22,7 @@
               "src/manifest.json"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
             "scripts": [
@@ -78,6 +79,7 @@
               "node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
             "assets": [

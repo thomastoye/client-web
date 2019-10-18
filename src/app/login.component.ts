@@ -22,10 +22,8 @@ import { userInterfaceService } from './userInterface.service';
           <button [hidden]="newUser" type="button" (click)="login(email,password)">Login</button>
           <div [hidden]="newUser" style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password?</div>
           <div [hidden]="!newUser">
-          <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *" (keyup)="messageUser=''"/>
-          <input maxlength="500" [(ngModel)]="name" name="name" type="text" placeholder="First name *" (keyup)="messageUser=''"/>
-          <input maxlength="500" [(ngModel)]="familyName" name="familyName" type="text" placeholder="Last name *" (keyup)="messageUser=''"/>
-          <button type="button" (click)="register(email,password,passwordConfirm,name,familyName)">Register</button>
+          <!--Old Register-->
+          <app-register></app-register>
           </div>
           </div>
           <div [hidden]="UI.currentUser==null">

@@ -25,6 +25,8 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 
 import { Ng2ImgMaxModule } from 'ng2-img-max';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RegisterComponent } from './register/register.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -48,6 +50,7 @@ export const firebaseConfig = {
     SearchComponent,
     BuyCoinsComponent,
     ScrollableDirective,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,
@@ -61,6 +64,7 @@ export const firebaseConfig = {
     AppRoutingModule,
     LinkyModule,
     Ng2ImgMaxModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     userInterfaceService,
