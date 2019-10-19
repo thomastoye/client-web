@@ -30,7 +30,8 @@ import { RegisterComponent } from './register/register.component';
 
 import {
   MatInputModule,
-  MatFormFieldModule
+  MatFormFieldModule,
+  MatButtonModule
 } from '@angular/material';
 
 // Must export the config
@@ -71,7 +72,8 @@ export const firebaseConfig = {
     Ng2ImgMaxModule,
     BrowserAnimationsModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatButtonModule
   ],
   providers: [
     userInterfaceService,
